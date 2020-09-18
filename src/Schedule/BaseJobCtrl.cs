@@ -1,0 +1,153 @@
+﻿using System;
+using System.Linq;
+using Quartz;
+using Quartz.Impl.Matchers;
+using Schedule.Abstractions;
+using Schedule.Func;
+using Schedule.Model;
+using Schedule.Model.Enums;
+
+namespace Schedule
+{
+    public class BaseJobCtrl<T, LT> : IJobCtrl
+        where T : IJob
+        where LT : IScheduleListener, new()
+    {
+        public virtual string JobCode => typeof(T).Name.ToLower();
+
+
+        /// <summary>
+        ///     开启job
+        /// </summary>
+        /// <param name="jobParam">job执行参数</param>
+        /// <param name="onceJob">是否执行计划外的任务</param>
+        /// <returns></returns>
+        public bool StartJob(JobMeta jobParam, bool onceJob = false)
+        {
+            try
+            {
+                var triggerKey = onceJob ? UtilsFunc.GenTriggerKey(jobParam.JobName) : GetTriggerKey();
+                var trigger = GenTrigger(triggerKey, jobParam.StartTime, jobParam.Interval, jobParam.CronExpression,
+                    onceJob);
+                if (trigger == null)
+                {
+                    JobLogHelper.Error(
+                        $"创建{jobParam.JobName}的trigger失败，参数为{onceJob},{jobParam.StartTime},{jobParam.Interval},{jobParam.CronExpression}",
+                        null, nameof(StartJob));
+                    return false;
+                }
+
+                var jobkey = onceJob ? UtilsFunc.GenJobKey(jobParam.JobName) : GetJobKey();
+                var job = JobBuilder.Create<T>()
+                    .WithIdentity(jobkey)
+                    .Build();
+
+                JobContextFunc.SetJobName(job, jobParam.JobName);
+                JobContextFunc.SetJobCode(job, jobParam.JobCode);
+                JobContextFunc.SetOnceJobFlag(job, onceJob);
+                JobContextFunc.SetDepJobs(job, jobParam.DepJobs);
+                JobContextFunc.SetJobRunParams(job, jobParam.RunParams);
+                JobContextFunc.SetAutoClose(job, jobParam.AutoClose);
+                JobContextFunc.SetIsDoNotice(job, jobParam.IsDoNotice);
+
+                ScheduleModConfig.Instance.DefaultScheduler.ScheduleJob(job, trigger);
+
+                var jobListener = new LT();
+                if (onceJob) jobListener.SetName(UtilsFunc.GenListenerName(jobParam.JobName));
+                ScheduleModConfig.Instance.DefaultScheduler.ListenerManager.AddJobListener(jobListener,
+                    KeyMatcher<JobKey>.KeyEquals(jobkey));
+                ScheduleModConfig.Instance.DefaultScheduler.ListenerManager.AddTriggerListener(jobListener,
+                    KeyMatcher<TriggerKey>.KeyEquals(triggerKey));
+                if (jobParam.State == JobStateEnum.Pause) ScheduleModConfig.Instance.DefaultScheduler.PauseJob(jobkey);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                JobLogHelper.Error(ex.Message, ex, nameof(StartJob));
+                return false;
+            }
+        }
+
+        public JobMeta ReadJobParam()
+        {
+            var jobCode = GetJobKey().Name;
+            var jobMeta = ConfigItems.JobsConfig?.Items?.FirstOrDefault(m =>
+                string.Equals(m.JobCode, jobCode, StringComparison.InvariantCultureIgnoreCase));
+
+            return new JobMeta
+            {
+                JobId = string.Empty,
+                Group = string.Empty,
+                RunParams = string.Empty,
+                JobName = jobMeta.JobName,
+                JobCode = jobMeta.JobCode,
+                Title = jobMeta.Title,
+                Description = jobMeta.Description,
+                StartTime = jobMeta.StartTime,
+                Interval = jobMeta.Interval,
+                CronExpression = jobMeta.CronExpression,
+                State = jobMeta.State,
+                SupportOnceJob = jobMeta.SupportOnceJob,
+                DepJobs = jobMeta.DepJobs,
+                AutoClose = jobMeta.AutoClose,
+                JobParamsDesc = jobMeta.JobParamsDesc,
+                IsDoNotice = jobMeta.IsDoNotice
+            };
+        }
+
+        public virtual JobKey GetJobKey()
+        {
+            return JobKey.Create(JobCode, $"{JobCode}_group");
+        }
+
+        public virtual TriggerKey GetTriggerKey()
+        {
+            return new TriggerKey($"{JobCode}_trigger", $"{JobCode}_group");
+        }
+
+        private ITrigger GenTrigger(TriggerKey triggerKey, DateTime startTime, uint interval, string cronExpression,
+            bool onceJob = false)
+        {
+            if (onceJob && startTime != default)
+            {
+                Console.WriteLine("will start job at time: {0}", startTime);
+                return TriggerBuilder.Create()
+                    .WithIdentity(triggerKey)
+                    .StartAt(new DateTimeOffset(new DateTime(startTime.Year, startTime.Month, startTime.Day,
+                        startTime.Hour, startTime.Minute, startTime.Second)))
+                    .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionNextWithRemainingCount())
+                    .Build();
+            }
+
+            if (startTime != default)
+                return TriggerBuilder.Create()
+                    .WithIdentity(triggerKey)
+                    .StartNow()
+                    .WithSchedule(
+                        CronScheduleBuilder.DailyAtHourAndMinute(startTime.Hour,
+                            startTime.Minute)) //未指定错过执行时间的处理方式，要求job里面的逻辑支持可重入
+                    .Build();
+            if (interval != 0)
+                //pause后重新resume,执行类似misfire job的原因
+                //http://stackoverflow.com/questions/1933676/quartz-java-resuming-a-job-excecutes-it-many-times
+                return TriggerBuilder.Create()
+                    .WithIdentity(triggerKey)
+                    .WithSimpleSchedule(x => x
+                            .WithIntervalInSeconds((int)interval)
+                            .RepeatForever()
+                            .WithMisfireHandlingInstructionNextWithRemainingCount() //discard misfire trigger
+                    )
+                    .StartNow()
+                    .Build();
+            if (!string.IsNullOrEmpty(cronExpression))
+                return TriggerBuilder.Create()
+                    .WithIdentity(triggerKey)
+                    .StartNow()
+                    .WithCronSchedule(cronExpression)
+                    .Build();
+
+            return null;
+        }
+    }
+}
