@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
+using WindNight.Core.Abstractions;
 
 namespace Microsoft.Extensions.DependencyInjection.WnExtension
 {
@@ -45,7 +47,19 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         {
             if (Instance.ServiceProvider == null) return default;
 #if NETSTANDARD
-            if (!string.IsNullOrEmpty(name)) return Instance.ServiceProvider.GetServices<T>().FirstOrDefault();
+            if (!string.IsNullOrEmpty(name))
+            {
+                var impls = Instance.ServiceProvider.GetServices<T>();
+                foreach (var impl in impls)
+                {
+                    var alias = impl.GetType().GetCustomAttributes<AliasAttribute>().FirstOrDefault();
+                    if (alias != null && alias.Name == name)
+                    {
+                        return impl;
+                    }
+                }
+                return Instance.ServiceProvider.GetServices<T>().FirstOrDefault();
+            }
             return Instance.ServiceProvider.GetService<T>();
 #else
             return (T)Instance.ServiceProvider.GetService(typeof(T));

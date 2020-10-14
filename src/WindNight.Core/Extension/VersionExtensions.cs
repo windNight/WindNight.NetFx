@@ -17,7 +17,7 @@ namespace WindNight.Core.Extension
         {
             try
             {
-                return new VersionStruct {Version = version};
+                return new VersionStruct { Version = version };
             }
             catch (Exception ex)
             {
@@ -71,7 +71,7 @@ namespace WindNight.Core.Extension
         public string Version { get; set; }
         public long VersionLong => Version.Convert2Long();
 
-        public static VersionStruct NullVersionStruct => new VersionStruct {Version = "0"};
+        public static VersionStruct NullVersionStruct => new VersionStruct { Version = "0" };
 
         public static bool operator ==(VersionStruct left, VersionStruct right)
         {
@@ -108,5 +108,26 @@ namespace WindNight.Core.Extension
             if (left == null || right == null) return false;
             return left.VersionLong <= right.VersionLong;
         }
+
+
+        public override bool Equals(object obj)
+        {
+            if (obj is VersionStruct objVersionStruct)
+            {
+                return this == objVersionStruct;
+
+            }
+            return false;
+        }
+
+        public override string ToString()
+        {
+            return $"{Version}";
+        }
+        //public override int GetHashCode()
+        //{
+        //    return base.GetHashCode();
+        //}
+
     }
 }

@@ -37,5 +37,9 @@ namespace System.Security.Cryptography.Extensions
 
             return result.ToLower();
         }
+
+
+
+
     }
 }

@@ -4,6 +4,7 @@ using WindNight.Core.Abstractions;
 
 namespace WindNight.LogExtension
 {
+    /// <inheritdoc />
     public class DefaultLogService : ILogService
     {
         public void AddLog(LogLevels logLevel, string msg, Exception exception = null, long millisecond = 0,
