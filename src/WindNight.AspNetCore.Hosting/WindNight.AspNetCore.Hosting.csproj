@@ -2,31 +2,34 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>
-			netstandard2.0;
-			netstandard2.1;
+			<!--netstandard2.0;
+			netstandard2.1;-->
+			<!--netcoreapp3.0;-->
+			netcoreapp3.1;
 		</TargetFrameworks>
-		<AssemblyVersion>1.0.1</AssemblyVersion>
-		<FileVersion>1.0.1</FileVersion>
-		<Version>1.0.1</Version>
+		<AssemblyVersion>1.0.2.1</AssemblyVersion>
+		<FileVersion>1.0.2.1</FileVersion>
+		<Version>1.0.2.1</Version>
 		<Authors>windnight</Authors>
 		<Company></Company>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<AssemblyName>WindNight.Schedule</AssemblyName>
-		<Description>WindNight.Schedule</Description>
-		<PackageReleaseNotes>WindNight.Schedule</PackageReleaseNotes>
+		<Description>
+		</Description>
+		<PackageReleaseNotes>
+		</PackageReleaseNotes>
 		<Title>$(AssemblyName)</Title>
 		<PackageIconUrl>//</PackageIconUrl>
 		<PackageProjectUrl>https://github.com/windNight/WindNight.NetFx.git</PackageProjectUrl>
 		<PackageLicenseUrl>//</PackageLicenseUrl>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
-		<PackageIcon>logo.png</PackageIcon>
 		<ApplicationIcon>..\logo.ico</ApplicationIcon>
+		<PackageIcon>logo.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="..\logo.ico" />
-		<EmbeddedResource Include="..\logo.png" />
+		<EmbeddedResource Include="..\logo.ico" Link="logo.ico" />
+		<EmbeddedResource Include="..\logo.png" Link="logo.png" />
 		<None Include="..\logo.ico">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
@@ -38,12 +41,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Quartz" Version="3.1.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.9" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.9" />
-		<!--<PackageReference Include="WindNight.Core" Version="1.0.0" />-->
+		<ProjectReference Include="..\WindNight.AspNetCore.Mvc.Extensions\WindNight.AspNetCore.Mvc.Extensions.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />
-	</ItemGroup>
+
+
 </Project>

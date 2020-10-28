@@ -7,9 +7,9 @@
 			net45;
 			net461;
 		</TargetFrameworks>
-		<AssemblyVersion>1.0.0.1</AssemblyVersion>
-		<FileVersion>1.0.0.1</FileVersion>
-		<Version>1.0.0.1</Version>
+		<AssemblyVersion>1.0.1</AssemblyVersion>
+		<FileVersion>1.0.1</FileVersion>
+		<Version>1.0.1</Version>
 		<Authors>windnight</Authors>
 		<Company> </Company>
 		<Description>
@@ -24,19 +24,21 @@
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
 		<ApplicationIcon>..\logo.ico</ApplicationIcon>
-		<PackageIcon></PackageIcon>
+		<PackageIcon>logo.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="..\logo.ico" />
-		<!--<EmbeddedResource Include="..\logo.png" />-->
-
+		<EmbeddedResource Include="..\logo.ico" Link="logo.ico" />
+		<EmbeddedResource Include="..\logo.png" Link="logo.png" />
 		<None Include="..\logo.ico">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
+		<None Include="..\logo.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
 	</ItemGroup>
-
 	<ItemGroup>
 		<ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />
 	</ItemGroup>
@@ -46,7 +48,7 @@
 			<Version>3.1.9</Version>
 		</PackageReference>
 	</ItemGroup>
- 
+
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net45'">
 		<Reference Include="System.Configuration" />

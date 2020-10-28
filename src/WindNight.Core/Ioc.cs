@@ -46,24 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         public static T GetService<T>(string name = null)
         {
             if (Instance.ServiceProvider == null) return default;
-#if NETSTANDARD
-            if (!string.IsNullOrEmpty(name))
-            {
-                var impls = Instance.ServiceProvider.GetServices<T>();
-                foreach (var impl in impls)
-                {
-                    var alias = impl.GetType().GetCustomAttributes<AliasAttribute>().FirstOrDefault();
-                    if (alias != null && alias.Name == name)
-                    {
-                        return impl;
-                    }
-                }
-                return Instance.ServiceProvider.GetServices<T>().FirstOrDefault();
-            }
-            return Instance.ServiceProvider.GetService<T>();
-#else
-            return (T)Instance.ServiceProvider.GetService(typeof(T));
-#endif
+            return Instance.ServiceProvider.GetService<T>(name); 
         }
 
 
@@ -82,7 +65,7 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         ///     Please Make Sure you has do Ioc.Instance.InitServiceProvider(yourIServiceProvider) when init your app.
         /// </remarks>
         /// <returns> A service object of type T or null if there is no such service. </returns>
-        public static T GetService<T>(this IServiceProvider serviceProvider, string name = null)
+        public static T GetService<T>(this IServiceProvider serviceProvider, string name)
         {
             if (serviceProvider == null) return default;
 #if NETSTANDARD

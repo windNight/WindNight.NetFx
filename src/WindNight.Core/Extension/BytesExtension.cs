@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.IO.Compression;
+using System.Linq;
 
 namespace System.Text
 {
@@ -78,9 +79,9 @@ namespace System.Text
         public static byte[] DoCompress(this byte[] rawData)
         {
             var ms = new MemoryStream();
-            var compressedzipStream = new GZipStream(ms, CompressionMode.Compress, true);
-            compressedzipStream.Write(rawData, 0, rawData.Length);
-            compressedzipStream.Close();
+            var gZipStream = new GZipStream(ms, CompressionMode.Compress, true);
+            gZipStream.Write(rawData, 0, rawData.Length);
+            gZipStream.Close();
             return ms.ToArray();
         }
 
@@ -98,5 +99,19 @@ namespace System.Text
             if (encoding == null) encoding = Encoding.UTF8;
             return DoDecompress(zippedData).ToGetString(encoding);
         }
+
+        public static byte[] Combine(params byte[][] arrays)
+        {
+            var ret = new byte[arrays.Sum(x => x.Length)];
+            int offset = 0;
+            foreach (var data in arrays)
+            {
+                Buffer.BlockCopy(data, 0, ret, offset, data.Length);
+                offset += data.Length;
+            }
+            return ret;
+        }
+
+
     }
 }

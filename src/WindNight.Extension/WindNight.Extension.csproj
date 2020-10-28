@@ -7,9 +7,9 @@
 			net45;
 			net461;
 		</TargetFrameworks>
-		<AssemblyVersion>1.0.0.1</AssemblyVersion>
-		<FileVersion>1.0.0.1</FileVersion>
-		<Version>1.0.0.1</Version>
+		<AssemblyVersion>1.0.1</AssemblyVersion>
+		<FileVersion>1.0.1</FileVersion>
+		<Version>1.0.1</Version>
 		<Authors>windnight</Authors>
 		<Company> </Company>
 		<Description>
@@ -25,7 +25,6 @@
 		<NoWarn>1701;1702;1705;1591</NoWarn>
 		<ApplicationIcon>..\logo.ico</ApplicationIcon>
 		<PackageIcon>logo.png</PackageIcon>
-		<PackageIcon></PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
