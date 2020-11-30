@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection.WnExtension;
+﻿using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
+using System;
+using System.Linq;
 using WindNight.Core.Abstractions;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
@@ -81,17 +81,16 @@ namespace Microsoft.AspNetCore.WindNight.Hosting.Internals
         /// <param name="appendMessage"></param>
         internal static void LogRegisterInfo(string buildType, bool appendMessage = false)
         {
-            var serverIp = IpHelper.GetLocalIPs();
             var sysInfo = new
             {
                 ConfigItems.SysAppId,
                 ConfigItems.SysAppCode,
                 ConfigItems.SysAppName,
-                ServerIP = serverIp,
+                ServerIP = IpHelper.LocalServerIps,
                 BuildType = buildType
             };
             var msg = $"register info is {sysInfo.ToJsonStr()}";
-            Add(msg, LogLevels.SysRegister, serverIp: serverIp.FirstOrDefault(), appendMessage: appendMessage);
+            Add(msg, LogLevels.SysRegister, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage);
         }
 
         /// <summary>
@@ -101,18 +100,17 @@ namespace Microsoft.AspNetCore.WindNight.Hosting.Internals
         /// <param name="appendMessage"></param>
         internal static void LogOfflineInfo(string buildType, Exception exception = null, bool appendMessage = false)
         {
-            var serverIp = IpHelper.GetLocalIPs();
             var sysInfo = new
             {
                 ConfigItems.SysAppId,
                 ConfigItems.SysAppCode,
                 ConfigItems.SysAppName,
-                ServerIP = serverIp,
+                ServerIP = IpHelper.LocalServerIps,
                 BuildType = buildType
             };
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
-            Add(msg, LogLevels.SysOffline, exception, serverIp: serverIp.FirstOrDefault(),
-                appendMessage: appendMessage);
+            Add(msg, LogLevels.SysOffline, exception, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage);
+
         }
 
 

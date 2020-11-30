@@ -17,8 +17,7 @@ namespace WindNight.Extension
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
         /// <returns></returns>
-        public static T
-            Get<T>(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200) //where T : new()
+        public static T Get<T>(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
             {
@@ -40,8 +39,10 @@ namespace WindNight.Extension
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
         /// <returns></returns>
-        public static T Get<T>(string domain, string path, Dictionary<string, object> queries,
-            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200) //where T : new()
+        public static T Get<T>(string domain, string path,
+            Dictionary<string, object> queries,
+            Dictionary<string, string> headerDict = null,
+            int warnMiSeconds = 200) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
             {
@@ -68,8 +69,10 @@ namespace WindNight.Extension
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
         /// <returns></returns>
-        public static async Task<T> GetAsync<T>(string domain, string path, Dictionary<string, object> queries,
-            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200) //where T : new()
+        public static async Task<T> GetAsync<T>(string domain, string path,
+            Dictionary<string, object> queries,
+            Dictionary<string, string> headerDict = null,
+            int warnMiSeconds = 200) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
             {
@@ -164,6 +167,7 @@ namespace WindNight.Extension
                 Timeout = 1000 * 60 * 20
             };
             var response = await client.ExecuteTaskAsync(request);
+            //var response = await client.ExecuteAsync(request);
             return DeserializeResponse<T>(response);
         }
 

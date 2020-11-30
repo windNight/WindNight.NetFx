@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP3_1
+﻿#if NETCOREAPP3_1||NET5_0
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
@@ -31,7 +31,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// </param>
         /// <returns></returns>
         public static IMvcBuilder AddMvcBuilder(this IServiceCollection services, Action<MvcOptions> mvcOption
-#if !NETCOREAPP3_1
+#if !NETCOREAPP3_1&&!NET5_0
             , Action<MvcJsonOptions> mvcJsonOption = null
 #else
             , Action<JsonOptions> jsonOptions = null, Action<MvcNewtonsoftJsonOptions> mvcJsonOptions = null
@@ -40,7 +40,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         {
             AddCommonMvc(services);
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1||NET5_0
             return services.AddControllers(mvcOption)
                            .AppendJsonSettings(jsonOptions, mvcJsonOptions);
 
@@ -71,7 +71,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// </remarks>
         /// <returns></returns>
         public static IMvcBuilder AddMvcBuilderWithDefaultFilters(this IServiceCollection services
-#if !NETCOREAPP3_1
+#if !NETCOREAPP3_1&&!NET5_0
             , Action<MvcJsonOptions> mvcJsonOption = null
 #else
             , Action<JsonOptions> jsonOptions = null, Action<MvcNewtonsoftJsonOptions> mvcJsonOptions = null
@@ -85,15 +85,15 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                      options.Filters.Add(new ValidateInputAttribute());
                      options.Filters.Add(new LogProcessAttribute());
                  }
-#if !NETCOREAPP3_1
+#if !NETCOREAPP3_1&&!NET5_0
                 , mvcJsonOption
 #else
-            ,  jsonOptions ,  mvcJsonOptions 
+            , jsonOptions, mvcJsonOptions
 #endif
                 );
         }
 
-  
+
         /// <summary>
         /// </summary>
         /// <param name="services"></param>
@@ -122,14 +122,14 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
 
         public static IMvcBuilder AppendJsonSettings(this IMvcBuilder mvcBuilder
-#if !NETCOREAPP3_1
+#if !NETCOREAPP3_1&&!NET5_0
             , Action<MvcJsonOptions> mvcJsonOption = null
 #else
             , Action<JsonOptions> jsonOptions = null, Action<MvcNewtonsoftJsonOptions> mvcJsonOptions = null
 #endif
         )
         {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1||NET5_0
             return mvcBuilder.AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
@@ -150,6 +150,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
 
         }
-         
+
     }
 }

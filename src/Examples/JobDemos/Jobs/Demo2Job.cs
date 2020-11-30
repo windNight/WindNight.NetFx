@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Quartz;
+﻿using Quartz;
 using Schedule;
+using System;
+using System.Threading.Tasks;
 
 namespace JobDemos.Jobs.Demo2
 {

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography.Extensions;
 using System.Threading;
- 
+
 using Newtonsoft.Json.Extension;
 using WindNight.ConfigCenter.Extension.Internal;
 
@@ -64,7 +64,7 @@ namespace WindNight.ConfigCenter.Extension
 
         public static ConfigProvider Instance { get; }
 
-        private static string ConfigPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory + "Config");
+        private static string ConfigPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config");
 
         private static List<string> ValidExtensions => new List<string> { ".json" };
 

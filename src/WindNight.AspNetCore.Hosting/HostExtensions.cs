@@ -1,7 +1,7 @@
-﻿using System.Threading;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WindNight.Hosting.Internals;
-using Microsoft.Extensions.DependencyInjection;
+using static Microsoft.AspNetCore.WindNight.Hosting.Internals.LogHelper;
 
 namespace Microsoft.Extensions.Hosting.WnExtensions
 {
@@ -14,8 +14,8 @@ namespace Microsoft.Extensions.Hosting.WnExtensions
 
             // Create a new TaskCompletionSource called waitForStop
             var waitForStop = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
-            applicationLifetime.ApplicationStarted.Register(() => { LogHelper.LogRegisterInfo(buildType); }
-            );
+            applicationLifetime.ApplicationStarted.Register(() =>
+                LogRegisterInfo(buildType));
 
             // Register a callback with the ApplicationStopping cancellation token
             applicationLifetime.ApplicationStopping.Register(obj =>
@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.Hosting.WnExtensions
 
                 //PUT YOUR CODE HERE 
 
-                LogHelper.LogOfflineInfo(buildType);
+                LogOfflineInfo(buildType);
 
                 Thread.Sleep(200);
                 // When the application stopping event is fired, set 
@@ -34,7 +34,45 @@ namespace Microsoft.Extensions.Hosting.WnExtensions
 
             // Await the Task. This will block until ApplicationStopping is triggered,
             // and TrySetResult(null) is called
-            //await waitForStop.Task;
+            await waitForStop.Task;
+
+            // We're shutting down, so call StopAsync on IHost
+            await host.StopAsync();
+        }
+
+        public static void InjectionRS(this IHost host, string buildType)
+        {
+            var serviceProvider = host.Services;
+            // Get the lifetime object from the DI container
+            var applicationLifetime = serviceProvider.GetService<IHostApplicationLifetime>();
+            // Create a new TaskCompletionSource called waitForStop
+            var waitForStop = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var hostEnv = serviceProvider.GetService<IHostEnvironment>();
+            applicationLifetime.ApplicationStarted.Register(() =>
+            {
+                LogRegisterInfo(buildType);
+            });
+
+
+            // Register a callback with the ApplicationStopping cancellation token
+            applicationLifetime.ApplicationStopping.Register(obj =>
+            {
+                var tcs = (TaskCompletionSource<object>)obj;
+
+                //PUT YOUR CODE HERE 
+
+
+                LogOfflineInfo(buildType);
+
+                Thread.Sleep(200);
+                // When the application stopping event is fired, set 
+                // the result for the waitForStop task, completing it
+                tcs.TrySetResult(null);
+            }, waitForStop);
+
+            // Await the Task. This will block until ApplicationStopping is triggered,
+            // and TrySetResult(null) is called
+            // await waitForStop.Task;
 
             // We're shutting down, so call StopAsync on IHost
             //await host.StopAsync();

@@ -18,7 +18,8 @@ namespace WindNight.NetCore.Extension
         /// <param name="connKey"></param>
         /// <param name="isThrow"></param>
         /// <returns></returns>
-        protected static string GetConnStringValue(string connKey, bool isThrow = true) => GetConnStringValue(connKey, "", isThrow);
+        protected static string GetConnStringValue(string connKey, bool isThrow = true) 
+            => GetConnStringValue(connKey, "", isThrow);
 
         /// <summary>
         /// </summary>
@@ -49,7 +50,8 @@ namespace WindNight.NetCore.Extension
         /// <param name="configKey"></param>
         /// <param name="isThrow"></param>
         /// <returns></returns>
-        protected static string GetConfigValue(string configKey, bool isThrow = true) => GetConfigValue(configKey, "", isThrow);
+        protected static string GetConfigValue(string configKey, bool isThrow = true) 
+            => GetConfigValue(configKey, "", isThrow);
 
         /// <summary>
         /// </summary>
@@ -57,7 +59,8 @@ namespace WindNight.NetCore.Extension
         /// <param name="defaultValue"></param>
         /// <param name="isThrow"></param>
         /// <returns></returns>
-        protected static int GetConfigValue(string configKey, int defaultValue = 0, bool isThrow = true) => GetConfigValue(configKey, defaultValue.ToString(), isThrow).ToInt(defaultValue);
+        protected static int GetConfigValue(string configKey, int defaultValue = 0, bool isThrow = true) 
+            => GetConfigValue(configKey, defaultValue.ToString(), isThrow).ToInt(defaultValue);
 
         /// <summary>
         /// </summary>
@@ -65,7 +68,8 @@ namespace WindNight.NetCore.Extension
         /// <param name="defaultValue"></param>
         /// <param name="isThrow"></param>
         /// <returns></returns>
-        protected static long GetConfigValue(string configKey, long defaultValue = 0L, bool isThrow = true) => GetConfigValue(configKey, defaultValue.ToString(), isThrow).ToLong(defaultValue);
+        protected static long GetConfigValue(string configKey, long defaultValue = 0L, bool isThrow = true) 
+            => GetConfigValue(configKey, defaultValue.ToString(), isThrow).ToLong(defaultValue);
 
         /// <summary>
         /// </summary>
@@ -83,7 +87,8 @@ namespace WindNight.NetCore.Extension
         /// <param name="defaultValue"></param>
         /// <param name="isThrow"></param>
         /// <returns></returns>
-        protected static bool GetConfigValue(string configKey, bool defaultValue, bool isThrow) => GetConfigValue(configKey, defaultValue ? TrueString : FalseString, isThrow) == TrueString;
+        protected static bool GetConfigValue(string configKey, bool defaultValue, bool isThrow) 
+            => GetConfigValue(configKey, defaultValue ? TrueString : FalseString, isThrow) == TrueString;
 
         /// <summary>
         /// </summary>

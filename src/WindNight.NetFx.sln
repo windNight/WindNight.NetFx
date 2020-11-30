@@ -23,6 +23,22 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.AspNetCore.Mvc.Ex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcDemo_NetCore3_1", "Examples\Tmp\MvcDemo_NetCore3_1\MvcDemo_NetCore3_1.csproj", "{D74568E6-7FC5-4E36-A0A5-32B1F337D03A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resource", "resource", "{F13DE86C-E85B-4369-832B-A19E659B01E3}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\common.props = ..\build\common.props
+		..\build\version.props = ..\build\version.props
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleExamples_NetCore5", "Examples\ConsoleExamples_NetCore5\ConsoleExamples_NetCore5.csproj", "{DD2A004D-B88E-4A13-AFFE-2234EF5BA362}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D1583FA4-40F8-43F8-9104-1B41A6EA78B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindNight.Core.Tests", "Tests\WindNight.Core.Tests\WindNight.Core.Tests.csproj", "{FBAF80B2-BBA6-4CAA-879A-EA277E5058AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindNight.Extension.Tests", "Tests\WindNight.Extension.Tests\WindNight.Extension.Tests.csproj", "{9BCE8064-81FA-4DA5-888A-CD2EE8134CC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcDemo_Net5", "Examples\MvcDemo_Net5\MvcDemo_Net5.csproj", "{66F6C21B-3B03-4CDD-B3A8-53839D8C8880}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +81,22 @@ Global
 		{D74568E6-7FC5-4E36-A0A5-32B1F337D03A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D74568E6-7FC5-4E36-A0A5-32B1F337D03A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D74568E6-7FC5-4E36-A0A5-32B1F337D03A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD2A004D-B88E-4A13-AFFE-2234EF5BA362}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD2A004D-B88E-4A13-AFFE-2234EF5BA362}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD2A004D-B88E-4A13-AFFE-2234EF5BA362}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD2A004D-B88E-4A13-AFFE-2234EF5BA362}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBAF80B2-BBA6-4CAA-879A-EA277E5058AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBAF80B2-BBA6-4CAA-879A-EA277E5058AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBAF80B2-BBA6-4CAA-879A-EA277E5058AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBAF80B2-BBA6-4CAA-879A-EA277E5058AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BCE8064-81FA-4DA5-888A-CD2EE8134CC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BCE8064-81FA-4DA5-888A-CD2EE8134CC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BCE8064-81FA-4DA5-888A-CD2EE8134CC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BCE8064-81FA-4DA5-888A-CD2EE8134CC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66F6C21B-3B03-4CDD-B3A8-53839D8C8880}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66F6C21B-3B03-4CDD-B3A8-53839D8C8880}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66F6C21B-3B03-4CDD-B3A8-53839D8C8880}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66F6C21B-3B03-4CDD-B3A8-53839D8C8880}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,6 +104,11 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{59E6325A-7922-4259-AA9A-59CC2869434A} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
 		{C1061384-7187-4E34-9413-18C103899260} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
+		{D74568E6-7FC5-4E36-A0A5-32B1F337D03A} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
+		{DD2A004D-B88E-4A13-AFFE-2234EF5BA362} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
+		{FBAF80B2-BBA6-4CAA-879A-EA277E5058AE} = {D1583FA4-40F8-43F8-9104-1B41A6EA78B0}
+		{9BCE8064-81FA-4DA5-888A-CD2EE8134CC2} = {D1583FA4-40F8-43F8-9104-1B41A6EA78B0}
+		{66F6C21B-3B03-4CDD-B3A8-53839D8C8880} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4D07DFE6-71BA-4D72-AF00-A6D57FAE38EB}

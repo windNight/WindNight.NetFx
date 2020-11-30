@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Linq;
-using Newtonsoft.Json.Extension;
+﻿using Newtonsoft.Json.Extension;
+using System;
 using WindNight.Core.Abstractions;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
@@ -16,6 +14,7 @@ namespace WindNight.LogExtension
 
         public static void RegisterProcessEvent(PublishLogInfoEvent publishLogInfoEvent)
         {
+            PublishLogInfoHandleEvent -= publishLogInfoEvent;
             PublishLogInfoHandleEvent += publishLogInfoEvent;
         }
 
@@ -24,7 +23,7 @@ namespace WindNight.LogExtension
             PublishLogInfoHandleEvent?.Invoke(logInfo);
         }
 
-      
+
         /// <summary>
         /// </summary>
         /// <param name="url"></param>
@@ -127,7 +126,6 @@ namespace WindNight.LogExtension
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>
-        /// <param name="log2TcySys"></param>
         public static void Fatal(string msg, Exception exception, long millisecond = 0, string url = "",
             string serverIp = "", string clientIp = "", bool appendMessage = false)
         {
@@ -141,10 +139,9 @@ namespace WindNight.LogExtension
         /// <param name="appendMessage"></param>
         public static void LogRegisterInfo(string buildType, bool appendMessage = false)
         {
-            var serverIp = IpHelper.GetLocalIPs();
             var sysInfo = GetSysInfo(buildType);
             var msg = $"register info is {sysInfo.ToJsonStr()}";
-            Add(msg, LogLevels.SysRegister, serverIp: serverIp.FirstOrDefault(), appendMessage: appendMessage);
+            Add(msg, LogLevels.SysRegister, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage);
         }
 
         /// <summary>
@@ -154,21 +151,19 @@ namespace WindNight.LogExtension
         /// <param name="appendMessage"></param>
         public static void LogOfflineInfo(string buildType, Exception exception = null, bool appendMessage = false)
         {
-            var serverIp = IpHelper.GetLocalIPs();
             var sysInfo = GetSysInfo(buildType);
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
-            Add(msg, LogLevels.SysOffline, exception, serverIp: serverIp.FirstOrDefault(), appendMessage: appendMessage);
+            Add(msg, LogLevels.SysOffline, exception, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage);
         }
 
         static object GetSysInfo(string buildType)
         {
-            var serverIp = IpHelper.GetLocalIPs();
             var sysInfo = new
             {
                 SysAppId = ConfigItems.SystemAppId,
                 SysAppCode = ConfigItems.SystemAppCode,
                 SysAppName = ConfigItems.SystemAppName,
-                ServerIP = serverIp,
+                HardInfo = HardInfo.ToString(),
                 BuildType = buildType
             };
             return sysInfo;
@@ -185,10 +180,9 @@ namespace WindNight.LogExtension
         public static void LogRegisterInfo(string buildType, int appId, string appCode, string appName,
             bool appendMessage = false)
         {
-            var serverIp = IpHelper.GetLocalIPs();
             var sysInfo = GetSysInfo(buildType);
             var msg = $"register info is {sysInfo.ToJsonStr()}";
-            Add(msg, LogLevels.SysRegister, serverIp: serverIp.FirstOrDefault(), appendMessage: appendMessage);
+            Add(msg, LogLevels.SysRegister, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage);
         }
 
         /// <summary>
@@ -202,13 +196,11 @@ namespace WindNight.LogExtension
         public static void LogOfflineInfo(string buildType, int appId, string appCode, string appName,
             Exception exception = null, bool appendMessage = false)
         {
-            var serverIp = IpHelper.GetLocalIPs();
             var sysInfo = GetSysInfo(buildType);
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
-            Add(msg, LogLevels.SysOffline, exception, serverIp: serverIp.FirstOrDefault(),
-                appendMessage: appendMessage);
+            Add(msg, LogLevels.SysOffline, exception, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage);
         }
 
-       
+
     }
 }

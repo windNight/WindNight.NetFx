@@ -1,47 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+	<Import Project="..\..\build\common.props" />
 	<PropertyGroup>
 		<TargetFrameworks>
-			netstandard2.0;
 			netstandard2.1;
+			netstandard2.0;
 		</TargetFrameworks>
-		<AssemblyVersion>1.0.1</AssemblyVersion>
-		<FileVersion>1.0.1</FileVersion>
-		<Version>1.0.1</Version>
-		<Authors>windnight</Authors>
-		<Company></Company>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description> </Description>
+		<PackageReleaseNotes> </PackageReleaseNotes>
 		<AssemblyName>WindNight.Schedule</AssemblyName>
-		<Description>WindNight.Schedule</Description>
-		<PackageReleaseNotes>WindNight.Schedule</PackageReleaseNotes>
-		<Title>$(AssemblyName)</Title>
-		<PackageIconUrl>//</PackageIconUrl>
-		<PackageProjectUrl>https://github.com/windNight/WindNight.NetFx.git</PackageProjectUrl>
-		<PackageLicenseUrl>//</PackageLicenseUrl>
-		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-		<NoWarn>1701;1702;1705;1591</NoWarn>
-		<PackageIcon>logo.png</PackageIcon>
-		<ApplicationIcon>..\logo.ico</ApplicationIcon>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="..\logo.ico" />
-		<EmbeddedResource Include="..\logo.png" />
-		<None Include="..\logo.ico">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-		<None Include="..\logo.png">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Quartz" Version="3.1.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.9" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.9" />
-		<!--<PackageReference Include="WindNight.Core" Version="1.0.0" />-->
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />

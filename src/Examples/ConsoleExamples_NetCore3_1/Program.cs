@@ -206,6 +206,7 @@ namespace ConsoleExamples_NetCore3_1
 
                 return Task.CompletedTask;
             }
+
             /// <summary>
             /// Triggered when the application host is performing a graceful shutdown.
             /// </summary>
@@ -214,9 +215,9 @@ namespace ConsoleExamples_NetCore3_1
             {
                 LogOfflineInfo("Debug");
                 ConfigItemsBase.StopConfigCenter();
-                return Task.CompletedTask;
-
+                return Task.CompletedTask; 
             }
+
         }
 
         static void ConsolePublish(LogInfo logInfo)

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
+using System;
+using System.Linq;
 using WindNight.Core.Abstractions;
 
 namespace Schedule
@@ -33,14 +31,6 @@ namespace Schedule
         {
             _jobsConfig = jobsConfig;
         }
-
-        //internal static string DingtalkToken => GetAppSettingConfig(ConfigItemsKey.DingtalkTokenKey,
-        //    "63c799ab6890b7c293ab32e94b862be21a961e4edb245f6187606e93cc39bcd1", false);
-
-        //internal static string DingtalkPhones => GetAppSettingConfig(ConfigItemsKey.DingtalkPhonesKey, "", false);
-
-        //internal static bool DingtalkAtAll => GetAppSettingConfig(ConfigItemsKey.DingtalkAtAllKey, "0", false) == "1";
-
 
         private static string GetAppSettingConfig(string configKey, string defaultValue = "", bool isThrow = true)
         {

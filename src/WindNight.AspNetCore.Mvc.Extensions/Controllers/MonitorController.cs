@@ -1,7 +1,6 @@
-﻿using System.Attributes;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions.Attributes;
-using WindNight.Core.Extension;
+using System.Attributes;
 using WindNight.Extension;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
@@ -53,8 +52,8 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
         private object GetInfo()
         {
-            var serverIp = _httpContextAccessor.HttpContext.GetServerIP();
-            var clientIp = _httpContextAccessor.HttpContext.GetClientIP();
+            var serverIp = _httpContextAccessor.HttpContext.GetServerIp();
+            var clientIp = _httpContextAccessor.HttpContext.GetClientIp();
             return $"200-ok-{serverIp}-{clientIp}";
         }
     }

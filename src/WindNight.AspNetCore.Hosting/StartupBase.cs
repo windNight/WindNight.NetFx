@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.WnExtensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions;
@@ -9,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Extensions;
+using System;
 
 namespace Microsoft.AspNetCore.Hosting.WnExtensions
 {
@@ -32,7 +31,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             return serviceProvider;
         }
 
-     
+
         public virtual void ConfigureServices(IServiceCollection services)
         {
             ConfigSysServices(services, Configuration);

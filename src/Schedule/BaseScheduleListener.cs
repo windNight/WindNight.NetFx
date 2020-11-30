@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text.Extension;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection.WnExtension;
+﻿using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Quartz;
 using Schedule.Abstractions;
 using Schedule.Ctrl;
 using Schedule.Func;
 using Schedule.Model.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Extension;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Schedule
 {
@@ -147,7 +146,7 @@ namespace Schedule
                 JobLogHelper.Info($"{JobInfo} 耗时{milliseconds} ms ", nameof(TriggerComplete));
             var bizState = JobContextFunc.GetJobBusinessState(context);
             var bizStatsStr = bizState.ToString();
-            if(bizState== JobBusinessStateEnum.Success)
+            if (bizState == JobBusinessStateEnum.Success)
             {
                 bizStatsStr = $"<font color=#20CE43>{bizState}</font>";
             }

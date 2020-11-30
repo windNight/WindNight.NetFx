@@ -1,0 +1,27 @@
+<Project>
+	<Import Project="version.props" />
+	<PropertyGroup>
+		<Authors> windnight</Authors>
+		<Product> </Product>
+		<!--<AssemblyVersion>1.0.2</AssemblyVersion>
+		<FileVersion>1.0.2</FileVersion>
+		<Version>1.0.2</Version>-->
+		<Title>$(AssemblyName)</Title>
+		<PackageProjectUrl>https://github.com/windNight/WindNight.NetFx.git</PackageProjectUrl>
+		<PackageLicenseUrl></PackageLicenseUrl>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/windNight/WindNight.NetFx.git</RepositoryUrl>
+		<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+		<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+		<PackageIconUrl>https://avatars0.githubusercontent.com/u/11327494?s=200&amp;v=4</PackageIconUrl>
+		<!--<PackageIcon>https://avatars0.githubusercontent.com/u/11327494?s=200&amp;v=4</PackageIcon>-->
+	</PropertyGroup>
+</Project>

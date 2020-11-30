@@ -81,7 +81,6 @@ namespace WindNight.Core.Tools
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="func"></param>
-        /// <param name="realTs"></param>
         /// <param name="watcherName"></param>
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>

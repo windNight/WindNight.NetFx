@@ -1,9 +1,9 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
-using Quartz;
+﻿using Quartz;
 using Schedule.Func;
 using Schedule.Model.Enums;
+using System;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Schedule
 {

@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using JobDemos.Jobs;
+﻿using JobDemos.Jobs;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
+using Microsoft.Extensions.Hosting;
 using Schedule.Model;
-using Schedule;
 using Schedule.Model.Enums;
+using System;
+using System.Collections.Generic;
 using WindNight.Core.Abstractions;
 
 namespace JobDemos
 {
     class Program
-    {
-
+    { 
         static void Main(string[] args)
         {
             var jsonConfig = GetCustomConfig();

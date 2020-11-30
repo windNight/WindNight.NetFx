@@ -47,6 +47,23 @@ namespace System.Text
             return encoding.GetBytes(text);
         }
 
+        /// <summary>
+        ///     Converts the specified string, which encodes binary data as base-64 digits, to an equivalent 8-bit unsigned integer array.
+        /// </summary>
+        /// <param name="base64Str">The string to convert. </param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// <paramref name="base64Str" /> is <see langword="null" />.</exception>
+        /// <exception cref="T:System.FormatException">The length of <paramref name="base64Str" />, ignoring white-space characters, is not zero or a multiple of 4.
+        /// -or-
+        /// The format of <paramref name="base64Str" /> is invalid. <paramref name="base64Str" /> contains a non-base-64 character, more than two padding characters, or a non-white space-character among the padding characters.</exception>
+
+        /// <returns>
+        ///     An array of 8-bit unsigned integers that is equivalent to <paramref name="base64Str" />.
+        /// </returns>
+        public static byte[] ToBytesFromBase64String(this string base64Str)
+        {
+            return Convert.FromBase64String(base64Str);
+        }
 
         /// <summary>
         ///     ZIP解压

@@ -10,7 +10,7 @@ namespace WindNight.LogExtension
 {
     public static partial class LogHelper
     {
-        private static void Add(string msg, LogLevels logLevel, Exception errorStack = null, bool isTimeout = false,
+        public static void Add(string msg, LogLevels logLevel, Exception errorStack = null, bool isTimeout = false,
             long millisecond = 0,
             // [Maxlength(255)]
             string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false)
@@ -19,6 +19,7 @@ namespace WindNight.LogExtension
             {
                 var logInfo = GeneratorLogInfo(msg, logLevel, errorStack, millisecond, url, serverIp, clientIp,
                     appendMessage);
+
                 OnPublishLogInfoHandleEvent(logInfo);
             }
             catch (Exception ex)
@@ -42,7 +43,8 @@ namespace WindNight.LogExtension
                 ServerIp = serverIp,
                 RequestUrl = url,
                 Timestamps = millisecond,
-                SerialNumber = "" // CurrentItem.GetSerialNumber
+                SerialNumber = CurrentItem.GetSerialNumber,
+                NodeCode = HardInfo.NodeCode,
             };
 
             FixLogInfo(logInfo, appendMessage);
@@ -74,7 +76,7 @@ namespace WindNight.LogExtension
                     }
                     else
                     {
-                        ip = IpHelper.GetServerIP();
+                        ip = IpHelper.GetServerIp();
                     }
 
                     logInfo.ServerIp = ip;
@@ -92,8 +94,8 @@ namespace WindNight.LogExtension
             }
 
             if (string.IsNullOrEmpty(logInfo.ServerIp))
-                logInfo.ServerIp = string.Join(",", IpHelper.GetLocalIPs().OrderBy(m => m));
-            if (string.IsNullOrEmpty(logInfo.ClientIp)) logInfo.ClientIp = IpHelper.GetClientIP();
+                logInfo.ServerIp = string.Join(",", IpHelper.LocalServerIps);
+            if (string.IsNullOrEmpty(logInfo.ClientIp)) logInfo.ClientIp = IpHelper.GetClientIp();
             if (string.IsNullOrEmpty(logInfo.RequestUrl)) logInfo.RequestUrl = IpHelper.GetCurrentUrl();
         }
 
@@ -109,19 +111,17 @@ namespace WindNight.LogExtension
                 try
                 {
                     var now = DateTime.Now;
-                    var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "LogException");//  + "\\Logs\\";
-                    var filePath = Path.Combine(dir, DateTime.Now.FormatDateTime("yyyyMMdd"), "err.log");// path1 + "\\" + (now.Year * 10000 + now.Month * 100 + now.Day).ToString() + "err.log";
+                    var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "LogException");
+                    var filePath = Path.Combine(dir, now.FormatDateTime("yyyyMMdd"), "err.log");
                     if (!Directory.Exists(dir))
                         Directory.CreateDirectory(dir);
                     if (!File.Exists(filePath))
                         File.Create(filePath).Close();
-                    using (StreamWriter streamWriter = new StreamWriter(filePath, true))
+                    using (var streamWriter = new StreamWriter(filePath, true))
                     {
                         try
                         {
-
-                            string str = now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "：" + msg;
-                            streamWriter.WriteLine(str);
+                            streamWriter.WriteLine($"{now:yyyy-MM-dd HH:mm:ss:fff}:{msg}");
                         }
                         catch
                         {

@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+	<Import Project="..\..\build\common.props" />
 	<PropertyGroup>
 		<TargetFrameworks>
 			netstandard2.1;
@@ -7,54 +7,27 @@
 			net45;
 			net461;
 		</TargetFrameworks>
-		<AssemblyVersion>1.0.1</AssemblyVersion>
-		<FileVersion>1.0.1</FileVersion>
-		<Version>1.0.1</Version>
-		<Authors>windnight</Authors>
-		<Company> </Company>
+
 		<Description>
 		</Description>
 		<PackageReleaseNotes>
 		</PackageReleaseNotes>
-		<Title>$(AssemblyName)</Title>
-		<PackageIconUrl></PackageIconUrl>
-		<PackageProjectUrl>https://github.com/windNight/WindNight.NetFx.git</PackageProjectUrl>
-		<PackageLicenseUrl>//</PackageLicenseUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-		<NoWarn>1701;1702;1705;1591</NoWarn>
-		<ApplicationIcon>..\logo.ico</ApplicationIcon>
-		<PackageIcon>logo.png</PackageIcon>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Include="..\logo.ico" Link="logo.ico" />
-		<EmbeddedResource Include="..\logo.png" Link="logo.png" />
-		<None Include="..\logo.ico">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None> 
-		<None Include="..\logo.png">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-	</ItemGroup>
-
 
 	<ItemGroup>
 		<PackageReference Include="log4net" Version="2.0.8" />
 	</ItemGroup>
 
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' or '$(TargetFramework)' == 'netstandard2.1' or '$(TargetFramework)' == 'net461'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' &#xD;&#xA;					   or '$(TargetFramework)' == 'netstandard2.1' &#xD;&#xA;					   or '$(TargetFramework)' == 'net461'">
 		<PackageReference Include="Microsoft.AspNetCore.Http">
 			<Version>2.2.2</Version>
 		</PackageReference>
 		<PackageReference Include="RestSharp">
-			<Version>106.11.4</Version>
+			<Version>106.11.7</Version>
 		</PackageReference>
 	</ItemGroup>
- 
+
 	<ItemGroup Condition="'$(TargetFramework)' == 'net45'">
 		<Reference Include="System.Web" />
 		<PackageReference Include="RestSharp">

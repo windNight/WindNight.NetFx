@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Extensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Extension;
+using IpHelper = WindNight.Extension.HttpContextExtension;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 {
@@ -53,7 +54,9 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 ConfigItems.SysAppCode,
                 ConfigItems.SysAppName,
                 AssemblyVersions = GetAssemblyVersions(),
-                ServerIp = _httpContextAccessor.HttpContext.GetServerIP()
+                ServerIp = _httpContextAccessor.HttpContext.GetServerIp(),
+                LocalServerIp = IpHelper.LocalServerIp,
+                LocalServerIps = IpHelper.LocalServerIps,
             };
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 
 namespace WindNight.LogExtension
@@ -15,6 +16,12 @@ namespace WindNight.LogExtension
             public long Timestamps { get; set; }
             public LogLevels Level { get; set; }
             public string Content { get; set; }
+            public string NodeCode { get; set; }
+
+            public override string ToString()
+            {
+                return this.ToJsonStr();
+            }
         }
         internal class ThreadContext
         {

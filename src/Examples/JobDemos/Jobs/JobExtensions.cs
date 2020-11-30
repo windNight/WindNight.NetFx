@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using JobDemos.Jobs.Demo1;
+﻿using JobDemos.Jobs.Demo1;
 using JobDemos.Jobs.Demo2;
 using JobDemos.Jobs.Demo3;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +14,7 @@ namespace JobDemos.Jobs
         {
             services.AddSingleton<IJobCtrl, Demo1JobCtrl>();
             services.AddSingleton<IScheduleListener, Demo1JobScheduleListener>();
-            
+
             services.AddSingleton<IJobCtrl, Demo2JobCtrl>();
             services.AddSingleton<IScheduleListener, Demo2JobScheduleListener>();
 

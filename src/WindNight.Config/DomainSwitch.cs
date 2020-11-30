@@ -24,12 +24,14 @@ namespace WindNight.ConfigCenter.Extension
 
 
         private static string DomainSwitchConfigPath => GetMapPath(XmlPath);
+
         private static bool IsExistDomainSwitchConfig => File.Exists(DomainSwitchConfigPath);
+
         private static string XmlPath =>
-            ConfigItems.DomainSwitchConfigPath.TrimStart('/'); //ConfigurationManager.AppSettings["DomainSwitchConfigPath"];
+            ConfigItems.DomainSwitchConfigPath.TrimStart('/');
 
         private static string ConfigSolution =>
-            ConfigItems.DomainSwitchSolution; //ConfigurationManager.AppSettings["DomainSwitchSolution"].Trim();
+            ConfigItems.DomainSwitchSolution;
 
         private static string SiteHostNodeKey =>
             $"/{nameof(DomainSwitch)}/{GetSolution()}/{DomainSwitchNodeType.SiteHost}";
@@ -79,14 +81,12 @@ namespace WindNight.ConfigCenter.Extension
 
         public static string GetCurrDomain()
         {
-            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["Domain"]?.Value
-                ?.ToLower();
+            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["Domain"]?.Value?.ToLower();
         }
 
         public static string GetSetDomain()
         {
-            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["SetDomain"].Value
-                .ToLower();
+            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["SetDomain"]?.Value?.ToLower();
         }
 
         public static string GetAllDomain()
@@ -100,12 +100,12 @@ namespace WindNight.ConfigCenter.Extension
                 if (childNode == null) continue;
                 if (stringBuilder.Length == 0)
                 {
-                    stringBuilder.Append(childNode.Attributes?["Domain"].Value.ToLowerInvariant());
+                    stringBuilder.Append(childNode.Attributes?["Domain"]?.Value?.ToLowerInvariant() ?? "");
                 }
                 else
                 {
                     stringBuilder.Append("|");
-                    stringBuilder.Append(childNode.Attributes?["Domain"].Value.ToLowerInvariant());
+                    stringBuilder.Append(childNode.Attributes?["Domain"]?.Value?.ToLowerInvariant() ?? "");
                 }
             }
 
@@ -113,8 +113,7 @@ namespace WindNight.ConfigCenter.Extension
         }
 
         public static Dictionary<string, string> GetAllDomainDict()
-        {
-
+        { 
             var dict = new Dictionary<string, string>();
             if (!IsExistDomainSwitchConfig) return dict;
 
@@ -141,8 +140,7 @@ namespace WindNight.ConfigCenter.Extension
 
         public static string GetServiceUrl(string serviceName)
         {
-            return GetNodeValue(
-                $"{ServiceUrlNodeKey}/{serviceName}");
+            return GetNodeValue($"{ServiceUrlNodeKey}/{serviceName}");
         }
 
 

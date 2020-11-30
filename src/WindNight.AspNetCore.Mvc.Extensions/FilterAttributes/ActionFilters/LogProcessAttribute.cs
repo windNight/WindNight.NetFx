@@ -60,7 +60,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 CurrentItem.AddItem(WebConst.RESPONSE, result);
                 var request = context.HttpContext.Request;
                 DateTime? beginTime = CurrentItem.GetItem<DateTime>(WebConst.BEGINTIME);
-                var ms = beginTime == null ? -1 : (long) (DateTime.Now - beginTime.Value).TotalMilliseconds;
+                var ms = beginTime.HasValue && beginTime.Value == null ? -1 : (long)(DateTime.Now - beginTime.Value).TotalMilliseconds;
 
                 if (ms > ConfigItems.ApiWarningMis)
                     LogHelper.Warn($"请求共耗时:{ms} ms ");
@@ -83,8 +83,8 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 CurrentItem.AddItem(WebConst.SERIZLNUMBER, $"{GuidHelper.GenerateOrderNumber()}");
 
             CurrentItem.AddItem(WebConst.REQUESTPATH, context.HttpContext?.Request?.Path);
-            CurrentItem.AddItem(WebConst.CLIENTIP, context.HttpContext.GetClientIP());
-            CurrentItem.AddItem(WebConst.SERVERIP, context.HttpContext.GetServerIP());
+            CurrentItem.AddItem(WebConst.CLIENTIP, context.HttpContext.GetClientIp());
+            CurrentItem.AddItem(WebConst.SERVERIP, context.HttpContext.GetServerIp());
             CurrentItem.AddItem(WebConst.APPCODE, ConfigItems.SysAppCode);
         }
 

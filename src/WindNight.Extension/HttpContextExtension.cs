@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-
-#if NET45
+using System.Threading;
+using WindNight.Core.Abstractions;
+#if NETFRAMEWORK
 using System.Web;
+using System.Runtime.Remoting.Messaging;
 #else
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
@@ -14,9 +17,41 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 
 namespace WindNight.Extension
 {
+    [Alias("IpHelper")]
     public static class HttpContextExtension
     {
-        private const string DefaultIP = "0.0.0.0";
+        private const string DefaultIp = "0.0.0.0";
+        // private const string LocalServerIpKey = "WindNight:HttpContext:LocalServerIp";
+        // private const string LocalServerIpsKey = "WindNight:HttpContext:LocalServerIps";
+
+        public static List<string> LocalServerIps = HardInfo.GetLocalIps().ToList();
+        public static string LocalServerIp = LocalServerIps.FirstOrDefault();
+        public static string LocalServerIpsString = string.Join(",", LocalServerIps);
+
+        public static string GetLocalServerIp()
+        {
+            try
+            {
+                return LocalServerIp;
+            }
+            catch (Exception ex)
+            {
+                return DefaultIp;
+            }
+        }
+
+        public static IEnumerable<string> GetLocalServerIps()
+        {
+            try
+            {
+                return LocalServerIps;
+            }
+            catch (Exception ex)
+            {
+                return new[] { DefaultIp };
+            }
+        }
+
 
         /// <summary>
         /// </summary>
@@ -28,79 +63,85 @@ namespace WindNight.Extension
         }
 
         /// <summary> 获取本地IP地址信息  </summary>
-        public static string GetServerIP()
+        public static string GetServerIp()
         {
             try
             {
                 var context = GetHttpContext();
-                return context.GetServerIP();
+                return context.GetServerIp();
             }
             catch
             {
-                return DefaultIP;
+                return DefaultIp;
             }
         }
 
-        /// <summary>
-        /// </summary>
-        /// <returns></returns>
-        public static string GetLocalIP()
-        {
-            return GetLocalIPs().OrderBy(m => m).FirstOrDefault();
-        }
+        ///// <summary>
+        ///// </summary>
+        ///// <returns></returns>
+        //private static string GetLocalIp()
+        //{
+        //    return GetLocalIps().FirstOrDefault();
+        //}
+        ///// <summary>
+        ///// </summary>
+        ///// <returns></returns>
+        //private static IEnumerable<string> GetLocalIps()
+        //{
+        //    try
+        //    {
+        //        var validAddressFamilies = new List<AddressFamily> { AddressFamily.InterNetwork, AddressFamily.InterNetworkV6 };
+        //        var unicastAddresses = NetworkInterface.GetAllNetworkInterfaces()?
+        //            .Where(m => m.OperationalStatus == OperationalStatus.Up)?
+        //            .Select(m => m.GetIPProperties().UnicastAddresses);
 
-        /// <summary>
-        /// </summary>
-        /// <returns></returns>
-        public static IEnumerable<string> GetLocalIPs()
-        {
-            try
-            {
-                var validAddressFamilies = new[] { AddressFamily.InterNetwork, AddressFamily.InterNetworkV6 };
-                var ips = NetworkInterface.GetAllNetworkInterfaces()?
-                    .Where(m => m.OperationalStatus == OperationalStatus.Up)?
-                    .Select(m => m.GetIPProperties().UnicastAddresses)?
-                    .FirstOrDefault()?
-                    .Where(m => validAddressFamilies.Contains(m.Address.AddressFamily))?
-                    .Select(m => m.Address.ToString()).OrderBy(m => m).ToArray();
-                return ips ?? new[] { DefaultIP };
-            }
-            catch
-            {
-                return new[] { DefaultIP };
-            }
-        }
+        //        var ipList = (from unicastAddress in unicastAddresses
+        //                      from unicastIpAddress in unicastAddress
+        //                      where unicastIpAddress != null
+        //                      where unicastIpAddress.IsDnsEligible
+        //                      where validAddressFamilies.Contains(unicastIpAddress.Address.AddressFamily)
+        //                      select unicastIpAddress.Address.ToString()).ToList();
+
+        //        if (!ipList.Any())
+        //        {
+        //            ipList.Add(DefaultIp);
+        //        }
+        //        return ipList;
+        //    }
+        //    catch
+        //    {
+        //        return new[] { DefaultIp };
+        //    }
+        //}
 
         /// <summary>
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string GetServerIP(this HttpContext context)
+        public static string GetServerIp(this HttpContext context)
         {
             try
             {
                 if (context == null)
                 {
-                    var ips = GetLocalIPs();
-                    var serverIps = string.Join(",", ips);
-
+                    var serverIps = string.Join(",", LocalServerIps);
                     return serverIps;
                 }
 
                 var serverIp = string.Empty;
-#if NET45
+#if NETFRAMEWORK
                 serverIp = context?.Request?.ServerVariables?.Get("Local_Addr") ?? "::1";
 #else
                 serverIp = context.Connection?.LocalIpAddress?.ToString() ?? string.Empty;
 #endif
 
                 if ("::1".Equals(serverIp))
-                    serverIp = string.Join(",", GetLocalIPs());
+                    serverIp = string.Join(",", LocalServerIps);
                 return serverIp;
             }
             catch
             {
-                return DefaultIP;
+                return DefaultIp;
             }
         }
         public static string GetCurrentUrl(this HttpContext context)
@@ -130,16 +171,16 @@ namespace WindNight.Extension
         /// <summary>
         /// </summary>
         /// <returns></returns>
-        public static string GetClientIP()
+        public static string GetClientIp()
         {
             try
             {
                 var context = GetHttpContext();
-                return context.GetClientIP();
+                return context.GetClientIp();
             }
             catch
             {
-                return DefaultIP;
+                return DefaultIp;
             }
         }
 
@@ -147,38 +188,38 @@ namespace WindNight.Extension
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string GetClientIP(this HttpContext context)
+        public static string GetClientIp(this HttpContext context)
         {
             try
             {
-                if (context == null) return DefaultIP;
+                if (context == null) return DefaultIp;
                 var headerDict = GetHeaderDict(context);
                 var ip = GetIpFromDict(headerDict);
                 if (string.IsNullOrEmpty(ip))
                 {
-#if NET45
+#if NETFRAMEWORK
                     ip = context.Request.UserHostAddress;
 #else
                     ip = context.Connection.RemoteIpAddress?.ToString();
-#endif 
+#endif
                 }
 
-                if ("::1".Equals(ip)) return DefaultIP;
+                if ("::1".Equals(ip)) return DefaultIp;
 
-                if (string.IsNullOrEmpty(ip)) return DefaultIP;
+                if (string.IsNullOrEmpty(ip)) return DefaultIp;
 
                 return ip.Split(',')[0];
             }
             catch
             {
-                return DefaultIP;
+                return DefaultIp;
             }
         }
         public static HttpContext GetHttpContext()
         {
             HttpContext context = null;
 
-#if NET45
+#if NETFRAMEWORK
             context = HttpContext.Current;
 #else
             context = Ioc.GetService<IHttpContextAccessor>()?.HttpContext;
@@ -193,7 +234,7 @@ namespace WindNight.Extension
         private static Dictionary<string, string> GetHeaderDict(HttpContext context)
         {
             var headerDict = new Dictionary<string, string>();
-#if !NET45
+#if !NETFRAMEWORK
 
             var validIPKeys = new[] { "X-Real-IP", "HTTP_X_REAL_IP", "x-forwarded-for" };
             foreach (var item in context.Request.Headers.Where(m => validIPKeys.Contains(m.Key)))
@@ -201,15 +242,15 @@ namespace WindNight.Extension
 #else
             foreach (var item in context.Request.Headers.Keys)
             {
-                headerDict.Add(item.ToString(), context.Request.Headers[item.ToString()].ToString());
+                headerDict.Add(item.ToString(), context.Request.Headers[item.ToString()]?.ToString());
             }
             if (!string.IsNullOrEmpty(context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"]?.ToString()))
             {
-                headerDict.Add("HTTP_X_FORWARDED_FOR", context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"].ToString());
+                headerDict.Add("HTTP_X_FORWARDED_FOR", context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"]?.ToString());
             }
             if (!string.IsNullOrEmpty(context.Request.ServerVariables["REMOTE_ADDR"]?.ToString()))
             {
-                headerDict.Add("REMOTE_ADDR", context.Request.ServerVariables["REMOTE_ADDR"].ToString());
+                headerDict.Add("REMOTE_ADDR", context.Request.ServerVariables["REMOTE_ADDR"]?.ToString());
             }
 
 #endif

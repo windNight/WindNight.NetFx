@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Schedule.Abstractions
+﻿namespace Schedule.Abstractions
 {
     public class JobBaseInfo
     {

@@ -25,32 +25,30 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
         public void Register(string buildType, bool appendMessage = false)
         {
-            var serverIp = IpHelper.GetLocalIPs();
             var sysInfo = new
             {
                 SysAppId = ConfigItems.SysAppId,
                 SysAppCode = ConfigItems.SysAppCode,
                 SysAppName = ConfigItems.SysAppName,
-                ServerIP = serverIp,
+                ServerIP = IpHelper.LocalServerIps,
                 BuildType = buildType,
             };
             var msg = $"register info is {sysInfo.ToJsonStr()}";
-            AddLog(LogLevels.SysRegister, msg, serverIp: serverIp.FirstOrDefault(), appendMessage: appendMessage);
+            AddLog(LogLevels.SysRegister, msg, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage);
         }
 
         public void Offline(string buildType, Exception exception = null, bool appendMessage = false)
         {
-            var serverIp = IpHelper.GetLocalIPs();
             var sysInfo = new
             {
                 SysAppId = ConfigItems.SysAppId,
                 SysAppCode = ConfigItems.SysAppCode,
                 SysAppName = ConfigItems.SysAppName,
-                ServerIP = serverIp,
+                ServerIP = IpHelper.LocalServerIps,
                 BuildType = buildType,
             };
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
-            AddLog(LogLevels.SysOffline, msg, exception: exception, serverIp: serverIp.FirstOrDefault(), appendMessage: appendMessage);
+            AddLog(LogLevels.SysOffline, msg, exception: exception, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage);
 
         }
 

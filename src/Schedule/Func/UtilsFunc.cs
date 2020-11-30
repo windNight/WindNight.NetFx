@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Extension;
+﻿using Newtonsoft.Json.Extension;
 using Quartz;
 using Schedule.Model;
 

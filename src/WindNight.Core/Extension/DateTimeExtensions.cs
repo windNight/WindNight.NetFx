@@ -1,4 +1,6 @@
-﻿namespace System
+﻿using System.Collections.Generic;
+
+namespace System
 {
     /// <summary> </summary>
     public static class DateTimeExtensions
@@ -23,9 +25,9 @@
             var startTime = TimeZoneInfo.ConvertTimeFromUtc(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
             var ts = dateTime - startTime;
             if (milliseconds)
-                timestamps = (long) ts.TotalMilliseconds;
+                timestamps = (long)ts.TotalMilliseconds;
             else
-                timestamps = (long) ts.TotalSeconds;
+                timestamps = (long)ts.TotalSeconds;
 
             return timestamps;
         }
@@ -121,11 +123,11 @@
         {
             try
             {
-                return dateTime.ToString(format).ToInt(1970101);
+                return dateTime.ToDateInt(format);
             }
             catch (Exception ex)
             {
-                return 1970101;
+                return 19700101;
             }
         }
 
@@ -137,7 +139,75 @@
         /// <returns></returns>
         public static int ToDateInt(this DateTime dateTime, string format = "yyyyMMdd")
         {
-            return dateTime.ToString(format).ToInt();
+            return dateTime.ToString(format).ToInt(19700101);
         }
+
+        public static DateTime FirstDayOfMonth(this DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, 1);
+        }
+
+        public static DateTime LastDayOfMonth(this DateTime dateTime)
+        {
+            return dateTime.FirstDayOfMonth().AddMonths(1).AddDays(-1);
+        }
+
+        public static DateTime FirstDayOfYear(this DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, 1, 1);
+        }
+
+        public static DateTime LastDayOfYear(this DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, 12, 31);
+        }
+
+        /// <summary>
+        ///  周一为第一天
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static DateTime FirstDayOfWeek(this DateTime date)
+        {
+            if (date.DayOfWeek == DayOfWeek.Monday)
+                return date.Date;
+            return date.Date.AddDays(1 - (int)date.DayOfWeek);
+        }
+
+        /// <summary>
+        /// 周日为最后一天
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static DateTime LastDayOfWeek(this DateTime date)
+        {
+            if (date.DayOfWeek == DayOfWeek.Sunday)
+                return date.Date;
+            return date.Date.AddDays(7 - (int)date.DayOfWeek);
+        }
+
+        public static int WeekOfYear(this DateTime date)
+        {
+            var dateTime = date.FirstDayOfYear();
+            return (int)((date - dateTime).Days + dateTime.DayOfWeek) / 7 + 1;
+        }
+
+        public static List<int> GeneratorDateIntList(this DateTime beginDate, DateTime? endDateParam = null)
+        {
+            var endDate = DateTime.Now.Date;
+            if (endDateParam.HasValue)
+            {
+                endDate = endDateParam.Value;
+            }
+            if (beginDate > endDate) return new List<int>();
+            var list = new List<int>();
+            for (var i = beginDate; i < endDate; i = i.AddDays(1))
+            {
+                list.Add(i.ToDateInt());
+            }
+            return list;
+        }
+
+
     }
 }

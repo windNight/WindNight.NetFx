@@ -15,7 +15,7 @@
 		<!--<PackageReference Include="IP2Region.Ex" Version="1.2.0" />-->
 		<!--<PackageReference Include="IPTools.Core" Version="1.5.0" />
 		<PackageReference Include="IPTools.International" Version="1.5.0" />-->
-		<PackageReference Include="WindNight.ParserIp.Ip2Region" Version="1.0.0" />
+		<PackageReference Include="WindNight.ParserIp.Ip2Region" Version="1.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.9" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.9" />
 		<PackageReference Include="Phonedata_NetCore" Version="1.0.0" />

@@ -1,0 +1,34 @@
+<Project>
+	<PropertyGroup>
+		<!--
+https://docs.microsoft.com/zh-cn/nuget/create-packages/prerelease-packages
+https://semver.org/lang/zh-CN/
+
+Major：重大更改
+Minor：新增功能，但可向后兼容
+Patch：仅可向后兼容的 bug 修复
+
+-alpha：Alpha 版本，通常用于在制品和试验品
+-beta：Beta 版本，通常指可用于下一计划版本的功能完整的版本，但可能包含已知 bug。
+-rc：候选发布，通常可能为最终（稳定）版本，除非出现重大 bug。
+1.0.1
+1.0.1-zzz
+1.0.1-rc
+1.0.1-open
+1.0.1-beta.12
+1.0.1-beta.5
+1.0.1-beta
+1.0.1-alpha.2
+1.0.1-alpha
+-->
+		<VersionMajor>1</VersionMajor>
+		<VersionMinor>0</VersionMinor>
+		<VersionPatch>3</VersionPatch>
+		<VersionQuality>1</VersionQuality>
+		<VersionTT></VersionTT>
+		<VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</VersionPrefix>
+		<AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
+		<FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</FileVersion>
+		<!--<Version>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</Version>-->
+	</PropertyGroup>
+</Project>
