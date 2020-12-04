@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\..\build\common.props" />
+	<PropertyGroup>
+		<TargetFrameworks>
+			netcoreapp3.1;
+			net5.0;
+		</TargetFrameworks>
+		<Description> </Description>
+		<PackageReleaseNotes> </PackageReleaseNotes>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Grpc.Swagger" Version="0.1.0-alpha.20580.2" />
+		<PackageReference Include="WindNight.AspNetCore.Hosting" Version="1.0.3.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--<ProjectReference Include="..\extensions\WindNight.AspNetCore.GRpc.Swagger\WindNight.AspNetCore.GRpc.Swagger.csproj" />-->
+		<!--<ProjectReference Include="..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />-->
+	</ItemGroup>
+</Project>

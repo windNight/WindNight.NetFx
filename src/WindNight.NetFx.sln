@@ -33,11 +33,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleExamples_NetCore5", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D1583FA4-40F8-43F8-9104-1B41A6EA78B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindNight.Core.Tests", "Tests\WindNight.Core.Tests\WindNight.Core.Tests.csproj", "{FBAF80B2-BBA6-4CAA-879A-EA277E5058AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.Core.Tests", "Tests\WindNight.Core.Tests\WindNight.Core.Tests.csproj", "{FBAF80B2-BBA6-4CAA-879A-EA277E5058AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindNight.Extension.Tests", "Tests\WindNight.Extension.Tests\WindNight.Extension.Tests.csproj", "{9BCE8064-81FA-4DA5-888A-CD2EE8134CC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.Extension.Tests", "Tests\WindNight.Extension.Tests\WindNight.Extension.Tests.csproj", "{9BCE8064-81FA-4DA5-888A-CD2EE8134CC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcDemo_Net5", "Examples\MvcDemo_Net5\MvcDemo_Net5.csproj", "{66F6C21B-3B03-4CDD-B3A8-53839D8C8880}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcDemo_Net5", "Examples\MvcDemo_Net5\MvcDemo_Net5.csproj", "{66F6C21B-3B03-4CDD-B3A8-53839D8C8880}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.AspNetCore.GRpc.Hosting", "WindNight.AspNetCore.GRpc.Hosting\WindNight.AspNetCore.GRpc.Hosting.csproj", "{4F025988-F222-48D2-AA5A-9943932B8E51}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", "{7834D1E1-1A31-4493-BDCF-CFD31B14C049}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.AspNetCore.GRpc.HttpApi", "extensions\WindNight.AspNetCore.GRpc.HttpApi\WindNight.AspNetCore.GRpc.HttpApi.csproj", "{3F870322-C864-46B2-A957-768C321BCAFF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.AspNetCore.GRpc.Swagger", "extensions\WindNight.AspNetCore.GRpc.Swagger\WindNight.AspNetCore.GRpc.Swagger.csproj", "{558F116F-A4C5-4889-A620-906609EC9E63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcDemo_Net5", "Examples\GrpcDemo_Net5\GrpcDemo_Net5.csproj", "{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,6 +107,22 @@ Global
 		{66F6C21B-3B03-4CDD-B3A8-53839D8C8880}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66F6C21B-3B03-4CDD-B3A8-53839D8C8880}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66F6C21B-3B03-4CDD-B3A8-53839D8C8880}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F025988-F222-48D2-AA5A-9943932B8E51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F025988-F222-48D2-AA5A-9943932B8E51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F025988-F222-48D2-AA5A-9943932B8E51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F025988-F222-48D2-AA5A-9943932B8E51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F870322-C864-46B2-A957-768C321BCAFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F870322-C864-46B2-A957-768C321BCAFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F870322-C864-46B2-A957-768C321BCAFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F870322-C864-46B2-A957-768C321BCAFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{558F116F-A4C5-4889-A620-906609EC9E63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{558F116F-A4C5-4889-A620-906609EC9E63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{558F116F-A4C5-4889-A620-906609EC9E63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{558F116F-A4C5-4889-A620-906609EC9E63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -109,6 +135,9 @@ Global
 		{FBAF80B2-BBA6-4CAA-879A-EA277E5058AE} = {D1583FA4-40F8-43F8-9104-1B41A6EA78B0}
 		{9BCE8064-81FA-4DA5-888A-CD2EE8134CC2} = {D1583FA4-40F8-43F8-9104-1B41A6EA78B0}
 		{66F6C21B-3B03-4CDD-B3A8-53839D8C8880} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
+		{3F870322-C864-46B2-A957-768C321BCAFF} = {7834D1E1-1A31-4493-BDCF-CFD31B14C049}
+		{558F116F-A4C5-4889-A620-906609EC9E63} = {7834D1E1-1A31-4493-BDCF-CFD31B14C049}
+		{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4D07DFE6-71BA-4D72-AF00-A6D57FAE38EB}

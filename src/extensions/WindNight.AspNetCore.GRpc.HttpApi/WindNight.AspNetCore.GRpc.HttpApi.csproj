@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>
+			netcoreapp3.0;
+			netcoreapp3.1;
+			net5;
+		</TargetFrameworks>
+		<WarningsNotAsErrors>$(WarningsNotAsErrors);CA2007</WarningsNotAsErrors>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+		<GenerateProgramFile>false</GenerateProgramFile>
+		<Description>HTTP API for gRPC ASP.NET Core</Description>
+		<PackageTags>gRPC RPC HTTP/2 REST</PackageTags>
+		<IsPackable>true</IsPackable>
+		<IsShipping>true</IsShipping>
+		<NoWarn>$(NoWarn);CA2007</NoWarn>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\CodeSnippets\Shared\Server\BindMethodFinder.cs" Link="Internal\Shared\Server\BindMethodFinder.cs" />
+		<Compile Include="..\..\CodeSnippets\Shared\Server\ClientStreamingServerMethodInvoker.cs" Link="Internal\Shared\Server\ClientStreamingServerMethodInvoker.cs" />
+		<Compile Include="..\..\CodeSnippets\Shared\Server\DuplexStreamingServerMethodInvoker.cs" Link="Internal\Shared\Server\DuplexStreamingServerMethodInvoker.cs" />
+		<Compile Include="..\..\CodeSnippets\Shared\Server\InterceptorPipelineBuilder.cs" Link="Internal\Shared\Server\InterceptorPipelineBuilder.cs" />
+		<Compile Include="..\..\CodeSnippets\Shared\Server\MethodOptions.cs" Link="Internal\Shared\Server\MethodOptions.cs" />
+		<Compile Include="..\..\CodeSnippets\Shared\Server\ServerMethodInvokerBase.cs" Link="Internal\Shared\Server\ServerMethodInvokerBase.cs" />
+		<Compile Include="..\..\CodeSnippets\Shared\Server\ServerStreamingServerMethodInvoker.cs" Link="Internal\Shared\Server\ServerStreamingServerMethodInvoker.cs" />
+		<Compile Include="..\..\CodeSnippets\Shared\Server\UnaryServerMethodInvoker.cs" Link="Internal\Shared\Server\UnaryServerMethodInvoker.cs" />
+		<Compile Include="..\..\CodeSnippets\Shared\ServiceDescriptorHelpers.cs" Link="Internal\Shared\ServiceDescriptorHelpers.cs" />
+
+		<Protobuf Include="Internal\Protos\errors.proto" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--<FrameworkReference Include="Microsoft.AspNetCore.App" />-->
+
+		<PackageReference Include="Google.Api.CommonProtos" Version="2.2.0" />
+		<PackageReference Include="Google.Protobuf" Version="3.14.0" />
+		<PackageReference Include="Grpc.AspNetCore.Server" Version="2.33.1" />
+		<PackageReference Include="Grpc.Tools" Version="2.33.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.IO.Pipelines" Version="5.0.0" />
+	</ItemGroup>
+
+</Project>
