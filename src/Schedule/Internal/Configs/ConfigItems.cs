@@ -24,6 +24,14 @@ namespace Schedule
             private set => _jobsConfig = value;
         }
 
+        public static string DingtalkToken =>
+            GetAppSettingConfig(ConfigItemsKey.DingtalkTokenKey, "", false);
+
+        public static string DingtalkPhones =>
+            GetAppSettingConfig(ConfigItemsKey.DingtalkPhonesKey, "", false);
+
+        public static bool DingtalkAtAll =>
+            GetAppSettingConfig(ConfigItemsKey.DingtalkAtAllKey, "false", false) == "true";
 
         private static JobsConfig _jobsConfig;
 

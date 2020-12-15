@@ -20,7 +20,7 @@ namespace Schedule.NetCore
                 jobConfigs = configuration.GetSection(ConfigItemsKey.ScheduleJobNodeName).Get<JobsConfig>();
                 if (jobConfigs == null || !jobConfigs.Items.Any())
                     throw new ArgumentNullException($"配置 ScheduleJobs 不能为空！请注册节点【 ScheduleJobs】");
-                ConfigItems.SetJobsConfig(jobConfigs);
+                SetJobsConfig(jobConfigs);
             }
 
             jobConfigs = ConfigItems.JobsConfig;

@@ -47,7 +47,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.AspNetCore.GRpc.H
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.AspNetCore.GRpc.Swagger", "extensions\WindNight.AspNetCore.GRpc.Swagger\WindNight.AspNetCore.GRpc.Swagger.csproj", "{558F116F-A4C5-4889-A620-906609EC9E63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcDemo_Net5", "Examples\GrpcDemo_Net5\GrpcDemo_Net5.csproj", "{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcDemo_Net5", "Examples\GrpcDemo_Net5\GrpcDemo_Net5.csproj", "{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.DataSourceTestTool", "WindNight.DataSourceTestTool\WindNight.DataSourceTestTool.csproj", "{23EB0CBC-F92D-4273-9467-AEB80EDFC936}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{0B1D54C0-2992-48D7-BD2C-6088263B3F04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -123,6 +127,10 @@ Global
 		{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23EB0CBC-F92D-4273-9467-AEB80EDFC936}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23EB0CBC-F92D-4273-9467-AEB80EDFC936}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23EB0CBC-F92D-4273-9467-AEB80EDFC936}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23EB0CBC-F92D-4273-9467-AEB80EDFC936}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,6 +146,7 @@ Global
 		{3F870322-C864-46B2-A957-768C321BCAFF} = {7834D1E1-1A31-4493-BDCF-CFD31B14C049}
 		{558F116F-A4C5-4889-A620-906609EC9E63} = {7834D1E1-1A31-4493-BDCF-CFD31B14C049}
 		{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
+		{23EB0CBC-F92D-4273-9467-AEB80EDFC936} = {0B1D54C0-2992-48D7-BD2C-6088263B3F04}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4D07DFE6-71BA-4D72-AF00-A6D57FAE38EB}

@@ -8,13 +8,13 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.LogExtension;
- 
+
 namespace ConsoleExamples_NetCore5
 {
     class Program
     {
 
-        static void Main(string[] args)
+        static Task Main(string[] args)
         {
             var buildType = "";
 #if DEBUG
@@ -23,6 +23,7 @@ namespace ConsoleExamples_NetCore5
             buildType = "Release";
 #endif
             Init(CreateHostBuilder, buildType, args);
+            return Task.CompletedTask;
         }
 
         private static IHostBuilder CreateHostBuilder(string buildType, string[] args)

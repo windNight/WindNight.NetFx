@@ -14,7 +14,17 @@ namespace Schedule.Internal
         internal static async Task DoNoticeAsync(JobBaseInfo jobBaseInfo, string message)
         {
             var noticeDingConfig = ConfigItems.JobsConfig?.NoticeDingConfig;
-            var token = noticeDingConfig?.NoticeDingToken ?? string.Empty;
+            if (noticeDingConfig == null)
+            {
+                noticeDingConfig = new NoticeDingConfig
+                {
+                    NoticeDingToken = ConfigItems.DingtalkToken,
+                    NoticeDingPhones = ConfigItems.DingtalkPhones,
+                    NoticeDingAtAll = ConfigItems.DingtalkAtAll,
+                    NoticeDingIsOpen = !string.IsNullOrEmpty(ConfigItems.DingtalkToken),
+                };
+            }
+            var token = noticeDingConfig?.NoticeDingToken ?? ConfigItems.DingtalkToken;
             if (string.IsNullOrEmpty(token)) return;
             var postData = GetDingTalkPostData(jobBaseInfo, message, noticeDingConfig);
             if (postData == null) return;
@@ -52,6 +62,11 @@ namespace Schedule.Internal
                 if (!noticeDingConfig.NoticeDingIsOpen) return null;
                 atMobiles = noticeDingConfig.NoticeDingPhones;
                 isAtAll = noticeDingConfig.NoticeDingAtAll;
+            }
+            else
+            {
+                atMobiles = ConfigItems.DingtalkPhones;
+                isAtAll = ConfigItems.DingtalkAtAll;
             }
             // <font color=#228B22>Failed</font>
             var content = GetNoticeContent(jobBaseInfo, message);

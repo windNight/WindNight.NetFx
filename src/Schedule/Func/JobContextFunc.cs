@@ -12,7 +12,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="jobDetail"></param>
         /// <param name="origName"></param>
-        public static void SetJobCode(IJobDetail jobDetail, string origName)
+        public static void SetJobCode(this IJobDetail jobDetail, string origName)
         {
             if (!string.IsNullOrEmpty(origName))
                 jobDetail.JobDataMap["jobCode"] = origName;
@@ -23,7 +23,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string GetJobCode(IJobExecutionContext context)
+        public static string GetJobCode(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("jobCode")
                 ? context.JobDetail.JobDataMap["jobCode"].ToString()
@@ -35,7 +35,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="jobDetail"></param>
         /// <param name="name"></param>
-        public static void SetJobName(IJobDetail jobDetail, string name)
+        public static void SetJobName(this IJobDetail jobDetail, string name)
         {
             if (!string.IsNullOrEmpty(name))
                 jobDetail.JobDataMap["jobName"] = name;
@@ -46,7 +46,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string GetJobName(IJobExecutionContext context)
+        public static string GetJobName(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("jobName")
                 ? context.JobDetail.JobDataMap["jobName"].ToString()
@@ -58,7 +58,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="jobDetail"></param>
         /// <param name="runParams"></param>
-        public static void SetJobRunParams(IJobDetail jobDetail, string runParams)
+        public static void SetJobRunParams(this IJobDetail jobDetail, string runParams)
         {
             if (!string.IsNullOrEmpty(runParams))
                 jobDetail.JobDataMap["runParams"] = runParams;
@@ -69,7 +69,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string GetJobRunParams(IJobExecutionContext context)
+        public static string GetJobRunParams(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("runParams")
                 ? context.JobDetail.JobDataMap["runParams"].ToString()
@@ -81,7 +81,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="jobDetail"></param>
         /// <param name="isOnceFlag"></param>
-        public static void SetOnceJobFlag(IJobDetail jobDetail, bool isOnceFlag)
+        public static void SetOnceJobFlag(this IJobDetail jobDetail, bool isOnceFlag)
         {
             jobDetail.JobDataMap["onceJob"] = isOnceFlag;
         }
@@ -91,7 +91,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static bool IsOnceJob(IJobExecutionContext context)
+        public static bool IsOnceJob(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("onceJob")
                 ? bool.Parse(context.JobDetail.JobDataMap["onceJob"].ToString())
@@ -103,7 +103,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="jobDetail"></param>
         /// <param name="isContinueFlag"></param>
-        public static void SetContinueRunFlag(IJobDetail jobDetail, bool isContinueFlag)
+        public static void SetContinueRunFlag(this IJobDetail jobDetail, bool isContinueFlag)
         {
             jobDetail.JobDataMap.Add("JobContinue", isContinueFlag);
         }
@@ -112,7 +112,7 @@ namespace Schedule.Func
         ///     设置是否继续执行
         /// </summary>
         /// <param name="context"></param>
-        public static bool IsContinueRun(IJobExecutionContext context)
+        public static bool IsContinueRun(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("JobContinue")
                 ? bool.Parse(context.JobDetail.JobDataMap["JobContinue"].ToString())
@@ -124,7 +124,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="jobDetail"></param>
         /// <param name="depJobs"></param>
-        public static void SetDepJobs(IJobDetail jobDetail, string depJobs)
+        public static void SetDepJobs(this IJobDetail jobDetail, string depJobs)
         {
             if (!string.IsNullOrEmpty(depJobs))
                 jobDetail.JobDataMap.Add("depJobs", depJobs);
@@ -135,7 +135,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string GetDepJobs(IJobExecutionContext context)
+        public static string GetDepJobs(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("depJobs")
                 ? context.JobDetail.JobDataMap["depJobs"].ToString()
@@ -147,7 +147,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="jobDetail"></param>
         /// <param name="jobDbId"></param>
-        public static void SetJobDbId(IJobDetail jobDetail, string jobDbId)
+        public static void SetJobDbId(this IJobDetail jobDetail, string jobDbId)
         {
             if (!string.IsNullOrEmpty(jobDbId))
                 jobDetail.JobDataMap.Add("jobId", jobDbId);
@@ -158,7 +158,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string GetJobDbId(IJobExecutionContext context)
+        public static string GetJobDbId(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("jobId")
                 ? context.JobDetail.JobDataMap["jobId"].ToString()
@@ -170,7 +170,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="jobDetail"></param>
         /// <param name="autoClose"></param>
-        public static void SetAutoClose(IJobDetail jobDetail, bool autoClose)
+        public static void SetAutoClose(this IJobDetail jobDetail, bool autoClose)
         {
             jobDetail.JobDataMap["autoClose"] = autoClose;
         }
@@ -180,7 +180,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static bool GetAutoClose(IJobExecutionContext context)
+        public static bool GetAutoClose(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("autoClose")
                 ? bool.Parse(context.JobDetail.JobDataMap["autoClose"].ToString())
@@ -193,7 +193,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="jobDetail"></param>
         /// <param name="state"></param>
-        public static void SetJobBusinessState(IJobDetail jobDetail, JobBusinessStateEnum state)
+        public static void SetJobBusinessState(this IJobDetail jobDetail, JobBusinessStateEnum state)
         {
             jobDetail.JobDataMap["jobBusinessState"] = state;
         }
@@ -203,19 +203,19 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static JobBusinessStateEnum GetJobBusinessState(IJobExecutionContext context)
+        public static JobBusinessStateEnum GetJobBusinessState(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("jobBusinessState")
-                ? (JobBusinessStateEnum) context.JobDetail.JobDataMap["jobBusinessState"]
+                ? (JobBusinessStateEnum)context.JobDetail.JobDataMap["jobBusinessState"]
                 : JobBusinessStateEnum.Unknown;
         }
 
-        public static void SetJobBeginDateTimeTicks(IJobDetail jobDetail)
+        public static void SetJobBeginDateTimeTicks(this IJobDetail jobDetail)
         {
             jobDetail.JobDataMap.Add("jobbeginticks", DateTime.Now.Ticks);
         }
 
-        public static long GetJobBeginDateTimeTicks(IJobExecutionContext context)
+        public static long GetJobBeginDateTimeTicks(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("jobbeginticks")
                 ? context.JobDetail.JobDataMap["jobbeginticks"].ToString().ToLong()
@@ -226,7 +226,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="jobDetail"></param>
         /// <param name="isDoNotice"></param>
-        public static void SetIsDoNotice(IJobDetail jobDetail, bool isDoNotice)
+        public static void SetIsDoNotice(this IJobDetail jobDetail, bool isDoNotice)
         {
             jobDetail.JobDataMap["isDoNotice"] = isDoNotice;
         }
@@ -235,7 +235,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static bool GetIsDoNotice(IJobExecutionContext context)
+        public static bool GetIsDoNotice(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("isDoNotice")
                 ? bool.Parse(context.JobDetail.JobDataMap["isDoNotice"].ToString())

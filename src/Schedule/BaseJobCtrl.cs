@@ -42,13 +42,13 @@ namespace Schedule
                     .WithIdentity(jobkey)
                     .Build();
 
-                JobContextFunc.SetJobName(job, jobParam.JobName);
-                JobContextFunc.SetJobCode(job, jobParam.JobCode);
-                JobContextFunc.SetOnceJobFlag(job, onceJob);
-                JobContextFunc.SetDepJobs(job, jobParam.DepJobs);
-                JobContextFunc.SetJobRunParams(job, jobParam.RunParams);
-                JobContextFunc.SetAutoClose(job, jobParam.AutoClose);
-                JobContextFunc.SetIsDoNotice(job, jobParam.IsDoNotice);
+                job.SetJobName(jobParam.JobName);
+                job.SetJobCode(jobParam.JobCode);
+                job.SetOnceJobFlag(onceJob);
+                job.SetDepJobs(jobParam.DepJobs);
+                job.SetJobRunParams(jobParam.RunParams);
+                job.SetAutoClose(jobParam.AutoClose);
+                job.SetIsDoNotice(jobParam.IsDoNotice);
 
                 ScheduleModConfig.Instance.DefaultScheduler.ScheduleJob(job, trigger);
 

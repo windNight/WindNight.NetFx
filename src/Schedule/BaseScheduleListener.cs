@@ -81,7 +81,6 @@ namespace Schedule
             CancellationToken cancellationToken = default)
         {
             SetJobId(context);
-
             Debug(nameof(ITriggerListener), nameof(TriggerFired));
 
             await DoNoticeAsync($"begin with TriggerFired_ITriggerListener:NowTicks({DateTime.Now.Ticks})");
@@ -137,14 +136,14 @@ namespace Schedule
             CancellationToken cancellationToken = default)
         {
             Debug(nameof(ITriggerListener), nameof(TriggerComplete));
-            var beginTicks = JobContextFunc.GetJobBeginDateTimeTicks(context);
+            var beginTicks = context.GetJobBeginDateTimeTicks();
             var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - beginTicks).TotalMilliseconds;
 
             if (milliseconds > 5 * 1000)
                 JobLogHelper.Warn($"{JobInfo} 耗时{milliseconds} ms ", null, nameof(TriggerComplete));
             else if (milliseconds > 0)
                 JobLogHelper.Info($"{JobInfo} 耗时{milliseconds} ms ", nameof(TriggerComplete));
-            var bizState = JobContextFunc.GetJobBusinessState(context);
+            var bizState = context.GetJobBusinessState();
             var bizStatsStr = bizState.ToString();
             if (bizState == JobBusinessStateEnum.Success)
             {
@@ -180,14 +179,14 @@ namespace Schedule
             CancellationToken cancellationToken = default)
         {
             Debug(nameof(ITriggerListener), nameof(VetoJobExecution));
-            var origJobName = JobContextFunc.GetJobCode(context);
+            var origJobName = context.GetJobCode();
             //检查依赖选项是否满足
-            var isOnceJob = JobContextFunc.IsOnceJob(context);
-            var depJobs = JobContextFunc.GetDepJobs(context); //jobcodes
+            var isOnceJob = context.IsOnceJob();
+            var depJobs = context.GetDepJobs(); //jobcodes
             var isContinueRun = isOnceJob || string.IsNullOrEmpty(depJobs)
                 ? true
                 : await WaitJobCompleted(origJobName, depJobs.Split(',').ToList(), DateTime.Now.Date);
-            JobContextFunc.SetContinueRunFlag(context.JobDetail, isContinueRun);
+            context.JobDetail.SetContinueRunFlag(isContinueRun);
 
             if (!isContinueRun)
             {
@@ -228,10 +227,10 @@ namespace Schedule
             Debug(nameof(IJobListener), nameof(JobToBeExecuted));
             try
             {
-                var jobName = JobContextFunc.GetJobName(context);
-                var jobCode = JobContextFunc.GetJobCode(context);
-                var autoClose = JobContextFunc.GetAutoClose(context);
-                var runParams = JobContextFunc.GetJobRunParams(context);
+                var jobName = context.GetJobName();
+                var jobCode = context.GetJobCode();
+                var autoClose = context.GetAutoClose();
+                var runParams = context.GetJobRunParams();
 
                 var msg = $"{JobInfo} begin time:{DateTime.Now:yyyy-MM-dd HH:mm:sss}, autoClose:{autoClose}, runParams:{runParams}";
                 JobLogHelper.Info(msg, nameof(JobToBeExecuted));
@@ -314,15 +313,15 @@ namespace Schedule
             var retCode = 0;
             try
             {
-                var jobName = JobContextFunc.GetJobName(context);
+                var jobName = context.GetJobName();
                 // var jobCode = JobContextFunc.GetJobCode(context);
 
-                var autoClose = JobContextFunc.GetAutoClose(context);
-                var runParams = JobContextFunc.GetJobRunParams(context);
+                var autoClose = context.GetAutoClose();
+                var runParams = context.GetJobRunParams();
 
                 // 如果是单次运行，则删除job 
                 // OnceJob not support now 
-                if (JobContextFunc.IsOnceJob(context))
+                if (context.IsOnceJob())
                 {
                     var delJobRet = new ScheduleCtrl().StopJob(jobName);
                     if (delJobRet != JobActionRetEnum.Success)
@@ -342,7 +341,7 @@ namespace Schedule
                 }
                 else
                 {
-                    var jobBusinessState = JobContextFunc.GetJobBusinessState(context);
+                    var jobBusinessState = context.GetJobBusinessState();
                     switch (jobBusinessState)
                     {
                         case JobBusinessStateEnum.Unknown: //基本上是没有继承BaseJob的
@@ -426,12 +425,12 @@ namespace Schedule
         private void SetJobId(IJobExecutionContext context)
         {
             var jobId = GuidHelper.GetGuid();
-            JobContextFunc.SetJobDbId(context.JobDetail, jobId);
-            JobContextFunc.SetJobBeginDateTimeTicks(context.JobDetail);
+            context.JobDetail.SetJobDbId(jobId);
+            context.JobDetail.SetJobBeginDateTimeTicks();
             JobId = jobId;
-            JobName = JobContextFunc.GetJobName(context);
-            IsDoNotice = JobContextFunc.GetIsDoNotice(context);
-            // JobContext.SetCurrentJobBaseInfo(JobId, JobCode, JobName);
+            JobName = context.GetJobName();
+            IsDoNotice = context.GetIsDoNotice();
+            JobContext.SetCurrentJobBaseInfo(JobId, JobCode, JobName);
         }
 
     }

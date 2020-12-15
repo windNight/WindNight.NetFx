@@ -17,18 +17,18 @@ namespace Schedule
 
         public virtual async Task Execute(IJobExecutionContext context)
         {
-            JobId = JobContextFunc.GetJobDbId(context);
-            JobCode = JobContextFunc.GetJobCode(context);
-            JobName = JobContextFunc.GetJobName(context);
+            JobId = context.GetJobDbId();
+            JobCode = context.GetJobCode();
+            JobName = context.GetJobName();
             JobContext.SetCurrentJobBaseInfo(JobId, JobCode, JobName);
 
             var job = context.JobDetail;
             var state = JobBusinessStateEnum.Processing;
-            JobContextFunc.SetJobBusinessState(job, state);
+            job.SetJobBusinessState(state);
             var rlt = ExecuteWithResult(context);
 
             state = await rlt ? JobBusinessStateEnum.Success : JobBusinessStateEnum.Fail;
-            JobContextFunc.SetJobBusinessState(job, state);
+            job.SetJobBusinessState(state);
         }
 
         /// <summary>
