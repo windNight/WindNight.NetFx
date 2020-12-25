@@ -19,7 +19,7 @@ namespace WindNight.Core.Extension
             {
                 return new VersionStruct { Version = version };
             }
-            catch (Exception ex)
+            catch// (Exception ex)
             {
                 return VersionStruct.NullVersionStruct;
             }
@@ -31,12 +31,12 @@ namespace WindNight.Core.Extension
                    string.Equals(version, MAX_VERSION, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static long Convert2Long(this string version, long defaultVersion = 0L, bool isThrow = false)
+        public static long Convert2Long(this string? version, long defaultVersion = 0L, bool isThrow = false)
         {
             return version.Convert2Long(out var firstNumber, defaultVersion, isThrow);
         }
 
-        public static long Convert2Long(this string version, out int firstNumber, long defaultVersion = 0L,
+        public static long Convert2Long(this string? version, out int firstNumber, long defaultVersion = 0L,
             bool isThrow = true)
         {
             firstNumber = 0;
@@ -68,14 +68,14 @@ namespace WindNight.Core.Extension
 
     public class VersionStruct
     {
-        public string Version { get; set; }
+        public string? Version { get; set; }
         public long VersionLong => Version.Convert2Long();
 
         public static VersionStruct NullVersionStruct => new VersionStruct { Version = "0" };
 
         public static bool operator ==(VersionStruct left, VersionStruct right)
         {
-            if (left == null || right == null) return false;
+            if (left == null || right == null || left.VersionLong == 0L) return false;
             return left.VersionLong == right.VersionLong;
         }
 
@@ -124,10 +124,12 @@ namespace WindNight.Core.Extension
         {
             return $"{Version}";
         }
-        //public override int GetHashCode()
-        //{
-        //    return base.GetHashCode();
-        //}
+
+        public override int GetHashCode()
+        {
+            // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
+            return base.GetHashCode();
+        }
 
     }
 }

@@ -32,9 +32,9 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// <returns></returns>
         public static IMvcBuilder AddMvcBuilder(this IServiceCollection services, Action<MvcOptions> mvcOption
 #if !NETCOREAPP3_1&&!NET5_0
-            , Action<MvcJsonOptions> mvcJsonOption = null
+            , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
-            , Action<JsonOptions> jsonOptions = null, Action<MvcNewtonsoftJsonOptions> mvcJsonOptions = null
+            , Action<JsonOptions>? jsonOptions = null, Action<MvcNewtonsoftJsonOptions>? mvcJsonOptions = null
 #endif
             )
         {
@@ -72,9 +72,9 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// <returns></returns>
         public static IMvcBuilder AddMvcBuilderWithDefaultFilters(this IServiceCollection services
 #if !NETCOREAPP3_1&&!NET5_0
-            , Action<MvcJsonOptions> mvcJsonOption = null
+            , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
-            , Action<JsonOptions> jsonOptions = null, Action<MvcNewtonsoftJsonOptions> mvcJsonOptions = null
+            , Action<JsonOptions>? jsonOptions = null, Action<MvcNewtonsoftJsonOptions>? mvcJsonOptions = null
 #endif
         )
         {
@@ -123,9 +123,9 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
         public static IMvcBuilder AppendJsonSettings(this IMvcBuilder mvcBuilder
 #if !NETCOREAPP3_1&&!NET5_0
-            , Action<MvcJsonOptions> mvcJsonOption = null
+            , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
-            , Action<JsonOptions> jsonOptions = null, Action<MvcNewtonsoftJsonOptions> mvcJsonOptions = null
+            , Action<JsonOptions>? jsonOptions = null, Action<MvcNewtonsoftJsonOptions>? mvcJsonOptions = null
 #endif
         )
         {

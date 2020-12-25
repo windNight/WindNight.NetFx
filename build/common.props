@@ -23,5 +23,8 @@
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 		<PackageIconUrl>https://avatars0.githubusercontent.com/u/11327494?s=200&amp;v=4</PackageIconUrl>
 		<!--<PackageIcon>https://avatars0.githubusercontent.com/u/11327494?s=200&amp;v=4</PackageIcon>-->
+		<LangVersion>preview</LangVersion>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 </Project>

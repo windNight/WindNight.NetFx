@@ -3,19 +3,10 @@ using MongoDB.Driver;
 using MySqlConnector;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Net.Sockets;
-using System.Runtime.Serialization;
-using System.Text;
+using System.Threading;
 using System.Windows.Forms;
-using MongoDB.Bson;
 using WindNight.DataSourceTestTool.RabbitMQ;
 using WindNight.DataSourceTestTool.Redis;
 
@@ -178,7 +169,7 @@ namespace WindNight.DataSourceTestTool.Forms
         void TestMysql()
         {
             bool flag = false;
-            IDbConnection connection = null;
+            IDbConnection? connection = null;
             try
             {
                 connection = new MySqlConnection(ConnectString);
@@ -225,7 +216,7 @@ namespace WindNight.DataSourceTestTool.Forms
         {
 
             bool flag = false;
-            IDbConnection connection = null;
+            IDbConnection? connection = null;
             try
             {
                 connection = new SqlConnection(ConnectString);
@@ -254,7 +245,7 @@ namespace WindNight.DataSourceTestTool.Forms
             if (!flag) return;
             try
             {
-                connection.Close();
+                connection?.Close();
                 flag = true;
 
             }
@@ -270,7 +261,7 @@ namespace WindNight.DataSourceTestTool.Forms
 
         void TestMongodb()
         {
-            var mongoUrl = MongoUrl.Create(ConnectString);// new MongoUrl(ConnectString);
+            var mongoUrl = new MongoUrl(ConnectString);//  MongoUrl.Create(ConnectString);// new MongoUrl(ConnectString);
             var mongoClientSettings = MongoClientSettings.FromUrl(mongoUrl);
             var defaultTs = TimeSpan.FromMinutes(2);
             mongoClientSettings.MaxConnectionIdleTime = defaultTs;
@@ -281,18 +272,34 @@ namespace WindNight.DataSourceTestTool.Forms
             //mongoClientSettings.ClusterConfigurator = cb =>
             //    cb.ConfigureTcp(tcp => tcp.With(socketConfigurator: (Action<Socket>)SocketConfigurator));
 
-            var mongoClient = new MongoClient(mongoClientSettings);
+            MongoClient mongoClient = new MongoClient(mongoClientSettings);
             var databaseName = mongoUrl.DatabaseName;
-            var dbList = mongoClient.ListDatabases();
-            var Database = mongoClient.GetDatabase(databaseName);
-            var alldbs = Database.ListCollectionNames();
-            var collectNames = new List<string>();
-            while (alldbs.MoveNext())
+            try
             {
-                collectNames.AddRange(alldbs.Current);
+                var dbList = mongoClient.ListDatabases();
             }
-            AppendLine(tb_Output, $"collectNames is {string.Join(",", collectNames)}");
+            catch (Exception ex)
+            {
+                AppendLine(tb_Output, $"ListDatabases Handler Error {ex.Message}\r\n{ex}");
+            }
+            IMongoDatabase Database = mongoClient.GetDatabase(databaseName);
 
+            try
+            {
+
+                var alldbs = Database.ListCollectionNames();
+                var collectNames = new List<string>();
+                while (alldbs.MoveNext())
+                {
+                    collectNames.AddRange(alldbs.Current);
+                }
+                AppendLine(tb_Output, $"collectNames is {string.Join(",", collectNames)}");
+            }
+            catch (Exception ex)
+            {
+                AppendLine(tb_Output, $"ListCollectionNames Handler Error {ex.Message}\r\n{ex}");
+
+            }
             Database.Client.Cluster.Dispose();
 
         }
@@ -321,7 +328,7 @@ namespace WindNight.DataSourceTestTool.Forms
 
             var amqpUrl = configInfo.amqpUrl;
             var queueName = configInfo.queueName;
-            var consumer = new Consumer(amqpUrl, new ConsumerConfigInfo { QueueName = queueName });
+            var consumer = new Consumer(amqpUrl, new ConsumerConfigInfo { QueueName = queueName, });
             // using (var consumer = new Consumer(amqpUrl, new ConsumerConfigInfo { QueueName = queueName }))
             // {
             AppendLine(tb_Output, $"IsChannelOpen: {consumer.IsChannelOpen}");
@@ -329,6 +336,7 @@ namespace WindNight.DataSourceTestTool.Forms
             int loop = 0;
             bool isAck = false;
             var deliveryTag = 0UL;
+            //TODO 使用异步
             while (loop < 10)
             {
                 try
@@ -361,7 +369,7 @@ namespace WindNight.DataSourceTestTool.Forms
                     }
                 }
                 loop++;
-
+                Thread.Sleep(1000 * 5);
 
             }
 
@@ -515,7 +523,7 @@ namespace WindNight.DataSourceTestTool.Forms
             { "Redis","redis9.tcy365.org:10013,password=msc67b3u,defaultDataBase=15,Prefix=xxxx"},
             { "Mssql","data source=192.168.1.5,1436;database=ctdeveloperdb;user id=ctdeveloper;password=wq4jchag;Connection Timeout=15;"},
             { "Mysql","Data Source=mysql9.tcy365.org;Port=3306;Database=cpsopendatadb;User ID=cpsopendata;Password=m7hvgrdf;Charset=utf8mb4;SslMode=None;"},
-            { "Mongodb","mongodb://#USER#:#PASSWORD#@#HOST1#:#PORT1#,#HOST2#:#PORT2#/#DATABASE#?replicaSet=YourReplicaSet"},
+            { "Mongodb","mongodb://lycpsopen:avgqhp5b@mongodb1.tcy365.org:60002,mongodb2.tcy365.org:60002/lycpsopendb?replicaSet=mongodb34"},
             { "Consumer","amqp://#USER#:#PASSWORD#@#HOST#:#PORT#,#QUEUENAME#"},
             { "Producer","amqp://#USER#:#PASSWORD#@#HOST#:#PORT#,#TOPICNAME#"},
         };

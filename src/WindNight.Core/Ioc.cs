@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using WindNight.Core.Abstractions;
@@ -23,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
 
         /// <summary>
         /// </summary>
-        public IServiceProvider ServiceProvider { get; internal set; }
+        public IServiceProvider? ServiceProvider { get; internal set; }
 
         /// <summary>
         /// </summary>
@@ -43,12 +44,28 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         ///     Please Make Sure you has do Ioc.Instance.InitServiceProvider(yourIServiceProvider) when init your app.
         /// </remarks>
         /// <returns> A service object of type T or null if there is no such service. </returns>
-        public static T GetService<T>(string name = null)
+        public static T GetService<T>(string? name = null)
         {
             if (Instance.ServiceProvider == null) return default;
-            return Instance.ServiceProvider.GetService<T>(name); 
+            return Instance.ServiceProvider.GetService<T>(name);
         }
 
+#if !NET45
+        /// <summary>
+        ///     Get service of type T from the System.IServiceProvider.
+        /// </summary>
+        /// <typeparam name="T">The type of service object to get</typeparam>
+        /// <param name="name"></param>
+        /// <remarks>
+        ///     Please Make Sure you has do Ioc.Instance.InitServiceProvider(yourIServiceProvider) when init your app.
+        /// </remarks>
+        /// <returns> A service object of type T or null if there is no such service. </returns>
+        public static IEnumerable<T> GetServices<T>()
+        {
+            if (Instance.ServiceProvider == null) return default;
+            return Instance.ServiceProvider.GetServices<T>();
+        }
+#endif
 
     }
 
@@ -65,7 +82,7 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         ///     Please Make Sure you has do Ioc.Instance.InitServiceProvider(yourIServiceProvider) when init your app.
         /// </remarks>
         /// <returns> A service object of type T or null if there is no such service. </returns>
-        public static T GetService<T>(this IServiceProvider serviceProvider, string name)
+        public static T GetService<T>(this IServiceProvider? serviceProvider, string? name)
         {
             if (serviceProvider == null) return default;
 #if NETSTANDARD

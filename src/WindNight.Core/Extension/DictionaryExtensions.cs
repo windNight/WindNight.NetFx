@@ -29,8 +29,10 @@ namespace WindNight.Core.Extension
         public static T SafeGetValue<TKey, T>(this IReadOnlyDictionary<TKey, T> dict, TKey key,
             T defaultValue = default)
         {
+#pragma warning disable CS8603 // 可能的 null 引用返回。
             if (key == null) return defaultValue;
             return dict.ContainsKey(key) ? dict[key] : defaultValue;
+#pragma warning restore CS8603 // 可能的 null 引用返回。
         }
     }
 }

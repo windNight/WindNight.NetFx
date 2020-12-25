@@ -22,7 +22,7 @@ namespace ConsoleExamples_NetCore5
 #else
             buildType = "Release";
 #endif
-            Init(CreateHostBuilder, buildType, args);
+            ProgramBase.Init(CreateHostBuilder, buildType, args);
             return Task.CompletedTask;
         }
 
@@ -83,6 +83,10 @@ namespace ConsoleExamples_NetCore5
             {
                 Console.WriteLine($"Hello I'm {nameof(TestBackgroundService)} {DateTime.Now:yyyy-MM-dd HH:mm:sss}");
                 Thread.Sleep(1000 * 5);
+
+
+
+                await Task.CompletedTask;
             }
         }
     }

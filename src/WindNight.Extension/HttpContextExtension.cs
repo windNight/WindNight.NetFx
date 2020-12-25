@@ -215,9 +215,9 @@ namespace WindNight.Extension
                 return DefaultIp;
             }
         }
-        public static HttpContext GetHttpContext()
+        public static HttpContext? GetHttpContext()
         {
-            HttpContext context = null;
+            HttpContext? context = null;
 
 #if NETFRAMEWORK
             context = HttpContext.Current;

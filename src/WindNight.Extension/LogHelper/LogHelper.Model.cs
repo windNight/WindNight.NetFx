@@ -8,15 +8,15 @@ namespace WindNight.LogExtension
     {
         public class LogInfo
         {
-            public string SerialNumber { get; set; }
-            public string RequestUrl { get; set; }
-            public Exception Exceptions { get; set; }
-            public string ServerIp { get; set; }
-            public string ClientIp { get; set; }
+            public string? SerialNumber { get; set; }
+            public string? RequestUrl { get; set; }
+            public Exception? Exceptions { get; set; }
+            public string? ServerIp { get; set; }
+            public string? ClientIp { get; set; }
             public long Timestamps { get; set; }
             public LogLevels Level { get; set; }
-            public string Content { get; set; }
-            public string NodeCode { get; set; }
+            public string? Content { get; set; }
+            public string? NodeCode { get; set; }
 
             public override string ToString()
             {

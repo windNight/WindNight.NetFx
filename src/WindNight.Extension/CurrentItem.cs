@@ -19,7 +19,7 @@ namespace WindNight.Extension
 
         private static
 #if NET45
-            IDictionary 
+            IDictionary
 #else
 
             IDictionary<object, object>
@@ -34,7 +34,7 @@ namespace WindNight.Extension
         /// </summary>
         public static
 #if NET45
-            IDictionary 
+            IDictionary
 #else
 
             IDictionary<object, object>
@@ -46,10 +46,10 @@ namespace WindNight.Extension
                 try
                 {
 #if NET45
-                    return HttpContext.GetHttpContext().Items;
+                    return HttpContext.GetHttpContext()?.Items ?? (_items ??= new ConcurrentDictionary<object, object>());
 #else
 
-                    return Ioc.GetService<IHttpContextAccessor>()?.HttpContext?.Items;
+                    return Ioc.GetService<IHttpContextAccessor>()?.HttpContext?.Items ?? (_items ??= new ConcurrentDictionary<object, object>());
 #endif
                 }
                 catch

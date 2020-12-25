@@ -88,10 +88,13 @@ namespace Schedule
             await Task.CompletedTask;
         }
 
-        async Task DoNoticeAsync(string message)
+        async Task DoNoticeAsync(string message, string extendInfo = "")
         {
             if (_scheduleNotice != null && IsDoNotice)
-                await _scheduleNotice.DoNoticeAsync(JobBaseInfo, message);
+            {
+                await _scheduleNotice.DoNoticeAsync(JobBaseInfo, $"{message}{(string.IsNullOrEmpty(extendInfo) ? "" : $"\n\n{extendInfo}")}");
+            }
+
 
             await Task.CompletedTask;
         }
@@ -153,7 +156,7 @@ namespace Schedule
             {
                 bizStatsStr = $"<font color=#FF0000>{bizState}</font>";
             }
-            await DoNoticeAsync($"耗时 {milliseconds} ms. 任务状态为 {bizStatsStr}");
+            await DoNoticeAsync($"耗时 {milliseconds} ms. 任务状态为 {bizStatsStr}", context.GetTempConfig("BizContent").ToString());
 
             await Task.CompletedTask;
         }
@@ -183,9 +186,7 @@ namespace Schedule
             //检查依赖选项是否满足
             var isOnceJob = context.IsOnceJob();
             var depJobs = context.GetDepJobs(); //jobcodes
-            var isContinueRun = isOnceJob || string.IsNullOrEmpty(depJobs)
-                ? true
-                : await WaitJobCompleted(origJobName, depJobs.Split(',').ToList(), DateTime.Now.Date);
+            var isContinueRun = isOnceJob || string.IsNullOrEmpty(depJobs) || await WaitJobCompleted(origJobName, depJobs.Split(',').ToList(), DateTime.Now.Date);
             context.JobDetail.SetContinueRunFlag(isContinueRun);
 
             if (!isContinueRun)

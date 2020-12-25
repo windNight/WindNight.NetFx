@@ -21,7 +21,7 @@ namespace System.Text
         /// <returns>
         ///     A string that contains the results of decoding the specified sequence of bytes.
         /// </returns>
-        public static string ToGetString(this byte[] bytes, Encoding encoding = null)
+        public static string ToGetString(this byte[] bytes, Encoding? encoding = null)
         {
             if (encoding == null) encoding = Encoding.UTF8;
             return encoding.GetString(bytes);
@@ -41,7 +41,7 @@ namespace System.Text
         /// <returns>
         ///     A byte array containing the results of encoding the specified set of characters.
         /// </returns>
-        public static byte[] ToBytes(this string text, Encoding encoding = null)
+        public static byte[] ToBytes(this string text, Encoding? encoding = null)
         {
             if (encoding == null) encoding = Encoding.UTF8;
             return encoding.GetBytes(text);
@@ -108,7 +108,7 @@ namespace System.Text
         /// <param name="zippedString">经GZip压缩后的二进制字符串</param>
         /// <param name="encoding"> </param>
         /// <returns>原始未压缩字符串</returns>
-        public static string GZipDecompressString(this string zippedString, Encoding encoding = null)
+        public static string GZipDecompressString(this string zippedString, Encoding? encoding = null)
         {
             if (string.IsNullOrEmpty(zippedString) || zippedString.Length == 0) return "";
 

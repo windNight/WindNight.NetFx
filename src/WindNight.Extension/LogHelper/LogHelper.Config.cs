@@ -35,11 +35,11 @@ namespace WindNight.LogExtension
 
             /// <summary> 服务代号： </summary>
             internal static string SystemAppCode
-                => configService?.GetAppSetting(ConstKeys.AppCodeKey, "");
+                => configService?.GetAppSetting(ConstKeys.AppCodeKey, "") ?? "";
 
             /// <summary> 服务名称： </summary>
             internal static string SystemAppName
-                => configService?.GetAppSetting(ConstKeys.AppNameKey, "");
+                => configService?.GetAppSetting(ConstKeys.AppNameKey, "") ?? "";
 
             internal static class ConstKeys
             {
@@ -47,7 +47,7 @@ namespace WindNight.LogExtension
                 public const string AppendLogMessageKey = "AppendLogMessage";
                 public const string LogOnConsoleKey = "LogOnConsole";
                 public const string Log4netOpenKey = "Log4netOpen";
-                
+
                 internal const string AppIdKey = "AppId";
                 internal const string AppCodeKey = "AppCode";
                 internal const string AppNameKey = "AppName";

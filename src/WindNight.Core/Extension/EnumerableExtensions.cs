@@ -93,7 +93,9 @@ namespace System.Linq.Expressions
                 return true;
             if ((leftProp == null) ^ (rightProp == null)) //逻辑或位 XOR(异或)。 通常可以将此运算符与整数类型和 enum 类型一起使用
                 return false;
+#pragma warning disable CS8602 // 解引用可能出现空引用。
             return leftProp.Equals(rightProp);
+#pragma warning restore CS8602 // 解引用可能出现空引用。
         }
 
         /// <summary>

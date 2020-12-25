@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!--<TargetFramework>netstandard2.1</TargetFramework>-->
+		<TargetFramework>net461</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Antlr2.Runtime" Version="2.7.7.02" />
+		<PackageReference Include="Antlr2.Tools" Version="2.7.6.4" />
+		<PackageReference Include="DotNetZip.Reduced" version="1.9.1.8"  />
+		<PackageReference Include="JetBrains.Annotations" version="10.1.4"  />
+		<PackageReference Include="JetBrains.Build.Platform.Tasks.ThemedIconsPacker" version="2.0.20151217.1"  developmentDependency="true" />
+		<PackageReference Include="JetBrains.ExternalAnnotations" version="10.1.8"  />
+		<PackageReference Include="JetBrains.Mono.Posix" version="0.1"  />
+		<PackageReference Include="JetBrains.Platform.Core.Ide" version="105.0.20160414.153405"  />
+		<PackageReference Include="JetBrains.Platform.Core.Shell" version="105.0.20160414.95726"  />
+		<PackageReference Include="JetBrains.Platform.Core.Text" version="105.0.20160414.153405"  />
+		<PackageReference Include="JetBrains.Platform.Installer" version="105.0.20160414.153405"  />
+		<PackageReference Include="JetBrains.Platform.Interop.dotMemoryUnit.Interop" version="105.0.20160414.153405"  />
+		<PackageReference Include="JetBrains.Platform.Lib.DevExpress" version="2.0.20150224.0"  />
+		<PackageReference Include="JetBrains.Platform.Lib.Microsoft.Deployment.Compression.Cab" version="2.0.20140304.0"  />
+		<PackageReference Include="JetBrains.Platform.Lib.Microsoft.Deployment.WindowsInstaller" version="2.0.20140821.0"  />
+		<PackageReference Include="JetBrains.Platform.Lib.System.Windows.Interactivity" version="2.0.20140318.0"  />
+		<PackageReference Include="JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild" version="2.0.20140304.0"  />
+		<PackageReference Include="JetBrains.Platform.Lib.WpfContrib" version="2.0.20150225.0"  />
+		<PackageReference Include="JetBrains.Platform.Symbols" version="105.0.20160414.153405"  />
+		<PackageReference Include="JetBrains.Platform.Tests.Framework" version="105.0.20160414.153405"  />
+		<PackageReference Include="JetBrains.Platform.VisualStudio" version="105.0.20160414.153405"  />
+		<PackageReference Include="JetBrains.Psi.Features.Core" version="105.0.20160414.153845"  />
+		<PackageReference Include="JetBrains.Psi.Features.Cpp.Src" version="105.0.20160414.155000"  />
+		<PackageReference Include="JetBrains.Psi.Features.SolutionBuilder" version="105.0.20160414.153845"  />
+		<PackageReference Include="JetBrains.Psi.Features.src" version="105.0.20160414.153845"  />
+		<PackageReference Include="JetBrains.Psi.Features.Tasks" version="105.0.20160414.153845"  />
+		<PackageReference Include="JetBrains.Psi.Features.test.Framework" version="105.0.20160414.153845"  />
+		<PackageReference Include="JetBrains.Psi.Features.UnitTesting" version="105.0.20160414.153845"  />
+		<PackageReference Include="JetBrains.Psi.Features.VisualStudio" version="105.0.20160414.153845"  />
+		<PackageReference Include="JetBrains.ReSharper.SDK" version="2016.1.20160414.161610"  developmentDependency="true" />
+		<PackageReference Include="JetBrains.ReSharper.SDK.Internal" version="105.0.20160414.161610"  />
+		<PackageReference Include="JetBrains.WinDbg.SymStore" version="10.0.10586.20151201"  developmentDependency="true" />
+		<PackageReference Include="Microsoft.VC100.CRT.JetBrains" version="10.00.40219.2"  />
+		<PackageReference Include="Microsoft.VC120.CRT.JetBrains" version="12.0.21005.2"  />
+		<PackageReference Include="Microsoft.Web.Xdt" version="2.1.1"  />
+		<PackageReference Include="Newtonsoft35.Json" version="7.0.1"  />
+		<PackageReference Include="NuGet.Core" version="2.10.1"  />
+		<PackageReference Include="NUnit" version="2.6.4"  />
+		<PackageReference Include="NUnit.ReSharperRunner2" version="2.6.408"  />
+		<PackageReference Include="NUnit.ReSharperRunner3" version="3.0.12"  />
+		<PackageReference Include="NVelocity" version="1.0.3"  />
+		<PackageReference Include="SharpZipLib.JetBrains.Stripped" version="0.86.20150204.1"  />
+		<PackageReference Include="Sprache.JetBrains" version="2.0.0.44"  />
+		<PackageReference Include="System.Runtime" version="4.0.20"  />
+		<PackageReference Include="Vestris.ResourceLib.JetBrains" version="1.4.20150303.0"  />
+		<PackageReference Include="Wave" version="5.0.0.0"  />
+		<PackageReference Include="Windows7APICodePack.JetBrains.Stripped" version="1.1.20150225.0"  />
+		<PackageReference Include="xmlrpcnet" version="2.5.0"  />
+		<PackageReference Include="xunit.abstractions.JetBrains" version="2.0.0"  />
+		<PackageReference Include="xunit.JetBrains" version="1.9.2"  />
+		<PackageReference Include="xunit.runner.utility.JetBrains" version="2.2.0"  />
+	</ItemGroup>
+
+</Project>

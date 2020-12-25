@@ -39,9 +39,9 @@ namespace WindNight.ConfigCenter.Extension
         private static string ServiceUrlNodeKey =>
             $"/{nameof(DomainSwitch)}/{GetSolution()}/{DomainSwitchNodeType.ServiceUrl}";
 
-        private static XmlNodeList GetNodeChildren(string node)
+        private static XmlNodeList? GetNodeChildren(string node)
         {
-            return GetInstance().SelectSingleNode(node)?.ChildNodes;
+            return GetInstance().SelectSingleNode(node)?.ChildNodes ?? null;
         }
 
         private static XmlDocument GetInstance()
@@ -69,7 +69,7 @@ namespace WindNight.ConfigCenter.Extension
         {
             if (ConfigSolution != string.Empty)
                 return ConfigSolution;
-            return GetInstance().SelectSingleNode(nameof(DomainSwitch))?.ChildNodes[0]?.Name;
+            return GetInstance().SelectSingleNode(nameof(DomainSwitch))?.ChildNodes[0]?.Name ?? "";
         }
 
         public static string RplDomain(string content)
@@ -81,12 +81,12 @@ namespace WindNight.ConfigCenter.Extension
 
         public static string GetCurrDomain()
         {
-            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["Domain"]?.Value?.ToLower();
+            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["Domain"]?.Value?.ToLower() ?? "";
         }
 
         public static string GetSetDomain()
         {
-            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["SetDomain"]?.Value?.ToLower();
+            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["SetDomain"]?.Value?.ToLower() ?? "";
         }
 
         public static string GetAllDomain()
@@ -113,7 +113,7 @@ namespace WindNight.ConfigCenter.Extension
         }
 
         public static Dictionary<string, string> GetAllDomainDict()
-        { 
+        {
             var dict = new Dictionary<string, string>();
             if (!IsExistDomainSwitchConfig) return dict;
 

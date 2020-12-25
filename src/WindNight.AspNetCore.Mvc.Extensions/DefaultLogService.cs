@@ -10,7 +10,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 {
     public class DefaultLogService : ILogService
     {
-        public void AddLog(LogLevels logLevel, string msg, Exception exception = null, long millisecond = 0, string url = "",
+        public void AddLog(LogLevels logLevel, string msg, Exception? exception = null, long millisecond = 0, string url = "",
             string serverIp = "", string clientIp = "", bool appendMessage = true)
         {
             DoConsoleLog(logLevel, msg);
@@ -37,7 +37,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
             AddLog(LogLevels.SysRegister, msg, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage);
         }
 
-        public void Offline(string buildType, Exception exception = null, bool appendMessage = false)
+        public void Offline(string buildType, Exception? exception = null, bool appendMessage = false)
         {
             var sysInfo = new
             {
@@ -71,14 +71,14 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                 appendMessage: appendMessage);
         }
 
-        public void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "",
+        public void Warn(string msg, Exception? exception = null, long millisecond = 0, string url = "",
             string serverIp = "", string clientIp = "", bool appendMessage = true)
         {
             AddLog(LogLevels.Warning, msg, exception, millisecond: millisecond, url: url, serverIp: serverIp,
                 clientIp: clientIp, appendMessage: appendMessage);
         }
 
-        public void Error(string msg, Exception exception, long millisecond = 0, string url = "",
+        public void Error(string msg, Exception? exception, long millisecond = 0, string url = "",
             string serverIp = "",
             string clientIp = "", bool appendMessage = true)
         {
@@ -86,7 +86,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                 clientIp: clientIp, appendMessage: appendMessage);
         }
 
-        public void Fatal(string msg, Exception exception, long millisecond = 0, string url = "",
+        public void Fatal(string msg, Exception? exception, long millisecond = 0, string url = "",
             string serverIp = "", string clientIp = "", bool appendMessage = false)
         {
             AddLog(LogLevels.Critical, msg, exception, millisecond: millisecond, url: url, serverIp: serverIp,

@@ -23,7 +23,7 @@ namespace Schedule
         /// <summary>
         ///     初始化调度context
         /// </summary>
-        public bool Init(JobMeta config = null)
+        public bool Init(JobMeta? config = null)
         {
             var properties = new NameValueCollection
             {
@@ -44,7 +44,7 @@ namespace Schedule
             else
             {
                 //加载配置文件，并且运行状态为open的任务
-                var allJobs = Ioc.Instance.ServiceProvider.GetServices<IJobCtrl>().ToList();
+                var allJobs = Ioc.GetServices<IJobCtrl>().ToList();
                 ScheduleModConfig.Instance.Jobs = new List<JobMeta>(allJobs.Count());
                 var sc = new ScheduleCtrl();
                 var cacheJobs = sc.GetBGJobInfo();

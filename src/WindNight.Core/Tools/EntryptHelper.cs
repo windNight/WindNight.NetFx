@@ -11,7 +11,7 @@ namespace System.Security.Cryptography.Extensions
         /// <param name="text"></param>
         /// <param name="encoding"> default is  Encoding.UTF8</param>
         /// <returns></returns>
-        public static string Md5Encrypt(this string text, Encoding encoding = null)
+        public static string Md5Encrypt(this string text, Encoding? encoding = null)
         {
             if (encoding == null) encoding = Encoding.UTF8;
             var bs = encoding.GetBytes(text);
@@ -39,7 +39,7 @@ namespace System.Security.Cryptography.Extensions
             return result.ToLower();
         }
 
-        public static string DoHmacSha1Sign(this string text, string signKey, Encoding encoding = null)
+        public static string DoHmacSha1Sign(this string text, string signKey, Encoding? encoding = null)
         {
             if (encoding == null)
                 encoding = Encoding.UTF8;
@@ -63,7 +63,7 @@ namespace System.Security.Cryptography.Extensions
         /// <returns></returns>
         public static string AesEncrypt(this string encryptString, string key, string iv,
             PaddingMode paddingMode = PaddingMode.Zeros, CipherMode cipherMode = CipherMode.CBC,
-            int keyLength = 16, int ivLength = 16, Encoding encoding = null
+            int keyLength = 16, int ivLength = 16, Encoding? encoding = null
             )
         {
             try
@@ -115,7 +115,7 @@ namespace System.Security.Cryptography.Extensions
         /// <returns></returns>
         public static string AesDecrypt(this string decryptString, string key, string iv,
             PaddingMode paddingMode = PaddingMode.Zeros, CipherMode cipherMode = CipherMode.CBC,
-            int keyLength = -1, int ivLength = -1, Encoding encoding = null)
+            int keyLength = -1, int ivLength = -1, Encoding? encoding = null)
         {
             try
             {

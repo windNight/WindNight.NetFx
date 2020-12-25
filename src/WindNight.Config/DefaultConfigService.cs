@@ -9,17 +9,17 @@ namespace WindNight.ConfigCenter.Extension
             return GetConnectionString(connKey, defaultValue, isThrow);
         }
 
-        public virtual string GetAppSetting(string configKey, string defaultValue = "", bool isThrow = false)
+        public new string GetAppSetting(string configKey, string defaultValue = "", bool isThrow = false)
         {
             return ConfigItemsBase.GetAppSetting(configKey, defaultValue, isThrow);
         }
 
-        public virtual int GetAppSetting(string configKey, int defaultValue = ZeroInt, bool isThrow = false)
+        public new int GetAppSetting(string configKey, int defaultValue = ZeroInt, bool isThrow = false)
         {
             return ConfigItemsBase.GetAppSetting(configKey, defaultValue, isThrow);
         }
 
-        public virtual bool GetAppSetting(string configKey, bool defaultValue = false, bool isThrow = false)
+        public new bool GetAppSetting(string configKey, bool defaultValue = false, bool isThrow = false)
         {
             return ConfigItemsBase.GetAppSetting(configKey, defaultValue, isThrow);
         }

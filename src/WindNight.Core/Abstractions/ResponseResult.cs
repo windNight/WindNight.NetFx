@@ -7,7 +7,7 @@
         public int Code { get; set; }
 
         /// <summary> 响应信息 </summary>
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 
     /// <summary>
@@ -17,7 +17,7 @@
     public class ResponseResult<T> : ResponseResult
     {
         /// <summary> </summary>
-        public ResponseResult() : this(default)
+        public ResponseResult() : this(default!)
         {
         }
 
@@ -50,7 +50,7 @@
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public virtual ResponseResult<T> SystemError(string message = null)
+        public virtual ResponseResult<T> SystemError(string? message = null)
         {
             return new ResponseResult<T>
             {
@@ -64,7 +64,7 @@
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public virtual ResponseResult<T> NotFound(string message = null)
+        public virtual ResponseResult<T> NotFound(string? message = null)
         {
             return new ResponseResult<T>
             {

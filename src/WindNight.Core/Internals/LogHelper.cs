@@ -14,14 +14,14 @@ namespace WindNight.Core.Internals
                 appendMessage: appendMessage);
         }
 
-        internal static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "",
+        internal static void Warn(string msg, Exception? exception = null, long millisecond = 0, string url = "",
             string serverIp = "", string clientIp = "", bool appendMessage = true)
         {
             Add(msg, LogLevels.Warning, exception, millisecond: millisecond, url: url, serverIp: serverIp,
                 clientIp: clientIp, appendMessage: appendMessage);
         }
 
-        internal static void Error(string msg, Exception exception, long millisecond = 0, string url = "",
+        internal static void Error(string msg, Exception? exception, long millisecond = 0, string url = "",
             string serverIp = "",
             string clientIp = "", bool appendMessage = true)
         {
@@ -29,7 +29,7 @@ namespace WindNight.Core.Internals
                 clientIp: clientIp, appendMessage: appendMessage);
         }
 
-        internal static void Fatal(string msg, Exception exception, long millisecond = 0, string url = "",
+        internal static void Fatal(string msg, Exception? exception, long millisecond = 0, string url = "",
             string serverIp = "", string clientIp = "", bool appendMessage = false)
         {
             Add(msg, LogLevels.Critical, exception, millisecond: millisecond, url: url, serverIp: serverIp,
@@ -47,7 +47,7 @@ namespace WindNight.Core.Internals
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>
-        public static void Add(string msg, LogLevels level, Exception errorStack = null, bool isTimeout = false,
+        public static void Add(string msg, LogLevels level, Exception? errorStack = null, bool isTimeout = false,
             long millisecond = 0,
             string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false)
         {

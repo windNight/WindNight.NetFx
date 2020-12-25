@@ -27,7 +27,7 @@ namespace WindNight.ConfigCenter.Extension
     internal class ConfigProvider
     {
 #if !NET45
-        private static IConfiguration _configuration;
+        private static IConfiguration? _configuration;
         public void SetConfiguration(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -246,7 +246,7 @@ namespace WindNight.ConfigCenter.Extension
 
         private Tuple<int, string, string> LoadAllConfig()
         {
-            Dictionary<string, string> dict = null;
+            Dictionary<string, string>? dict = null;
             // read file from project /Config *.json
             foreach (var file in Directory.GetFiles(ConfigPath).Where(m => CheckFileExtension(Path.GetExtension(m))))
             {
@@ -317,12 +317,14 @@ namespace WindNight.ConfigCenter.Extension
                     else if (item.Value is IList)
                     {
                         var asList = item.Value.To<List<AppSettingInfo>>();
-                        asList.ForEach(m => dict.Add(m.Key, m.Value));
+                        if (asList != null)
+                            asList.ForEach(m => dict.Add(m.Key, m.Value));
                     }
                     else
                     {
                         var aS = item.Value.To<AppSettingInfo>();
-                        dict.Add(aS.Key, aS.Value);
+                        if (aS != null)
+                            dict.Add(aS.Key, aS.Value);
                     }
                 }
 #endif
@@ -368,12 +370,14 @@ namespace WindNight.ConfigCenter.Extension
                     else if (item.Value is IList)
                     {
                         var asList = item.Value.To<List<ConnectionStringInfo>>();
-                        asList.ForEach(m => dict.Add(m.Key, m.Value));
+                        if (asList != null)
+                            asList.ForEach(m => dict.Add(m.Key, m.Value));
                     }
                     else
                     {
                         var aS = item.Value.To<ConnectionStringInfo>();
-                        dict.Add(aS.Key, aS.Value);
+                        if (aS != null)
+                            dict.Add(aS.Key, aS.Value);
                     }
                 }
 #endif

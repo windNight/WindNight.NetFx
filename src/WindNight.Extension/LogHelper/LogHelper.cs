@@ -10,7 +10,7 @@ namespace WindNight.LogExtension
 
         public delegate void PublishLogInfoEvent(LogInfo logInfo);
 
-        public static event PublishLogInfoEvent PublishLogInfoHandleEvent;
+        public static event PublishLogInfoEvent PublishLogInfoHandleEvent = null!;
 
         public static void RegisterProcessEvent(PublishLogInfoEvent publishLogInfoEvent)
         {
@@ -47,7 +47,7 @@ namespace WindNight.LogExtension
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>
-        public static void ApiUrlException(string url, string msg, Exception exception, string serverIp = "",
+        public static void ApiUrlException(string url, string msg, Exception? exception, string serverIp = "",
             string clientIp = "", bool appendMessage = true)
         {
             Add(msg, LogLevels.ApiUrlException, exception, url: url, serverIp: serverIp, clientIp: clientIp,
@@ -93,7 +93,7 @@ namespace WindNight.LogExtension
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>
-        public static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "",
+        public static void Warn(string msg, Exception? exception = null, long millisecond = 0, string url = "",
             string serverIp = "", string clientIp = "", bool appendMessage = true)
         {
             Add(msg, LogLevels.Warning, exception, millisecond: millisecond, url: url, serverIp: serverIp,
@@ -109,7 +109,7 @@ namespace WindNight.LogExtension
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>
-        public static void Error(string msg, Exception exception, long millisecond = 0, string url = "",
+        public static void Error(string msg, Exception? exception, long millisecond = 0, string url = "",
             string serverIp = "",
             string clientIp = "", bool appendMessage = true)
         {
@@ -126,7 +126,7 @@ namespace WindNight.LogExtension
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>
-        public static void Fatal(string msg, Exception exception, long millisecond = 0, string url = "",
+        public static void Fatal(string msg, Exception? exception, long millisecond = 0, string url = "",
             string serverIp = "", string clientIp = "", bool appendMessage = false)
         {
             Add(msg, LogLevels.Critical, exception, millisecond: millisecond, url: url, serverIp: serverIp,
@@ -149,7 +149,7 @@ namespace WindNight.LogExtension
         /// <param name="buildType"></param>
         /// <param name="exception"></param>
         /// <param name="appendMessage"></param>
-        public static void LogOfflineInfo(string buildType, Exception exception = null, bool appendMessage = false)
+        public static void LogOfflineInfo(string buildType, Exception? exception = null, bool appendMessage = false)
         {
             var sysInfo = GetSysInfo(buildType);
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
@@ -194,7 +194,7 @@ namespace WindNight.LogExtension
         /// <param name="exception"></param>
         /// <param name="appendMessage"></param>
         public static void LogOfflineInfo(string buildType, int appId, string appCode, string appName,
-            Exception exception = null, bool appendMessage = false)
+            Exception? exception = null, bool appendMessage = false)
         {
             var sysInfo = GetSysInfo(buildType);
             var msg = $"offline info is {sysInfo.ToJsonStr()}";

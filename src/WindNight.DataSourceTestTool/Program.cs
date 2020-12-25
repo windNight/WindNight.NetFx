@@ -17,6 +17,8 @@ namespace WindNight.DataSourceTestTool
             Application.Run(new DataSourceTestForm());
 
         }
+
+
     }
 
     public class StringUtility
@@ -31,5 +33,7 @@ namespace WindNight.DataSourceTestTool
             return s.ToLowerInvariant();
         }
     }
+
+
 
 }

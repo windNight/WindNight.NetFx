@@ -125,7 +125,7 @@ namespace System
             {
                 return dateTime.ToDateInt(format);
             }
-            catch (Exception ex)
+            catch// (Exception ex)
             {
                 return 19700101;
             }

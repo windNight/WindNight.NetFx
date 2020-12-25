@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Hosting.WnExtensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -15,6 +14,12 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 {
     public static class ProgramBase
     {
+        public static IHost CreateHostBuilder(Func<string, string[], IHostBuilder> createHostBuilder, Func<string> buildTypeFunc, string[] args)
+        {
+            var buildType = buildTypeFunc.Invoke();
+            return CreateHostBuilder(createHostBuilder, buildType, args);
+        }
+
         public static IHost CreateHostBuilder(Func<string, string[], IHostBuilder> createHostBuilder, string buildType, string[] args)
         {
             var hostBuilder = createHostBuilder.Invoke(buildType, args);
@@ -22,10 +27,18 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             return host;
         }
 
+        public static async Task InitAsync(Func<string, string[], IHostBuilder> createHostBuilder, Func<string> buildTypeFunc, string[] args)
+        {
+            var buildType = buildTypeFunc.Invoke();
+            await InitAsync(createHostBuilder, buildType, args);
+        }
+
         public static async Task InitAsync(Func<string, string[], IHostBuilder> createHostBuilder, string buildType, string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEventHandler;
+#pragma warning disable CS8622 // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
             TaskScheduler.UnobservedTaskException += UnobservedTaskHandler;
+#pragma warning restore CS8622 // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
             var host = CreateHostBuilder(createHostBuilder, buildType, args);
             // await host.InjectionRSAsync(buildType);
             await host.RunAsync();
@@ -33,10 +46,18 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             Thread.Sleep(1_000);
         }
 
+        public static void Init(Func<string, string[], IHostBuilder> createHostBuilder, Func<string> buildTypeFunc, string[] args)
+        {
+            var buildType = buildTypeFunc.Invoke();
+            Init(createHostBuilder, buildType, args);
+        }
+
         public static void Init(Func<string, string[], IHostBuilder> createHostBuilder, string buildType, string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEventHandler;
+#pragma warning disable CS8622 // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
             TaskScheduler.UnobservedTaskException += UnobservedTaskHandler;
+#pragma warning restore CS8622 // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
             var host = CreateHostBuilder(createHostBuilder, buildType, args);
             // host.InjectionRS(buildType);
             host.Run();
@@ -71,11 +92,11 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         ///         cref=" Microsoft.Extensions.Hosting.IHostBuilder.ConfigureServices(Action{HostBuilderContext, IServiceCollection})" />
         /// </param>
         /// <returns></returns>
-        public static IHostBuilder CreateHostBuilderDefaults(string buildType,
+        public static IHostBuilder? CreateHostBuilderDefaults(string buildType,
             Action<IConfigurationBuilder> appConfigurationConfigureDelegate,
             Action<IWebHostBuilder> webHostConfigure,
-            Action<ILoggingBuilder> configureLogging = null,
-            Action<HostBuilderContext, IServiceCollection> configureServicesDelegate = null)
+            Action<ILoggingBuilder>? configureLogging = null,
+            Action<HostBuilderContext, IServiceCollection>? configureServicesDelegate = null)
         {
             return CreateHostBuilderDefaults(buildType, null, appConfigurationConfigureDelegate, webHostConfigure,
                 configureLogging, configureServicesDelegate);
@@ -109,19 +130,19 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         ///         cref=" Microsoft.Extensions.Hosting.IHostBuilder.ConfigureServices(Action{HostBuilderContext, IServiceCollection})" />
         /// </param>
         /// <returns></returns>
-        public static IHostBuilder CreateHostBuilderDefaults(string buildType, string[] args,
+        public static IHostBuilder? CreateHostBuilderDefaults(string buildType, string[]? args,
             Action<IConfigurationBuilder> appConfigurationConfigureDelegate,
             Action<IWebHostBuilder> webHostConfigure,
-            Action<ILoggingBuilder> configureLogging = null,
-            Action<HostBuilderContext, IServiceCollection> configureServicesDelegate = null)
+            Action<ILoggingBuilder>? configureLogging = null,
+            Action<HostBuilderContext, IServiceCollection>? configureServicesDelegate = null)
         {
-            return Host.CreateDefaultBuilder(args)
+            return Host.CreateDefaultBuilder(args)?
                 .ConfigureAppConfigurationDefaults(configBuilder =>
                 {
                     appConfigurationConfigureDelegate?.Invoke(configBuilder);
-                })
-                .ConfigureLoggingDefaults(configureLogging)
-                .ConfigureServiceDefaults(buildType, configureServicesDelegate)
+                })?
+                .ConfigureLoggingDefaults(configureLogging)?
+                .ConfigureServiceDefaults(buildType, configureServicesDelegate)?
                 .ConfigureWebHostDefaults(webBuilder => { webHostConfigure?.Invoke(webBuilder); });
         }
 
@@ -146,10 +167,10 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         ///         cref=" Microsoft.Extensions.Hosting.IHostBuilder.ConfigureServices(Action{HostBuilderContext, IServiceCollection})" />
         /// </param>
         /// <returns></returns>
-        public static IHostBuilder CreateHostBuilderDefaults(string buildType,
+        public static IHostBuilder? CreateHostBuilderDefaults(string buildType,
             Action<IConfigurationBuilder> appConfigurationConfigureDelegate,
-            Action<ILoggingBuilder> configureLogging = null,
-            Action<HostBuilderContext, IServiceCollection> configureServicesDelegate = null)
+            Action<ILoggingBuilder>? configureLogging = null,
+            Action<HostBuilderContext, IServiceCollection>? configureServicesDelegate = null)
         {
             return CreateHostBuilderDefaults(buildType, null, appConfigurationConfigureDelegate, configureLogging, configureServicesDelegate);
         }
@@ -177,19 +198,19 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         ///         cref=" Microsoft.Extensions.Hosting.IHostBuilder.ConfigureServices(Action{HostBuilderContext, IServiceCollection})" />
         /// </param>
         /// <returns></returns>
-        public static IHostBuilder CreateHostBuilderDefaults(string buildType, string[] args,
+        public static IHostBuilder? CreateHostBuilderDefaults(string buildType, string[]? args,
             Action<IConfigurationBuilder> appConfigurationConfigureDelegate,
-            Action<ILoggingBuilder> configureLogging = null,
-            Action<HostBuilderContext, IServiceCollection> configureServicesDelegate = null)
+            Action<ILoggingBuilder>? configureLogging = null,
+            Action<HostBuilderContext, IServiceCollection>? configureServicesDelegate = null)
         {
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfigurationDefaults(configBuilder =>
-                {
-                    appConfigurationConfigureDelegate?.Invoke(configBuilder);
-                })
-                .ConfigureLoggingDefaults(configureLogging)
-                .ConfigureServiceDefaults(buildType, configureServicesDelegate)
-                 ;
+            return Host.CreateDefaultBuilder(args)?
+                    .ConfigureAppConfigurationDefaults(configBuilder =>
+                    {
+                        appConfigurationConfigureDelegate?.Invoke(configBuilder);
+                    })?
+                    .ConfigureLoggingDefaults(configureLogging)?
+                    .ConfigureServiceDefaults(buildType, configureServicesDelegate)
+                ;
         }
 
         public static void UnobservedTaskHandler(object sender, UnobservedTaskExceptionEventArgs e)
@@ -216,7 +237,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         ///     to construct the <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" /> for the host.
         /// </param>
         /// <returns>The same instance of the <see cref="T:Microsoft.Extensions.Hosting.IHostBuilder" /> for chaining.</returns>
-        public static IHostBuilder ConfigureAppConfigurationDefaults(
+        public static IHostBuilder? ConfigureAppConfigurationDefaults(
             this IHostBuilder hostBuilder,
             Action<IConfigurationBuilder> configureDelegate)
         {
@@ -237,8 +258,8 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         ///     <see cref="T:Microsoft.Extensions.Logging.ILoggingBuilder" />.
         /// </param>
         /// <returns>The same instance of the <see cref="T:Microsoft.Extensions.Hosting.IHostBuilder" /> for chaining.</returns>
-        public static IHostBuilder ConfigureLoggingDefaults(this IHostBuilder hostBuilder,
-            Action<ILoggingBuilder> configureLogging = null)
+        public static IHostBuilder? ConfigureLoggingDefaults(this IHostBuilder hostBuilder,
+            Action<ILoggingBuilder>? configureLogging = null)
         {
             return hostBuilder?.ConfigureLogging(loggerBuilder =>
             {
@@ -262,8 +283,8 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         ///     to construct the <see cref="T:System.IServiceProvider" />.
         /// </param>
         /// <returns>The same instance of the <see cref="T:Microsoft.Extensions.Hosting.IHostBuilder" /> for chaining.</returns>
-        public static IHostBuilder ConfigureServiceDefaults(this IHostBuilder hostBuilder, string buildType,
-            Action<HostBuilderContext, IServiceCollection> configureDelegate = null)
+        public static IHostBuilder? ConfigureServiceDefaults(this IHostBuilder hostBuilder, string buildType,
+            Action<HostBuilderContext, IServiceCollection>? configureDelegate = null)
         {
             return hostBuilder?.ConfigureServices((context, services) =>
             {

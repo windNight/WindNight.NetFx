@@ -12,7 +12,7 @@ namespace Schedule.Func
         /// <param name="name"></param>
         /// <param name="group"></param>
         /// <returns></returns>
-        public static JobKey GenJobKey(string name, string group = "")
+        public static JobKey GenJobKey(string name, string? group = "")
         {
             return new JobKey($"{name}_running_jkey",
                 string.IsNullOrEmpty(group) ? $"{name}_jgroup" : group);
@@ -24,7 +24,7 @@ namespace Schedule.Func
         /// <param name="name"></param>
         /// <param name="group"></param>
         /// <returns></returns>
-        public static TriggerKey GenTriggerKey(string name, string group = "")
+        public static TriggerKey GenTriggerKey(string name, string? group = "")
         {
             return new TriggerKey($"{name}_running_tkey",
                 string.IsNullOrEmpty(group) ? $"{name}_tgroup" : group);
@@ -37,7 +37,7 @@ namespace Schedule.Func
         /// <returns></returns>
         public static string GenListenerName(string name)
         {
-            return string.Format("{0}_running_lname", name);
+            return $"{name}_running_lname";
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Schedule.Func
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static JobMeta StringToJobMeta(string str)
+        public static JobMeta? StringToJobMeta(string str)
         {
             return str.To<JobMeta>();
         }

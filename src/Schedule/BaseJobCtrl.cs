@@ -79,7 +79,7 @@ namespace Schedule
             {
                 JobId = string.Empty,
                 Group = string.Empty,
-                RunParams = string.Empty,
+                RunParams = jobMeta.RunParams,
                 JobName = jobMeta.JobName,
                 JobCode = jobMeta.JobCode,
                 Title = jobMeta.Title,
@@ -106,7 +106,7 @@ namespace Schedule
             return new TriggerKey($"{JobCode}_trigger", $"{JobCode}_group");
         }
 
-        private ITrigger GenTrigger(TriggerKey triggerKey, DateTime startTime, uint interval, string cronExpression,
+        private ITrigger? GenTrigger(TriggerKey triggerKey, DateTime startTime, uint interval, string cronExpression,
             bool onceJob = false)
         {
             if (onceJob && startTime != default)

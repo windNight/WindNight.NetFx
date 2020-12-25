@@ -7,7 +7,7 @@ namespace WindNight.LogExtension
     /// <inheritdoc />
     public class DefaultLogService : ILogService
     {
-        public void AddLog(LogLevels logLevel, string msg, Exception exception = null, long millisecond = 0,
+        public void AddLog(LogLevels logLevel, string msg, Exception? exception = null, long millisecond = 0,
             string url = "",
             string serverIp = "", string clientIp = "", bool appendMessage = true)
         {
@@ -46,14 +46,14 @@ namespace WindNight.LogExtension
             }
         }
 
-        public void Error(string msg, Exception exception, long millisecond = 0, string url = "", string serverIp = "",
+        public void Error(string msg, Exception? exception, long millisecond = 0, string url = "", string serverIp = "",
             string clientIp = "", bool appendMessage = true)
         {
             AddLog(LogLevels.Error, msg, exception, millisecond, url,
                 serverIp, clientIp, appendMessage);
         }
 
-        public void Fatal(string msg, Exception exception, long millisecond = 0, string url = "", string serverIp = "",
+        public void Fatal(string msg, Exception? exception, long millisecond = 0, string url = "", string serverIp = "",
             string clientIp = "", bool appendMessage = false)
         {
             AddLog(LogLevels.Critical, msg, exception, millisecond, url,
@@ -67,7 +67,7 @@ namespace WindNight.LogExtension
                 serverIp, clientIp, appendMessage);
         }
 
-        public void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "",
+        public void Warn(string msg, Exception? exception = null, long millisecond = 0, string url = "",
             string serverIp = "",
             string clientIp = "", bool appendMessage = true)
         {
@@ -95,7 +95,7 @@ namespace WindNight.LogExtension
         }
 
 
-        public void Offline(string buildType, Exception exception = null, bool appendMessage = false)
+        public void Offline(string buildType, Exception? exception = null, bool appendMessage = false)
         {
             LogHelper.LogOfflineInfo(buildType, exception);
         }

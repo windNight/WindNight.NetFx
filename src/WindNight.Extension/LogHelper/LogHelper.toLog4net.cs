@@ -10,10 +10,10 @@ namespace WindNight.LogExtension
     public static partial class LogHelper
     {
         private static readonly object lockHelper = new object();
-        private static ILog _log;
+        private static ILog? _log;
 
 
-        private static ILog DefaultLog
+        private static ILog? DefaultLog
         {
             get
             {
@@ -33,9 +33,9 @@ namespace WindNight.LogExtension
             try
             {
                 if (ConfigItems.Log4netOpen)
-                { 
+                {
                     CheckLog4netConfigPath();
-                    var fileInfo = new FileInfo(Log4netConfigPath);
+                    var fileInfo = new FileInfo(Log4NetConfigPath);
                     if (!fileInfo.Exists)
                         CreateConfigFile(fileInfo);
                     var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
@@ -50,21 +50,21 @@ namespace WindNight.LogExtension
             }
         }
 
-        private static string Log4netConfigDir => Path.GetDirectoryName(Log4netConfigPath);
+        private static string Log4NetConfigDir => Path.GetDirectoryName(Log4NetConfigPath);
 
-        private static string Log4netConfigPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+        private static string Log4NetConfigPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
             ConfigItems.Log4netConfigPath.TrimStart('/').Replace("/", "\\"));
 
         static void CheckLog4netConfigPath()
         {
             try
             {
-                if (!File.Exists(Log4netConfigPath))
+                if (!File.Exists(Log4NetConfigPath))
                 {
-                    if (!Directory.Exists(Log4netConfigDir))
-                        Directory.CreateDirectory(Log4netConfigDir);
-                    if (File.Exists(Log4netConfigPath)) return;
-                    using (var streamWriter = new StreamWriter(Log4netConfigPath, false))
+                    if (!Directory.Exists(Log4NetConfigDir))
+                        Directory.CreateDirectory(Log4NetConfigDir);
+                    if (File.Exists(Log4NetConfigPath)) return;
+                    using (var streamWriter = new StreamWriter(Log4NetConfigPath, false))
                     {
                         try
                         {
@@ -82,7 +82,7 @@ namespace WindNight.LogExtension
 
                 }
             }
-            catch (Exception ex)
+            catch// (Exception ex)
             {
 
             }
@@ -240,13 +240,13 @@ namespace WindNight.LogExtension
             }
         }
 
-        static void Log4NetPublish(LogInfo logInfo)
+        static void Log4NetPublish(LogInfo? logInfo)
         {
             if (logInfo == null) return;
             Log(logInfo.Level, logInfo.Content, logInfo.Exceptions);
         }
 
-        private static void Log(LogLevels level, string message, Exception logException = null)
+        private static void Log(LogLevels level, string? message, Exception? logException = null)
         {
             try
             {

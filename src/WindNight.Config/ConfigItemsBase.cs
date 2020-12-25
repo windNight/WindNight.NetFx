@@ -17,10 +17,10 @@ namespace WindNight.ConfigCenter.Extension
         /// </summary>
         /// <param name="sleepTimeInMs"> default is 5000 ms </param>
         /// <param name="logService">   </param>
-        /// <param name="configuration">   </param>
-        public static void StartConfigCenter(int sleepTimeInMs = 5 * 1000, ILogService logService = null
+        /// <param name="configuration"></param>
+        static void StartConfigCenter(int sleepTimeInMs = 5 * 1000, ILogService? logService = null
 #if !NET45
-            , IConfiguration configuration = null
+            , IConfiguration? configuration = null
 #endif
         )
         {
@@ -190,8 +190,10 @@ namespace WindNight.ConfigCenter.Extension
         {
             var configValue = GetJsonConfig(fileKey, defaultValue, isThrow);
 
-            if (string.IsNullOrEmpty(configValue)) return default(T);
+#pragma warning disable CS8603 // 可能的 null 引用返回。
+            if (string.IsNullOrEmpty(configValue)) return default;
             return configValue.To<T>();
+#pragma warning restore CS8603 // 可能的 null 引用返回。
         }
 
         #endregion //end Json Config 

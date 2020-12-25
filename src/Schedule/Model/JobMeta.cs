@@ -33,7 +33,7 @@ namespace Schedule.Model
         /// <summary>
         ///     job描述
         /// </summary>
-        public string Description { set; get; }
+        public string? Description { set; get; }
 
         /// <summary>
         ///     job开始时间

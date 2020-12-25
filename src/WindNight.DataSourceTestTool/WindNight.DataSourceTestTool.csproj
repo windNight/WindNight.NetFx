@@ -15,6 +15,7 @@
 
 	<ItemGroup>
 		<!--<Reference Include="System.Data.SqlClient" />-->
+		<!--<PackageReference Include="Microsoft.Owin.Hosting" Version="4.1.1" />-->
 		<PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
 		<PackageReference Include="MongoDB.Driver" Version="2.9.1" />

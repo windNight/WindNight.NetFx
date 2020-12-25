@@ -15,7 +15,7 @@ namespace WindNight.Core.Abstractions
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>
-        void AddLog(LogLevels logLevel, string msg, Exception exception = null, long millisecond = 0, string url = "",
+        void AddLog(LogLevels logLevel, string msg, Exception? exception = null, long millisecond = 0, string url = "",
             string serverIp = "", string clientIp = "", bool appendMessage = true);
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace WindNight.Core.Abstractions
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>
-        void Error(string msg, Exception exception, long millisecond = 0, string url = "", string serverIp = "",
+        void Error(string msg, Exception? exception, long millisecond = 0, string url = "", string serverIp = "",
             string clientIp = "", bool appendMessage = true);
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace WindNight.Core.Abstractions
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>
-        void Fatal(string msg, Exception exception, long millisecond = 0, string url = "", string serverIp = "",
+        void Fatal(string msg, Exception? exception, long millisecond = 0, string url = "", string serverIp = "",
             string clientIp = "", bool appendMessage = false);
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace WindNight.Core.Abstractions
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>
-        void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "", string serverIp = "",
+        void Warn(string msg, Exception? exception = null, long millisecond = 0, string url = "", string serverIp = "",
             string clientIp = "", bool appendMessage = true);
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace WindNight.Core.Abstractions
         /// <param name="buildType"></param>
         /// <param name="exception"></param>
         /// <param name="appendMessage"></param>
-        void Offline(string buildType, Exception exception = null, bool appendMessage = false);
+        void Offline(string buildType, Exception? exception = null, bool appendMessage = false);
 
         void Report(JObject obj, string serialNumber = "");
     }

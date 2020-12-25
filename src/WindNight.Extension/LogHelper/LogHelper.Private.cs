@@ -10,7 +10,7 @@ namespace WindNight.LogExtension
 {
     public static partial class LogHelper
     {
-        public static void Add(string msg, LogLevels logLevel, Exception errorStack = null, bool isTimeout = false,
+        public static void Add(string msg, LogLevels logLevel, Exception? errorStack = null, bool isTimeout = false,
             long millisecond = 0,
             // [Maxlength(255)]
             string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false)
@@ -29,7 +29,7 @@ namespace WindNight.LogExtension
             }
         }
 
-        private static LogInfo GeneratorLogInfo(string msg, LogLevels level, Exception exceptions = null,
+        private static LogInfo GeneratorLogInfo(string msg, LogLevels level, Exception? exceptions = null,
             long millisecond = 0, string url = "", string serverIp = "", string clientIp = "",
             bool appendMessage = false)
         {
@@ -52,7 +52,7 @@ namespace WindNight.LogExtension
         }
         static string FixLogMessage(string msg) => string.Concat(ConfigItems.SystemAppName, $" [请求序列号：{CurrentItem.GetSerialNumber}]-0: ", msg);
 
-        private static void DoConsoleLog(LogLevels logLevel, string message, Exception exception = null)
+        private static void DoConsoleLog(LogLevels logLevel, string message, Exception? exception = null)
         {
             if (logLevel > LogLevels.Warning)
                 RecordLog.WriteLog($"日志记录异常:【{logLevel}】{message} Exception: {exception.ToJsonStr()}");
@@ -87,7 +87,7 @@ namespace WindNight.LogExtension
                 if (appendMessage && ConfigItems.IsAppendLogMessage)
                 {
                     var msg = logInfo.Content;
-                    msg = msg.AppendLogMessage();
+                    msg = msg?.AppendLogMessage();
                     logInfo.Content = msg;
                 }
 
