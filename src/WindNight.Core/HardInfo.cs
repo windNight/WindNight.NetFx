@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.Extension;
@@ -15,7 +16,10 @@ namespace System
 
         public static string? NodeCode { get; private set; }
 
-        public static string? NodeIpAddress { get; private set; }
+        public static string NodeIpAddress { get; private set; } = "";
+        public static bool IsUnix => OperatorSys == OperatorSys.Unix;
+        public static bool IsWindows => OperatorSys == OperatorSys.Windows;
+        public static bool IsMac => OperatorSys == OperatorSys.MacOSX;
 
         public static OperatorSys OperatorSys
         {
@@ -31,6 +35,8 @@ namespace System
                         operatorSys = OperatorSys.Unix;
                         break;
                     case PlatformID.Xbox:
+                        operatorSys = OperatorSys.Xbox;
+                        break;
                     case PlatformID.Win32NT:
                     case PlatformID.Win32S:
                     case PlatformID.Win32Windows:
@@ -48,13 +54,15 @@ namespace System
 
         public static void InitHardInfo(string nodeCode = "", string ip = "")
         {
-            if (string.IsNullOrEmpty(nodeCode))
+            if (string.IsNullOrEmpty(nodeCode) && string.IsNullOrEmpty(NodeCode))
                 nodeCode = GuidHelper.GenerateOrderNumber();
             if (string.IsNullOrEmpty(ip))
             {
                 ip = string.Join(",", GetLocalIps());
             }
-            NodeCode = nodeCode;
+            if (string.IsNullOrEmpty(NodeCode))
+                NodeCode = nodeCode;
+            // if (string.IsNullOrEmpty(NodeIpAddress) || NodeIpAddress == DefaultIp)
             NodeIpAddress = ip;
         }
 
@@ -62,7 +70,7 @@ namespace System
 
         public static string GetLocalIp()
         {
-            return GetLocalIps().FirstOrDefault();
+            return GetLocalIps().FirstOrDefault() ?? string.Empty;
         }
 
         /// <summary>
@@ -70,30 +78,41 @@ namespace System
         /// <returns></returns>
         public static IEnumerable<string> GetLocalIps()
         {
+            var validAddressFamilies = new List<AddressFamily>
+                {AddressFamily.InterNetwork, AddressFamily.InterNetworkV6};
             try
             {
-                var validAddressFamilies = new List<AddressFamily> { AddressFamily.InterNetwork, AddressFamily.InterNetworkV6 };
-                var unicastAddresses = NetworkInterface.GetAllNetworkInterfaces()?
+                if (!string.IsNullOrEmpty(NodeIpAddress)) return NodeIpAddress.Split(',');
+
+                var ipList = NetworkInterface.GetAllNetworkInterfaces()?
                     .Where(m => m.OperationalStatus == OperationalStatus.Up)?
-                    .Select(m => m.GetIPProperties().UnicastAddresses);
-
-                var ipList = (from unicastAddress in unicastAddresses
-                              from unicastIpAddress in unicastAddress
-                              where unicastIpAddress != null
-                              where unicastIpAddress.IsDnsEligible
-                              where validAddressFamilies.Contains(unicastIpAddress.Address.AddressFamily)
-                              select unicastIpAddress.Address.ToString()).ToList();
-
+                    .SelectMany(m => m.GetIPProperties().UnicastAddresses)
+                    ?.Where(m => validAddressFamilies.Contains(m.Address.AddressFamily) && IPAddress.IsLoopback(m.Address) && IsUnix ? true : m.IsDnsEligible)
+                    ?.Select(m => m.Address.ToString())
+                    ?.ToList() ?? new List<string>();
                 if (!ipList.Any())
                 {
                     ipList.Add(DefaultIp);
                 }
                 return ipList;
             }
+            catch (PlatformNotSupportedException ex)
+            {
+                // UnixUnicastIPAddressInformation 未实现 IsDnsEligible.get
+                LogHelper.Warn($"OperatorSys is {OperatorSys} handler error {nameof(PlatformNotSupportedException)} : {ex.Message}", ex, appendMessage: false);
+                return NetworkInterface.GetAllNetworkInterfaces()
+                    ?.Select(m => m.GetIPProperties())
+                    ?.SelectMany(m => m.UnicastAddresses)
+                    ?.Where(m =>
+                        validAddressFamilies.Contains(m.Address.AddressFamily) && IPAddress.IsLoopback(m.Address))
+                    ?.Select(m => m.Address.ToString())
+                    ?.ToList() ?? new List<string> { DefaultIp };
+
+            }
             catch (Exception ex)
             {
                 LogHelper.Error($"NetworkInterface handler error {ex.Message}", ex, appendMessage: false);
-                return new[] { DefaultIp };
+                return new List<string> { DefaultIp };
             }
         }
 
@@ -264,7 +283,7 @@ namespace System
             {
                 NodeCode = NodeCode,
                 NodeIpAddress = NodeIpAddress,
-                OperatorSys = OperatorSys
+                OperatorSys = OperatorSys,
             }.ToJsonStr();
 
     }
