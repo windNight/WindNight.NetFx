@@ -237,10 +237,33 @@ namespace Schedule.Func
         /// <returns></returns>
         public static bool GetIsDoNotice(this IJobExecutionContext context)
         {
-            return context.JobDetail.JobDataMap.ContainsKey("isDoNotice")
-                ? bool.Parse(context.JobDetail.JobDataMap["isDoNotice"].ToString())
-                : false;
+            return context.JobDetail.JobDataMap.ContainsKey("isDoNotice") && bool.Parse(context.JobDetail.JobDataMap["isDoNotice"].ToString());
         }
+
+        /// <summary>
+        ///     设置 job 被否决的原因
+        /// </summary>
+        /// <param name="jobDetail"></param>
+        /// <param name="reason"></param>
+        public static void SetVotedReason(this IJobDetail jobDetail, string reason)
+        {
+            if (!string.IsNullOrEmpty(reason))
+                jobDetail.JobDataMap.Add("vetoedReason", reason);
+        }
+
+        /// <summary>
+        ///     获取job 被否决的原因 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static string GetVotedReason(this IJobExecutionContext context)
+        {
+            return context.JobDetail.JobDataMap.ContainsKey("vetoedReason")
+                ? context.JobDetail.JobDataMap["vetoedReason"].ToString()
+                : string.Empty;
+        }
+
+
 
         public static void SetTempConfig(this IJobExecutionContext context, string key, object value)
         {

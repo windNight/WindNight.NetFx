@@ -6,17 +6,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!--<ProjectReference Include="..\..\WindNight.Config\WindNight.Config.csproj" />
-		<ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
+		<ProjectReference Include="..\..\WindNight.Config\WindNight.Config.csproj" />
+		<!--<ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
 		<ProjectReference Include="..\..\WindNight.Extension\WindNight.Extension.csproj" />-->
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="WindNight.Config" Version="1.0.3.1" />
+		<!--<PackageReference Include="WindNight.Config" Version="1.0.3.2" />-->
 		<!--<PackageReference Include="WindNight.Core" Version="1.0.3.1" />-->
-		<PackageReference Include="WindNight.Extension" Version="1.0.3.1" />
-		<PackageReference Include="WindNight.ParserIp.Ip2Region" Version="1.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.9" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.9" />
+		<PackageReference Include="WindNight.Extension" Version="1.0.3.2" />
+		<PackageReference Include="WindNight.ParserIp.Ip2Region" Version="1.0.1.1" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+		<!--<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />-->
 		<PackageReference Include="Phonedata_NetCore" Version="1.0.0" />
 	</ItemGroup>
 </Project>

@@ -18,7 +18,7 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="sleepTimeInMs"> default is 5000 ms </param>
         /// <param name="logService">   </param>
         /// <param name="configuration"></param>
-        static void StartConfigCenter(int sleepTimeInMs = 5 * 1000, ILogService? logService = null
+        protected static void StartConfigCenter(int sleepTimeInMs = 5 * 1000, ILogService? logService = null
 #if !NET45
             , IConfiguration? configuration = null
 #endif
@@ -43,7 +43,7 @@ namespace WindNight.ConfigCenter.Extension
             ConfigProvider.Instance.Stop();
         }
 
-        public static void ReInitConfigCenter()
+        protected static void ReInitConfigCenter()
         {
             ConfigProvider.Instance.ReInit();
         }

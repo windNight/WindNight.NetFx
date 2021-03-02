@@ -1,21 +1,23 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core.Abstractions;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions
 {
     public class DefaultConfigService : IConfigService
     {
-        private readonly IConfiguration _configuration;
+     //   private readonly IConfiguration _configuration;
+        public IConfiguration Configuration => Ioc.GetService<IConfiguration>();
 
-        public DefaultConfigService(IConfiguration configuration)
+        public DefaultConfigService( )
         {
-            _configuration = configuration;
+           // _configuration = configuration;
         }
 
         T GetConfig<T>(string configKey, T defaultValue = default(T), bool isThrow = true)
         {
-            if (_configuration == null)
+            if (Configuration == null)
             {
                 if (isThrow)
                 {
@@ -26,7 +28,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
             }
             try
             {
-                var configValue = _configuration.GetSection(configKey).Get<T>();
+                var configValue = Configuration.GetSection(configKey).Get<T>();
                 return configValue;
             }
             catch (Exception e)
@@ -43,7 +45,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
         string GetConnectionString(string configKey, string defaultValue = "", bool isThrow = true)
         {
-            if (_configuration == null)
+            if (Configuration == null)
             {
                 if (isThrow)
                 {
@@ -54,7 +56,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
             }
             try
             {
-                var configValue = _configuration.GetConnectionString(configKey);
+                var configValue = Configuration.GetConnectionString(configKey);
                 return configValue;
             }
             catch (Exception e)

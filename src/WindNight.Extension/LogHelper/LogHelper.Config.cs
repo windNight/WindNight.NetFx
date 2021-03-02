@@ -30,16 +30,16 @@ namespace WindNight.LogExtension
 
             /// <summary> 服务编号： </summary>
             internal static int SystemAppId
-                => configService?.GetAppSetting(ConstKeys.AppIdKey, ZeroInt)
+                => configService?.GetAppSetting(ConstKeys.AppIdKey, ZeroInt, false)
                    ?? ZeroInt;
 
             /// <summary> 服务代号： </summary>
             internal static string SystemAppCode
-                => configService?.GetAppSetting(ConstKeys.AppCodeKey, "") ?? "";
+                => configService?.GetAppSetting(ConstKeys.AppCodeKey, "", false) ?? "";
 
             /// <summary> 服务名称： </summary>
             internal static string SystemAppName
-                => configService?.GetAppSetting(ConstKeys.AppNameKey, "") ?? "";
+                => configService?.GetAppSetting(ConstKeys.AppNameKey, "", false) ?? "";
 
             internal static class ConstKeys
             {

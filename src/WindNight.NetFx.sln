@@ -26,6 +26,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resource", "resource", "{F13DE86C-E85B-4369-832B-A19E659B01E3}"
 	ProjectSection(SolutionItems) = preProject
 		..\build\common.props = ..\build\common.props
+		..\ReadMe.md = ..\ReadMe.md
 		..\build\version.props = ..\build\version.props
 	EndProjectSection
 EndProject
@@ -52,6 +53,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.DataSourceTestTool", "WindNight.DataSourceTestTool\WindNight.DataSourceTestTool.csproj", "{23EB0CBC-F92D-4273-9467-AEB80EDFC936}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{0B1D54C0-2992-48D7-BD2C-6088263B3F04}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CB0A9B88-CADA-46AE-963B-826CD6FC0EAC}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

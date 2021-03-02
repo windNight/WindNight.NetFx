@@ -14,7 +14,7 @@ using WindNight.Core.Abstractions;
 namespace JobDemos
 {
     class Program
-    { 
+    {
         static void Main(string[] args)
         {
             var jsonConfig = GetCustomConfig();

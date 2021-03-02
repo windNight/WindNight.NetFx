@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS8603: 可能的 null 引用返回。
+dotnet_diagnostic.CS8603.severity = none

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Extension;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Schedule.Abstractions;
 using Schedule.Attributes;
@@ -123,7 +124,7 @@ namespace Schedule.Ctrl
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public JobActionRetEnum StopJob(string name)
+        public async Task<JobActionRetEnum> StopJobAsync(string name)
         {
             var jobParams = ScheduleModConfig.Instance.Jobs == null
                 ? null
@@ -140,7 +141,7 @@ namespace Schedule.Ctrl
             //移除job, trigger listener and job self and its trigger
             return ScheduleModConfig.Instance.DefaultScheduler.ListenerManager.RemoveJobListener(listenerName) &&
                    ScheduleModConfig.Instance.DefaultScheduler.ListenerManager.RemoveTriggerListener(listenerName) &&
-                   ScheduleModConfig.Instance.DefaultScheduler.DeleteJob(jobKey).GetAwaiter().GetResult()
+                await ScheduleModConfig.Instance.DefaultScheduler.DeleteJob(jobKey)
                 ? JobActionRetEnum.Success
                 : JobActionRetEnum.Failed;
         }

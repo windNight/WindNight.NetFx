@@ -43,6 +43,7 @@ namespace Schedule
         protected bool IsDoNotice { get; private set; } = true;
 
         protected JobBaseInfo JobBaseInfo => new JobBaseInfo { JobCode = JobCode, JobId = JobId, JobName = JobName };
+
         /// <summary>
         ///     Get the name of the Quartz.IJobListener and the Quartz.ITriggerListener.
         /// </summary>
@@ -56,9 +57,6 @@ namespace Schedule
         {
             __listenerName = name;
         }
-
-
-
 
         #region ITriggerListener
 
@@ -88,16 +86,6 @@ namespace Schedule
             await Task.CompletedTask;
         }
 
-        async Task DoNoticeAsync(string message, string extendInfo = "")
-        {
-            if (_scheduleNotice != null && IsDoNotice)
-            {
-                await _scheduleNotice.DoNoticeAsync(JobBaseInfo, $"{message}{(string.IsNullOrEmpty(extendInfo) ? "" : $"\n\n{extendInfo}")}");
-            }
-
-
-            await Task.CompletedTask;
-        }
         /// <summary>
         ///     Scheduler 调用这个方法是在 Trigger 错过触发时。如这个方法的 JavaDoc 所指出的，你应该关注此方法中持续时间长的逻辑：在出现许多错过触发的 Trigger
         ///     时，长逻辑会导致骨牌效应。你应当保持这上方法尽量的小。
@@ -191,14 +179,9 @@ namespace Schedule
 
             if (!isContinueRun)
             {
-                //BusinessLog.Write(origJobName + "未满足运行条件", "jobrun", "jobrun");
-#if DEBUG
-                Console.WriteLine(origJobName + "未满足运行条件");
-#endif
+                Debug(nameof(ITriggerListener), origJobName + "未满足运行条件");
                 // Do Notice
-
                 await DoNoticeAsync($"前置job：{depJobs} 未全部完成！ ");
-
                 return await Task.FromResult(true);
             }
 
@@ -207,7 +190,6 @@ namespace Schedule
 
         #endregion //end ITriggerListener
 
-        private string JobInfo => $"{JobName} ({JobCode}) :{JobId}";
         #region IJobListener
 
         /// <summary>
@@ -285,15 +267,17 @@ namespace Schedule
         public virtual async Task JobExecutionVetoed(IJobExecutionContext context,
             CancellationToken cancellationToken = default)
         {
+            //TODO Add Notice 
             Debug(nameof(IJobListener), nameof(JobExecutionVetoed));
             await Task.CompletedTask;
             //return Task.FromResult(true);
         }
 
-        void Debug(string interfaceName, string actionName)
+        protected void Debug(string interfaceName, string actionName)
         {
             JobLogHelper.Debug($"{JobInfo}:{actionName}:{interfaceName}:NowTicks({DateTime.Now.Ticks})", actionName);
         }
+
         /// <summary>
         ///     Job完成后调用
         ///     Called by the Quartz.IScheduler after a Quartz.IJobDetail has been executed,
@@ -324,7 +308,7 @@ namespace Schedule
                 // OnceJob not support now 
                 if (context.IsOnceJob())
                 {
-                    var delJobRet = new ScheduleCtrl().StopJob(jobName);
+                    var delJobRet = await new ScheduleCtrl().StopJobAsync(jobName);
                     if (delJobRet != JobActionRetEnum.Success)
                         JobLogHelper.Error(
                             $"{JobInfo}:单次运行job结束后删除job失败，job ：{JobContext.CurrentJobBaseInfo}，返回结果：{delJobRet }", null, nameof(JobWasExecuted));
@@ -379,8 +363,7 @@ namespace Schedule
             {
                 var autoClose = JobContextFunc.GetAutoClose(context);
                 if (autoClose)
-                    // TODO 通知注册中心下线
-                    //Ioc.GetService<ISysConfig>().OffLineSignId(SignName);
+                    // TODO 通知注册中心下线 
                     Environment.Exit(retCode);
             }
 
@@ -390,6 +373,7 @@ namespace Schedule
 
         #endregion //end IJobListener
 
+        protected string JobInfo => $"{JobName} ({JobCode}) :{JobId}";
 
         /// <summary>
         ///     等待job结束
@@ -423,7 +407,7 @@ namespace Schedule
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private void SetJobId(IJobExecutionContext context)
+        protected void SetJobId(IJobExecutionContext context)
         {
             var jobId = GuidHelper.GetGuid();
             context.JobDetail.SetJobDbId(jobId);
@@ -433,6 +417,19 @@ namespace Schedule
             IsDoNotice = context.GetIsDoNotice();
             JobContext.SetCurrentJobBaseInfo(JobId, JobCode, JobName);
         }
+
+        protected async Task DoNoticeAsync(string message, string extendInfo = "")
+        {
+            if (_scheduleNotice != null && IsDoNotice)
+            {
+                await _scheduleNotice.DoNoticeAsync(JobBaseInfo, $"{message}{(string.IsNullOrEmpty(extendInfo) ? "" : $"\n\n{extendInfo}")}");
+            }
+
+            await Task.CompletedTask;
+        }
+
+
+
 
     }
 }

@@ -7,23 +7,33 @@ namespace Schedule
 
         public static void Debug(string message, string actionName = "")
         {
-            LogHelper.Debug($"{JobContext.CurrentJobBaseInfo}: {message}", url: $"{JobContext.JobCode}:{actionName}");
+            LogHelper.Debug($"{JobContext.CurrentJobBaseInfo}: {message}", url: FixActionName(actionName));
         }
         public static void Info(string message, string actionName = "")
         {
-            LogHelper.Info($"{JobContext.CurrentJobBaseInfo}: {message}", url: $"{JobContext.JobCode}:{actionName}");
+            LogHelper.Info($"{JobContext.CurrentJobBaseInfo}: {message}", url: FixActionName(actionName));
         }
 
         public static void Warn(string message, Exception ex, string actionName = "")
         {
-            LogHelper.Warn($"{JobContext.CurrentJobBaseInfo}: {message}", ex, url: $"{JobContext.JobCode}:{actionName}");
+            LogHelper.Warn($"{JobContext.CurrentJobBaseInfo}: {message}", ex, url: FixActionName(actionName));
         }
 
         public static void Error(string message, Exception ex, string actionName = "")
         {
-            LogHelper.Error($"{JobContext.CurrentJobBaseInfo}: {message}", ex, url: $"{JobContext.JobCode}:{actionName}");
+            LogHelper.Error($"{JobContext.CurrentJobBaseInfo}: {message}", ex, url: FixActionName(actionName));
         }
 
+        static string FixActionName(string actionName = "")
+        {
+            var jobCode = JobContext.JobCode;
+            if (!string.IsNullOrEmpty(jobCode))
+            {
+                return $"{jobCode}:{actionName}";
+            }
+
+            return actionName;
+        }
 
     }
 }

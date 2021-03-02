@@ -1,9 +1,17 @@
 ﻿using WindNight.Core.Abstractions;
+#if !NET45
+using Microsoft.Extensions.DependencyInjection.WnExtension;
+using Microsoft.Extensions.Configuration;
+#endif
 
 namespace WindNight.ConfigCenter.Extension
 {
     public class DefaultConfigService : ConfigItemsBase, IConfigService
     {
+#if !NET45
+        public IConfiguration Configuration => Ioc.GetService<IConfiguration>();
+#endif
+
         public virtual string GetConnString(string connKey, string defaultValue = "", bool isThrow = false)
         {
             return GetConnectionString(connKey, defaultValue, isThrow);

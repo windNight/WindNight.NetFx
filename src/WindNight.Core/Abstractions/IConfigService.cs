@@ -1,9 +1,16 @@
-﻿namespace WindNight.Core.Abstractions
+﻿#if !NET45
+using Microsoft.Extensions.Configuration;
+#endif
+namespace WindNight.Core.Abstractions
 {
     /// <summary>
     /// </summary>
     public interface IConfigService
     {
+#if !NET45
+        IConfiguration Configuration { get; }
+#endif
+
         /// <summary>
         /// </summary>
         /// <param name="connKey"></param>

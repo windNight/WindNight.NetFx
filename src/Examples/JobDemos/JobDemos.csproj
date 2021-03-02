@@ -14,7 +14,7 @@
 		<!--<ProjectReference Include="..\..\Schedule\Schedule.csproj" />-->
 		<!--<ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />-->
 
-		<PackageReference Include="WindNight.Schedule" Version="1.0.3.1" />
+		<PackageReference Include="WindNight.Schedule" Version="1.0.3.2" />
 	</ItemGroup>
 
 </Project>

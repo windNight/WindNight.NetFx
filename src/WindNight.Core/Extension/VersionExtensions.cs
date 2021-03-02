@@ -4,10 +4,10 @@ namespace WindNight.Core.Extension
 {
     public static class VersionExtensions
     {
-        private const string MAX_VERSION = "99.99.9999999999";
-        public const long MAX_VERSION_NO = 99999999999999;
-        private const long VERSION_HX = 1000000000000;
-        private const string MaxVersionString = "*";
+        //private const string MAX_VERSION = "99.99.9999999999";
+        //public const long MAX_VERSION_NO = 99999999999999;
+        //private const long VERSION_HX = 1000000000000;
+        //private const string MaxVersionString = "*";
 
         /// <summary>
         /// </summary>
@@ -27,8 +27,8 @@ namespace WindNight.Core.Extension
 
         public static bool IsMax(this string version)
         {
-            return string.Equals(version, MaxVersionString, StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(version, MAX_VERSION, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(version, VersionStruct.AllVersion, StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(version, VersionStruct.MaxVersion, StringComparison.OrdinalIgnoreCase);
         }
 
         public static long Convert2Long(this string? version, long defaultVersion = 0L, bool isThrow = false)
@@ -43,7 +43,7 @@ namespace WindNight.Core.Extension
             try
             {
                 if (string.IsNullOrEmpty(version) || version == "0") return defaultVersion;
-                if (version.Trim() == "*") return MAX_VERSION_NO;
+                if (version.Trim() == "*") return VersionStruct.MaxVersionLong;
                 long.TryParse(version.Replace(".", ""), out var result);
                 if (result == 0L) return defaultVersion;
                 var strArray = version.Split('.');
@@ -66,8 +66,15 @@ namespace WindNight.Core.Extension
         }
     }
 
-    public class VersionStruct
+    public struct VersionStruct
     {
+        public const string AllVersion = "*";
+        public const string MaxVersion = "99.99.9999999999";
+        public const long MaxVersionLong = 99999999999999L;
+        public const string MinVersion = "1.0.0";
+        public const long MinVersionLong = 1000000000000;
+
+
         public string? Version { get; set; }
         public long VersionLong => Version.Convert2Long();
 
@@ -130,6 +137,7 @@ namespace WindNight.Core.Extension
             // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
             return base.GetHashCode();
         }
+        
 
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using WindNight.AspNetCore.Hosting.Internals;
 using WindNight.Core.Abstractions;
 using WindNight.LogExtension;
 
@@ -243,6 +244,9 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         {
             return hostBuilder?.ConfigureAppConfiguration(configBuilder =>
             {
+                configBuilder.SetBasePath(AppContext.BaseDirectory)
+                    .AddJsonFile("appsettings.json", false, true)
+                    .AddEnvironmentVariables();
                 configureDelegate?.Invoke(configBuilder);
             });
         }
@@ -296,6 +300,11 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                 services.TryAddSingleton(configuration);
                 configureDelegate?.Invoke(context, services);
                 Ioc.Instance.InitServiceProvider(services.BuildServiceProvider());
+                if (Ioc.GetService<IConfigService>() == null)
+                {
+                    services.AddSingleton<IConfigService, DefaultConfigService>();
+                    Ioc.Instance.InitServiceProvider(services.BuildServiceProvider());
+                }
                 LogHelper.LogRegisterInfo(buildType, false);
 
             });
