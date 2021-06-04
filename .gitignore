@@ -32,6 +32,8 @@ bld/
 [Dd]oc/
 [Pp]ublish
 [Tt]mp/
+[Oo]utput/
+
 # .nuget/
 # Visual Studio 2015 cache/options directory
 .vs/

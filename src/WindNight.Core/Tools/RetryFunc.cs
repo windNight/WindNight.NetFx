@@ -63,7 +63,7 @@ namespace WindNight.Core.Tools
                 #endregion //end try
             }
 
-            if (Equals(rlt, errorResult)) warnAction.KeepSafeAction();
+            if (Equals(rlt, errorResult)) warnAction?.KeepSafeAction();
 
             return rlt;
         }

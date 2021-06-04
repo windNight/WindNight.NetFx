@@ -14,7 +14,11 @@
 		<PackageTags>gRPC RPC HTTP/2 REST</PackageTags>
 		<IsPackable>true</IsPackable>
 		<IsShipping>true</IsShipping>
-		<NoWarn>$(NoWarn);CA2007</NoWarn>
+		<NoWarn>
+			$(NoWarn);CA2007;
+			CS8618;CS8619;CS8603;
+			NETSDK;NETSDK1138;
+		</NoWarn>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 

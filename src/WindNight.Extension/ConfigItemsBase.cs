@@ -152,7 +152,6 @@ namespace WindNight.NetCore.Extension
 
         /// <summary>
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="fileName"></param>
         /// <param name="defaultValue"></param>
         /// <param name="isThrow"></param>

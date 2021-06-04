@@ -10,16 +10,41 @@ using WindNight.Core.Internals;
 
 namespace System
 {
-    /// <summary>硬件信息</summary>
-    public class HardInfo
+    public partial class HardInfo
     {
+        public static DateTime FirstDayOfThisMonth => DateTime.Now.FirstDayOfMonth();
 
+        public static DateTime LastDayOfThisMonth => DateTime.Now.LastDayOfMonth();
+
+        public static DateTime FirstDayOfThisWeek => DateTime.Now.FirstDayOfWeek();
+
+        public static DateTime LastDayOfThisWeek => DateTime.Now.LastDayOfWeek();
+
+        public static DateTime FirstDayOfThisYear => DateTime.Now.FirstDayOfYear();
+
+        public static DateTime LastDayOfThisYear => DateTime.Now.LastDayOfYear();
+
+        public static int NowDateInt => DateTime.Now.ToDateInt();
+
+        public static long NowUnixTime => DateTime.Now.ConvertToUnixTime();
+
+        public static int NowYearInt => DateTime.Now.Year;
+
+        public static int NowMonthInt => DateTime.Now.TryToDateInt("yyyyMM");
+
+    }
+
+    /// <summary>硬件信息</summary>
+    public partial class HardInfo
+    {
         public static string? NodeCode { get; private set; }
 
         public static string NodeIpAddress { get; private set; } = "";
+
         public static bool IsUnix => OperatorSys == OperatorSys.Unix;
         public static bool IsWindows => OperatorSys == OperatorSys.Windows;
         public static bool IsMac => OperatorSys == OperatorSys.MacOSX;
+        public static bool IsXBox => OperatorSys == OperatorSys.XBox;
 
         public static OperatorSys OperatorSys
         {
@@ -35,7 +60,7 @@ namespace System
                         operatorSys = OperatorSys.Unix;
                         break;
                     case PlatformID.Xbox:
-                        operatorSys = OperatorSys.Xbox;
+                        operatorSys = OperatorSys.XBox;
                         break;
                     case PlatformID.Win32NT:
                     case PlatformID.Win32S:

@@ -11,7 +11,7 @@ namespace WindNight.Core.Tools
     public static class TimeWatcherHelper
     {
         private const int DefaultWarnMiSeconds = 100;
-        private static readonly string TimeWatcherIsOpenKey = "TimeWatcherIsOpen";
+        private const string TimeWatcherIsOpenKey = "TimeWatcherIsOpen";
 
         private static bool TimeWatcherIsOpen
         {
@@ -19,8 +19,18 @@ namespace WindNight.Core.Tools
             {
                 var configService = Ioc.GetService<IConfigService>();
                 if (configService == null) return false;
-                var configValue = configService.GetAppSetting(TimeWatcherIsOpenKey, "1", false);
-                return configValue == "1";
+                var configValue = configService.GetAppSetting(TimeWatcherIsOpenKey, false, false);
+                return configValue;
+            }
+        }
+        private static bool DebugIsOpen
+        {
+            get
+            {
+                var configService = Ioc.GetService<IConfigService>();
+                if (configService == null) return false;
+                var configValue = configService.GetAppSetting("DebugIsOpen", false, false);
+                return configValue;
             }
         }
 

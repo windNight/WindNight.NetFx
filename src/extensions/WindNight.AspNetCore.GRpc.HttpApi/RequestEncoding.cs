@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 
+#nullable enable
 namespace Microsoft.AspNetCore.GRpc.HttpApi
 {
     // Logic from https://github.com/dotnet/aspnetcore/blob/master/src/Mvc/Mvc.Core/src/Formatters/TextInputFormatter.cs

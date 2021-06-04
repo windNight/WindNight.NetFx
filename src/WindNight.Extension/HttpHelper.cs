@@ -5,11 +5,19 @@ using Newtonsoft.Json.Extension;
 using RestSharp;
 using WindNight.Core.Tools;
 using WindNight.Extension.Internals;
+using WindNight.NetCore.Extension;
 
 namespace WindNight.Extension
 {
     public static class HttpHelper
     {
+        class ConfigItems : ConfigItemsBase
+        {
+            public static bool DebugIsOpen => GetConfigValue("DebugIsOpen", false, false);
+
+        }
+
+
         /// <summary>
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -175,7 +183,8 @@ namespace WindNight.Extension
         {
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                LogHelper.Debug($" response.Content is {response.Content} ");
+                if (ConfigItems.DebugIsOpen)
+                    LogHelper.Debug($" response.Content is {response.Content} ", appendMessage: false);
                 return response.Content.To<T>();
             }
 

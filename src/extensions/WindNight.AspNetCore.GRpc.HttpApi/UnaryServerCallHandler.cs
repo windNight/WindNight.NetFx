@@ -62,7 +62,7 @@ namespace Microsoft.AspNetCore.GRpc.HttpApi
 
         public async Task HandleCallAsync(HttpContext httpContext)
         {
-          //  var requestMessage = await CreateMessage(httpContext.Request);
+            //  var requestMessage = await CreateMessage(httpContext.Request);
 
             var selectedEncoding = ResponseEncoding.SelectCharacterEncoding(httpContext.Request);
 
@@ -80,7 +80,7 @@ namespace Microsoft.AspNetCore.GRpc.HttpApi
             TResponse responseMessage;
             try
             {
-                responseMessage = await _unaryMethodInvoker.Invoke(httpContext, serverCallContext, (TRequest) requestMessage);
+                responseMessage = await _unaryMethodInvoker.Invoke(httpContext, serverCallContext, (TRequest)requestMessage);
             }
             catch (Exception ex)
             {
@@ -136,7 +136,7 @@ namespace Microsoft.AspNetCore.GRpc.HttpApi
                     request.Body.Seek(0L, SeekOrigin.Begin);
                 }
 
-                var encoding = RequestEncoding.SelectCharacterEncoding(request);
+                var encoding = RequestEncoding.SelectCharacterEncoding(request) ?? Encoding.UTF8;
                 // TODO: Handle unsupported encoding
 
                 using (var requestReader = new HttpRequestStreamReader(request.Body, encoding))
@@ -147,7 +147,7 @@ namespace Microsoft.AspNetCore.GRpc.HttpApi
 
                         if (_resolvedBodyFieldDescriptors!.Count > 0)
                         {
-                            requestMessage = (IMessage) Activator.CreateInstance<TRequest>();
+                            requestMessage = (IMessage)Activator.CreateInstance<TRequest>();
                             ServiceDescriptorHelpers.RecursiveSetValue(requestMessage, _resolvedBodyFieldDescriptors,
                                 containingMessage);
                         }
@@ -187,7 +187,7 @@ namespace Microsoft.AspNetCore.GRpc.HttpApi
             }
             else
             {
-                requestMessage = (IMessage) Activator.CreateInstance<TRequest>();
+                requestMessage = (IMessage)Activator.CreateInstance<TRequest>();
             }
 
             foreach (var parameterDescriptor in _routeParameterDescriptors)
@@ -237,10 +237,10 @@ namespace Microsoft.AspNetCore.GRpc.HttpApi
             // To get around this limitation a wrapping TextReader is created that inserts a wrapping
             // object into the JSON passed to the parser. The parser returns the containing message
             // with the repeated fields set on it.
-            var containingType = _bodyFieldDescriptors.Last()!.ContainingType;
+            var containingType = _bodyFieldDescriptors?.LastOrDefault()!.ContainingType;
 
             return JsonParser.Default.Parse(
-                new PropertyWrappingTextReader(requestReader, _bodyFieldDescriptors.Last().JsonName), containingType);
+                new PropertyWrappingTextReader(requestReader, _bodyFieldDescriptors?.LastOrDefault()?.JsonName), containingType);
         }
 
         private async Task SendResponse(HttpResponse response, Encoding encoding, TResponse message)
@@ -248,7 +248,7 @@ namespace Microsoft.AspNetCore.GRpc.HttpApi
             object responseBody = message;
 
             if (_responseBodyDescriptor != null)
-                responseBody = _responseBodyDescriptor.Accessor.GetValue((IMessage) responseBody);
+                responseBody = _responseBodyDescriptor.Accessor.GetValue((IMessage)responseBody);
 
             response.StatusCode = StatusCodes.Status200OK;
             response.ContentType = "application/json";
@@ -263,7 +263,7 @@ namespace Microsoft.AspNetCore.GRpc.HttpApi
             {
                 Error_ = message,
                 Message = message,
-                Code = (int) statusCode
+                Code = (int)statusCode
             };
 
             response.StatusCode = MapStatusCodeToHttpStatus(statusCode);

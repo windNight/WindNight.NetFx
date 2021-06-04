@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.Logging;
 using MethodOptions = GRpc.Shared.Server.MethodOptions;
 
+#nullable enable
 namespace Microsoft.AspNetCore.GRpc.HttpApi
 {
     internal class HttpApiProviderServiceBinder<TService> : ServiceBinderBase where TService : class
@@ -122,12 +123,12 @@ namespace Microsoft.AspNetCore.GRpc.HttpApi
 
                 var (invoker, metadata) = CreateModelCore<UnaryServerMethod<TService, TRequest, TResponse>>(
                     method.Name,
-                    new[] {typeof(TRequest), typeof(ServerCallContext)},
+                    new[] { typeof(TRequest), typeof(ServerCallContext) },
                     httpVerb,
                     httpRule,
                     methodDescriptor);
 
-                var methodContext = MethodOptions.Create(new[] {_globalOptions, _serviceOptions});
+                var methodContext = MethodOptions.Create(new[] { _globalOptions, _serviceOptions });
 
                 var routePattern = RoutePatternFactory.Parse(pattern);
                 var routeParameterDescriptors =
@@ -181,14 +182,14 @@ namespace Microsoft.AspNetCore.GRpc.HttpApi
             if (handlerMethod == null)
                 throw new InvalidOperationException($"Could not find '{methodName}' on {typeof(TService)}.");
 
-            var invoker = (TDelegate) Delegate.CreateDelegate(typeof(TDelegate), handlerMethod);
+            var invoker = (TDelegate)Delegate.CreateDelegate(typeof(TDelegate), handlerMethod);
 
             var metadata = new List<object>();
             // Add type metadata first so it has a lower priority
             metadata.AddRange(typeof(TService).GetCustomAttributes(true));
             // Add method metadata last so it has a higher priority
             metadata.AddRange(handlerMethod.GetCustomAttributes(true));
-            metadata.Add(new HttpMethodMetadata(new[] {verb}));
+            metadata.Add(new HttpMethodMetadata(new[] { verb }));
 
             // Add protobuf service method descriptor.
             // Is used by swagger generation to identify gRPC HTTP APIs.

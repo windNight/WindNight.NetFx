@@ -15,7 +15,10 @@
 		</TargetFrameworks>
 		<!-- Disable analysis for ConfigureAwait(false) -->
 		<WarningsNotAsErrors>$(WarningsNotAsErrors);CA2007</WarningsNotAsErrors>
-		<NoWarn>$(NoWarn);CA2007</NoWarn>
+		<NoWarn>
+			$(NoWarn);CA2007;
+			NETSDK;NETSDK1138;
+		</NoWarn>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 	<ItemGroup>

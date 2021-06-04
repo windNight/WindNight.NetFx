@@ -16,10 +16,16 @@
 		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<NoWarn>$(NoWarn);CA2007;1701;1702;1705;1591</NoWarn>
+		<NoWarn>
+			$(NoWarn);CA2007;1701;1702;1705;1591;
+			CS1574;CS1572;CS8767;CS8618;CS8601;CS8602;CS0168;CS8600;CS8603;CS8604;CS8632;CS8604;CS8625;
+			NETSDK;NETSDK1138;
+			NU5048;NU5104;
+		</NoWarn>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<IncludeSymbols>true</IncludeSymbols>
+		<IncludeSymbols>false</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<OutputPath>..\..\Output\$(Configuration)</OutputPath>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 		<PackageIconUrl>https://avatars0.githubusercontent.com/u/11327494?s=200&amp;v=4</PackageIconUrl>
 		<!--<PackageIcon>https://avatars0.githubusercontent.com/u/11327494?s=200&amp;v=4</PackageIcon>-->

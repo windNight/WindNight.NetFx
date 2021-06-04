@@ -10,6 +10,6 @@ namespace WindNight.Core.Abstractions
         Windows = 1,
         Unix = 2,
         MacOSX = 3,
-        Xbox = 4,
+        XBox = 4,
     }
 }
