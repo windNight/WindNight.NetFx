@@ -43,7 +43,7 @@ namespace WindNight.Core.Internals
         /// <param name="errorStack"></param>
         /// <param name="isTimeout"></param>
         /// <param name="millisecond"></param>
-        /// <param name="url"> max lenght is 256.limit 255 in this case  </param>
+        /// <param name="url"> max length is 256.limit 255 in this case  </param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>

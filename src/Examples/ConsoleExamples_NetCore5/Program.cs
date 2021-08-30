@@ -14,10 +14,14 @@ using WindNight.LogExtension;
 
 namespace ConsoleExamples_NetCore5
 {
+
+
+
     class Program
     {
+         
         static async Task Main(string[] args)
-        {
+        { 
 
             var buildType = "";
 #if DEBUG

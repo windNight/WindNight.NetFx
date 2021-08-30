@@ -1,9 +1,47 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 
 namespace System
 {
+    public static partial class StringExtension
+    {
+        /// <summary>
+        /// </summary>
+        /// <param name="sourceString"></param>
+        /// <returns></returns>
+        public static bool IsNullOrEmpty(this string sourceString)
+        {
+            return string.IsNullOrEmpty(sourceString);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="sourceString"></param>
+        /// <returns></returns>
+        public static bool IsNullOrWhiteSpace(this string sourceString)
+        {
+            return string.IsNullOrWhiteSpace(sourceString);
+        }
+
+
+        /// <summary>
+        /// </summary>
+        /// <param name="sourceString"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string Concat(this string sourceString, params string[] args)
+        {
+            var sL = args.ToList();
+            sL.Insert(0, sourceString);
+            return string.Concat(sL);
+        }
+
+
+
+
+    }
     /// <summary> </summary>
-    public static class StringExtension
+    public static partial class StringExtension
     {
         /// <summary>
         /// </summary>

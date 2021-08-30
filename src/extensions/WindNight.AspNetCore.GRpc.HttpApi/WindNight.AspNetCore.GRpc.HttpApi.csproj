@@ -39,14 +39,14 @@
 	<ItemGroup>
 		<!--<FrameworkReference Include="Microsoft.AspNetCore.App" />-->
 
-		<PackageReference Include="Google.Api.CommonProtos" Version="2.2.0" />
-		<PackageReference Include="Google.Protobuf" Version="3.15.3" />
-		<PackageReference Include="Grpc.AspNetCore.Server" Version="2.35.0" />
-		<PackageReference Include="Grpc.Tools" Version="2.36.0">
+		<PackageReference Include="Google.Api.CommonProtos" Version="2.3.0" />
+		<PackageReference Include="Google.Protobuf" Version="3.17.2" />
+		<PackageReference Include="Grpc.AspNetCore.Server" Version="2.37.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.38.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="System.IO.Pipelines" Version="5.0.0" />
+		<PackageReference Include="System.IO.Pipelines" Version="5.0.1" />
 	</ItemGroup>
 
 </Project>
