@@ -73,3 +73,6 @@ namespace xx{
 
 }
 ```
+
+## Thanks for the Rider IDE provided by JetBrains
+[![](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://www.jetbrains.com/?from=WindNight.NetFx)
