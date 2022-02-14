@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace System.Linq.Expressions
@@ -6,7 +7,12 @@ namespace System.Linq.Expressions
     /// <summary>
     /// </summary>
     public static class EnumerableExtensions
-    {
+    { 
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T>? items)
+        {
+            return items == null || !items.Any();
+        }
+
         /// <summary>
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
@@ -38,6 +44,59 @@ namespace System.Linq.Expressions
             var comparer = new GeneralPropertyComparer<TSource, TKey>(property);
             return items.Distinct(comparer);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="bag"></param>
+        public static void Clear<T>(this ConcurrentBag<T> bag)
+        {
+            if (!bag.IsEmpty)
+            {
+                bag.TryTake(out _);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="bag"></param>
+        /// <param name="dataList"></param>
+        public static void AddRange<T>(this ConcurrentBag<T> bag, IEnumerable<T> dataList)
+        {
+            foreach (var item in dataList)
+            {
+                bag.Add(item);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="bag"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool TryAdd<T>(this ConcurrentBag<T> bag, T data)
+        {
+            if (!bag.Contains(data))
+            {
+                try
+                {
+                    bag.Add(data);
+
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+            return false;
+
+        }
+
     }
 
     /// <summary>
@@ -93,9 +152,9 @@ namespace System.Linq.Expressions
                 return true;
             if ((leftProp == null) ^ (rightProp == null)) //逻辑或位 XOR(异或)。 通常可以将此运算符与整数类型和 enum 类型一起使用
                 return false;
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+            // 解引用可能出现空引用。
             return leftProp.Equals(rightProp);
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+            // 解引用可能出现空引用。
         }
 
         /// <summary>

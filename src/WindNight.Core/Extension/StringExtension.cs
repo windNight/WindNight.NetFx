@@ -36,10 +36,8 @@ namespace System
             return string.Concat(sL);
         }
 
-
-
-
     }
+     
     /// <summary> </summary>
     public static partial class StringExtension
     {
@@ -50,7 +48,8 @@ namespace System
         /// <returns></returns>
         public static int ToInt(this string sourceString, int defaultValue = 0)
         {
-            if (string.IsNullOrEmpty(sourceString))
+
+            if (sourceString.IsNullOrEmpty())
                 return defaultValue;
             return int.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
@@ -62,7 +61,7 @@ namespace System
         /// <returns></returns>
         public static long ToLong(this string sourceString, long defaultValue = 0)
         {
-            if (string.IsNullOrEmpty(sourceString))
+            if (sourceString.IsNullOrEmpty())
                 return defaultValue;
             return long.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
@@ -74,7 +73,7 @@ namespace System
         /// <returns></returns>
         public static decimal ToDecimal(this string sourceString, decimal defaultValue = 0M)
         {
-            if (string.IsNullOrEmpty(sourceString))
+            if (sourceString.IsNullOrEmpty())
                 return defaultValue;
             return decimal.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
@@ -86,7 +85,7 @@ namespace System
         /// <returns></returns>
         public static double ToDouble(this string sourceString, double defaultValue = 0)
         {
-            if (string.IsNullOrEmpty(sourceString))
+            if (sourceString.IsNullOrEmpty())
                 return defaultValue;
             return double.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
@@ -98,7 +97,7 @@ namespace System
         /// <returns></returns>
         public static string Limit(this string sourceString, int limitLength)
         {
-            if (string.IsNullOrEmpty(sourceString))
+            if (sourceString.IsNullOrEmpty())
                 return string.Empty;
 
             if (sourceString.Length <= limitLength)
@@ -109,15 +108,17 @@ namespace System
 
         public static string UrlEncode(this string sourceString)
         {
-            if (string.IsNullOrEmpty(sourceString)) return sourceString;
+            if (sourceString.IsNullOrEmpty()) return sourceString;
             return WebUtility.UrlEncode(sourceString);
         }
 
         public static string UrlDecode(this string sourceString)
         {
-            if (string.IsNullOrEmpty(sourceString)) return sourceString;
+            if (sourceString.IsNullOrEmpty()) return sourceString;
             return WebUtility.UrlDecode(sourceString);
         }
 
     }
+
+
 }

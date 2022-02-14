@@ -21,7 +21,7 @@ namespace Newtonsoft.Json.Extension
         ///     If this is null, default serialization settings will be used.
         /// </param>
         /// <returns></returns>
-#if NETSTANDARD2_1
+#if STD21
         [return: MaybeNull]
 #endif
         public static T To<T>(this object? obj, Formatting formatting = Formatting.None,
@@ -56,13 +56,13 @@ namespace Newtonsoft.Json.Extension
         ///     If this is null, default serialization settings will be used.
         /// </param>
         /// <returns></returns>
-#if NETSTANDARD2_1
+#if STD21
         [return: MaybeNull]
 #endif
 
         public static T To<T>(this string jsonStr, JsonSerializerSettings? settings = null)
         {
-            if (string.IsNullOrEmpty(jsonStr)) return default;
+            if (jsonStr.IsNullOrEmpty()) return default;
 
             try
             {
@@ -115,26 +115,22 @@ namespace Newtonsoft.Json.Extension
     //    {
     //        return objectType == typeof(IPAddress);
     //    }
-
     //    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
     //    {
     //        writer.WriteValue(value.ToString());
     //    }
-
     //    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue,
     //        JsonSerializer serializer)
     //    {
     //        return IPAddress.Parse((string)reader.Value);
     //    }
     //}
-
     //internal class IPEndPointConverter : JsonConverter
     //{
     //    public override bool CanConvert(Type objectType)
     //    {
     //        return objectType == typeof(IPEndPoint);
     //    }
-
     //    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
     //    {
     //        var ep = (IPEndPoint)value;
@@ -143,7 +139,6 @@ namespace Newtonsoft.Json.Extension
     //        jo.Add("Port", ep.Port);
     //        jo.WriteTo(writer);
     //    }
-
     //    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue,
     //        JsonSerializer serializer)
     //    {
@@ -154,4 +149,6 @@ namespace Newtonsoft.Json.Extension
     //        return new IPEndPoint(address, port);
     //    }
     //}
+
+
 }

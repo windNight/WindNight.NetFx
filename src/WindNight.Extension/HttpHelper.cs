@@ -1,19 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using RestSharp;
+using WindNight.Core.Abstractions;
 using WindNight.Core.Tools;
 using WindNight.Extension.Internals;
-using WindNight.NetCore.Extension;
+//using WindNight.NetCore.Extension;
 
 namespace WindNight.Extension
 {
     public static class HttpHelper
     {
-        class ConfigItems : ConfigItemsBase
+        class ConfigItems// : ConfigItemsBase
         {
-            public static bool DebugIsOpen => GetConfigValue("DebugIsOpen", false, false);
+            public static bool DebugIsOpen
+            {
+                get
+                {
+                    var config = Ioc.GetService<IConfigService>();
+                    if (config == null) return false;
+                    return config.GetAppSetting("DebugIsOpen", false, false);
+                }
+            }
 
         }
 

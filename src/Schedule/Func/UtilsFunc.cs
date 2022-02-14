@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Extension;
 using Quartz;
 using Schedule.Model;
+using System;
 
 namespace Schedule.Func
 {
@@ -15,7 +16,7 @@ namespace Schedule.Func
         public static JobKey GenJobKey(string name, string? group = "")
         {
             return new JobKey($"{name}_running_jkey",
-                string.IsNullOrEmpty(group) ? $"{name}_jgroup" : group);
+                group.IsNullOrEmpty() ? $"{name}_jgroup" : group);
         }
 
         /// <summary>
@@ -27,7 +28,7 @@ namespace Schedule.Func
         public static TriggerKey GenTriggerKey(string name, string? group = "")
         {
             return new TriggerKey($"{name}_running_tkey",
-                string.IsNullOrEmpty(group) ? $"{name}_tgroup" : group);
+                group.IsNullOrEmpty() ? $"{name}_tgroup" : group);
         }
 
         /// <summary>

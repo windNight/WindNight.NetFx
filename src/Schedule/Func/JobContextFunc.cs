@@ -14,7 +14,7 @@ namespace Schedule.Func
         /// <param name="origName"></param>
         public static void SetJobCode(this IJobDetail jobDetail, string origName)
         {
-            if (!string.IsNullOrEmpty(origName))
+            if (!origName.IsNullOrEmpty())
                 jobDetail.JobDataMap["jobCode"] = origName;
         }
 
@@ -37,7 +37,7 @@ namespace Schedule.Func
         /// <param name="name"></param>
         public static void SetJobName(this IJobDetail jobDetail, string name)
         {
-            if (!string.IsNullOrEmpty(name))
+            if (!name.IsNullOrEmpty())
                 jobDetail.JobDataMap["jobName"] = name;
         }
 
@@ -60,7 +60,7 @@ namespace Schedule.Func
         /// <param name="runParams"></param>
         public static void SetJobRunParams(this IJobDetail jobDetail, string runParams)
         {
-            if (!string.IsNullOrEmpty(runParams))
+            if (!runParams.IsNullOrEmpty())
                 jobDetail.JobDataMap["runParams"] = runParams;
         }
 
@@ -126,7 +126,7 @@ namespace Schedule.Func
         /// <param name="depJobs"></param>
         public static void SetDepJobs(this IJobDetail jobDetail, string depJobs)
         {
-            if (!string.IsNullOrEmpty(depJobs))
+            if (!depJobs.IsNullOrEmpty())
                 jobDetail.JobDataMap.Add("depJobs", depJobs);
         }
 
@@ -149,7 +149,7 @@ namespace Schedule.Func
         /// <param name="jobDbId"></param>
         public static void SetJobDbId(this IJobDetail jobDetail, string jobDbId)
         {
-            if (!string.IsNullOrEmpty(jobDbId))
+            if (!jobDbId.IsNullOrEmpty())
                 jobDetail.JobDataMap.Add("jobId", jobDbId);
         }
 
@@ -247,7 +247,7 @@ namespace Schedule.Func
         /// <param name="reason"></param>
         public static void SetVotedReason(this IJobDetail jobDetail, string reason)
         {
-            if (!string.IsNullOrEmpty(reason))
+            if (!reason.IsNullOrEmpty())
                 jobDetail.JobDataMap.Add("vetoedReason", reason);
         }
 

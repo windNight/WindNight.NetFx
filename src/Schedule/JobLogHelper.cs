@@ -27,7 +27,7 @@ namespace Schedule
         static string FixActionName(string actionName = "")
         {
             var jobCode = JobContext.JobCode;
-            if (!string.IsNullOrEmpty(jobCode))
+            if (!jobCode.IsNullOrEmpty())
             {
                 return $"{jobCode}:{actionName}";
             }

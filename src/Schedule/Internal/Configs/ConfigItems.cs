@@ -2,23 +2,25 @@
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using System;
 using System.Linq;
-using WindNight.Core.Abstractions;
 
 namespace Schedule
 {
     internal class ConfigItems
     {
+        private static IConfiguration configuration => Ioc.GetService<IConfiguration>();
+
+
         internal static JobsConfig JobsConfig
         {
             get
             {
                 if (_jobsConfig != null && _jobsConfig.Items.Any()) return _jobsConfig;
-                var configuration = Ioc.GetService<IConfiguration>();
                 if (configuration != null)
                 {
                     var jobConfigs = configuration.GetSection(ConfigItemsKey.ScheduleJobNodeName).Get<JobsConfig>();
                     if (jobConfigs != null && jobConfigs.Items.Any()) return jobConfigs;
                 }
+
                 return GetFileConfig<JobsConfig>(ConfigItemsKey.ScheduleJobsFileName);
             }
             private set => _jobsConfig = value;
@@ -42,10 +44,10 @@ namespace Schedule
 
         private static string GetAppSettingConfig(string configKey, string defaultValue = "", bool isThrow = true)
         {
-            var configService = Ioc.GetService<IConfigService>();
+            var configService = Ioc.Instance.CurrentConfigService;
             if (configService == null)
             {
-                if (!string.IsNullOrEmpty(defaultValue))
+                if (!defaultValue.IsNullOrEmpty())
                     return defaultValue;
                 if (isThrow)
                     throw new ApplicationException("Please Impl the interface of IConfigService and  register it.");
@@ -57,7 +59,7 @@ namespace Schedule
 
         private static T GetFileConfig<T>(string configKey, bool isThrow = true) where T : class, new()
         {
-            var configService = Ioc.GetService<IConfigService>();
+            var configService = Ioc.Instance.CurrentConfigService;
 
             if (configService == null)
                 throw new ApplicationException("Please Impl the interface of IConfigService and  register it.");
@@ -65,11 +67,13 @@ namespace Schedule
             return configService.GetFileConfig<T>(configKey);
         }
 
+
         internal static class ConfigItemsKey
         {
             internal static string ScheduleJobsFileName = "schedulejobs.json";
 
             internal static string ScheduleJobNodeName = "ScheduleJobs";
+            internal static string JobRemotingConfigNodeName = "ScheduleJobs:Remoting";
 
             internal static string DingtalkTokenKey = "JobExecuted:NoticeDingToken";
             internal static string DingtalkPhonesKey = "JobExecuted:NoticeDingPhones";

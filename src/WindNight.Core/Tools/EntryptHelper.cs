@@ -151,8 +151,8 @@ namespace System.Security.Cryptography.Extensions
                 hexString = hexString.Replace(" ", "");
                 if ((hexString.Length % 2) != 0)
                     hexString += " ";
-                byte[] returnBytes = new byte[hexString.Length / 2];
-                for (int i = 0; i < returnBytes.Length; i++)
+                var returnBytes = new byte[hexString.Length / 2];
+                for (var i = 0; i < returnBytes.Length; i++)
                     returnBytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
                 return returnBytes;
             }

@@ -101,5 +101,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                 $"【{logLevel.ToString()}】: DefaultLogService: {message}");
             Console.ResetColor();
         }
+
     }
+
 }

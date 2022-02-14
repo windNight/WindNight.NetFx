@@ -7,7 +7,7 @@ namespace WindNight.LogExtension
     {
         internal class ConfigItems
         {
-            static IConfigService configService => Ioc.GetService<IConfigService>();
+            static IConfigService configService => Ioc.Instance.CurrentConfigService;
             protected const string TrueString = "1", FalseString = "0", ZeroString = "0";
             protected const int ZeroInt = 0;
 

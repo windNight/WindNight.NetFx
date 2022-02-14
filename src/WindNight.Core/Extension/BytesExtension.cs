@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
@@ -56,7 +57,6 @@ namespace System.Text
         /// <exception cref="T:System.FormatException">The length of <paramref name="base64Str" />, ignoring white-space characters, is not zero or a multiple of 4.
         /// -or-
         /// The format of <paramref name="base64Str" /> is invalid. <paramref name="base64Str" /> contains a non-base-64 character, more than two padding characters, or a non-white space-character among the padding characters.</exception>
-
         /// <returns>
         ///     An array of 8-bit unsigned integers that is equivalent to <paramref name="base64Str" />.
         /// </returns>
@@ -110,7 +110,7 @@ namespace System.Text
         /// <returns>原始未压缩字符串</returns>
         public static string GZipDecompressString(this string zippedString, Encoding? encoding = null)
         {
-            if (string.IsNullOrEmpty(zippedString) || zippedString.Length == 0) return "";
+            if (zippedString.IsNullOrEmpty() || zippedString.Length == 0) return "";
 
             var zippedData = Convert.FromBase64String(zippedString);
             if (encoding == null) encoding = Encoding.UTF8;
@@ -128,6 +128,81 @@ namespace System.Text
             }
             return ret;
         }
+
+
+        public static string ToHexString(this byte[] bytes, string splitStr = " ")
+        {
+            return bytes.ToHexString(0, bytes.Length, splitStr);
+        }
+
+        public static string ToHexString(this byte[] bytes, int startIndex, int length, string splitStr)
+        {
+            if (bytes == null || bytes.Length == 0 || length == 0) return string.Empty;
+            var sb = new StringBuilder();
+            for (var i = startIndex; i < bytes.Length && i < startIndex + length; i++)
+            {
+                var sh = bytes[i].ToString("X").PadLeft(2, '0');
+                sb.Append($"{sh}{splitStr}");
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        ///  带空格等分隔符的Hex字符串
+        /// </summary>
+        /// <param name="hexStr"></param>
+        /// <returns></returns>
+        public static byte[] ToBytesWithSplit(this string hexStr)
+        {
+            try
+            {
+                hexStr = hexStr.Trim();
+                var arr = hexStr.Split(new[] { ' ', ',', ';', '\r', '\n' },
+                     StringSplitOptions.RemoveEmptyEntries);
+                var bytes = new byte[arr.Length];
+                for (var i = 0; i < arr.Length; i++)
+                {
+                    bytes[i] = byte.Parse(arr[i], NumberStyles.HexNumber);
+                }
+                return bytes;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 将没有分隔符的字符串转成16进制，如果字符串格式是奇数，则最高位补0
+        /// </summary>
+        /// <param name="hexStr"></param>
+        /// <returns></returns>
+        public static byte[] ToBytesWithoutSplit(this string hexStr)
+        {
+            try
+            {
+                if (hexStr.IsNullOrEmpty()) return null;
+                var len = hexStr.Length;
+                var bytes = new byte[len / 2];
+                if (len / 2 != 0)
+                {
+                    hexStr = hexStr.PadLeft(1, '0');
+                }
+
+                len = hexStr.Length;
+                for (var i = 0; i < len / 2; i++)
+                {
+                    bytes[i] = byte.Parse(hexStr.Substring(2 * i, 2), NumberStyles.HexNumber);
+                }
+
+                return bytes;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
 
 
     }

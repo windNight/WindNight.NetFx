@@ -24,6 +24,7 @@ namespace System
 
         public static DateTime LastDayOfThisYear => DateTime.Now.LastDayOfYear();
 
+        public static DateTime Now => DateTime.Now;
         public static int NowDateInt => DateTime.Now.ToDateInt();
 
         public static long NowUnixTime => DateTime.Now.ConvertToUnixTime();
@@ -79,13 +80,13 @@ namespace System
 
         public static void InitHardInfo(string nodeCode = "", string ip = "")
         {
-            if (string.IsNullOrEmpty(nodeCode) && string.IsNullOrEmpty(NodeCode))
+            if (nodeCode.IsNullOrEmpty() && NodeCode.IsNullOrEmpty())
                 nodeCode = GuidHelper.GenerateOrderNumber();
-            if (string.IsNullOrEmpty(ip))
+            if (ip.IsNullOrEmpty())
             {
                 ip = string.Join(",", GetLocalIps());
             }
-            if (string.IsNullOrEmpty(NodeCode))
+            if (NodeCode.IsNullOrEmpty())
                 NodeCode = nodeCode;
             // if (string.IsNullOrEmpty(NodeIpAddress) || NodeIpAddress == DefaultIp)
             NodeIpAddress = ip;
@@ -107,7 +108,7 @@ namespace System
                 {AddressFamily.InterNetwork, AddressFamily.InterNetworkV6};
             try
             {
-                if (!string.IsNullOrEmpty(NodeIpAddress)) return NodeIpAddress.Split(',');
+                if (!NodeIpAddress.IsNullOrEmpty()) return NodeIpAddress.Split(',');
 
                 var ipList = NetworkInterface.GetAllNetworkInterfaces()?
                     .Where(m => m.OperationalStatus == OperationalStatus.Up)?

@@ -42,7 +42,7 @@ namespace WindNight.Core.Extension
             firstNumber = 0;
             try
             {
-                if (string.IsNullOrEmpty(version) || version == "0") return defaultVersion;
+                if (version.IsNullOrEmpty() || version == "0") return defaultVersion;
                 if (version.Trim() == "*") return VersionStruct.MaxVersionLong;
                 long.TryParse(version.Replace(".", ""), out var result);
                 if (result == 0L) return defaultVersion;
@@ -78,7 +78,7 @@ namespace WindNight.Core.Extension
         public string? Version { get; set; }
         public long VersionLong => Version.Convert2Long();
 
-        public static VersionStruct NullVersionStruct => new VersionStruct { Version = "0" };
+        public static VersionStruct NullVersionStruct => new() { Version = "0" };
 
         public static bool operator ==(VersionStruct left, VersionStruct right)
         {

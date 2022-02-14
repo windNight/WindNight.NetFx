@@ -140,7 +140,7 @@ namespace Schedule
                     )
                     .StartNow()
                     .Build();
-            if (!string.IsNullOrEmpty(cronExpression))
+            if (!cronExpression.IsNullOrEmpty())
                 return TriggerBuilder.Create()
                     .WithIdentity(triggerKey)
                     .StartNow()

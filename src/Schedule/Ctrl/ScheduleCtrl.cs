@@ -42,7 +42,7 @@ namespace Schedule.Ctrl
             if (search.SupportOnceJob != null)
                 allJobInfo = allJobInfo.Where(x => x.SupportOnceJob == (search.SupportOnceJob ?? true)).ToList();
             if (search.ShowOnceJob != null)
-                allJobInfo = allJobInfo.Where(x => !string.IsNullOrEmpty(x.JobId) == search.ShowOnceJob.Value).ToList();
+                allJobInfo = allJobInfo.Where(x => !x.JobId.IsNullOrEmpty() == search.ShowOnceJob.Value).ToList();
 
             var totalJobsCount = allJobInfo.Count;
             allJobInfo = allJobInfo.Skip((search.PageCurrent - 1) * search.PageSize).Take(search.PageSize).ToList();
@@ -61,7 +61,7 @@ namespace Schedule.Ctrl
             var allJobInfo = ScheduleModConfig.Instance.Jobs.ToList();
 
             allJobInfo.RemoveAll(x =>
-                allJobEnv.Select(y => y.JobName).Contains(x.JobName) && string.IsNullOrEmpty(x.JobId));
+                allJobEnv.Select(y => y.JobName).Contains(x.JobName) && x.JobId.IsNullOrEmpty());
             allJobInfo.AddRange(allJobEnv);
             return allJobInfo;
         }
@@ -87,7 +87,7 @@ namespace Schedule.Ctrl
         public List<JobMeta> GetBGJobInfo()
         {
             var allJobEnv = __JobEnvManager.ReadAllJobEnv();
-            return allJobEnv.Where(x => string.IsNullOrEmpty(x.JobId)).ToList();
+            return allJobEnv.Where(x => x.JobId.IsNullOrEmpty()).ToList();
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace Schedule.Ctrl
         public JobActionRetEnum PauseJob(string name)
         {
             var jobParams = GetAllJobInfo()
-                .FirstOrDefault(x => x.JobName.Equals(name) && string.IsNullOrEmpty(x.JobId));
+                .FirstOrDefault(x => x.JobName.Equals(name) && x.JobId.IsNullOrEmpty());
             if (jobParams == null) return JobActionRetEnum.Failed;
 
             if (jobParams.State == JobStateEnum.Closed) return JobActionRetEnum.Conflict;
@@ -176,7 +176,7 @@ namespace Schedule.Ctrl
         public JobActionRetEnum ResumeJob(string name)
         {
             var jobParams = GetAllJobInfo()
-                .FirstOrDefault(x => x.JobName.Equals(name) && string.IsNullOrEmpty(x.JobId));
+                .FirstOrDefault(x => x.JobName.Equals(name) && x.JobId.IsNullOrEmpty());
             if (jobParams == null) return JobActionRetEnum.Failed;
 
             if (jobParams.State == JobStateEnum.Closed) return JobActionRetEnum.Conflict;

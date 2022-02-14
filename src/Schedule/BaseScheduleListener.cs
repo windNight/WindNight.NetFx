@@ -47,7 +47,7 @@ namespace Schedule
         /// <summary>
         ///     Get the name of the Quartz.IJobListener and the Quartz.ITriggerListener.
         /// </summary>
-        public string Name => string.IsNullOrEmpty(__listenerName) ? OrigName : __listenerName;
+        public string Name => __listenerName.IsNullOrEmpty() ? OrigName : __listenerName;
 
         /// <summary>
         ///     Set the name of the Quartz.IJobListener and the Quartz.ITriggerListener.
@@ -174,7 +174,7 @@ namespace Schedule
             //检查依赖选项是否满足
             var isOnceJob = context.IsOnceJob();
             var depJobs = context.GetDepJobs(); //jobcodes
-            var isContinueRun = isOnceJob || string.IsNullOrEmpty(depJobs) || await WaitJobCompleted(origJobName, depJobs.Split(',').ToList(), DateTime.Now.Date);
+            var isContinueRun = isOnceJob || depJobs.IsNullOrEmpty() || await WaitJobCompleted(origJobName, depJobs.Split(',').ToList(), DateTime.Now.Date);
             context.JobDetail.SetContinueRunFlag(isContinueRun);
 
             if (!isContinueRun)
@@ -422,7 +422,7 @@ namespace Schedule
         {
             if (_scheduleNotice != null && IsDoNotice)
             {
-                await _scheduleNotice.DoNoticeAsync(JobBaseInfo, $"{message}{(string.IsNullOrEmpty(extendInfo) ? "" : $"\n\n{extendInfo}")}");
+                await _scheduleNotice.DoNoticeAsync(JobBaseInfo, $"{message}{(extendInfo.IsNullOrEmpty() ? "" : $"\n\n{extendInfo}")}");
             }
 
             await Task.CompletedTask;

@@ -27,6 +27,7 @@ namespace WindNight.Core.Tools
             Func<T> func, int tryCount = 1, int delayMs = 1000, T errorResult = default,
             Action rollBackAction = null, Action<Exception> warnAction = null, T defaultValue = default(T)
         )
+        where T : IEquatable<T>
         {
             tryCount = tryCount < 1 ? 1 : tryCount;
             var execCount = 0;
@@ -48,9 +49,9 @@ namespace WindNight.Core.Tools
                     if (tryCount == execCount - 1)
                     {
                         //  告警策略实现
-                        warnAction?.KeepSafeAction(ex);
+                        warnAction.KeepSafeAction(ex);
                         //  回滚策略实现
-                        rollBackAction?.KeepSafeAction();
+                        rollBackAction.KeepSafeAction();
                         break;
                     }
 
@@ -63,7 +64,7 @@ namespace WindNight.Core.Tools
                 #endregion //end try
             }
 
-            if (Equals(rlt, errorResult)) warnAction?.KeepSafeAction();
+            if (rlt.Equals(errorResult)) warnAction.KeepSafeAction();
 
             return rlt;
         }
@@ -107,9 +108,9 @@ namespace WindNight.Core.Tools
                     if (tryCount == execCount - 1)
                     {
                         //TODO 告警策略实现
-                        warnAction?.KeepSafeAction(ex);
+                        warnAction.KeepSafeAction(ex);
                         //TODO 回滚策略实现
-                        rollBackAction?.KeepSafeAction();
+                        rollBackAction.KeepSafeAction();
                         break;
                     }
 
@@ -124,6 +125,7 @@ namespace WindNight.Core.Tools
 
         public static void KeepSafeAction(this Action action)
         {
+            if (action == null) return;
             try
             {
                 action.Invoke();
@@ -136,6 +138,7 @@ namespace WindNight.Core.Tools
 
         public static void KeepSafeAction(this Action<Exception> action, Exception ex = null)
         {
+            if (action == null) return;
             try
             {
                 action.Invoke(ex);
@@ -145,5 +148,6 @@ namespace WindNight.Core.Tools
                 // ignored
             }
         }
+
     }
 }

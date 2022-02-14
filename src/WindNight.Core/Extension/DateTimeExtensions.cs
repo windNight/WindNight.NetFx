@@ -168,7 +168,7 @@ namespace System
         /// <returns></returns>
         public static string TryToDateString(this string dateStr, string linkCode = "-")
         {
-            if (string.IsNullOrEmpty(dateStr)) throw new ArgumentNullException(nameof(dateStr));
+            if (dateStr.IsNullOrEmpty()) throw new ArgumentNullException(nameof(dateStr));
             if (dateStr.Length < 8) dateStr = dateStr.PadRight(8, '0');
             if (dateStr.Length > 8) dateStr = dateStr.Substring(0, 8);
             var newstr = dateStr.Insert(4, linkCode).Insert(7, linkCode);
@@ -205,7 +205,7 @@ namespace System
         {
             try
             {
-                return dateTime.ToDateInt(format);
+                return dateTime.ToDateInt(format, defaultValue);
             }
             catch// (Exception ex)
             {
@@ -225,7 +225,7 @@ namespace System
             return dateTime.ToString(format).ToInt(defaultValue);
         }
 
-        public static DateTime FirstDayOfMonth(this DateTime dateTime)
+        public static DateTime  FirstDayOfMonth(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, 1);
         }
@@ -269,11 +269,40 @@ namespace System
             return date.Date.AddDays(7 - (int)date.DayOfWeek);
         }
 
+
+        /// <summary>
+        /// TODO Reverse
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
         public static int WeekOfYear(this DateTime date)
         {
             var dateTime = date.FirstDayOfYear();
             return (int)((date - dateTime).Days + dateTime.DayOfWeek) / 7 + 1;
         }
+
+        public static
+#if NET45LATER
+            (DateTime beginDate, DateTime endDate)
+#else
+                Tuple<DateTime, DateTime>
+#endif
+            CalcDateRangeByWeek(this DateTime date, int week, int year = 0)
+        {
+            if (year == 0)
+                year = date.Year;
+            var firstDayOfYear = new DateTime(year, 1, 1);
+
+            var dt = firstDayOfYear.AddDays((week - 1) * 7);
+            var beginDate = dt.FirstDayOfWeek();
+            var endDate = dt.LastDayOfWeek();
+#if NET45LATER
+            return (beginDate, endDate);
+#else
+            return new Tuple<DateTime, DateTime>(beginDate, endDate);
+#endif
+        }
+
 
         public static List<int> GeneratorDateIntList(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false)
         {
@@ -292,7 +321,6 @@ namespace System
 
         public static List<T> GeneratorDateSelfList<T>(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false, Func<DateTime, T> func = null)
         {
-
             var endDate = endDateParam ?? DateTime.Now.Date;
 
             if (withLastDay)
@@ -303,6 +331,29 @@ namespace System
             if (beginDate > endDate) return list;
             if (func == null) return list;
             for (var i = beginDate; i < endDate; i = i.AddDays(1))
+            {
+                var m = func.Invoke(i);
+                list.Add(m);
+            }
+
+            return list;
+        }
+
+        public static List<T> GeneratorMonthSelfList<T>(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false, Func<DateTime, T> func = null)
+        {
+
+            beginDate = beginDate.FirstDayOfMonth();
+            var endDate = endDateParam ?? DateTime.Now.Date;
+            if (withLastDay)
+            {
+                endDate = endDate.AddDays(1);
+            }
+
+            endDate = endDate.FirstDayOfMonth();
+            var list = new List<T>();
+            if (beginDate > endDate) return list;
+            if (func == null) return list;
+            for (var i = beginDate; i < endDate; i = i.AddMonths(1))
             {
                 var m = func.Invoke(i);
                 list.Add(m);

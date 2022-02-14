@@ -21,11 +21,11 @@ namespace Schedule.Internal
                     NoticeDingToken = ConfigItems.DingtalkToken,
                     NoticeDingPhones = ConfigItems.DingtalkPhones,
                     NoticeDingAtAll = ConfigItems.DingtalkAtAll,
-                    NoticeDingIsOpen = !string.IsNullOrEmpty(ConfigItems.DingtalkToken),
+                    NoticeDingIsOpen = !ConfigItems.DingtalkToken.IsNullOrEmpty(),
                 };
             }
             var token = noticeDingConfig?.NoticeDingToken ?? ConfigItems.DingtalkToken;
-            if (string.IsNullOrEmpty(token)) return;
+            if (token.IsNullOrEmpty()) return;
             var postData = GetDingTalkPostData(jobBaseInfo, message, noticeDingConfig);
             if (postData == null) return;
 

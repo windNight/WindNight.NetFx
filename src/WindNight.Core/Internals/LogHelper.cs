@@ -53,7 +53,7 @@ namespace WindNight.Core.Internals
         {
             try
             {
-                var logService = Ioc.GetService<ILogService>();
+                var logService = Ioc.Instance.CurrentLogService;
                 if (logService != null)
                     logService.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage);
                 else

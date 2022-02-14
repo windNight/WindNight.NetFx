@@ -1,4 +1,4 @@
-﻿using WindNight.NetCore.Extension;
+﻿using WindNight.ConfigCenter.Extension;
 
 namespace Microsoft.AspNetCore.WindNight.Hosting.Internals
 {

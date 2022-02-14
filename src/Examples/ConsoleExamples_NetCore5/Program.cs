@@ -79,7 +79,7 @@ namespace ConsoleExamples_NetCore5
         //}
 
         static void ConsolePublish(LogHelper.LogInfo logInfo)
-        {
+        { 
             if (logInfo == null) return;
             var logLevel = logInfo.Level;
             var message = logInfo.Content;

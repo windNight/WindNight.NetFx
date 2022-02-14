@@ -45,11 +45,11 @@ namespace WindNight.LogExtension
                 Timestamps = millisecond,
                 SerialNumber = CurrentItem.GetSerialNumber,
                 NodeCode = HardInfo.NodeCode,
-            };
-
+            }; 
             FixLogInfo(logInfo, appendMessage);
             return logInfo;
         }
+
         static string FixLogMessage(string msg) => string.Concat(ConfigItems.SystemAppName, $" [请求序列号：{CurrentItem.GetSerialNumber}]-0: ", msg);
 
         private static void DoConsoleLog(LogLevels logLevel, string message, Exception? exception = null)
@@ -63,14 +63,15 @@ namespace WindNight.LogExtension
             Console.ResetColor();
         }
 
+
         static void FixLogInfo(LogInfo logInfo, bool appendMessage)
         {
             if (CurrentItem.Items != null)
             {
-                if (string.IsNullOrEmpty(logInfo.ServerIp))
+                if (logInfo.ServerIp.IsNullOrEmpty())
                 {
                     var ip = CurrentItem.GetItem<string>(ThreadContext.SERVERIP);
-                    if (!string.IsNullOrEmpty(ip)) //截取中间部分 用于显示端口
+                    if (!ip.IsNullOrEmpty()) //截取中间部分 用于显示端口
                     {
                         // if (ip.Length > 32 && !is2Es) ip = ip.Replace(ip.Substring(5, 13), "***");
                     }
@@ -82,8 +83,8 @@ namespace WindNight.LogExtension
                     logInfo.ServerIp = ip;
                 }
 
-                if (string.IsNullOrEmpty(logInfo.ClientIp)) logInfo.ClientIp = CurrentItem.GetItem<string>(ThreadContext.CLIENTIP);
-                if (string.IsNullOrEmpty(logInfo.RequestUrl)) logInfo.RequestUrl = CurrentItem.GetItem<string>(ThreadContext.REQUESTPATH);
+                if (logInfo.ClientIp.IsNullOrEmpty()) logInfo.ClientIp = CurrentItem.GetItem<string>(ThreadContext.CLIENTIP);
+                if (logInfo.RequestUrl.IsNullOrEmpty()) logInfo.RequestUrl = CurrentItem.GetItem<string>(ThreadContext.REQUESTPATH);
                 if (appendMessage && ConfigItems.IsAppendLogMessage)
                 {
                     var msg = logInfo.Content;
@@ -93,10 +94,10 @@ namespace WindNight.LogExtension
 
             }
 
-            if (string.IsNullOrEmpty(logInfo.ServerIp))
+            if (logInfo.ServerIp.IsNullOrEmpty())
                 logInfo.ServerIp = string.Join(",", IpHelper.LocalServerIps);
-            if (string.IsNullOrEmpty(logInfo.ClientIp)) logInfo.ClientIp = IpHelper.GetClientIp();
-            if (string.IsNullOrEmpty(logInfo.RequestUrl)) logInfo.RequestUrl = IpHelper.GetCurrentUrl();
+            if (logInfo.ClientIp.IsNullOrEmpty()) logInfo.ClientIp = IpHelper.GetClientIp();
+            if (logInfo.RequestUrl.IsNullOrEmpty()) logInfo.RequestUrl = IpHelper.GetCurrentUrl();
         }
 
         static string AppendLogMessage(this string msg)

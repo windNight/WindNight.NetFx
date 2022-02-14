@@ -60,7 +60,7 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="defaultValue"></param>
         public static string GetAppSetting(string configKey, string defaultValue = "")
         {
-            if (string.IsNullOrEmpty(configKey)) return defaultValue;
+            if (configKey.IsNullOrEmpty()) return defaultValue;
             var key = FixDictKey(ConfigType.AppSettings, configKey);
             return GetFromConfigurationDict(key, defaultValue);
         }

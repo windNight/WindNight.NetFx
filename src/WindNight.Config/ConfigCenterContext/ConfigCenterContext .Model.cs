@@ -9,7 +9,8 @@ namespace WindNight.ConfigCenter.Extension
         AppSettings = 1,
         DomainSwitch = 2,
         ConnectionStrings = 3,
-        JsonConfig = 4
+        JsonConfig = 4,
+
     }
 
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 
 namespace WindNight.ConfigCenter.Extension
 {
@@ -59,8 +60,8 @@ namespace WindNight.ConfigCenter.Extension
 
         private static string GetFromConfigurationDict(string configKey, string defaultValue = "")
         {
-            if (string.IsNullOrEmpty(configKey)) return defaultValue;
-            if (CurrentConfiguration.TryGetValue(configKey, out var configValue) && !string.IsNullOrEmpty(configValue))
+            if (configKey.IsNullOrEmpty()) return defaultValue;
+            if (CurrentConfiguration.TryGetValue(configKey, out var configValue) && !configValue.IsNullOrEmpty())
                 return configValue;
 
             return defaultValue;

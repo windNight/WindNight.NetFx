@@ -17,7 +17,7 @@ namespace WindNight.Core.Tools
         {
             get
             {
-                var configService = Ioc.GetService<IConfigService>();
+                var configService = Ioc.Instance.CurrentConfigService;
                 if (configService == null) return false;
                 var configValue = configService.GetAppSetting(TimeWatcherIsOpenKey, false, false);
                 return configValue;
@@ -27,7 +27,7 @@ namespace WindNight.Core.Tools
         {
             get
             {
-                var configService = Ioc.GetService<IConfigService>();
+                var configService = Ioc.Instance.CurrentConfigService;
                 if (configService == null) return false;
                 var configValue = configService.GetAppSetting("DebugIsOpen", false, false);
                 return configValue;
@@ -177,7 +177,7 @@ namespace WindNight.Core.Tools
             }
             finally
             {
-                if (string.IsNullOrEmpty(watcherName)) watcherName = nameof(action);
+                if (watcherName.IsNullOrEmpty()) watcherName = nameof(action);
                 realTs = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                 var fwarnMiS = FixWarnMiSeconds(warnMiSeconds);
                 if (realTs > fwarnMiS)
@@ -192,8 +192,8 @@ namespace WindNight.Core.Tools
         {
             T rlt;
             var ticks = DateTime.Now.Ticks;
-
-            if (string.IsNullOrEmpty(watcherName)) watcherName = nameof(func);
+            // TODO Try to get real name of this func
+            if (watcherName.IsNullOrEmpty()) watcherName = nameof(func);
             try
             {
                 rlt = func.Invoke();

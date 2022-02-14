@@ -24,11 +24,10 @@ namespace WindNight.ConfigCenter.Extension
 #endif
         )
         {
-            ConfigProvider.Instance.Start(sleepTimeInMs);
             if (logService != null) ConfigCenterLogExtension.InitLogProvider(logService);
             else
             {
-                ConfigCenterLogExtension.InitLogProvider(Ioc.GetService<ILogService>());
+                ConfigCenterLogExtension.InitLogProvider(Ioc.Instance.CurrentLogService);
             }
 #if !NET45
             if (configuration != null)
@@ -36,6 +35,9 @@ namespace WindNight.ConfigCenter.Extension
                 ConfigProvider.Instance.SetConfiguration(configuration);
             }
 #endif
+
+            ConfigProvider.Instance.Start(sleepTimeInMs);
+
         }
 
         public static void StopConfigCenter()
@@ -88,7 +90,7 @@ namespace WindNight.ConfigCenter.Extension
         private static string ReadFromConfig(Func<string, string, string> func, string configKey,
             string defaultValue = "", bool isThrow = false)
         {
-            if (string.IsNullOrEmpty(configKey)) return defaultValue;
+            if (configKey.IsNullOrEmpty()) return defaultValue;
             var configValue = string.Empty;
             try
             {
@@ -101,7 +103,7 @@ namespace WindNight.ConfigCenter.Extension
                     throw;
             }
 
-            if (string.IsNullOrEmpty(configValue) && !string.IsNullOrEmpty(defaultValue)) configValue = defaultValue;
+            if (configValue.IsNullOrEmpty() && !defaultValue.IsNullOrEmpty()) configValue = defaultValue;
 
             return configValue;
         }
@@ -110,7 +112,7 @@ namespace WindNight.ConfigCenter.Extension
             DomainSwitchNodeType nodeType = DomainSwitchNodeType.Unknown, string defaultValue = "",
             bool isThrow = false)
         {
-            if (string.IsNullOrEmpty(nodeName) || nodeType == DomainSwitchNodeType.Unknown) return defaultValue;
+            if (nodeName.IsNullOrEmpty() || nodeType == DomainSwitchNodeType.Unknown) return defaultValue;
             var configValue = string.Empty;
             try
             {
@@ -123,7 +125,7 @@ namespace WindNight.ConfigCenter.Extension
                     throw;
             }
 
-            if (string.IsNullOrEmpty(configValue) && !string.IsNullOrEmpty(defaultValue)) configValue = defaultValue;
+            if (configValue.IsNullOrEmpty() && !defaultValue.IsNullOrEmpty()) configValue = defaultValue;
 
             return configValue;
         }
@@ -176,6 +178,61 @@ namespace WindNight.ConfigCenter.Extension
             return ReadFromConfig(ConfigCenterContext.GetAppSetting, configKey, defaultValue, isThrow);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="configKey"></param>
+        /// <param name="isThrow"></param>
+        /// <returns></returns>
+        protected static string GetConfigValue(string configKey, bool isThrow = true)
+            => GetAppSetting(configKey, "", isThrow);
+
+        /// <summary>
+        /// </summary>
+        /// <param name="configKey"></param>
+        /// <param name="defaultValue"></param>
+        /// <param name="isThrow"></param>
+        /// <returns></returns>
+        protected static string GetConfigValue(string configKey, string defaultValue = "", bool isThrow = true)
+            => GetAppSetting(configKey, defaultValue, isThrow);
+
+        /// <summary>
+        /// </summary>
+        /// <param name="configKey"></param>
+        /// <param name="defaultValue"></param>
+        /// <param name="isThrow"></param>
+        /// <returns></returns>
+        protected static int GetConfigValue(string configKey, int defaultValue = 0, bool isThrow = true)
+            => GetAppSetting(configKey, defaultValue.ToString(), isThrow).ToInt(defaultValue);
+
+        /// <summary>
+        /// </summary>
+        /// <param name="configKey"></param>
+        /// <param name="defaultValue"></param>
+        /// <param name="isThrow"></param>
+        /// <returns></returns>
+        protected static long GetConfigValue(string configKey, long defaultValue = 0L, bool isThrow = true)
+            => GetAppSetting(configKey, defaultValue.ToString(), isThrow).ToLong(defaultValue);
+
+        /// <summary>
+        /// </summary>
+        /// <param name="configKey"></param>
+        /// <param name="defaultValue"></param>
+        /// <param name="isThrow"></param>
+        /// <returns></returns>
+        protected static decimal GetConfigValue(string configKey, decimal defaultValue = 0M, bool isThrow = true) =>
+            GetAppSetting(configKey, defaultValue.ToString(CultureInfo.InvariantCulture), isThrow)
+                .ToDecimal(defaultValue);
+
+        /// <summary>
+        /// </summary>
+        /// <param name="configKey"></param>
+        /// <param name="defaultValue"></param>
+        /// <param name="isThrow"></param>
+        /// <returns></returns>
+        protected static bool GetConfigValue(string configKey, bool defaultValue, bool isThrow)
+            => GetAppSetting(configKey, defaultValue ? TrueString : FalseString, isThrow) == TrueString;
+
+
         #endregion //end AppSetting
 
         #region Json Config 
@@ -190,10 +247,10 @@ namespace WindNight.ConfigCenter.Extension
         {
             var configValue = GetJsonConfig(fileKey, defaultValue, isThrow);
 
-#pragma warning disable CS8603 // 可能的 null 引用返回。
-            if (string.IsNullOrEmpty(configValue)) return default;
+            // 可能的 null 引用返回。
+            if (configValue.IsNullOrEmpty()) return default;
             return configValue.To<T>();
-#pragma warning restore CS8603 // 可能的 null 引用返回。
+            // 可能的 null 引用返回。
         }
 
         #endregion //end Json Config 
@@ -218,5 +275,7 @@ namespace WindNight.ConfigCenter.Extension
         }
 
         #endregion //end DomainSwitch
+
+
     }
 }

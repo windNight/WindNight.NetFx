@@ -121,7 +121,7 @@ namespace WindNight.ConfigCenter.Extension
             {
                 try
                 {
-                    if (!string.IsNullOrEmpty(configName)) return LoadConfigByFileName(configName);
+                    if (!configName.IsNullOrEmpty()) return LoadConfigByFileName(configName);
                     return LoadAllConfig();
                 }
                 catch (Exception ex)
@@ -143,14 +143,14 @@ namespace WindNight.ConfigCenter.Extension
                 try
                 {
                     var configValue = string.Empty;
-                    if (!string.IsNullOrEmpty(nodeName) && nodeType != DomainSwitchNodeType.Unknown)
+                    if (!nodeName.IsNullOrEmpty() && nodeType != DomainSwitchNodeType.Unknown)
                     {
                         if (nodeType == DomainSwitchNodeType.ServiceUrl)
                             configValue = DomainSwitch.GetServiceUrl(nodeName);
                         if (nodeType == DomainSwitchNodeType.SiteHost) configValue = DomainSwitch.GetSiteHost(nodeName);
 
                         var nodePath = $"{nodeType}:{nodeName}";
-                        if (!string.IsNullOrEmpty(configValue))
+                        if (!configValue.IsNullOrEmpty())
                             ConfigCenterContext.SetDomainSwitch(nodePath, configValue);
                         return new Tuple<int, string, string>(0, "刷新成功", configValue);
                     }
@@ -228,7 +228,7 @@ namespace WindNight.ConfigCenter.Extension
             if (File.Exists(filePath))
             {
                 content = File.ReadAllText(filePath);
-                if (!string.IsNullOrEmpty(content))
+                if (!content.IsNullOrEmpty())
                 {
                     ConfigCenterContext.SetJsonConfig(configName, content);
                     configUpdateTime[configName] = Directory.GetLastWriteTime(filePath);
@@ -253,7 +253,7 @@ namespace WindNight.ConfigCenter.Extension
                 var fileName = Path.GetFileName(file);
                 try
                 {
-                    if (string.IsNullOrEmpty(fileName)) continue;
+                    if (fileName.IsNullOrEmpty()) continue;
                     if (configUpdateTime.TryGetValue(fileName, out var lastModifyTime) &&
                         lastModifyTime == Directory.GetLastWriteTime(file)) continue;
 
@@ -398,5 +398,12 @@ namespace WindNight.ConfigCenter.Extension
         }
 
         #endregion //end Private
+
+#if !NET45
+
+
+
+#endif
+
     }
 }

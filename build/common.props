@@ -18,7 +18,7 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<NoWarn>
 			$(NoWarn);CA2007;1701;1702;1705;1591;
-			CS1574;CS1572;CS8767;CS8618;CS8601;CS8602;CS0168;CS8600;CS8603;CS8604;CS8632;CS8604;CS8625;
+			CS1574;CS1572;CS8767;CS8618;CS8601;CS8602;CS0168;CS8600;CS8603;CS8604;CS8632;CS8604;CS8625;CS8622;
 			NETSDK;NETSDK1138;
 			NU5048;NU5104;
 		</NoWarn>
@@ -33,4 +33,32 @@
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net45'">
+		<DefineConstants>$(DefineConstants);__WIN__;NET45;NETFX;</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)'=='net461'">
+		<DefineConstants>$(DefineConstants);__WIN__;NET461;NETFX;NET45LATER;</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+		<DefineConstants>$(DefineConstants);__CORE__;NETSTD;STD20;NET45LATER;</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
+		<DefineConstants>$(DefineConstants);__CORE__;NETSTD;STD21;NET45LATER;</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.0'">
+		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;COREAPP30;NET45LATER;</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
+		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;COREAPP31;CORE31LATER;NET45LATER;</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)'=='net5.0'">
+		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET50;CORE31LATER;NET45LATER;</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
+		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET60;CORE31LATER;NET45LATER;</DefineConstants>
+	</PropertyGroup>
+
+
 </Project>

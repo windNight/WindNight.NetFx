@@ -9,9 +9,10 @@
 		<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
 		<GenerateProgramFile>false</GenerateProgramFile>
 		<TargetFrameworks>
-			netcoreapp3.0;
+			<!--netcoreapp3.0;-->
 			netcoreapp3.1;
-			net5;
+			net5.0;
+			net6.0;
 		</TargetFrameworks>
 		<!-- Disable analysis for ConfigureAwait(false) -->
 		<WarningsNotAsErrors>$(WarningsNotAsErrors);CA2007</WarningsNotAsErrors>
@@ -24,7 +25,7 @@
 	<ItemGroup>
 		<Compile Include="..\..\CodeSnippets\Shared\ServiceDescriptorHelpers.cs" Link="Internal\Shared\ServiceDescriptorHelpers.cs" />
 		<!--<FrameworkReference Include="Microsoft.AspNetCore.App" />-->
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\WindNight.AspNetCore.GRpc.HttpApi\WindNight.AspNetCore.GRpc.HttpApi.csproj" />

@@ -18,7 +18,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
             Order = ExecOrder;
         }
 
-        public virtual int ExecOrder { get; set; } = -9999;
+        public int ExecOrder { get; set; } = -9999;
 
         protected virtual void AppendHeaderInfo(HttpContext context)
         {
@@ -59,16 +59,17 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 var result = context.Result;
                 CurrentItem.AddItem(WebConst.RESPONSE, result);
                 var request = context.HttpContext.Request;
-                DateTime? beginTime = CurrentItem.GetItem<DateTime>(WebConst.BEGINTIME);
-                var ms = beginTime.HasValue && beginTime.Value == null ? -1 : (long)(DateTime.Now - beginTime.Value).TotalMilliseconds;
+                DateTime beginTime = CurrentItem.GetItem<DateTime>(WebConst.BEGINTIME);
+                var ms = (long)(DateTime.Now - beginTime).TotalMilliseconds;
 
                 if (ms > ConfigItems.ApiWarningMis)
                     LogHelper.Warn($"请求共耗时:{ms} ms ");
                 else if (ConfigItems.LogProcessOpened)
                     LogHelper.Info($"请求共耗时:{ms} ms ");
 
-                LogHelper.Add($"请求耗时{ms} {request.Path}", LogLevels.ApiUrl, url: request.Path, millisecond: ms,
-                    appendMessage: true);
+                if (ConfigItems.ApiUrlOpened)
+                    LogHelper.Add($"请求耗时{ms} {request.Path}", LogLevels.ApiUrl, url: request.Path, millisecond: ms,
+                        appendMessage: true);
             }
             catch
             {
@@ -106,5 +107,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
         }
 
         #endregion
+
     }
+
 }

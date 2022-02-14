@@ -33,7 +33,7 @@ namespace WindNight.AspNetCore.Hosting.Internals
         public int GetAppSetting(string configKey, int defaultValue = 0, bool isThrow = true)
         {
             var config = GetAppSetting(configKey, string.Empty, isThrow);//  _configuration.GetValue<string>($"AppSettings:{configKey}");
-            if (string.IsNullOrEmpty(config) && isThrow)
+            if (config.IsNullOrEmpty() && isThrow)
                 throw new NotImplementedException($"Can't Get IConfiguration From DI Container.  ");
             return int.TryParse(config, out var flag) ? flag : defaultValue;
         }
@@ -41,7 +41,7 @@ namespace WindNight.AspNetCore.Hosting.Internals
         public bool GetAppSetting(string configKey, bool defaultValue = false, bool isThrow = true)
         { 
             var config = GetAppSetting(configKey, string.Empty, isThrow);// _configuration.GetValue<string>($"AppSettings:{configKey}");
-            if (string.IsNullOrEmpty(config) && isThrow)
+            if (config.IsNullOrEmpty() && isThrow)
                 throw new Exception($"Can't Get IConfiguration From DI Container.  ");
             if (bool.TryParse(config, out var flag))
             {

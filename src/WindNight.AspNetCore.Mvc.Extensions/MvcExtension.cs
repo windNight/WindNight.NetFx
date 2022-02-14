@@ -1,9 +1,12 @@
-﻿#if NETCOREAPP3_1||NET5_0
+﻿#if CORE31LATER
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
 #endif
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Filters.Extensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Controllers;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +16,83 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 {
     public static class MvcExtension
     {
+
+        /// <summary>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="actionFilters"></param>
+        /// <param name="addDefaultFilters"></param>
+        /// <param name="mvcJsonOption">
+        ///  used in  <see cref="Microsoft.Extensions.DependencyInjection.MvcJsonMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{MvcJsonOptions})"/>
+        ///   The <see cref="T:Microsoft.AspNetCore.Mvc.MvcJsonOptions" /> which need to be configured.
+        /// </param>
+        /// <param name="jsonOptions">
+        /// used in <see cref="Microsoft.Extensions.DependencyInjection.MvcCoreMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{Microsoft.AspNetCore.Mvc.JsonOptions})"/>
+        /// An <see cref="T:System.Action" /> to configure the <see cref="T:Microsoft.AspNetCore.Mvc.JsonOptions" />
+        /// </param>
+        /// <param name="mvcJsonOptions">
+        /// used in <see cref="Microsoft.Extensions.DependencyInjection.NewtonsoftJsonMvcBuilderExtensions.AddNewtonsoftJson(IMvcBuilder, Action{MvcNewtonsoftJsonOptions})"/>
+        /// Callback to configure <see cref="T:Microsoft.AspNetCore.Mvc.MvcNewtonsoftJsonOptions" />
+        /// </param>
+        /// <returns></returns>
+        public static IMvcBuilder AddMvcBuilderWithSelfFilters(this IServiceCollection services, IEnumerable<Type> actionFilters = null, bool addDefaultFilters = true
+#if !CORE31LATER
+            , Action<MvcJsonOptions>? mvcJsonOption = null
+#else
+            , Action<JsonOptions>? jsonOptions = null, Action<MvcNewtonsoftJsonOptions>? mvcJsonOptions = null
+#endif
+        )
+        {
+            Type[] defaultFilters = {
+                typeof (ApiResultFilterAttribute),
+                typeof (ApiExceptionFilterAttribute),
+                typeof (ValidateInputAttribute),
+                typeof (LogProcessAttribute)
+            };
+
+            return services.AddMvcBuilder(options =>
+                {
+
+                    if (actionFilters != null && actionFilters.Any())
+                    {
+                        foreach (var actionFilter in actionFilters.Distinct())
+                        {
+                            if (actionFilter.GetInterfaces().Contains(typeof(IFilterMetadata)) && !defaultFilters.Contains(actionFilter))
+                                AddFilter(actionFilter);
+                        }
+                    }
+
+                    if (addDefaultFilters)
+                        foreach (var actionFilter in defaultFilters)
+                            AddFilter(actionFilter);
+
+                    void AddFilter(Type actionFilter)
+                    {
+                        if (!typeof(IFilterMetadata).IsAssignableFrom(actionFilter))
+                            return;
+
+                        var typeFilterAttribute = new TypeFilterAttribute(actionFilter);
+
+                        if (!options.Filters.Contains(typeFilterAttribute))
+                            options.Filters.Add(typeFilterAttribute);
+
+                    }
+
+
+ 
+
+                }
+
+#if !CORE31LATER
+                ,  mvcJsonOption  
+#else
+                , jsonOptions, mvcJsonOptions
+#endif
+
+            );
+        }
+         
+
         /// <summary>
         /// </summary>
         /// <param name="services"></param> 
@@ -31,7 +111,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// </param>
         /// <returns></returns>
         public static IMvcBuilder AddMvcBuilder(this IServiceCollection services, Action<MvcOptions> mvcOption
-#if !NETCOREAPP3_1&&!NET5_0
+#if !CORE31LATER
             , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
             , Action<JsonOptions>? jsonOptions = null, Action<MvcNewtonsoftJsonOptions>? mvcJsonOptions = null
@@ -40,7 +120,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         {
             AddCommonMvc(services);
 
-#if NETCOREAPP3_1||NET5_0
+#if CORE31LATER
             return services.AddControllers(mvcOption)
                            .AppendJsonSettings(jsonOptions, mvcJsonOptions);
 
@@ -71,7 +151,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// </remarks>
         /// <returns></returns>
         public static IMvcBuilder AddMvcBuilderWithDefaultFilters(this IServiceCollection services
-#if !NETCOREAPP3_1&&!NET5_0
+#if !CORE31LATER
             , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
             , Action<JsonOptions>? jsonOptions = null, Action<MvcNewtonsoftJsonOptions>? mvcJsonOptions = null
@@ -85,7 +165,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                      options.Filters.Add(new ValidateInputAttribute());
                      options.Filters.Add(new LogProcessAttribute());
                  }
-#if !NETCOREAPP3_1&&!NET5_0
+#if !CORE31LATER
                 , mvcJsonOption
 #else
             , jsonOptions, mvcJsonOptions
@@ -122,14 +202,14 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
 
         public static IMvcBuilder AppendJsonSettings(this IMvcBuilder mvcBuilder
-#if !NETCOREAPP3_1&&!NET5_0
+#if !CORE31LATER
             , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
             , Action<JsonOptions>? jsonOptions = null, Action<MvcNewtonsoftJsonOptions>? mvcJsonOptions = null
 #endif
         )
         {
-#if NETCOREAPP3_1||NET5_0
+#if CORE31LATER
             return mvcBuilder.AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);

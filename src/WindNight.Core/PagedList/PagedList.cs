@@ -48,7 +48,7 @@ namespace System.Collections.Generic
                 PageSize = pageSize;
                 IndexFrom = indexFrom;
                 RecordCount = querable.Count();
-                PageCount = (int) Math.Ceiling(RecordCount / (double) PageSize);
+                PageCount = (int)Math.Ceiling(RecordCount / (double)PageSize);
 
                 List = querable.Skip((PageIndex - IndexFrom) * PageSize).Take(PageSize).ToList();
             }
@@ -58,7 +58,7 @@ namespace System.Collections.Generic
                 PageSize = pageSize;
                 IndexFrom = indexFrom;
                 RecordCount = source.Count();
-                PageCount = (int) Math.Ceiling(RecordCount / (double) PageSize);
+                PageCount = (int)Math.Ceiling(RecordCount / (double)PageSize);
 
                 List = source.Skip((PageIndex - IndexFrom) * PageSize).Take(PageSize).ToList();
             }
@@ -66,7 +66,7 @@ namespace System.Collections.Generic
 
         internal PagedList()
         {
-            List = new T[0];
+            List = new List<T>();// Array.Empty<T>();
         }
 
         public int PageIndex { get; set; }
@@ -101,7 +101,7 @@ namespace System.Collections.Generic
                 PageSize = pageSize;
                 IndexFrom = indexFrom;
                 RecordCount = querable.Count();
-                PageCount = (int) Math.Ceiling(RecordCount / (double) PageSize);
+                PageCount = (int)Math.Ceiling(RecordCount / (double)PageSize);
 
                 var items = querable.Skip((PageIndex - IndexFrom) * PageSize).Take(PageSize).ToArray();
 
@@ -113,7 +113,7 @@ namespace System.Collections.Generic
                 PageSize = pageSize;
                 IndexFrom = indexFrom;
                 RecordCount = source.Count();
-                PageCount = (int) Math.Ceiling(RecordCount / (double) PageSize);
+                PageCount = (int)Math.Ceiling(RecordCount / (double)PageSize);
 
                 var items = source.Skip((PageIndex - IndexFrom) * PageSize).Take(PageSize).ToArray();
 

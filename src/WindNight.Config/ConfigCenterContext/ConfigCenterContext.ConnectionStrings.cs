@@ -59,7 +59,7 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="defaultValue"></param>
         public static string GetConnectionString(string configKey, string defaultValue = "")
         {
-            if (string.IsNullOrEmpty(configKey)) return defaultValue;
+            if (configKey.IsNullOrEmpty()) return defaultValue;
             var key = FixDictKey(ConfigType.ConnectionStrings, configKey);
             return GetFromConfigurationDict(key, defaultValue);
         }

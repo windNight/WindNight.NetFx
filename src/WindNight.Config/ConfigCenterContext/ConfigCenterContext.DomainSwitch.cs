@@ -61,10 +61,10 @@ namespace WindNight.ConfigCenter.Extension
         public static string GetDomainSwitchConfig(string nodeName,
             DomainSwitchNodeType nodeType = DomainSwitchNodeType.Unknown, string defaultValue = "")
         {
-            if (string.IsNullOrEmpty(nodeName) || nodeType == DomainSwitchNodeType.Unknown) return defaultValue;
+            if (nodeName.IsNullOrEmpty() || nodeType == DomainSwitchNodeType.Unknown) return defaultValue;
             var key = FixDictKey(ConfigType.DomainSwitch, $"{nodeType}:{nodeName}");
             var configValue = GetFromConfigurationDict(key, defaultValue);
-            if (!string.IsNullOrEmpty(configValue)) return configValue;
+            if (!configValue.IsNullOrEmpty()) return configValue;
             var loadRlt = ConfigProvider.Instance.LoadDomainSwitch(configValue, nodeType);
 
             configValue = loadRlt.Item1 == 0 ? loadRlt.Item3 : defaultValue;

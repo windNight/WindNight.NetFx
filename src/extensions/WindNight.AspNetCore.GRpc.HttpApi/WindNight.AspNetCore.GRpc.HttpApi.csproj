@@ -2,9 +2,10 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>
-			netcoreapp3.0;
+			<!--netcoreapp3.0;-->
 			netcoreapp3.1;
-			net5;
+			net5.0;
+			net6.0;
 		</TargetFrameworks>
 		<WarningsNotAsErrors>$(WarningsNotAsErrors);CA2007</WarningsNotAsErrors>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -39,14 +40,14 @@
 	<ItemGroup>
 		<!--<FrameworkReference Include="Microsoft.AspNetCore.App" />-->
 
-		<PackageReference Include="Google.Api.CommonProtos" Version="2.3.0" />
-		<PackageReference Include="Google.Protobuf" Version="3.17.2" />
-		<PackageReference Include="Grpc.AspNetCore.Server" Version="2.37.0" />
-		<PackageReference Include="Grpc.Tools" Version="2.38.0">
+		<PackageReference Include="Google.Api.CommonProtos" Version="2.4.0" />
+		<PackageReference Include="Google.Protobuf" Version="3.19.1" />
+		<PackageReference Include="Grpc.AspNetCore.Server" Version="2.40.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.42.0-pre1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="System.IO.Pipelines" Version="5.0.1" />
+		<PackageReference Include="System.IO.Pipelines" Version="6.0.0" />
 	</ItemGroup>
 
 </Project>

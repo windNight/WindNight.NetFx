@@ -63,10 +63,10 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="defaultValue"></param>
         public static string GetJsonConfig(string fileName, string defaultValue = "")
         {
-            if (string.IsNullOrEmpty(fileName)) return defaultValue;
+            if (fileName.IsNullOrEmpty()) return defaultValue;
             var key = FixDictKey(ConfigType.JsonConfig, fileName);
             var configValue = GetFromConfigurationDict(key, defaultValue);
-            if (!string.IsNullOrEmpty(configValue)) return configValue;
+            if (!configValue.IsNullOrEmpty()) return configValue;
 
             var loadRlt = ConfigProvider.Instance.LoadJsonConfig(configValue);
 

@@ -66,12 +66,12 @@ namespace WindNight.Extension
             get
             {
                 string orderNumber = GetItem<string>(Consts.SERIZLNUMBER);
-                if (string.IsNullOrEmpty(orderNumber))
+                if (orderNumber.IsNullOrEmpty())
                 {
                     lock (LockSerialNumber)
                     {
                         orderNumber = GetItem<string>(Consts.SERIZLNUMBER);
-                        if (string.IsNullOrEmpty(orderNumber))
+                        if (orderNumber.IsNullOrEmpty())
                         {
                             orderNumber = GuidHelper.GenerateOrderNumber();
                             AddItem(Consts.SERIZLNUMBER, orderNumber);
@@ -118,7 +118,7 @@ namespace WindNight.Extension
         public static bool ContainKey(string key)
         {
             bool flag = false;
-            if (!string.IsNullOrEmpty(key) && Items != null)
+            if (!key.IsNullOrEmpty() && Items != null)
             {
 #if NET45
                 flag = Items.Contains(key);
@@ -138,7 +138,7 @@ namespace WindNight.Extension
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(key) || value == null || Items == null)
+                if (key.IsNullOrWhiteSpace() || value == null || Items == null)
                     return;
                 if (!ContainKey(key))
                     Items.Add(key, value);

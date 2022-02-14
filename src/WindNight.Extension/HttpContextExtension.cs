@@ -144,6 +144,7 @@ namespace WindNight.Extension
                 return DefaultIp;
             }
         }
+
         public static string GetCurrentUrl(this HttpContext context)
         {
             try
@@ -155,6 +156,7 @@ namespace WindNight.Extension
                 return "";
             }
         }
+
         public static string GetCurrentUrl()
         {
             try
@@ -195,7 +197,7 @@ namespace WindNight.Extension
                 if (context == null) return DefaultIp;
                 var headerDict = GetHeaderDict(context);
                 var ip = GetIpFromDict(headerDict);
-                if (string.IsNullOrEmpty(ip))
+                if (ip.IsNullOrEmpty())
                 {
 #if NETFRAMEWORK
                     ip = context.Request.UserHostAddress;
@@ -206,7 +208,7 @@ namespace WindNight.Extension
 
                 if ("::1".Equals(ip)) return DefaultIp;
 
-                if (string.IsNullOrEmpty(ip)) return DefaultIp;
+                if (ip.IsNullOrEmpty()) return DefaultIp;
 
                 return ip.Split(',')[0];
             }
@@ -215,6 +217,7 @@ namespace WindNight.Extension
                 return DefaultIp;
             }
         }
+
         public static HttpContext? GetHttpContext()
         {
             HttpContext? context = null;
@@ -244,11 +247,11 @@ namespace WindNight.Extension
             {
                 headerDict.Add(item.ToString(), context.Request.Headers[item.ToString()]?.ToString());
             }
-            if (!string.IsNullOrEmpty(context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"]?.ToString()))
+            if (!context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"].IsNullOrEmpty())
             {
                 headerDict.Add("HTTP_X_FORWARDED_FOR", context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"]?.ToString());
             }
-            if (!string.IsNullOrEmpty(context.Request.ServerVariables["REMOTE_ADDR"]?.ToString()))
+            if (!context.Request.ServerVariables["REMOTE_ADDR"].IsNullOrEmpty())
             {
                 headerDict.Add("REMOTE_ADDR", context.Request.ServerVariables["REMOTE_ADDR"]?.ToString());
             }
@@ -270,11 +273,12 @@ namespace WindNight.Extension
                 "REMOTE_ADDR"
             };
             foreach (var key in timKey)
-                if (headerDict.TryGetValue(key, out ip) && !string.IsNullOrEmpty(ip))
+                if (headerDict.TryGetValue(key, out ip) && !ip.IsNullOrEmpty())
                     break;
             return ip;
         }
 
         #endregion
+
     }
 }

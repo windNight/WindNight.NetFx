@@ -149,7 +149,7 @@ Background
                 // 或者 修正上限和下限 max(start,logs[0].time) min(end,logs[logs.length-1].time) 
                 if (log.time < start || log.time > end) continue;
 
-                if (log.action == "login" && (string.IsNullOrEmpty(preAction) || preAction == "logout"))
+                if (log.action == "login" && (preAction.IsNullOrEmpty() || preAction == "logout"))
                 {
                     preAction = "login";
                     loginIn = log.time;

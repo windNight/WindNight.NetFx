@@ -59,6 +59,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindNight.Extension.Dapper", "Dapper\WindNight.Extension.Dapper\WindNight.Extension.Dapper.csproj", "{331BB1B4-5B7A-44FB-A273-5EF60D439A00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +139,10 @@ Global
 		{23EB0CBC-F92D-4273-9467-AEB80EDFC936}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23EB0CBC-F92D-4273-9467-AEB80EDFC936}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23EB0CBC-F92D-4273-9467-AEB80EDFC936}.Release|Any CPU.Build.0 = Release|Any CPU
+		{331BB1B4-5B7A-44FB-A273-5EF60D439A00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{331BB1B4-5B7A-44FB-A273-5EF60D439A00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{331BB1B4-5B7A-44FB-A273-5EF60D439A00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{331BB1B4-5B7A-44FB-A273-5EF60D439A00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

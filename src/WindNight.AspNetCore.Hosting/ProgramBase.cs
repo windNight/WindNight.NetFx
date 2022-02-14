@@ -37,9 +37,9 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         public static async Task InitAsync(Func<string, string[], IHostBuilder> createHostBuilder, string buildType, string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEventHandler;
-#pragma warning disable CS8622 // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
+            // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
             TaskScheduler.UnobservedTaskException += UnobservedTaskHandler;
-#pragma warning restore CS8622 // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
+            // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
             var host = CreateHostBuilder(createHostBuilder, buildType, args);
             // await host.InjectionRSAsync(buildType);
             await host.RunAsync();
@@ -56,9 +56,9 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         public static void Init(Func<string, string[], IHostBuilder> createHostBuilder, string buildType, string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEventHandler;
-#pragma warning disable CS8622 // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
+            // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
             TaskScheduler.UnobservedTaskException += UnobservedTaskHandler;
-#pragma warning restore CS8622 // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
+            // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
             var host = CreateHostBuilder(createHostBuilder, buildType, args);
             // host.InjectionRS(buildType);
             host.Run();
@@ -216,12 +216,12 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
         public static void UnobservedTaskHandler(object sender, UnobservedTaskExceptionEventArgs e)
         {
-            Ioc.GetService<ILogService>()?.Fatal("UnobservedTaskException", e.Exception);
+            Ioc.Instance.CurrentLogService?.Fatal("UnobservedTaskException", e.Exception);
         }
 
         public static void UnhandledExceptionEventHandler(object sender, UnhandledExceptionEventArgs e)
         {
-            Ioc.GetService<ILogService>()?.Fatal("UnhandledException", e.ExceptionObject as Exception);
+            Ioc.Instance.CurrentLogService?.Fatal("UnhandledException", e.ExceptionObject as Exception);
         }
 
         /// <summary>
@@ -300,7 +300,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                 services.TryAddSingleton(configuration);
                 configureDelegate?.Invoke(context, services);
                 Ioc.Instance.InitServiceProvider(services.BuildServiceProvider());
-                if (Ioc.GetService<IConfigService>() == null)
+                if (Ioc.Instance.CurrentConfigService == null)
                 {
                     services.AddSingleton<IConfigService, DefaultConfigService>();
                     Ioc.Instance.InitServiceProvider(services.BuildServiceProvider());

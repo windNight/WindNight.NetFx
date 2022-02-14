@@ -6,16 +6,41 @@ using WindNight.Core.Abstractions;
 
 namespace Microsoft.Extensions.DependencyInjection.WnExtension
 {
-    /// <summary>
-    /// </summary>
-    public class Ioc
+    /// <summary> </summary>
+    public partial class Ioc
     {
-        private static readonly Lazy<Ioc> LazyIocInstance = new Lazy<Ioc>(() => new Ioc());
+        private IConfigService? _currentConfigService { get; set; } = null;
+
+        public void SetCurrentConfigService(IConfigService configService)
+        {
+            _currentConfigService = configService;
+        }
+
+        public IConfigService? CurrentConfigService => _currentConfigService ?? GetService<IConfigService>();
+
+
+        private ILogService? _currentLogService { get; set; } = null;
+
+        public void SetCurrentLogService(ILogService logService)
+        {
+            _currentLogService = logService;
+        }
+
+        public ILogService? CurrentLogService => _currentLogService ?? GetService<ILogService>();
+
+    }
+
+    /// <summary> </summary>
+    public partial class Ioc
+    {
+        //private static readonly Lazy<Ioc> LazyIocInstance = new Lazy<Ioc>(() => new Ioc());
+        private static readonly Lazy<Ioc> LazyIocInstance = new(() => new Ioc());
 
         //public static readonly Ioc Instance = new Ioc();
 
         private Ioc()
         {
+
         }
 
         /// <summary>
@@ -33,7 +58,6 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         {
             ServiceProvider = serviceProvider;
         }
-
 
         /// <summary>
         ///     Get service of type T from the System.IServiceProvider.
@@ -67,7 +91,9 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         }
 #endif
 
+
     }
+
 
     public static class IocExtension
     {
@@ -86,7 +112,7 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         {
             if (serviceProvider == null) return default;
 #if NETSTANDARD
-            if (!string.IsNullOrEmpty(name))
+            if (!name.IsNullOrEmpty())
             {
                 var impls = serviceProvider.GetServices<T>();
                 foreach (var impl in impls)
@@ -105,5 +131,8 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
 #endif
 
         }
+
+
     }
+
 }
