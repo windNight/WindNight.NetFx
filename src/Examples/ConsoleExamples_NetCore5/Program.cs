@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting.WnExtensions;
@@ -19,18 +21,21 @@ namespace ConsoleExamples_NetCore5
 
     class Program
     {
-         
+
+
         static async Task Main(string[] args)
-        { 
+        {
 
             var buildType = "";
 #if DEBUG
             buildType = "Debug";
 #else
-            buildType = "Release";
+                    buildType = "Release";
 #endif
             await ProgramBase.InitAsync(CreateHostBuilder, buildType, args);
         }
+
+
 
         private static IHostBuilder CreateHostBuilder(string buildType, string[] args)
         {
@@ -79,7 +84,7 @@ namespace ConsoleExamples_NetCore5
         //}
 
         static void ConsolePublish(LogHelper.LogInfo logInfo)
-        { 
+        {
             if (logInfo == null) return;
             var logLevel = logInfo.Level;
             var message = logInfo.Content;

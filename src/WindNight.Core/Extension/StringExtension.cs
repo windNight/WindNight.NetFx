@@ -109,10 +109,10 @@ namespace System
         public static string UrlEncode(this string sourceString)
         {
             if (sourceString.IsNullOrEmpty()) return sourceString;
-            return WebUtility.UrlEncode(sourceString);
+            return WebUtility.UrlEncode(sourceString) ?? string.Empty;
         }
 
-        public static string UrlDecode(this string sourceString)
+        public static string UrlDecode(this string sourceString)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
         {
             if (sourceString.IsNullOrEmpty()) return sourceString;
             return WebUtility.UrlDecode(sourceString);

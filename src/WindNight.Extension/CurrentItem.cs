@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 #endif
 namespace WindNight.Extension
 {
+    // 建议在web项目中使用
     public class CurrentItem : IDisposable
     {
         private static readonly object LockSerialNumber = new object();
@@ -54,6 +55,7 @@ namespace WindNight.Extension
                 }
                 catch
                 {
+                    //TODO 需要优化
                     // return _items ?? (_items = new ConcurrentDictionary<object, object>());
                     return new ConcurrentDictionary<object, object>();
                 }

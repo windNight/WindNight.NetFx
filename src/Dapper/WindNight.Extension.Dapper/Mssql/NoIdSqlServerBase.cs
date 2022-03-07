@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection.WnExtension;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using System.Net.Sockets;
+using System.Reflection;
 using WindNight.Core.Abstractions;
 using WindNight.Core.SQL;
 using WindNight.Core.SQL.Abstractions;
@@ -32,6 +34,10 @@ namespace WindNight.Extension.Dapper.Mssql
             return SqlTimer((_sql, _param) => Query<T>(DbConnectString, _sql, _param),
                 sql, param, nameof(DbQueryE));
         }
+        protected virtual T DbQueryE<T>(string conn, string sql, object param = null)
+        {
+            return SqlTimer(Query<T>, conn, sql, param, nameof(DbQueryE));
+        }
 
         /// <summary>
         /// 查询自定义对象列表
@@ -45,6 +51,10 @@ namespace WindNight.Extension.Dapper.Mssql
             return SqlTimer((_sql, _param) => QueryList<T>(DbConnectString, _sql, _param),
                 sql, param, nameof(DbQueryEList));
         }
+        protected virtual IEnumerable<T> DbQueryEList<T>(string conn, string sql, object param = null)
+        {
+            return SqlTimer(QueryList<T>, conn, sql, param, nameof(DbQueryEList));
+        }
 
         /// <summary>
         /// 查询实体对象
@@ -56,6 +66,11 @@ namespace WindNight.Extension.Dapper.Mssql
         {
             return SqlTimer((_sql, _param) => Query<TEntity>(DbConnectString, _sql, _param),
                 sql, param, nameof(DbQuery));
+        }
+       
+        protected virtual TEntity DbQuery(string conn, string sql, object param = null)
+        {
+            return SqlTimer(Query<TEntity>, conn, sql, param, nameof(DbQuery));
         }
 
         /// <summary>
@@ -69,7 +84,12 @@ namespace WindNight.Extension.Dapper.Mssql
             return SqlTimer((_sql, _param) => QueryList<TEntity>(DbConnectString, _sql, _param),
                 sql, param, nameof(DbQueryList));
         }
-
+       
+        protected virtual IEnumerable<TEntity> DbQueryList(string conn, string sql, object param = null)
+        {
+            return SqlTimer(QueryList<TEntity>, conn, sql, param, nameof(DbQueryList));
+        }
+        
         /// <summary>
         /// 执行受影响行数
         /// </summary>
@@ -82,6 +102,11 @@ namespace WindNight.Extension.Dapper.Mssql
                 sql, param, nameof(DbExecute));
         }
 
+        protected int DbExecute(string conn, string sql, object param = null)
+        {
+            return SqlTimer(Execute, conn, sql, param, nameof(DbExecute));
+        }
+
         /// <summary>
         /// 首行首列数据
         /// </summary>
@@ -92,7 +117,12 @@ namespace WindNight.Extension.Dapper.Mssql
         protected T DbExecuteScalar<T>(string sql, object param = null)
         {
             return SqlTimer((_sql, _param) => ExecuteScalar<T>(DbConnectString, _sql, _param),
-                sql, param, nameof(ExecuteScalar));
+                sql, param, nameof(DbExecuteScalar));
+        }
+       
+        protected T DbExecuteScalar<T>(string conn, string sql, object param = null)
+        {
+            return SqlTimer(ExecuteScalar<T>, conn, sql, param, nameof(DbExecuteScalar));
         }
 
         /// <summary>
@@ -135,9 +165,16 @@ namespace WindNight.Extension.Dapper.Mssql
         /// <returns></returns>
         protected virtual async Task<T> DbQueryEAsync<T>(string sql, object param = null)
         {
-            return await SqlTimerAsync((_1, _2) => QueryAsync<T>(DbConnectString, _1, _2),
-                sql, param, nameof(DbQueryE));
+            return await SqlTimerAsync(async (_1, _2) => await QueryAsync<T>(DbConnectString, _1, _2),
+                sql, param, nameof(DbQueryEAsync));
         }
+
+        protected virtual async Task<T> DbQueryEAsync<T>(string conn, string sql, object param = null)
+        {
+            return await SqlTimerAsync(async (_0, _1, _2) => await QueryAsync<T>(_0, _1, _2), conn, sql, param, nameof(DbQueryEAsync));
+        }
+
+
 
         /// <summary>
         /// 查询自定义对象列表 Async
@@ -149,7 +186,12 @@ namespace WindNight.Extension.Dapper.Mssql
         protected virtual async Task<IEnumerable<T>> DbQueryEListAsync<T>(string sql, object param = null)
         {
             return await SqlTimerAsync(async (_sql, _param) => await QueryListAsync<T>(DbConnectString, _sql, _param),
-                sql, param, nameof(DbQueryEList));
+                sql, param, nameof(DbQueryEListAsync));
+        }
+        protected virtual async Task<IEnumerable<T>> DbQueryEListAsync<T>(string conn, string sql, object param = null)
+        {
+            return await SqlTimerAsync(async (_0, _sql, _param) => await QueryListAsync<T>(_0, _sql, _param),
+                conn, sql, param, nameof(DbQueryEListAsync));
         }
 
         /// <summary>
@@ -161,8 +203,13 @@ namespace WindNight.Extension.Dapper.Mssql
         protected virtual async Task<TEntity> DbQueryAsync(string sql, object param = null)
         {
             return await SqlTimerAsync(async (_sql, _param) => await QueryAsync<TEntity>(DbConnectString, _sql, _param),
-                sql, param, nameof(DbQuery));
+                sql, param, nameof(DbQueryAsync));
         }
+        protected virtual async Task<TEntity> DbQueryAsync(string conn, string sql, object param = null)
+        {
+            return await SqlTimerAsync(async (_0, _sql, _param) => await QueryAsync<TEntity>(_0, _sql, _param), conn, sql, param, nameof(DbQueryAsync));
+        }
+
 
         /// <summary>
         /// 查询实体对象列表 Async
@@ -176,6 +223,10 @@ namespace WindNight.Extension.Dapper.Mssql
                 async (_sql, _param) => await QueryListAsync<TEntity>(DbConnectString, _sql, _param),
                 sql, param, nameof(DbQueryList));
         }
+        protected virtual async Task<IEnumerable<TEntity>> DbQueryListAsync(string conn, string sql, object param = null)
+        {
+            return await SqlTimerAsync(async (_0, _sql, _param) => await QueryListAsync<TEntity>(_0, _sql, _param), conn, sql, param, nameof(DbQueryList));
+        }
 
         /// <summary>
         /// 执行受影响行数 Async
@@ -186,8 +237,13 @@ namespace WindNight.Extension.Dapper.Mssql
         protected async Task<int> DbExecuteAsync(string sql, object param = null)
         {
             return await SqlTimerAsync(async (_sql, _param) => await ExecuteAsync(DbConnectString, _sql, _param),
-                sql, param, nameof(DbExecute));
+                sql, param, nameof(DbExecuteAsync));
         }
+        protected async Task<int> DbExecuteAsync(string conn, string sql, object param = null)
+        {
+            return await SqlTimerAsync(async (_0, _sql, _param) => await ExecuteAsync(_0, _sql, _param), conn, sql, param, nameof(DbExecuteAsync));
+        }
+
 
         /// <summary>
         /// 首行首列数据 Async
@@ -200,7 +256,12 @@ namespace WindNight.Extension.Dapper.Mssql
         {
             return await SqlTimerAsync(
                 async (_sql, _param) => await ExecuteScalarAsync<T>(DbConnectString, _sql, _param),
-                sql, param, nameof(ExecuteScalar));
+                sql, param, nameof(DbExecuteScalarAsync));
+        }
+        protected async Task<T> DbExecuteScalarAsync<T>(string conn, string sql, object param = null)
+        {
+            return await SqlTimerAsync(
+                async (_0, _sql, _param) => await ExecuteScalarAsync<T>(_0, _sql, _param), conn, sql, param, nameof(DbExecuteScalarAsync));
         }
 
         /// <summary>
@@ -255,6 +316,8 @@ namespace WindNight.Extension.Dapper.Mssql
         protected T SqlTimer<T>(Func<string, object, T> sqlFunc, string sql, object param = null,
             string actionName = "")
         {
+
+   
             var ticks = DateTime.Now.Ticks;
             try
             {
@@ -262,7 +325,7 @@ namespace WindNight.Extension.Dapper.Mssql
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"{actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                LogHelper.Error($" 【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
             }
             finally
             {
@@ -270,7 +333,7 @@ namespace WindNight.Extension.Dapper.Mssql
                 {
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                     LogHelper.Info(
-                        $"sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                        $"【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
                 }
             }
 
@@ -288,7 +351,7 @@ namespace WindNight.Extension.Dapper.Mssql
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"{actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                LogHelper.Error($"【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】{actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
             }
             finally
             {
@@ -296,7 +359,60 @@ namespace WindNight.Extension.Dapper.Mssql
                 {
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                     LogHelper.Info(
-                        $"sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                        $"【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                }
+            }
+
+            return default;
+        }
+
+
+
+        protected T SqlTimer<T>(Func<string, string, object, T> sqlFunc, string connectString, string sql, object param = null,
+            string actionName = "")
+        {
+            var ticks = DateTime.Now.Ticks;
+            try
+            {
+                return sqlFunc(connectString, sql, param);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】 {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+            }
+            finally
+            {
+                if (ConfigItems.OpenDapperLog)
+                {
+                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                    LogHelper.Info(
+                        $"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】 sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                }
+            }
+
+            return default;
+        }
+
+
+        protected async Task<T> SqlTimerAsync<T>(Func<string, string, object, Task<T>> sqlFunc, string connectString, string sql, object param = null,
+            string actionName = "")
+        {
+            var ticks = DateTime.Now.Ticks;
+            try
+            {
+                return await sqlFunc(connectString, sql, param);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】{actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+            }
+            finally
+            {
+                if (ConfigItems.OpenDapperLog)
+                {
+                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                    LogHelper.Info(
+                        $"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】 sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
                 }
             }
 
@@ -347,10 +463,20 @@ namespace WindNight.Extension.Dapper.Mssql
                     return config.GetAppSetting(ConfigItemsKey.OpenDapperLogKey, false, false);
                 }
             }
+            public static bool IsLogConnectString
+            {
+                get
+                {
+                    var config = Ioc.Instance.CurrentConfigService;
+                    if (config == null) return false;
+                    return config.GetAppSetting(ConfigItemsKey.IsLogConnectStringKey, false, false);
+                }
+            }
 
             static class ConfigItemsKey
             {
-                internal static string OpenDapperLogKey = "OpenDapperLog";
+                internal static string OpenDapperLogKey = "DapperConfig:OpenDapperLog";
+                internal static string IsLogConnectStringKey = "DapperConfig:IsLogConnectString";
 
             }
         }

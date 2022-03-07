@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using RestSharp;
+using RestSharp.Extensions;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Tools;
 using WindNight.Extension.Internals;
@@ -19,7 +21,7 @@ namespace WindNight.Extension
             {
                 get
                 {
-                    var config = Ioc.GetService<IConfigService>();
+                    var config = Ioc.Instance.CurrentConfigService;// Ioc.GetService<IConfigService>();
                     if (config == null) return false;
                     return config.GetAppSetting("DebugIsOpen", false, false);
                 }
@@ -177,16 +179,22 @@ namespace WindNight.Extension
         }
 
 
-        private static async Task<T> ExecuteHttpClientAsync<T>(string domain, IRestRequest request)
+        private static async Task<T> ExecuteHttpClientAsync<T>(string domain, IRestRequest request, CancellationToken token = default(CancellationToken))
         {
             var client = new RestClient(domain)
             {
                 Proxy = null,
                 Timeout = 1000 * 60 * 20
             };
+#if  NET45
             var response = await client.ExecuteTaskAsync(request);
-            //var response = await client.ExecuteAsync(request);
+#else
+            var response = await client.ExecuteAsync(request, token);
+#endif
             return DeserializeResponse<T>(response);
+
+
+            // return DeserializeResponse<T>(response);
         }
 
         private static T DeserializeResponse<T>(IRestResponse response)

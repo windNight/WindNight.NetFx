@@ -44,8 +44,7 @@ namespace Newtonsoft.Json.Extension
                 return null;
             }
         }
-
-
+         
         /// <summary>
         ///     DeserializeObject Use Newtonsoft.Json
         /// </summary>
@@ -107,6 +106,7 @@ namespace Newtonsoft.Json.Extension
 
             return JsonConvert.SerializeObject(obj, formatting, settings);
         }
+
     }
 
     //internal class IPAddressConverter : JsonConverter

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using WindNight.Core.Extension;
 
 namespace System
 {
@@ -225,7 +226,7 @@ namespace System
             return dateTime.ToString(format).ToInt(defaultValue);
         }
 
-        public static DateTime  FirstDayOfMonth(this DateTime dateTime)
+        public static DateTime FirstDayOfMonth(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, 1);
         }
@@ -277,8 +278,17 @@ namespace System
         /// <returns></returns>
         public static int WeekOfYear(this DateTime date)
         {
-            var dateTime = date.FirstDayOfYear();
-            return (int)((date - dateTime).Days + dateTime.DayOfWeek) / 7 + 1;
+            var gregorianCalendar = new Globalization.GregorianCalendar();
+
+            //获取指定日期是周数 CalendarWeekRule指定 第一周开始于该年的第一天，DayOfWeek指定每周第一天是星期几　
+            int weekOfYear = gregorianCalendar.GetWeekOfYear(date, Globalization.CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+
+            return weekOfYear;
+
+            //var dateTime = date.FirstDayOfYear();
+            //var d = ((date.Date - dateTime.Date).Days + (int)dateTime.DayOfWeek) / 7.0;
+            //return d.Ceiling();
+             
         }
 
         public static
@@ -314,6 +324,7 @@ namespace System
             return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.FormatDateTime(format));
 
         }
+
         public static List<DateTime> GeneratorDateTimeList(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false)
         {
             return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time);
@@ -366,6 +377,7 @@ namespace System
         {
             return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.ToDateInt());
         }
+
         public static List<string> GeneratorDateStringList(this int beginDateInt, DateTime? endDateParam = null, string format = "yyyyMMdd", bool withLastDay = false)
         {
             return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.FormatDateTime(format));

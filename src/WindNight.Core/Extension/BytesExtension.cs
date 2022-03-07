@@ -129,7 +129,6 @@ namespace System.Text
             return ret;
         }
 
-
         public static string ToHexString(this byte[] bytes, string splitStr = " ")
         {
             return bytes.ToHexString(0, bytes.Length, splitStr);

@@ -1,6 +1,7 @@
-using System;
 using Xunit;
 using Xunit.Abstractions;
+using IpHelper = WindNight.Extension.HttpContextExtension;
+
 
 namespace WindNight.Extension.Tests
 {
@@ -14,7 +15,7 @@ namespace WindNight.Extension.Tests
         [Fact]
         public void GetLocalIPsTest()
         {
-            var ips = HttpContextExtension.GetLocalServerIps();
+            var ips = IpHelper.GetLocalServerIps();
             Output($"GetLocalServerIps()->{string.Join(",", ips)}");
 
         }
@@ -22,9 +23,9 @@ namespace WindNight.Extension.Tests
         [Fact]
         public void GetLocalServerIpsTest()
         {
-            var ips = HttpContextExtension.GetLocalServerIps();
+            var ips = IpHelper.GetLocalServerIps();
             Output($"GetLocalServerIps()->{string.Join(",", ips)}");
-            ips = HttpContextExtension.GetLocalServerIps();
+            ips = IpHelper.GetLocalServerIps();
             Output($"GetLocalServerIps()->{string.Join(",", ips)}");
 
         }

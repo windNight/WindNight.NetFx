@@ -34,6 +34,10 @@ namespace WindNight.ConfigCenter.Extension
             {
                 ConfigProvider.Instance.SetConfiguration(configuration);
             }
+            else
+            {
+                ConfigProvider.Instance.SetConfiguration();
+            }
 #endif
 
             ConfigProvider.Instance.Start(sleepTimeInMs);

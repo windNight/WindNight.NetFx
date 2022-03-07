@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WindNight.Core.Abstractions
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.All)]
     public class AliasAttribute : Attribute
     {
         /// <summary>

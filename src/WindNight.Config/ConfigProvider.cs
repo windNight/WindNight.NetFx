@@ -11,11 +11,14 @@ using WindNight.ConfigCenter.Extension.Internal;
 
 #if NET45
 using System.Configuration;
+
 #else
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Extensions;
 using Newtonsoft.Json.Linq;
 using System.Collections;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 
 #endif
 
@@ -28,10 +31,17 @@ namespace WindNight.ConfigCenter.Extension
     {
 #if !NET45
         private static IConfiguration? _configuration;
+
+        public void SetConfiguration()
+        {
+            _configuration = Ioc.GetService<IConfiguration>();
+        }
+
         public void SetConfiguration(IConfiguration configuration)
         {
             _configuration = configuration;
         }
+
 #endif
 
         private static Thread _thread;

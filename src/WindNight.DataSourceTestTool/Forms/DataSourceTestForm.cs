@@ -468,18 +468,21 @@ namespace WindNight.DataSourceTestTool.Forms
         }
 
         bool DbTypeIsConsumer => DbType.ToLower() == "consumer";
+
         bool DbTypeIsProducer => DbType.ToLower() == "producer";
+
         bool DbTypeIsRedis => DbType.ToLower() == "redis";
+
         bool DbTypeIsMssql => DbType.ToLower() == "mssql";
+
         bool DbTypeIsMysql => DbType.ToLower() == "mysql";
+
         bool DbTypeIsMongodb => DbType.ToLower() == "mongodb";
 
         private void btn_Stop_Click(object sender, EventArgs e)
         {
             btn_Stop.Enabled = false;
             btn_Test.Enabled = false;
-
-
 
             btn_Stop.Enabled = true;
             btn_Test.Enabled = true;
@@ -489,8 +492,6 @@ namespace WindNight.DataSourceTestTool.Forms
         private void btn_Start_Click(object sender, EventArgs e)
         {
             btn_Start.Enabled = false;
-
-
 
             btn_Start.Enabled = true;
 
@@ -507,28 +508,19 @@ namespace WindNight.DataSourceTestTool.Forms
         // Mongodb mongodb://#USER#:#PASSWORD#@#HOST1#:#PORT1#,#HOST2#:#PORT2#/#DATABASE#?replicaSet=YourReplicaSet
         // Consumer  amqp://#USER#:#PASSWORD#@#HOST#:#PORT#,#QUEUENAME#
         // Producer  amqp://#USER#:#PASSWORD#@#HOST#:#PORT#,#TOPICNAME#
-
-        /*
-        Data Source=mysql9.tcy365.org;Port=3306;Database=cpsopendatadb;User ID=cpsopendata;Password=m7hvgrdf;Charset=utf8mb4;SslMode=None;
-
-        redis9.tcy365.org:10013,password=msc67b3u,defaultDataBase=15,Prefix=xxxx
-
-        data source=192.168.1.5,1436;database=ctdeveloperdb;user id=ctdeveloper;password=wq4jchag;Connection Timeout=15;
-
-
-         */
+    
 #if DEBUG
-        public static Dictionary<string, string> DbConnTemplateDict = new Dictionary<string, string>
+        public static Dictionary<string, string> DbConnTemplateDict = new()
         {
-            { "Redis","redis9.tcy365.org:10013,password=msc67b3u,defaultDataBase=15,Prefix=xxxx"},
-            { "Mssql","data source=192.168.1.5,1436;database=ctdeveloperdb;user id=ctdeveloper;password=wq4jchag;Connection Timeout=15;"},
-            { "Mysql","Data Source=mysql9.tcy365.org;Port=3306;Database=cpsopendatadb;User ID=cpsopendata;Password=m7hvgrdf;Charset=utf8mb4;SslMode=None;"},
-            { "Mongodb","mongodb://lycpsopen:avgqhp5b@mongodb1.tcy365.org:60002,mongodb2.tcy365.org:60002/lycpsopendb?replicaSet=mongodb34"},
-            { "Consumer","amqp://#USER#:#PASSWORD#@#HOST#:#PORT#,#QUEUENAME#"},
-            { "Producer","amqp://#USER#:#PASSWORD#@#HOST#:#PORT#,#TOPICNAME#"},
+            { "Redis", "redis9.tcy365.org:10013,password=msc67b3u,defaultDataBase=15,Prefix=xxxx" },
+            { "Mssql", "data source=192.168.1.5,1436;database=ctdeveloperdb;user id=ctdeveloper;password=wq4jchag;Connection Timeout=15;" },
+            { "Mysql", "Data Source=mysql9.tcy365.org;Port=3306;Database=cpsopendatadb;User ID=cpsopendata;Password=m7hvgrdf;Charset=utf8mb4;SslMode=None;" },
+            { "Mongodb", "mongodb://lycpsopen:avgqhp5b@mongodb1.tcy365.org:60002,mongodb2.tcy365.org:60002/lycpsopendb?replicaSet=mongodb34" },
+            { "Consumer", "amqp://#USER#:#PASSWORD#@#HOST#:#PORT#,#QUEUENAME#" },
+            { "Producer", "amqp://#USER#:#PASSWORD#@#HOST#:#PORT#,#TOPICNAME#" },
         };
 #else
-        public static Dictionary<string, string> DbConnTemplateDict = new Dictionary<string, string>
+        public static Dictionary<string, string> DbConnTemplateDict = new()
         {
             { "Redis","#HOST#:#PORT#,password=#PASSWORD#,defaultDataBase=#DATABASE#,Prefix=xx"},
             { "Mssql","data source=#HOST#,#PORT#;database=#DATABASE#;user id=#USER#;password=#PASSWORD#;Connection Timeout=15;"},

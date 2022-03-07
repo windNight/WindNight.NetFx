@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Dapper.Internals;
- 
+
 
 namespace WindNight.Extension.Dapper.Mysql
 {
@@ -24,6 +24,50 @@ namespace WindNight.Extension.Dapper.Mysql
 
         protected virtual string DbConnectString => GetConnStr();
 
+        /// <summary>
+        /// 使用自定义连接
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sqlFunc"></param>
+        /// <param name="connectString"></param>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <param name="actionName"></param>
+        /// <returns></returns>
+        protected T SqlTimer<T>(Func<string, string, object, T> sqlFunc, string connectString, string sql, object param = null,
+            string actionName = "")
+        {
+            var ticks = DateTime.Now.Ticks;
+            try
+            {
+                return sqlFunc(connectString, sql, param);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】{actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+            }
+            finally
+            {
+                if (ConfigItems.OpenDapperLog)
+                {
+                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                    LogHelper.Info(
+                        $"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                }
+            }
+
+            return default;
+        }
+
+        /// <summary>
+        ///  使用默认连接
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sqlFunc"></param>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <param name="actionName"></param>
+        /// <returns></returns>
         protected T SqlTimer<T>(Func<string, object, T> sqlFunc, string sql, object param = null,
             string actionName = "")
         {
@@ -34,7 +78,7 @@ namespace WindNight.Extension.Dapper.Mysql
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"{actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                LogHelper.Error($"【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
             }
             finally
             {
@@ -42,13 +86,37 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                     LogHelper.Info(
-                        $"sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                        $"【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
                 }
             }
 
             return default;
         }
 
+        protected async Task<T> SqlTimerAsync<T>(Func<string, string, object, Task<T>> sqlFunc, string connectString, string sql, object param = null,
+            string actionName = "")
+        {
+            var ticks = DateTime.Now.Ticks;
+            try
+            {
+                return await sqlFunc(connectString, sql, param);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】{actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+            }
+            finally
+            {
+                if (ConfigItems.OpenDapperLog)
+                {
+                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                    LogHelper.Info(
+                        $"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                }
+            }
+
+            return default;
+        }
 
         protected async Task<T> SqlTimerAsync<T>(Func<string, object, Task<T>> sqlFunc, string sql, object param = null,
             string actionName = "")
@@ -60,7 +128,7 @@ namespace WindNight.Extension.Dapper.Mysql
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"{actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                LogHelper.Error($"【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】{actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
             }
             finally
             {
@@ -68,7 +136,7 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                     LogHelper.Info(
-                        $"sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                        $"【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
                 }
             }
 
@@ -114,17 +182,29 @@ namespace WindNight.Extension.Dapper.Mysql
             {
                 get
                 {
-                    var config = Ioc.GetService<IConfigService>();
+                    var config = Ioc.Instance.CurrentConfigService;// Ioc.GetService<IConfigService>();
                     if (config == null) return false;
                     return config.GetAppSetting(ConfigItemsKey.OpenDapperLogKey, false, false);
                 }
             }
 
+            public static bool IsLogConnectString
+            {
+                get
+                {
+                    var config = Ioc.Instance.CurrentConfigService;
+                    if (config == null) return false;
+                    return config.GetAppSetting(ConfigItemsKey.IsLogConnectStringKey, false, false);
+                }
+            }
+
             static class ConfigItemsKey
             {
-                internal static string OpenDapperLogKey = "OpenDapperLog";
+                internal static string OpenDapperLogKey = "DapperConfig:OpenDapperLog";
+                internal static string IsLogConnectStringKey = "DapperConfig:IsLogConnectString";
 
             }
+
         }
 
 
