@@ -23,7 +23,9 @@ namespace JobDemos
                     .ConfigureAppConfiguration((hostBuilderContent, configBuilder) =>
                     {
                         configBuilder.SetBasePath(Environment.CurrentDirectory)
-                            .AddJsonObject(jsonConfig);
+                            .AddJsonObject(jsonConfig)
+                            ;
+                        configBuilder.AddInMemoryCollection(new Dictionary<string, string>());
                     })
                     .ConfigureServices((hostContext, services) =>
                     {

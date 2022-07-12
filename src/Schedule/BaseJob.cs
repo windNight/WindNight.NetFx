@@ -24,7 +24,7 @@ namespace Schedule
 
             var job = context.JobDetail;
             var state = JobBusinessStateEnum.Processing;
-            job.SetJobBusinessState(state);
+            job.SetJobBusinessState(state); 
             var rlt = ExecuteWithResult(context);
 
             state = await rlt ? JobBusinessStateEnum.Success : JobBusinessStateEnum.Fail;

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30309.148
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.Core", "WindNight.Core\WindNight.Core.csproj", "{0398E4C6-F1F3-40BE-B688-38FAF9992970}"
 EndProject
@@ -59,7 +59,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindNight.Extension.Dapper", "Dapper\WindNight.Extension.Dapper\WindNight.Extension.Dapper.csproj", "{331BB1B4-5B7A-44FB-A273-5EF60D439A00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.Extension.Dapper", "Dapper\WindNight.Extension.Dapper\WindNight.Extension.Dapper.csproj", "{331BB1B4-5B7A-44FB-A273-5EF60D439A00}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Net6", "Examples\Net6\Net6.csproj", "{0353F228-0030-4B03-937F-E231714EE1EB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.RabbitMq", "WindNight.RabbitMq\WindNight.RabbitMq.csproj", "{7B9D8E44-2B11-42E4-8FFC-670D795CBA3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -143,6 +147,14 @@ Global
 		{331BB1B4-5B7A-44FB-A273-5EF60D439A00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{331BB1B4-5B7A-44FB-A273-5EF60D439A00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{331BB1B4-5B7A-44FB-A273-5EF60D439A00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0353F228-0030-4B03-937F-E231714EE1EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0353F228-0030-4B03-937F-E231714EE1EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0353F228-0030-4B03-937F-E231714EE1EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0353F228-0030-4B03-937F-E231714EE1EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B9D8E44-2B11-42E4-8FFC-670D795CBA3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B9D8E44-2B11-42E4-8FFC-670D795CBA3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B9D8E44-2B11-42E4-8FFC-670D795CBA3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B9D8E44-2B11-42E4-8FFC-670D795CBA3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,6 +171,7 @@ Global
 		{558F116F-A4C5-4889-A620-906609EC9E63} = {7834D1E1-1A31-4493-BDCF-CFD31B14C049}
 		{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
 		{23EB0CBC-F92D-4273-9467-AEB80EDFC936} = {0B1D54C0-2992-48D7-BD2C-6088263B3F04}
+		{0353F228-0030-4B03-937F-E231714EE1EB} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4D07DFE6-71BA-4D72-AF00-A6D57FAE38EB}

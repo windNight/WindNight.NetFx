@@ -147,7 +147,7 @@ namespace System
                     ?.Select(m => m.Address.ToString())
                     ?.ToList() ?? new List<string> { DefaultIp };
 
-            }
+            } 
             catch (Exception ex)
             {
                 LogHelper.Error($"NetworkInterface handler error {ex.Message}", ex, appendMessage: false);

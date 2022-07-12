@@ -30,7 +30,7 @@ namespace ConsoleExamples_NetCore5
 #if DEBUG
             buildType = "Debug";
 #else
-                    buildType = "Release";
+             buildType = "Release";
 #endif
             await ProgramBase.InitAsync(CreateHostBuilder, buildType, args);
         }

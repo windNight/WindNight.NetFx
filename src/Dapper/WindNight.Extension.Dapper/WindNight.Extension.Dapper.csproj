@@ -9,6 +9,7 @@
 		<PackageReleaseNotes>
 		</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<OutputPath>..\..\..\Output\$(Configuration)</OutputPath>
 
 	</PropertyGroup>
 	<ItemGroup>

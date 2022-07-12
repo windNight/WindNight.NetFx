@@ -123,7 +123,7 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
                         return impl;
                     }
                 }
-                return serviceProvider.GetServices<T>().FirstOrDefault();
+                return impls.FirstOrDefault();
             }
             return serviceProvider.GetService<T>();
 #else

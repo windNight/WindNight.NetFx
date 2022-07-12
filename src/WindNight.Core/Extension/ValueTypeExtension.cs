@@ -55,6 +55,7 @@ namespace WindNight.Core.Extension
 
         #endregion //end Decimal
 
+
         #region Double
 
 

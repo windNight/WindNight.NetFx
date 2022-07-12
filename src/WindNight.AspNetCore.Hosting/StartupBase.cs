@@ -52,7 +52,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             return serviceProvider;
         }
 
-
+ 
         protected virtual void UseSysConfigure(IApplicationBuilder app)
         {
             var env = Ioc.GetService<IWebHostEnvironment>();
