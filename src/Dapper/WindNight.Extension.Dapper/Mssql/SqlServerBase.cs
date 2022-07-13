@@ -21,8 +21,8 @@ namespace WindNight.Extension.Dapper.Mssql
         private string QueryListByStatusSql => $"SELECT * FROM {BaseTableName} WHERE Status=@QueryStatus";
         private string QueryChildrenByParentIdSql => $"SELECT * FROM {BaseTableName} WHERE ParentId=@QueryParentId";
 
-        private string DeleteByIdSql =>
-$@"UPDATE {BaseTableName} SET Status={(int)DataStatusEnums.Deleted} WHERE Id=@Id;";
+        private string DeleteByIdSql => $@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
+
         protected virtual string QueryAllSqlStr => $"SELECT * FROM {BaseTableName}";
 
         /// <summary>

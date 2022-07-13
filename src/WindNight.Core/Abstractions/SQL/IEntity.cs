@@ -19,7 +19,7 @@
 
     public interface IStatusEntity
     {
-        /// <summary> 状态 1 =正常，0=删除，2=禁用 detail to <see cref="DataStatusEnums" /> </summary>
+        /// <summary> 状态 0=未知， 1 =正常，2=禁用 detail to <see cref="DataStatusEnums" /> </summary>
         int Status { get; set; }
     }
 

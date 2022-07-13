@@ -47,6 +47,27 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             Thread.Sleep(1_000);
         }
 
+
+        public static async Task InitAsync(Func<string, string[], IHostBuilder> createHostBuilder, Func<string> buildTypeFunc, Action actBeforeRun, string[] args)
+        {
+            var buildType = buildTypeFunc.Invoke();
+            await InitAsync(createHostBuilder, buildType, actBeforeRun, args);
+        }
+
+        public static async Task InitAsync(Func<string, string[], IHostBuilder> createHostBuilder, string buildType, Action actBeforeRun, string[] args)
+        {
+            AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEventHandler;
+            // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
+            TaskScheduler.UnobservedTaskException += UnobservedTaskHandler;
+            // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
+            var host = CreateHostBuilder(createHostBuilder, buildType, args);
+            // await host.InjectionRSAsync(buildType);
+            actBeforeRun();
+            await host.RunAsync();
+            LogHelper.LogOfflineInfo(buildType, null, false);
+            Thread.Sleep(1_000);
+        }
+
         public static void Init(Func<string, string[], IHostBuilder> createHostBuilder, Func<string> buildTypeFunc, string[] args)
         {
             var buildType = buildTypeFunc.Invoke();
@@ -65,6 +86,35 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             LogHelper.LogOfflineInfo(buildType, null, false);
             Thread.Sleep(1_000);
         }
+
+        public static void Init(
+            Func<string, string[], IHostBuilder> createHostBuilder,
+            Func<string> buildTypeFunc,
+            Action actBeforeRun,
+            string[] args)
+        {
+            string buildType = buildTypeFunc();
+            Init(createHostBuilder, buildType, actBeforeRun, args);
+        }
+
+        public static void Init(
+            Func<string, string[], IHostBuilder> createHostBuilder,
+            string buildType,
+            Action actBeforeRun,
+            string[] args)
+        {
+            AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEventHandler;
+            // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
+            TaskScheduler.UnobservedTaskException += UnobservedTaskHandler;
+            // 参数类型中引用类型的为 Null 性与目标委托不匹配(可能是由于为 Null 性特性)。
+            var host = CreateHostBuilder(createHostBuilder, buildType, args);
+            // host.InjectionRS(buildType);
+            actBeforeRun();
+            host.Run();
+            LogHelper.LogOfflineInfo(buildType, null, false);
+            Thread.Sleep(1_000);
+        }
+
 
         /// <summary>
         ///     GenericHostBuilder For WebApp Only

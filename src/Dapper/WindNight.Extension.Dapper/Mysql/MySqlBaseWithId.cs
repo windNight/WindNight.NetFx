@@ -15,8 +15,8 @@ namespace WindNight.Extension.Dapper.Mysql
         private string QueryChildrenByParentIdSql => $"SELECT * FROM {BaseTableName} WHERE ParentId=@QueryParentId";
 
         private string DeleteByIdSql =>
-$@"UPDATE {BaseTableName} SET Status={(int)DataStatusEnums.Deleted} WHERE Id=@Id;";
-   
+$@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
+
         protected virtual string QueryAllSqlStr => $"SELECT * FROM {BaseTableName}";
 
         /// <summary>

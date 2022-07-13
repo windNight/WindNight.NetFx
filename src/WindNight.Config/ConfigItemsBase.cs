@@ -10,9 +10,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace WindNight.ConfigCenter.Extension
 {
+
     public class ConfigItemsBase
     {
-
+         
         /// <summary>
         /// </summary>
         /// <param name="sleepTimeInMs"> default is 5000 ms </param>
@@ -41,7 +42,7 @@ namespace WindNight.ConfigCenter.Extension
 #endif
 
             ConfigProvider.Instance.Start(sleepTimeInMs);
-
+         
         }
 
         public static void StopConfigCenter()

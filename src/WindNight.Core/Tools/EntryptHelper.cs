@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace System.Security.Cryptography.Extensions
@@ -6,6 +7,49 @@ namespace System.Security.Cryptography.Extensions
     /// <summary>  </summary>
     public static class EncryptHelper
     {
+
+
+        /// <summary>
+        ///     Base64加密
+        /// </summary>
+        /// <param name="str">待加密字符串</param>
+        /// <param name="encoding">字符编码，默认UTD-8</param>
+        /// <returns>Base64后的字符串</returns>
+        public static string ToBase64String(this string str, Encoding? encoding = null)
+        {
+            if (str.IsNullOrEmpty()) return str;
+            try
+            {
+                return str.ToBytes().ToBase64String();
+            }
+            catch (Exception ex)
+            {
+                return str;
+            }
+
+        }
+
+
+        /// <summary>
+        ///     Base64解密
+        /// </summary>
+        /// <param name="str">待解密字符串</param>
+        /// <param name="encoding">字符编码，默认UTD-8</param>
+        /// <returns>Base64解密后的字符串</returns>
+        public static string FromBase64String(this string str, Encoding? encoding = null)
+        {
+            if (str.IsNullOrEmpty()) return str;
+            try
+            {
+                return BytesExtension.FromBase64String(str).ToGetString(encoding);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+
         /// <summary>
         /// </summary>
         /// <param name="text"></param>
@@ -160,6 +204,15 @@ namespace System.Security.Cryptography.Extensions
             {
                 return null;
             }
+        }
+
+
+        public static string RSAEncrypt(this string content, string publicKey)
+        {
+            var rsa = new RSACryptoServiceProvider();
+            rsa.ImportCspBlob(BytesExtension.FromBase64String(publicKey));
+            var cipherbytes = rsa.Encrypt(content.ToBytes(), false);
+            return cipherbytes.ToBase64String();
         }
 
     }

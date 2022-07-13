@@ -1,0 +1,28 @@
+﻿{
+  "Items": [
+    {
+      "Type": "Queue",
+      "RabbitMqUrl": "amqp://xxx:xx@xxx:5672",
+      "QueueName": "TestQueue1",
+      "QueueTag": "TestConsumerSvr"
+    },
+    {
+      "RabbitMqUrl": "amqp://xxx:xx@xxx:5672",
+      "ExchangeName": "TestTopic",
+      "ExchangeTypeCode": "Topic",
+      "ProducerName": "TestProducerSvr"
+    },
+    {
+      "RabbitMqUrl": "amqp://xxx:xx@xxx:5672",
+      "ExchangeName": "TestTopic",
+      "ExchangeTypeCode": "Topic",
+      "ProducerName": "TestProducerSvr1"
+    },
+    {
+      "RabbitMqUrl": "amqp://xxx:xx@xxx:5672",
+      "ExchangeName": "TestTopic",
+      "ExchangeTypeCode": "Topic",
+      "ProducerName": "TestProducerSvr2"
+    }
+  ]
+}

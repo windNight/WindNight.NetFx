@@ -65,6 +65,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Net6", "Examples\Net6\Net6.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.RabbitMq", "WindNight.RabbitMq\WindNight.RabbitMq.csproj", "{7B9D8E44-2B11-42E4-8FFC-670D795CBA3C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMqDemos", "Examples\RabbitMqDemos\RabbitMqDemos.csproj", "{2430A1D7-8E99-4D68-A4EB-0F17AC21A804}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -155,6 +157,10 @@ Global
 		{7B9D8E44-2B11-42E4-8FFC-670D795CBA3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B9D8E44-2B11-42E4-8FFC-670D795CBA3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B9D8E44-2B11-42E4-8FFC-670D795CBA3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2430A1D7-8E99-4D68-A4EB-0F17AC21A804}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2430A1D7-8E99-4D68-A4EB-0F17AC21A804}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2430A1D7-8E99-4D68-A4EB-0F17AC21A804}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2430A1D7-8E99-4D68-A4EB-0F17AC21A804}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -172,6 +178,7 @@ Global
 		{CCE3F3CF-52D9-49A8-AB30-5A904CE0EE8C} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
 		{23EB0CBC-F92D-4273-9467-AEB80EDFC936} = {0B1D54C0-2992-48D7-BD2C-6088263B3F04}
 		{0353F228-0030-4B03-937F-E231714EE1EB} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
+		{2430A1D7-8E99-4D68-A4EB-0F17AC21A804} = {A5436B16-87A0-4212-A732-E2AA0DE3BB3D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4D07DFE6-71BA-4D72-AF00-A6D57FAE38EB}

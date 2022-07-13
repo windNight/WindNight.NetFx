@@ -1,9 +1,9 @@
 ﻿namespace WindNight.Core.SQL.Abstractions
 {
-  
+
     public enum DataStatusEnums
     {
-        Deleted = 0,
+        Unknown = 0,
         Enable = 1,
         Disable = 2,
     }

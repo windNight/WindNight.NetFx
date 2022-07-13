@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace System.Text
 {
@@ -60,10 +61,30 @@ namespace System.Text
         /// <returns>
         ///     An array of 8-bit unsigned integers that is equivalent to <paramref name="base64Str" />.
         /// </returns>
-        public static byte[] ToBytesFromBase64String(this string base64Str)
+        public static byte[] FromBase64String(this string base64Str)
         {
             return Convert.FromBase64String(base64Str);
         }
+        /// <summary>
+        ///     Base64加密
+        /// </summary>
+        /// <param name="bytes"> </param>
+        /// <returns>Base64后的字符串</returns>
+        public static string ToBase64String(this byte[] bytes)
+        {
+            if (bytes.IsNullOrEmpty()) return string.Empty;
+            try
+            {
+                return Convert.ToBase64String(bytes);
+            }
+            catch (Exception ex)
+            {
+                return string.Empty;
+            }
+
+        }
+
+
 
         /// <summary>
         ///     ZIP解压

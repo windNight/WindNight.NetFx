@@ -1,4 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection.WnExtension;
+﻿#if NET45LATER
+using Microsoft.Extensions.Configuration;
+#endif
+using System;
+using System.Linq.Expressions;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core.Abstractions;
 
 namespace WindNight.LogExtension
@@ -7,39 +12,83 @@ namespace WindNight.LogExtension
     {
         internal class ConfigItems
         {
+#if NET45LATER
+
+            private static IConfiguration configuration => Ioc.GetService<IConfiguration>();
+#endif
+
             static IConfigService configService => Ioc.Instance.CurrentConfigService;
             protected const string TrueString = "1", FalseString = "0", ZeroString = "0";
             protected const int ZeroInt = 0;
 
             public static string Log4netConfigPath
-                => configService?.GetAppSetting(ConstKeys.Log4netConfigPathKey, "/Config/log4net.config")
-                   ?? "/Config/log4net.config";
+                => GetAppSetting(ConstKeys.Log4netConfigPathKey, "/Config/log4net.config", false);
 
             internal static bool Log4netOpen
-                => configService?.GetAppSetting(ConstKeys.Log4netOpenKey, false, false)
-                   ?? false;
+                => GetAppSetting(ConstKeys.Log4netOpenKey, false, false);
 
             internal static bool IsAppendLogMessage
-                => configService?.GetAppSetting(ConstKeys.AppendLogMessageKey, false, false)
-                   ?? false;
+                => GetAppSetting(ConstKeys.AppendLogMessageKey, false, false);
 
             internal static bool LogOnConsole
-                => configService?.GetAppSetting(ConstKeys.LogOnConsoleKey, false, false)
-                   ?? false;
+                => GetAppSetting(ConstKeys.LogOnConsoleKey, false, false);
 
 
             /// <summary> 服务编号： </summary>
             internal static int SystemAppId
-                => configService?.GetAppSetting(ConstKeys.AppIdKey, ZeroInt, false)
-                   ?? ZeroInt;
+                => GetAppSetting(ConstKeys.AppIdKey, ZeroInt, false);
 
             /// <summary> 服务代号： </summary>
             internal static string SystemAppCode
-                => configService?.GetAppSetting(ConstKeys.AppCodeKey, "", false) ?? "";
+                => GetAppSetting(ConstKeys.AppCodeKey, "", false);
 
             /// <summary> 服务名称： </summary>
             internal static string SystemAppName
-                => configService?.GetAppSetting(ConstKeys.AppNameKey, "", false) ?? "";
+                => GetAppSetting(ConstKeys.AppNameKey, "", false);
+
+            static int GetAppSetting(string configKey, int defaultValue = 0, bool isThrow = true)
+            {
+                var configValue = GetAppSetting(configKey, "", isThrow: isThrow);
+                if (configValue.IsNullOrEmpty())
+                {
+                    return defaultValue;
+                }
+
+                return configValue.ToInt(0);
+            }
+
+
+            static bool GetAppSetting(string configKey, bool? defaultValue = null, bool isThrow = true)
+            {
+                var configValue = GetAppSetting(configKey, "", isThrow: isThrow);
+                if (configValue.IsNullOrEmpty())
+                {
+                    return defaultValue ?? false;
+                }
+
+                return configValue.ToInt() != ZeroInt;
+            }
+
+            static string GetAppSetting(string configKey, string defaultValue = "", bool isThrow = true)
+            {
+#if NET45LATER
+                if (configuration != null)
+                {
+                    var configValue = configuration.GetSection($"AppSettings:{configKey}").Value;
+                    if (!configValue.IsNullOrEmpty())
+                    {
+                        return configValue;
+                    }
+                }
+#endif
+                if (configService != null)
+                {
+                    return configService.GetAppSetting(configKey, defaultValue, isThrow);
+                }
+
+                return defaultValue;
+            }
+
 
             internal static class ConstKeys
             {
