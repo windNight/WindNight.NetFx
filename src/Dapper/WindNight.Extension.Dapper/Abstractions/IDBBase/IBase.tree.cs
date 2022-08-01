@@ -29,17 +29,86 @@ namespace WindNight.Extension.Dapper.Abstractions.DB
         where TId : IEquatable<TId>, IComparable<TId>
     {
         /// <summary>
-        ///     同步 根据节点获取树形列表
+        ///     同步 根据父节点获取树形列表
         /// </summary>
-        /// <param name="parentId">节点Id</param>
+        /// <param name="parentId">父节点Id</param>
         /// <returns></returns>
         IEnumerable<TEntity> QueryChildrenByParentId(TId parentId);
 
         /// <summary>
-        ///     异步 根据节点获取树形列表
+        ///     异步 根据父节点获取树形列表
         /// </summary>
-        /// <param name="parentId">节点Id</param>
+        /// <param name="parentId">父节点Id</param>
         /// <returns></returns>
         Task<IEnumerable<TEntity>> QueryChildrenByParentIdAsync(TId parentId);
+
+        /// <summary>
+        ///     同步 根据子节点获取树形列表
+        /// </summary>
+        /// <param name="childId">子节点Id</param>
+        /// <returns></returns>
+        IEnumerable<TEntity> QueryParentsByChildId(TId childId);
+
+        /// <summary>
+        ///     异步 根据子节点获取树形列表
+        /// </summary>
+        /// <param name="childId">子节点Id</param>
+        /// <returns></returns>
+        Task<IEnumerable<TEntity>> QueryParentsByChildIdAsync(TId childId);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        IEnumerable<T> QueryChildrenByParentId<T>(TId parentId) where T : class, ITreeEntity<TId>, new();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        IEnumerable<T> QueryChildrenByParentId<T>(string tableName, TId parentId)
+             where T : class, ITreeEntity<TId>, new();
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        IEnumerable<T> QueryParentsByChildId<T>(TId parentId)
+            where T : class, ITreeEntity<TId>, new();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        IEnumerable<T> QueryParentsByChildId<T>(string tableName, TId parentId)
+            where T : class, ITreeEntity<TId>, new();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(TId parentId)
+                  where T : class, ITreeEntity<TId>, new();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(string tableName, TId parentId)
+                  where T : class, ITreeEntity<TId>, new();
+
+         
+
     }
 }

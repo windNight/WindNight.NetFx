@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Extension;
 using WindNight.Core.SQL.Abstractions;
+using WindNight.Extension.Dapper.Abstractions.DB;
 using WindNight.Extension.Dapper.Internals;
 
 namespace WindNight.Extension.Dapper.Mysql
@@ -12,7 +13,7 @@ namespace WindNight.Extension.Dapper.Mysql
         protected string QueryDataByIdSql => $"SELECT * FROM {BaseTableName} WHERE Id=@Id;";
 
         private string QueryListByStatusSql => $"SELECT * FROM {BaseTableName} WHERE Status=@QueryStatus";
-        private string QueryChildrenByParentIdSql => $"SELECT * FROM {BaseTableName} WHERE ParentId=@QueryParentId";
+
 
         private string DeleteByIdSql =>
 $@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
@@ -100,7 +101,7 @@ $@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
         /// </summary>
         /// <param name="status"></param>
         /// <returns></returns>
-        public IEnumerable<TEntity> QueryListByStatus(DataStatusEnums status)
+        public virtual IEnumerable<TEntity> QueryListByStatus(DataStatusEnums status)
         {
             return DbQueryList(QueryListByStatusSql, new { QueryStatus = (int)status });
         }
@@ -112,7 +113,7 @@ $@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
         /// </summary>
         /// <param name="status"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<TEntity>> QueryListByStatusAsync(DataStatusEnums status)
+        public virtual async Task<IEnumerable<TEntity>> QueryListByStatusAsync(DataStatusEnums status)
         {
             return await DbQueryListAsync(QueryListByStatusSql, new { QueryStatus = (int)status });
         }
@@ -121,34 +122,10 @@ $@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
 
 
 
-        #region ITreeRepositoryService
 
-        /// <summary>
-        /// 
-        /// impl<see cref="ITreeRepositoryService{TEntity, TId}"/>
-        /// </summary>
-        /// <param name="parentId"></param>
-        /// <returns></returns>
-        public IEnumerable<TEntity> QueryChildrenByParentId(TId parentId)
-        {
-            return DbQueryList(QueryChildrenByParentIdSql, new { QueryParentId = parentId });
-        }
-
-
-        /// <summary>
-        /// 
-        /// impl<see cref="ITreeRepositoryService{TEntity, TId}"/>
-        /// </summary>
-        /// <param name="parentId"></param>
-        /// <returns></returns>
-        public async Task<IEnumerable<TEntity>> QueryChildrenByParentIdAsync(TId parentId)
-        {
-            return await DbQueryListAsync(QueryChildrenByParentIdSql, new { QueryParentId = parentId });
-        }
-
-        #endregion //end ITreeRepositoryService
 
         #endregion// end Id opt
+
 
         /// <summary>
         /// 分页
@@ -160,7 +137,7 @@ $@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
         /// <param name="orderBy"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IPagedList<TEntity> QueryPagedList(int pageIndex, int pageSize, string condition, string orderBy,
+        public virtual IPagedList<TEntity> QueryPagedList(int pageIndex, int pageSize, string condition, string orderBy,
             IDictionary<string, object> parameters = null)
         {
             return DbPagedList(pageIndex, pageSize, condition, orderBy, parameters);
@@ -176,13 +153,11 @@ $@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
         /// <param name="orderBy"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<IPagedList<TEntity>> QueryPagedListAsync(int pageIndex, int pageSize, string condition,
+        public virtual async Task<IPagedList<TEntity>> QueryPagedListAsync(int pageIndex, int pageSize, string condition,
             string orderBy, IDictionary<string, object> parameters = null)
         {
             return await DbPagedListAsync(pageIndex, pageSize, condition, orderBy, parameters);
         }
-
-
 
     }
 }
