@@ -19,8 +19,7 @@
 		<PackageReference Include="MySql.Data" Version="8.0.27" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
-		<!--<ProjectReference Include="..\..\WindNight.Extension\WindNight.Extension.csproj" />-->
+	  <ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
 	</ItemGroup>
 
 </Project>

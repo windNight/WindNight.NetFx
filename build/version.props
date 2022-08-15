@@ -25,10 +25,10 @@ Patch：仅可向后兼容的 bug 修复
 		<VersionMinor>0</VersionMinor>
 		<VersionPatch>3</VersionPatch>
 		<VersionQuality>4</VersionQuality>
-		<VersionTT>-beta.220801</VersionTT>
+		<VersionTT>-beta.22081504</VersionTT>
 		<VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</VersionPrefix>
 		<AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
-		<FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</FileVersion>
+		<FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</FileVersion>
 		<!--<Version>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</Version>-->
 	</PropertyGroup>
 </Project>

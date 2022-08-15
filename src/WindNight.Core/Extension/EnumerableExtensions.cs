@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using WindNight.Core.Abstractions;
 
 namespace System.Linq.Expressions
 {
     /// <summary>
     /// </summary>
     public static class EnumerableExtensions
-    { 
+    {
+
         public static bool IsNullOrEmpty<T>(this IEnumerable<T>? items)
         {
             return items == null || !items.Any();
@@ -97,6 +99,32 @@ namespace System.Linq.Expressions
 
         }
 
+        public static List<T> ListToTree<T>(this List<T> list)
+        where T : ITreeObject<T>, new()
+        { 
+            if (list.IsNullOrEmpty()) return new List<T>();
+
+            // list 去重
+            var lookup = list.DistinctBy(m => m.Id).ToDictionary(n => n.Id, n => n);
+
+            var rootNodes = new List<T>();
+
+            foreach (var node in list)
+            {
+                if (node.ParentId > 0)
+                {
+                    //add node to its parent
+                    var parent = lookup[node.ParentId];
+                    parent.Children.Add(node);
+                }
+                else
+                {
+                    rootNodes.Add(node);
+                }
+            }
+            return rootNodes;
+        }
+         
     }
 
     /// <summary>

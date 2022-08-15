@@ -22,12 +22,12 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="param"></param>
         /// <returns></returns>
         protected virtual T DbQueryE<T>(string sql, object param = null) => DbQueryE<T>(DbConnectString, sql, param);
-       
+
         //    {
         //        return SqlTimer((_sql, _param) => Query<T>(DbConnectString, _sql, _param),
         //            sql, param, nameof(DbQueryE));
         //}
-       
+
         protected virtual T DbQueryE<T>(string conn, string sql, object param = null)
         {
             return SqlTimer(Query<T>, conn, sql, param, nameof(DbQueryE));
@@ -62,12 +62,12 @@ namespace WindNight.Extension.Dapper.Mysql
             return SqlTimer((_sql, _param) => Query<TEntity>(DbConnectString, _sql, _param),
                 sql, param, nameof(DbQuery));
         }
-         
+
         protected virtual TEntity DbQuery(string conn, string sql, object param = null)
         {
             return SqlTimer(Query<TEntity>, conn, sql, param, nameof(DbQuery));
         }
-         
+
         /// <summary>
         /// 查询实体对象列表
         /// </summary>
@@ -100,7 +100,7 @@ namespace WindNight.Extension.Dapper.Mysql
         {
             return SqlTimer(Execute, conn, sql, param, nameof(DbExecute));
         }
-         
+
         /// <summary>
         /// 首行首列数据
         /// </summary>
@@ -118,7 +118,7 @@ namespace WindNight.Extension.Dapper.Mysql
         {
             return SqlTimer(ExecuteScalar<T>, conn, sql, param, nameof(ExecuteScalar));
         }
-         
+
         /// <summary>
         /// 分页
         /// </summary>
@@ -126,14 +126,15 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pageSize"></param>
         /// <param name="condition"></param>
         /// <param name="orderBy"></param>
+        /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName"/></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
         protected virtual IPagedList<TEntity> DbPagedList(int pageIndex, int pageSize, string condition,
-            string orderBy, IDictionary<string, object> parameters = null)
+            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "")
         {
             var pagedInfo = new QueryPageInfo
             {
-                TableName = BaseTableName,
+                TableName = queryTableName.IsNullOrEmpty() ? BaseTableName : queryTableName,
                 Fields = "*",
                 SqlWhere = condition,
                 OrderField = orderBy,
@@ -143,11 +144,13 @@ namespace WindNight.Extension.Dapper.Mysql
 
             return PagedList<TEntity>(DbConnectString, pagedInfo, parameters);
         }
-         
+
+
+
         #endregion //end Sync
 
         #region Async
-         
+
         /// <summary>
         /// 查询自定义对象 Async
         /// </summary>
@@ -184,7 +187,7 @@ namespace WindNight.Extension.Dapper.Mysql
             return await SqlTimerAsync(async (_1, _sql, _param) => await QueryListAsync<T>(_1, _sql, _param), conn,
                 sql, param, nameof(DbQueryEList));
         }
-         
+
         /// <summary>
         /// 查询实体对象 Async
         /// </summary>
@@ -215,7 +218,7 @@ namespace WindNight.Extension.Dapper.Mysql
                 async (_sql, _param) => await QueryListAsync<TEntity>(DbConnectString, _sql, _param),
                 sql, param, nameof(DbQueryList));
         }
-         
+
         protected virtual async Task<IEnumerable<TEntity>> DbQueryListAsync(string conn, string sql, object param = null)
         {
             return await SqlTimerAsync(
@@ -254,7 +257,7 @@ namespace WindNight.Extension.Dapper.Mysql
                 async (_sql, _param) => await ExecuteScalarAsync<T>(DbConnectString, _sql, _param),
                 sql, param, nameof(ExecuteScalar));
         }
-         
+
         protected async Task<T> DbExecuteScalarAsync<T>(string conn, string sql, object param = null)
         {
             return await SqlTimerAsync(
@@ -270,13 +273,14 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="condition"></param>
         /// <param name="orderBy"></param>
         /// <param name="parameters"></param>
+        /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName"/></param>
         /// <returns></returns>
         protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(int pageIndex,
-            int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null)
+            int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "")
         {
             var pagedInfo = new QueryPageInfo
             {
-                TableName = BaseTableName,
+                TableName = queryTableName.IsNullOrEmpty()? BaseTableName: queryTableName,
                 Fields = "*",
                 SqlWhere = condition,
                 OrderField = orderBy,

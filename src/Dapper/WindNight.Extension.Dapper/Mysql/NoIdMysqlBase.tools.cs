@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Extension;
 using System.Net.Sockets;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Dapper.Internals;
@@ -176,38 +177,10 @@ namespace WindNight.Extension.Dapper.Mysql
                 }
         }
 
-        internal class ConfigItems //: ConfigItemsBase
-        {
-            public static bool OpenDapperLog
-            {
-                get
-                {
-                    var config = Ioc.Instance.CurrentConfigService;// Ioc.GetService<IConfigService>();
-                    if (config == null) return false;
-                    return config.GetAppSetting(ConfigItemsKey.OpenDapperLogKey, false, false);
-                }
-            }
-
-            public static bool IsLogConnectString
-            {
-                get
-                {
-                    var config = Ioc.Instance.CurrentConfigService;
-                    if (config == null) return false;
-                    return config.GetAppSetting(ConfigItemsKey.IsLogConnectStringKey, false, false);
-                }
-            }
-
-            static class ConfigItemsKey
-            {
-                internal static string OpenDapperLogKey = "DapperConfig:OpenDapperLog";
-                internal static string IsLogConnectStringKey = "DapperConfig:IsLogConnectString";
-
-            }
-
-        }
-
-
 
     }
+
+
+
+
 }

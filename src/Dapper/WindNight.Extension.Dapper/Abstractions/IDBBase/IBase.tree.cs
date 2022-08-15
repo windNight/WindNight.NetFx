@@ -32,45 +32,57 @@ namespace WindNight.Extension.Dapper.Abstractions.DB
         ///     同步 根据父节点获取树形列表
         /// </summary>
         /// <param name="parentId">父节点Id</param>
+        /// <param name="rootCondition"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<TEntity> QueryChildrenByParentId(TId parentId);
+        IEnumerable<TEntity> QueryChildrenByParentId(TId parentId, string rootCondition = "", Dictionary<string, object> param = null);
 
         /// <summary>
         ///     异步 根据父节点获取树形列表
         /// </summary>
         /// <param name="parentId">父节点Id</param>
+        /// <param name="rootCondition"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        Task<IEnumerable<TEntity>> QueryChildrenByParentIdAsync(TId parentId);
+        Task<IEnumerable<TEntity>> QueryChildrenByParentIdAsync(TId parentId, string rootCondition = "", Dictionary<string, object> param = null);
 
         /// <summary>
         ///     同步 根据子节点获取树形列表
         /// </summary>
         /// <param name="childId">子节点Id</param>
+        /// <param name="rootCondition"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<TEntity> QueryParentsByChildId(TId childId);
+        IEnumerable<TEntity> QueryParentsByChildId(TId childId, string rootCondition = "", Dictionary<string, object> param = null);
 
         /// <summary>
         ///     异步 根据子节点获取树形列表
         /// </summary>
         /// <param name="childId">子节点Id</param>
+        /// <param name="rootCondition"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        Task<IEnumerable<TEntity>> QueryParentsByChildIdAsync(TId childId);
+        Task<IEnumerable<TEntity>> QueryParentsByChildIdAsync(TId childId, string rootCondition = "", Dictionary<string, object> param = null);
 
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="parentId"></param>
+        /// <param name="rootCondition"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<T> QueryChildrenByParentId<T>(TId parentId) where T : class, ITreeEntity<TId>, new();
+        IEnumerable<T> QueryChildrenByParentId<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null) where T : class, ITreeEntity<TId>, new();
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="parentId"></param>
+        /// <param name="rootCondition"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<T> QueryChildrenByParentId<T>(string tableName, TId parentId)
+        IEnumerable<T> QueryChildrenByParentId<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null)
              where T : class, ITreeEntity<TId>, new();
 
 
@@ -78,8 +90,10 @@ namespace WindNight.Extension.Dapper.Abstractions.DB
         /// 
         /// </summary>
         /// <param name="parentId"></param>
+        /// <param name="rootCondition"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<T> QueryParentsByChildId<T>(TId parentId)
+        IEnumerable<T> QueryParentsByChildId<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null)
             where T : class, ITreeEntity<TId>, new();
 
         /// <summary>
@@ -87,16 +101,20 @@ namespace WindNight.Extension.Dapper.Abstractions.DB
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="parentId"></param>
+        /// <param name="rootCondition"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<T> QueryParentsByChildId<T>(string tableName, TId parentId)
+        IEnumerable<T> QueryParentsByChildId<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null)
             where T : class, ITreeEntity<TId>, new();
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="parentId"></param>
+        /// <param name="rootCondition"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(TId parentId)
+        Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null)
                   where T : class, ITreeEntity<TId>, new();
 
         /// <summary>
@@ -104,11 +122,13 @@ namespace WindNight.Extension.Dapper.Abstractions.DB
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="parentId"></param>
+        /// <param name="rootCondition"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(string tableName, TId parentId)
+        Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null)
                   where T : class, ITreeEntity<TId>, new();
 
-         
+
 
     }
 }

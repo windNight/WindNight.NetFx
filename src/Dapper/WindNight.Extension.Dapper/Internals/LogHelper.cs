@@ -7,6 +7,14 @@ namespace WindNight.Extension.Dapper.Internals
 {
     internal static class LogHelper
     {
+        internal static void Debug(string msg, long millisecond = 0, string url = "", string serverIp = "",
+            string clientIp = "", bool appendMessage = false)
+        {
+            Add(msg, LogLevels.Debug, millisecond: millisecond, url: url, serverIp: serverIp, clientIp: clientIp,
+                appendMessage: appendMessage);
+        }
+
+        
         internal static void Info(string msg, long millisecond = 0, string url = "", string serverIp = "",
             string clientIp = "", bool appendMessage = false)
         {
