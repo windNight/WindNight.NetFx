@@ -47,7 +47,6 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             Thread.Sleep(1_000);
         }
 
-
         public static async Task InitAsync(Func<string, string[], IHostBuilder> createHostBuilder, Func<string> buildTypeFunc, Action actBeforeRun, string[] args)
         {
             var buildType = buildTypeFunc.Invoke();
@@ -115,7 +114,6 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             Thread.Sleep(1_000);
         }
 
-
         /// <summary>
         ///     GenericHostBuilder For WebApp Only
         ///       need set webHostConfigure
@@ -152,6 +150,27 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             return CreateHostBuilderDefaults(buildType, null, appConfigurationConfigureDelegate, webHostConfigure,
                 configureLogging, configureServicesDelegate);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="buildType"></param>
+        /// <param name="appConfigurationConfigureDelegate">The delegate for configuring the <see cref="T:Microsoft.Extensions.Configuration.IConfigurationBuilder" /> that will be used
+        /// to construct the <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" /> for the application.</param>
+        /// <param name="webHostConfigure"></param>
+        /// <param name="configureLogging"></param>
+        /// <param name="configureServicesDelegate"></param>
+        /// <returns></returns>
+        public static IHostBuilder? CreateHostBuilderDefaults(string buildType,
+            Action<HostBuilderContext, IConfigurationBuilder> appConfigurationConfigureDelegate,
+            Action<IWebHostBuilder> webHostConfigure,
+            Action<ILoggingBuilder>? configureLogging = null,
+            Action<HostBuilderContext, IServiceCollection>? configureServicesDelegate = null)
+        {
+            return CreateHostBuilderDefaults(buildType, null, appConfigurationConfigureDelegate, webHostConfigure,
+                configureLogging, configureServicesDelegate);
+        }
+
 
         /// <summary>
         ///     GenericHostBuilder For WebApp Only .
@@ -196,6 +215,36 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                 .ConfigureServiceDefaults(buildType, configureServicesDelegate)?
                 .ConfigureWebHostDefaults(webBuilder => { webHostConfigure?.Invoke(webBuilder); });
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="buildType"></param>
+        /// <param name="args"></param>
+        /// <param name="appConfigurationConfigureDelegate">The delegate for configuring the <see cref="T:Microsoft.Extensions.Configuration.IConfigurationBuilder" /> that will be used
+        /// to construct the <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" /> for the application.</param>
+        /// <param name="webHostConfigure"></param>
+        /// <param name="configureLogging"></param>
+        /// <param name="configureServicesDelegate"></param>
+        /// <returns></returns>
+        public static IHostBuilder? CreateHostBuilderDefaults(string buildType, string[]? args,
+            Action<HostBuilderContext, IConfigurationBuilder> appConfigurationConfigureDelegate,
+            Action<IWebHostBuilder> webHostConfigure,
+            Action<ILoggingBuilder>? configureLogging = null,
+            Action<HostBuilderContext, IServiceCollection>? configureServicesDelegate = null)
+        {
+            return Host.CreateDefaultBuilder(args)?
+                .ConfigureAppConfigurationDefaults((hostingContext, configBuilder) =>
+                {
+                    appConfigurationConfigureDelegate?.Invoke(hostingContext, configBuilder);
+                })?
+                .ConfigureLoggingDefaults(configureLogging)?
+                .ConfigureServiceDefaults(buildType, configureServicesDelegate)?
+                .ConfigureWebHostDefaults(webBuilder => { webHostConfigure?.Invoke(webBuilder); })
+                ;
+        }
+
 
         /// <summary>
         ///     GenericHostBuilder 
@@ -264,6 +313,31 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                 ;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="buildType"></param>
+        /// <param name="args"></param>
+        /// <param name="appConfigurationConfigureDelegate">The delegate for configuring the <see cref="T:Microsoft.Extensions.Configuration.IConfigurationBuilder" /> that will be used
+        /// to construct the <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" /> for the application.</param>
+        /// <param name="configureLogging"></param>
+        /// <param name="configureServicesDelegate"></param>
+        /// <returns></returns>
+        public static IHostBuilder? CreateHostBuilderDefaults(string buildType, string[]? args,
+            Action<HostBuilderContext, IConfigurationBuilder> appConfigurationConfigureDelegate,
+            Action<ILoggingBuilder>? configureLogging = null,
+            Action<HostBuilderContext, IServiceCollection>? configureServicesDelegate = null)
+        {
+            return Host.CreateDefaultBuilder(args)?
+                    .ConfigureAppConfigurationDefaults((hostingContext, configBuilder) =>
+                    {
+                        appConfigurationConfigureDelegate?.Invoke(hostingContext, configBuilder);
+                    })?
+                    .ConfigureLoggingDefaults(configureLogging)?
+                    .ConfigureServiceDefaults(buildType, configureServicesDelegate)
+                ;
+        }
+
         public static void UnobservedTaskHandler(object sender, UnobservedTaskExceptionEventArgs e)
         {
             Ioc.Instance.CurrentLogService?.Fatal("UnobservedTaskException", e.Exception);
@@ -298,6 +372,26 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                     .AddJsonFile("appsettings.json", false, true)
                     .AddEnvironmentVariables();
                 configureDelegate?.Invoke(configBuilder);
+            });
+        }
+
+
+        public static IHostBuilder? ConfigureAppConfigurationDefaults(
+            this IHostBuilder hostBuilder,
+            Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
+        {
+            return hostBuilder?.ConfigureAppConfiguration((hostingContext, configBuilder) =>
+            {
+                configBuilder.SetBasePath(AppContext.BaseDirectory)
+                    .AddJsonFile("appsettings.json", false, true)
+                    .AddEnvironmentVariables();
+                var envName = hostingContext.HostingEnvironment.EnvironmentName;
+                if (!envName.IsNullOrEmpty() && !hostingContext.HostingEnvironment.IsProduction())
+                {
+                    configBuilder.AddJsonFile($"appsettings.{envName}.json", false, true);
+                }
+
+                configureDelegate?.Invoke(hostingContext, configBuilder);
             });
         }
 
@@ -359,6 +453,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
             });
         }
+
 
     }
 }

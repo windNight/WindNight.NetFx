@@ -30,7 +30,7 @@ namespace ConsoleExamples_NetCore5
 #if DEBUG
             buildType = "Debug";
 #else
-             buildType = "Release";
+            buildType = "Release";
 #endif
             await ProgramBase.InitAsync(CreateHostBuilder, buildType, args);
         }
@@ -39,7 +39,8 @@ namespace ConsoleExamples_NetCore5
 
         private static IHostBuilder CreateHostBuilder(string buildType, string[] args)
         {
-            return ProgramBase.CreateHostBuilderDefaults(buildType, args, configBuilder =>
+            return ProgramBase.CreateHostBuilderDefaults(buildType, args,
+                (hostContext, configBuilder) =>
                  {
                      configBuilder.SetBasePath(AppContext.BaseDirectory);
                      // 不支持动态更换 如果和json内key的重复了也不会动态更新

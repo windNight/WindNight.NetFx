@@ -3,11 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Cryptography.Extensions;
 using System.Threading;
 
 using Newtonsoft.Json.Extension;
 using WindNight.ConfigCenter.Extension.Internal;
+using WindNight.Core;
 
 #if NET45
 using System.Configuration;
@@ -32,14 +34,14 @@ namespace WindNight.ConfigCenter.Extension
 #if !NET45
         private static IConfiguration? _configuration;
 
-        public void SetConfiguration()
-        {
-            _configuration = Ioc.GetService<IConfiguration>();
-        }
+        //public void SetConfiguration()
+        //{
+        //    _configuration = Ioc.GetService<IConfiguration>();
+        //}
 
-        public void SetConfiguration(IConfiguration configuration)
+        public void SetConfiguration(IConfiguration configuration = null)
         {
-            _configuration = configuration;
+            _configuration = configuration ?? Ioc.GetService<IConfiguration>();
         }
 
 #endif
@@ -218,6 +220,7 @@ namespace WindNight.ConfigCenter.Extension
         private void LoadAllConfigs()
         {
             LoadJsonConfig();
+            LoadAllDomainSwitch();
 #if !NET45
             if (_configuration == null)
             {
@@ -225,7 +228,6 @@ namespace WindNight.ConfigCenter.Extension
                 return;
             }
 #endif
-            LoadAllDomainSwitch();
             LoadAllAppSettings();
             LoadAllConnectionStrings();
         }
@@ -326,9 +328,23 @@ namespace WindNight.ConfigCenter.Extension
                     }
                     else if (item.Value is IList)
                     {
-                        var asList = item.Value.To<List<AppSettingInfo>>();
-                        if (asList != null)
-                            asList.ForEach(m => dict.Add(m.Key, m.Value));
+                        var asList = AnalyzeAppSettings(item);// item.Value.To<List<AppSettingInfo>>();
+
+                        if (!asList.IsNullOrEmpty())
+                        {
+                            LogHelper.Debug($"AnalyzeAppSettings({item.Key})->{item.ToJsonStr()}");
+                            asList.ForEach(m =>
+                                {
+                                    var key = m.Key;
+                                    if (m.Loop)
+                                    {
+                                        key = m.Path.Replace($"{nameof(ConfigType.AppSettings)}:", "");
+                                    }
+                                    dict.Add(key, m.Value);
+                                }
+                                );
+                        }
+
                     }
                     else
                     {
@@ -338,7 +354,7 @@ namespace WindNight.ConfigCenter.Extension
                     }
                 }
 #endif
-                if (dict != null && dict.Any())
+                if (!dict.IsNullOrEmpty())
                 {
                     var configMd5 = dict.ToJsonStr().Md5Encrypt();
                     if (_updateFlagDict.TryGetValue(nameof(ConfigType.AppSettings), out var lastMd5) &&
@@ -380,7 +396,7 @@ namespace WindNight.ConfigCenter.Extension
                     else if (item.Value is IList)
                     {
                         var asList = item.Value.To<List<ConnectionStringInfo>>();
-                        if (asList != null)
+                        if (!asList.IsNullOrEmpty())
                             asList.ForEach(m => dict.Add(m.Key, m.Value));
                     }
                     else
@@ -391,7 +407,7 @@ namespace WindNight.ConfigCenter.Extension
                     }
                 }
 #endif
-                if (dict != null && dict.Any())
+                if (!dict.IsNullOrEmpty())
                 {
                     var configMd5 = dict.ToJsonStr().Md5Encrypt();
                     if (_updateFlagDict.TryGetValue(nameof(ConfigType.ConnectionStrings), out var lastMd5) &&
@@ -406,6 +422,45 @@ namespace WindNight.ConfigCenter.Extension
                 LogHelper.Warn($"LoadAllConnectionStrings handler error ,{ex.Message}", ex);
             }
         }
+
+
+        List<AppSettingInfo> AnalyzeAppSettings(ConfigBaseInfo config, bool loop = false)
+        {
+            var list = new List<AppSettingInfo>();
+            if (config.Value is IList<ConfigBaseInfo> configList)
+            {
+                foreach (var item in configList)
+                {
+                    if (item.Value is IList<ConfigBaseInfo>)
+                    {
+                        list.AddRange(AnalyzeAppSettings(item, true));
+                    }
+                    else
+                    {
+                        list.Add(new AppSettingInfo
+                        {
+                            Key = item.Key,
+                            Path = item.Path,
+                            Value = item.Value.ToString(),
+                            Loop = loop,
+                        });
+                    }
+                }
+            }
+            else
+            {
+                list.Add(new AppSettingInfo
+                {
+                    Key = config.Key,
+                    Path = config.Path,
+                    Value = config.Value.ToString(),
+                    Loop = loop,
+                });
+            }
+
+            return list;
+        }
+
 
         #endregion //end Private
 

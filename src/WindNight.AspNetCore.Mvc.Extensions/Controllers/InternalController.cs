@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.WnExtensions.Internals;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Extensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
+using WindNight.ConfigCenter.Extension;
 using WindNight.Extension;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
@@ -36,7 +37,15 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 Configuration = GetConfiguration()
             };
         }
-
+        [HttpGet("config2")]
+        [NonAuth]
+        public object GetConfigs2()
+        {
+            return new
+            {
+                Configuration = ConfigItems.AllConfigs,
+            };
+        }
         private object GetConfiguration(IEnumerable<IConfigurationSection> sections = null)
         {
             var _config = Ioc.GetService<IConfiguration>();

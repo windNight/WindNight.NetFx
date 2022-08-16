@@ -13,7 +13,7 @@ namespace WindNight.ConfigCenter.Extension
 
     public class ConfigItemsBase
     {
-         
+
         /// <summary>
         /// </summary>
         /// <param name="sleepTimeInMs"> default is 5000 ms </param>
@@ -42,7 +42,7 @@ namespace WindNight.ConfigCenter.Extension
 #endif
 
             ConfigProvider.Instance.Start(sleepTimeInMs);
-         
+
         }
 
         public static void StopConfigCenter()
@@ -283,9 +283,44 @@ namespace WindNight.ConfigCenter.Extension
 
 #if NET45LATER
 
-        public static T GetSectionValue<T>(string sectionKey, T defaultValue = default, bool isThrow = false) where T : class, new()
+        public static T GetSectionValue<T>(string sectionKey = "", T defaultValue = default, bool isThrow = false) where T : class, new()
         {
             if (defaultValue == null) defaultValue = new T();
+            try
+            {
+                var config = Ioc.GetService<IConfiguration>();
+                if (config == null)
+                {
+                    return defaultValue;
+                }
+
+                if (sectionKey.IsNullOrEmpty())
+                {
+                    sectionKey = nameof(T);
+                }
+                var configValue = config.GetSection(sectionKey).Get<T>();
+                if (configValue == null)
+                {
+                    return defaultValue;
+                }
+
+                return configValue;
+
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Warn($"GetSection({sectionKey}) handler error {ex.Message}", ex);
+                if (isThrow)
+                    throw;
+            }
+
+            return defaultValue;
+
+        }
+
+        public static T GetSectionConfigValue<T>(string sectionKey, T defaultValue = default, bool isThrow = false)
+        {
+            if (defaultValue == null) defaultValue = default;
             try
             {
                 var config = Ioc.GetService<IConfiguration>();
@@ -312,6 +347,9 @@ namespace WindNight.ConfigCenter.Extension
             return defaultValue;
 
         }
+
+
+
 #endif
 
 

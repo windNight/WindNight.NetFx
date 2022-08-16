@@ -24,6 +24,7 @@ namespace WindNight.ConfigCenter.Extension
 
     internal class AppSettingInfo : ConfigBaseInfo
     {
+        public bool Loop { get; set; } = false;
         public new string Value { get; set; }
     }
 
