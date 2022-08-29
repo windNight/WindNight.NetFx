@@ -19,14 +19,14 @@ namespace WindNight.Extension.Dapper.Mysql
         //    SELECT c.* FROM {0} c ,td WHERE c.ParentId = td.Id
         //) SELECT * FROM td WHERE td.IsDeleted=0 ORDER BY td.Id; ";
 
-        protected virtual string QueryChildrenByParentIdSql => 
+        protected virtual string QueryChildrenByParentIdSql =>
 @"WITH RECURSIVE td AS (
    SELECT * FROM {0} WHERE 1=1 {1}
     UNION ALL
     SELECT c.* FROM {0} c ,td WHERE c.ParentId = td.Id
 ) SELECT * FROM td WHERE td.IsDeleted=0 ORDER BY td.Id; ";
 
-        protected virtual string QueryParentsByChildIdSql => 
+        protected virtual string QueryParentsByChildIdSql =>
 @"WITH RECURSIVE td AS (
    SELECT * FROM {0} WHERE Id = @QueryChildId {1}
     UNION ALL
@@ -87,6 +87,11 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     rootCondition = $" AND Id= @QueryParentId ";
                 }
+                else
+                {
+                    rootCondition = $" AND ParentId=0 "; //参数id=0 默认查 所有根节点的tree
+
+                }
             }
             else
             {
@@ -106,7 +111,7 @@ namespace WindNight.Extension.Dapper.Mysql
             return sql;
         }
 
-        
+
         /// <summary>
         /// 
         /// impl<see cref="ITreeRepositoryService{TEntity, TId}"/>

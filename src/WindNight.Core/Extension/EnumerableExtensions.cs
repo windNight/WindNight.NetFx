@@ -101,7 +101,7 @@ namespace System.Linq.Expressions
 
         public static List<T> ListToTree<T>(this List<T> list)
         where T : ITreeObject<T>, new()
-        { 
+        {
             if (list.IsNullOrEmpty()) return new List<T>();
 
             // list 去重
@@ -111,7 +111,7 @@ namespace System.Linq.Expressions
 
             foreach (var node in list)
             {
-                if (node.ParentId > 0)
+                if (node.ParentId > 0 && lookup.ContainsKey(node.ParentId))
                 {
                     //add node to its parent
                     var parent = lookup[node.ParentId];
@@ -124,7 +124,7 @@ namespace System.Linq.Expressions
             }
             return rootNodes;
         }
-         
+
     }
 
     /// <summary>
