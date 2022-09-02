@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 
@@ -59,6 +60,12 @@ namespace WindNight.ConfigCenter.Extension.Internal
             try
             {
                 var logService = ConfigCenterLogExtension.ConfigCenterLogProvider;
+               
+                if (logService == null)
+                {
+                    logService = Ioc.Instance.CurrentLogService;
+                }
+
                 if (logService != null)
                     logService.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage);
                 else
