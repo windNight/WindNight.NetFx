@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core;
 using WindNight.Core.Abstractions;
@@ -213,6 +214,44 @@ namespace WindNight.Core.Tools
             finally
             {
                 realTs = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                var fwarnMiS = FixWarnMiSeconds(warnMiSeconds);
+                if (realTs > fwarnMiS)
+                    LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage);
+                else if (realTs > 1 && TimeWatcherIsOpen)
+                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ");
+            }
+
+            return rlt;
+        }
+
+
+
+        private static async Task<T> DoWatcherFuncAsync<T>(Func<Task<T>> func, string watcherName, bool appendMessage, int warnMiSeconds,
+            bool isThrow)
+        {
+            T rlt;
+            var ticks = DateTime.Now.Ticks;
+            // TODO Try to get real name of this func
+            if (watcherName.IsNullOrEmpty()) watcherName = nameof(func);
+            try
+            {
+                rlt = await func.Invoke();
+            }
+            catch (BusinessException bex)
+            {
+                LogHelper.Warn($"TimeWatcher({watcherName}) 捕获业务异常：{bex.BusinessCode}", bex,
+                    appendMessage: appendMessage);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                rlt = default;
+                LogHelper.Error($"TimeWatcher({watcherName}) 捕获未知异常:{ex.GetType()}", ex, appendMessage: appendMessage);
+                if (isThrow) throw;
+            }
+            finally
+            {
+                var realTs = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                 var fwarnMiS = FixWarnMiSeconds(warnMiSeconds);
                 if (realTs > fwarnMiS)
                     LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage);
