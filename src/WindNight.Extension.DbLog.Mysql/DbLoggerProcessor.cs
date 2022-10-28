@@ -1,10 +1,7 @@
-﻿using Microsoft.Extensions.Options;
-using System;
+﻿using Microsoft.Extensions.DependencyInjection.WnExtension;
+using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.Sockets;
-using System.Net;
 using System.Text;
 using WindNight.Extension.Logger.DbLog.Abstractions;
 
@@ -17,22 +14,22 @@ namespace WindNight.Extension.Logger.DbLog
         private const int OpenGZipLimit = 15_00;
         private const string GZipFlagStr = "gzip@";
         private readonly Stopwatch _stopwatch = new Stopwatch();
-
+        private ISystemLogsProcess _repo => Ioc.GetService<ISystemLogsProcess>();
         /// <summary> </summary>
         protected readonly DbLogOptions DbLogOptions;
 
         /// <summary> </summary>
-        protected readonly ConcurrentQueue<string> MessageQueue;
+        protected readonly ConcurrentQueue<SysLogs> MessageQueue;
 
         /// <summary>
         /// </summary>
-        /// <param name="lyLogOptions"></param>
+        /// <param name="options"></param>
         public DbLoggerProcessor(IOptionsMonitor<DbLogOptions> options)
         {
             DbLogOptions = options.CurrentValue;
             _stopwatch.Start();
-            MessageQueue = new ConcurrentQueue<string>();
-
+            MessageQueue = new ConcurrentQueue<SysLogs>();
+            // _repo = Ioc.GetService<ISystemLogsProcess>();
             Task.Run(ProcessLogQueueThread);
             Task.Run(BackupThread);
         }
@@ -41,8 +38,9 @@ namespace WindNight.Extension.Logger.DbLog
         protected bool IsStop { get; set; }
 
         /// <summary> </summary>
-        public virtual void EnqueueMessage(string message)
+        public virtual void EnqueueMessage(SysLogs message)
         {
+            if (message.Content.ToLower().Contains($"{nameof(SysLogs)}".ToLower())) return;
             MessageQueue.Enqueue(message);
         }
 
@@ -133,26 +131,10 @@ namespace WindNight.Extension.Logger.DbLog
 #endif
         }
 
-        private void ProcessLog(params string[] messages)
+        private void ProcessLog(params SysLogs[] messages)
         {
-            // using (var udpClient = new UdpClient())
-            // {
-            foreach (var message in messages)
-                try
-                {
-                    //  var data = Encoding.UTF8.GetBytes(message);
-                    // var sendData = FixSenDbontent(data);
-                    //  udpClient.Send(sendData, sendData.Length, EndPoint);
-                    if (DbLogOptions.IsConsoleLog)
-                    {
-                        //Console.WriteLine($"send msg success {EndPoint.Address}:{EndPoint.Port} :{message}, Current Length In Queue is {MessageQueue.Count}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Send Msg:{message} Handler Error {ex.Message}");
-                }
-            //  }
+            var list = messages.ToList();
+            _repo?.BatchInsert(list);
         }
 
         private byte[] FixSenDbontent(byte[] originBytes)
@@ -186,7 +168,7 @@ namespace WindNight.Extension.Logger.DbLog
 
         private void ProcessBackupLogs()
         {
-            var oldQueue = new string[MessageQueue.Count];
+            var oldQueue = new SysLogs[MessageQueue.Count];
             MessageQueue.CopyTo(oldQueue, 0);
             ClearQueue();
             ProcessLog(oldQueue);

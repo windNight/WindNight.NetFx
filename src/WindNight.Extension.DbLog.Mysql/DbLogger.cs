@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json.Extension;
+using Newtonsoft.Json.Linq;
 using WindNight.Extension.Logger.DbLog.Abstractions;
-using WindNight.Extension.Logger.Mysql.DbLog.Internal;
+using WindNight.Extension.Logger.DbLog.Internal;
 
 namespace WindNight.Extension.Logger.Mysql.DbLog
 {
@@ -45,45 +42,90 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
             var message = formatter(state, exception);
 
             var now = DateTime.Now;
-            var logTimestamps = now.ConvertToUnixTime();
-            var logDate = now.ToString("yyyyMMdd");
             if (!string.IsNullOrEmpty(message) || exception != null)
             {
+                if (state is StateDataEntry stateEntry)
+                {
 
-                var logMsg = FixLogMessage(logLevel, state, message);
-                _messageQueue.EnqueueMessage(logMsg);
+                    var messageEntity = new SysLogs
+                    {
+                        LogAppCode = _options.LogAppCode,
+                        LogAppName = _options.LogAppName,
+                        RequestUrl = stateEntry.ApiUrl,
+                        ClientIp = stateEntry.ClientIP,
+                        ServerIp = stateEntry.ServerIP,
+                        SerialNumber = stateEntry.SerialNumber,
+                        LogTs = stateEntry.Timestamps,
+                        Level = stateEntry.Level.ToString(),
+                        NodeCode = HardInfo.NodeCode ?? "",
 
+
+                    };
+                    if (exception != null)
+                    {
+                        messageEntity.ExceptionObj = new ExceptionData
+                        {
+                            Message = exception.Message,
+                            StackTraceString = exception.StackTrace
+                        };
+                        messageEntity.Exceptions = messageEntity.ExceptionObj.ToJsonStr();
+                    }
+                    else
+                    {
+                        messageEntity.Exceptions = "{}";
+                    }
+
+                    messageEntity.Content = _options.ContentMaxLength > 0 && message.Length > _options.ContentMaxLength ? message.Substring(0, _options.ContentMaxLength) : message;
+                    _messageQueue.EnqueueMessage(messageEntity);
+                }
+                else
+                {
+
+                    var logMsg = FixLogMessage(logLevel, state, message);
+                    _messageQueue.EnqueueMessage(logMsg);
+                }
             }
+
         }
 
-        private string FixLogMessage<TState>(LogLevel logLevel, TState state, string message)
+        private SysLogs FixLogMessage<TState>(LogLevel logLevel, TState state, string message)
         {
-            var logMsg = string.Empty;
             var now = DateTime.Now;
             var logTimestamps = now.ConvertToUnixTime();
             var logDate = now.ToString("yyyyMMdd");
+            var logMsg = new SysLogs
+            {
+                LogAppCode = _options.LogAppCode,
+                LogAppName = _options.LogAppName,
+                Level = logLevel.ToString(),
+                LogTs = logTimestamps,
+                NodeCode = HardInfo.NodeCode ?? "",
+
+            };
+
             if (TryGetJObject(state, out var jo))
             {
                 if (string.IsNullOrEmpty(jo["logAppCode"]?.ToString())) jo["logAppCode"] = _options.LogAppCode;
                 if (string.IsNullOrEmpty(jo["logAppName"]?.ToString())) jo["logAppName"] = _options.LogAppName;
                 jo["logTimestamps"] = logTimestamps;
                 jo["logDate"] = logDate;
-                logMsg = jo.ToJsonStr();
+                message = jo.ToJsonStr();
             }
             else
             {
-                var log = new
-                {
-                    // app = _options.AppCode,
-                    level = logLevel.ToString(),
-                    content = message,
-                    logAppCode = _options.LogAppCode,
-                    logAppName = _options.LogAppName,
-                    logTimestamps,
-                    logDate
-                };
-                logMsg = log.ToJsonStr();
+                //var log = new
+                //{
+                //    // app = _options.AppCode,
+                //    level = logLevel.ToString(),
+                //    content = message,
+                //    logAppCode = _options.LogAppCode,
+                //    logAppName = _options.LogAppName,
+                //    logTimestamps,
+                //    logDate
+                //};
+                // logMsg = log.ToJsonStr();
             }
+            logMsg.Content = _options.ContentMaxLength > 0 && message.Length > _options.ContentMaxLength ? message.Substring(0, _options.ContentMaxLength) : message;
 
             return logMsg;
         }
@@ -103,5 +145,8 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
                 return false;
             }
         }
+
     }
+
+
 }

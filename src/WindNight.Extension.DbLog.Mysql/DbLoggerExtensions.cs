@@ -18,24 +18,19 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
         public static DbLogOptions DbLogOptions;
 
 
-        /// <summary>
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configure"></param>
-        /// <param name="loggerProcessor"></param>
-        /// <returns></returns>
+
         public static IServiceCollection AddDbLogger(this IServiceCollection services, Action<DbLogOptions> configure,
             IDbLoggerProcessor loggerProcessor = null)
         {
             if (configure == null) throw new ArgumentNullException(nameof(configure));
             services.Configure(configure);
-
+         
             services.AddSingleton<DbLogOptions>();
             services.AddSingleton<ILoggerProvider, DbLoggerProvider>();
             DbLogOptions = services.BuildServiceProvider().GetService<IOptionsMonitor<DbLogOptions>>().CurrentValue;
 
             SetDbLoggerProcessor(services, loggerProcessor);
-
+            services.AddMysqlLogsProcess();
             return services;
         }
 
@@ -44,8 +39,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
         /// <param name="builder"></param>
         /// <param name="loggerProcessor"></param>
         /// <returns></returns>
-        public static ILoggingBuilder AddDbLogger(this ILoggingBuilder builder,
-            IDbLoggerProcessor loggerProcessor = null)
+        public static ILoggingBuilder AddDbLogger(this ILoggingBuilder builder, IDbLoggerProcessor loggerProcessor = null)
         {
             builder.AddConfiguration();
             var services = builder.Services;
@@ -107,7 +101,15 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
             SetDbLoggerProcessor(services);
         }
 
-
+        /// <summary>
+        /// </summary>
+        /// <param name="services"></param> 
+        /// <returns></returns>
+        public static IServiceCollection AddMysqlLogsProcess(this IServiceCollection services)
+        {
+            services.AddSingleton<ISystemLogsProcess, MysqlLogsProcess>();
+            return services;
+        }
 
     }
 }

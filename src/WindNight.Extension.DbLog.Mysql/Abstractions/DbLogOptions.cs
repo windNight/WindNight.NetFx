@@ -7,7 +7,7 @@ using WindNight.Core.Abstractions;
 namespace WindNight.Extension.Logger.DbLog.Abstractions
 {
     public class DbLogOptions
-    { 
+    {
         /// <summary> </summary>
         public LogLevel MinLogLevel { get; set; } = LogLevel.Debug;
 
@@ -33,6 +33,8 @@ namespace WindNight.Extension.Logger.DbLog.Abstractions
 
         /// <summary> 上报时进行Gzip压缩 </summary>
         public bool OpenGZip { get; set; } = false;
+
+        public int ContentMaxLength { get; set; } = 2000;
 
     }
 }

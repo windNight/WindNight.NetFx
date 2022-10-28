@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace WindNight.Extension.Logger.Mysql.DbLog.Internal
+namespace WindNight.Extension.Logger.DbLog.Internal
 {
     internal class NullExternalScopeProvider : IExternalScopeProvider
     {

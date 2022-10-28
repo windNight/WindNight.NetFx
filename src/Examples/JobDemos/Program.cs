@@ -9,6 +9,7 @@ using Schedule.Model;
 using Schedule.Model.Enums;
 using System;
 using System.Collections.Generic;
+using Schedule;
 using WindNight.Core.Abstractions;
 
 namespace JobDemos
@@ -32,7 +33,7 @@ namespace JobDemos
                         services.AddOptions();
                         services.TryAddSingleton(hostContext.Configuration);
                         var configuration = hostContext.Configuration;
-                        //  services.Configure<JobsConfig>(configuration.GetSection("ScheduleJobs"));
+                        services.Configure<JobsConfig>(configuration.GetSection("ScheduleJobs"));
                         //  var ctScheduleJobConfigs = configuration.GetSection("ScheduleJobs").Get<JobsConfig>();
                         services.AddScheduleJobs(configuration);
                     })
@@ -102,4 +103,21 @@ namespace JobDemos
         }
 
     }
+
+    public static class TT
+    {
+
+        public static IServiceCollection AddConfig<T>(this IServiceCollection services,
+            IConfiguration configuration)
+            where T : class, new()
+
+        {
+            services.Configure<T>(configuration.GetSection(nameof(T)));
+
+            return services;
+
+        }
+
+    }
+
 }

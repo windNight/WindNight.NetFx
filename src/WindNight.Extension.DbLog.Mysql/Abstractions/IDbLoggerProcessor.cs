@@ -9,7 +9,7 @@ namespace WindNight.Extension.Logger.DbLog.Abstractions
         /// <summary>
         /// </summary>
         /// <param name="message"></param>
-        void EnqueueMessage(string message);
+        void EnqueueMessage(SysLogs message);
     }
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
@@ -55,7 +56,8 @@ namespace WindNight.ConfigCenter.Extension
             ConfigProvider.Instance.ReInit();
         }
 
-        protected const string TrueString = "1", FalseString = "0", ZeroString = "0";
+        protected static string[] TrueStrings = new[] { "1", "true" }, FalseStrings = new[] { "0", "false" };
+        protected const string ZeroString = "0";
         protected const int ZeroInt = 0;
 
         public static object AllConfigs => ConfigCenterContext.GetAllConfig();
@@ -173,9 +175,25 @@ namespace WindNight.ConfigCenter.Extension
 
         protected static bool GetAppSetting(string configKey, bool defaultValue = false, bool isThrow = false)
         {
-            var configValue = GetAppSetting(configKey, defaultValue ? TrueString : FalseString, isThrow);
+            var configValue = GetAppSetting(configKey, "", isThrow);
+            if (configValue.IsNullOrEmpty()) return defaultValue;
+            configValue = configValue.ToLower();
 
-            return string.Equals(configValue, TrueString, StringComparison.OrdinalIgnoreCase);
+            if (TrueStrings.Contains(configValue))
+            {
+                return true;
+            }
+
+            if (FalseStrings.Contains(configValue))
+            {
+                return false;
+            }
+
+            if (isThrow)
+            {
+                throw new ArgumentOutOfRangeException($"configKey", $"configKey({configKey}) is not in TrueStrings({(string.Join(",", TrueStrings))}) or FalseStrings({string.Join(",", FalseStrings)}) ");
+            }
+            return defaultValue;
         }
 
         protected static string GetAppSetting(string configKey, string defaultValue = "", bool isThrow = false)
@@ -235,7 +253,8 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="isThrow"></param>
         /// <returns></returns>
         protected static bool GetConfigValue(string configKey, bool defaultValue, bool isThrow)
-            => GetAppSetting(configKey, defaultValue ? TrueString : FalseString, isThrow) == TrueString;
+            => GetAppSetting(configKey, defaultValue, isThrow);
+
 
 
         #endregion //end AppSetting

@@ -4,7 +4,7 @@ namespace WindNight.ConfigCenter.Extension
 {
     public static class ConfigCenterLogExtension
     {
-        public static ILogService ConfigCenterLogProvider;
+        public static ILogService ConfigCenterLogProvider ;
 
         public static void InitLogProvider(ILogService logService)
         {

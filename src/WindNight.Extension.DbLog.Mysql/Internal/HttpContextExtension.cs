@@ -4,7 +4,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 
-namespace WindNight.Extension.Logger.Mysql.DbLog.Internal
+namespace WindNight.Extension.Logger.DbLog.Internal
 {
     internal static class HttpContextExtension
     {

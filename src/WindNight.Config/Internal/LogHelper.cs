@@ -2,7 +2,10 @@
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
+#if !NET45
 
+using WindNight.Config.Internal;
+#endif
 namespace WindNight.ConfigCenter.Extension.Internal
 {
     internal static class LogHelper
@@ -59,12 +62,17 @@ namespace WindNight.ConfigCenter.Extension.Internal
         {
             try
             {
-                var logService = ConfigCenterLogExtension.ConfigCenterLogProvider;
-               
-                if (logService == null)
-                {
-                    logService = Ioc.Instance.CurrentLogService;
-                }
+#if !NET45
+
+                if (!ConfigItems.OpenConfigLogs) return;
+#endif
+
+                var logService = ConfigCenterLogExtension.ConfigCenterLogProvider ?? Ioc.Instance.CurrentLogService;
+
+                //if (logService == null)
+                //{
+                //    logService = Ioc.Instance.CurrentLogService;
+                //}
 
                 if (logService != null)
                     logService.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage);
