@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json.Extension;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace WindNight.Extension.SqlClient.Extensions
 {

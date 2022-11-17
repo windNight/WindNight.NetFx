@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Text;
 using RabbitMQ.Client;
+using WindNight.Linq.Extensions.Expressions;
 using WindNight.RabbitMq.Abstractions;
 
 namespace WindNight.RabbitMq.Internal;

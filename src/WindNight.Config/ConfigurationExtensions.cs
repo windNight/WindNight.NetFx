@@ -12,7 +12,8 @@ namespace WindNight.ConfigCenter.Extension
 {
     public static class ConfigurationEx
     {
-        static string[] TrueStrings = new[] { "1", "true" }, FalseStrings = new[] { "0", "false" };
+        static readonly string[] TrueStrings = { "1", "true" };
+        static readonly string[] FalseStrings = { "0", "false" };
 
         static string FixAppConfigKey(string keyName) => $"{nameof(ConfigType.AppSettings)}:{keyName}";
 
@@ -23,7 +24,7 @@ namespace WindNight.ConfigCenter.Extension
             var configKey = FixAppConfigKey(keyName);
             try
             {
-                var configValue = configuration.GetAppConfigValue(keyName, "false", isThrow);
+                var configValue = configuration.GetAppConfigValue(keyName, "false", isThrow).ToLower();
 
                 if (TrueStrings.Contains(configValue))
                 {
@@ -37,7 +38,7 @@ namespace WindNight.ConfigCenter.Extension
 
                 if (isThrow)
                 {
-                    throw new ArgumentOutOfRangeException($"configKey", $"configKey({configKey}) is not in TrueStrings({(string.Join(",", TrueStrings))}) or FalseStrings({string.Join(",", FalseStrings)}) ");
+                    throw new ArgumentOutOfRangeException($"configKey", $"configKey({configKey}) configValue({configValue}) is not in TrueStrings([{(string.Join(",", TrueStrings))}]) or FalseStrings([{string.Join(",", FalseStrings)}]) ");
                 }
                 return defaultValue;
             }
@@ -70,18 +71,20 @@ namespace WindNight.ConfigCenter.Extension
         static T GetAppConfigValue<T>(string keyName, T defaultValue, bool isThrow, Func<string, T> func)
         {
             var configKey = FixAppConfigKey(keyName);
+            T configValue = defaultValue;
             try
             {
-                return func.Invoke(configKey);
+                configValue = func.Invoke(configKey);
+                return configValue;
             }
             catch (Exception ex)
             {
                 if (isThrow)
                 {
-                    LogHelper.Error($"GetAppConfigValue(keyName:{keyName},defaultValue:{defaultValue},isThrow:{isThrow})", ex);
+                    LogHelper.Error($"GetAppConfigValue(keyName:{keyName},defaultValue:{defaultValue},isThrow:{isThrow}) -> configValue({configValue})", ex);
                     throw;
                 }
-                LogHelper.Warn($"GetAppConfigValue(keyName:{keyName},defaultValue:{defaultValue},isThrow:{isThrow})", ex);
+                LogHelper.Warn($"GetAppConfigValue(keyName:{keyName},defaultValue:{defaultValue},isThrow:{isThrow}) -> configValue({configValue}) ", ex);
                 return defaultValue;
             }
         }
@@ -101,13 +104,14 @@ namespace WindNight.ConfigCenter.Extension
         public static T GetSectionConfigValue<T>(this IConfiguration configuration, string sectionKey, T defaultValue = default, bool isThrow = false)
         {
             if (defaultValue == null) defaultValue = default;
+            T configValue = defaultValue;
             try
             {
                 if (configuration == null)
                 {
                     return defaultValue;
                 }
-                var configValue = configuration.GetSection(sectionKey).Get<T>();
+                configValue = configuration.GetSection(sectionKey).Get<T>();
                 if (configValue == null)
                 {
                     return defaultValue;
@@ -120,11 +124,11 @@ namespace WindNight.ConfigCenter.Extension
             {
                 if (isThrow)
                 {
-                    LogHelper.Error($"GetSection({sectionKey}) handler error {ex.Message}", ex);
+                    LogHelper.Error($"GetSection({sectionKey}) configValue({configValue}) defaultValue({defaultValue}) isThrow({isThrow}) handler error {ex.Message}", ex);
                     throw;
                 }
 
-                LogHelper.Warn($"GetSection({sectionKey}) handler error {ex.Message}", ex);
+                LogHelper.Warn($"GetSection({sectionKey})  configValue({configValue}) defaultValue({defaultValue}) isThrow({isThrow})  handler error {ex.Message}", ex);
             }
 
             return defaultValue;

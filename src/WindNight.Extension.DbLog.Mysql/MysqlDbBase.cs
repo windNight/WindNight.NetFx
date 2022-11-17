@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection.WnExtension;
+﻿using System.Linq.Expressions;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Options;
 using WindNight.Core.SQL;
 using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Dapper.Mysql;
 using WindNight.Extension.Logger.DbLog.Abstractions;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace WindNight.Extension.Logger.Mysql.DbLog
 {
@@ -23,24 +25,30 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
 
         public bool Insert(SysLogs entity)
         {
+            if (entity.Content.Contains("syslogs")) return true;
             var rtl = InsertOne(entity);
             return rtl > 0;
         }
 
         public async Task<bool> InsertAsync(SysLogs entity)
         {
+            if (entity.Content.Contains("syslogs")) return true;
             var rtl = await InsertOneAsync(entity);
             return rtl > 0;
         }
 
         public bool BatchInsert(List<SysLogs> entities)
         {
+            entities = entities.Where(m => m.Content.Contains("syslogs")).ToList();
+            if (entities.IsNullOrEmpty()) return true;
             var rtl = BatchInsertUseValues(entities);
             return rtl;
         }
 
         public async Task<bool> BatchInsertAsync(List<SysLogs> entities)
         {
+            entities = entities.Where(m => m.Content.Contains("syslogs")).ToList();
+            if (entities.IsNullOrEmpty()) return true;
             var rtl = await BatchInsertUseValuesAsync(entities);
             return rtl; ;
         }

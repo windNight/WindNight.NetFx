@@ -10,6 +10,7 @@ using System.Threading;
 using Newtonsoft.Json.Extension;
 using WindNight.ConfigCenter.Extension.Internal;
 using WindNight.Core;
+using WindNight.Linq.Extensions.Expressions;
 
 #if NET45
 using System.Configuration;

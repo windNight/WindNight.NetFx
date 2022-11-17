@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Linq.Expressions;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace System.Text
 {

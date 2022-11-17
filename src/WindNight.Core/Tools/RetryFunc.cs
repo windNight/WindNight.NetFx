@@ -69,6 +69,39 @@ namespace WindNight.Core.Tools
             return rlt;
         }
 
+        public static T RetrySnippetFunc<T>(
+            Func<T> func,
+            int tryCount = 1,
+            int delayMs = 1000,
+            Action<Exception> warnAction = null
+        )
+        {
+            tryCount = tryCount < 1 ? 1 : tryCount;
+            int num = 0;
+            T obj = default(T);
+            while (tryCount > num - 1)
+            {
+                try
+                {
+                    ++num;
+                    obj = func();
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    if (tryCount == num - 1)
+                    {
+                        warnAction.KeepSafeAction(ex);
+                        break;
+                    }
+                    if (delayMs > 0)
+                        Task.Delay(delayMs).Wait();
+                }
+            }
+
+            return obj;
+        }
+
 
         /// <summary>
         ///     ReTry to exec the Snippet code which does not have return value.

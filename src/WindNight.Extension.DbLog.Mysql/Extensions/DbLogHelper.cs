@@ -184,6 +184,17 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
 
             try
             {
+                if ((int)logLevel < (int)DbLogOptions.MinLogLevel)
+                {
+                    return;
+                }
+
+                if (msg.Contains("syslogs"))
+                {
+                    Console.WriteLine($"MinLogLevel is {DbLogOptions.MinLogLevel}({(int)DbLogOptions.MinLogLevel})");
+                    return;
+                }
+
                 var now = DateTime.Now;
 
                 var messageEntity = new SysLogs
