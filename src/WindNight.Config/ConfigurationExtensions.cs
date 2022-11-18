@@ -24,6 +24,15 @@ namespace WindNight.ConfigCenter.Extension
             var configKey = FixAppConfigKey(keyName);
             try
             {
+                if (configuration == null)
+                {
+                    if (isThrow)
+                    {
+                        throw new ArgumentOutOfRangeException($"configuration", $"configuration  Null ");
+                    }
+                    return defaultValue;
+                }
+
                 var configValue = configuration.GetAppConfigValue(keyName, "false", isThrow).ToLower();
 
                 if (TrueStrings.Contains(configValue))
