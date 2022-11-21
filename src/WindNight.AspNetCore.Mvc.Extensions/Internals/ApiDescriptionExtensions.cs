@@ -8,33 +8,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.Internals
 {
-    internal static class CustomAttributeExtension
-    {
-        public static IEnumerable<T> GetMethodAttributes<T>(this ActionDescriptor actionDescriptor) where T : Attribute
-        {
-            if (actionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
-                return controllerActionDescriptor.MethodInfo.GetCustomAttributes<T>();
-
-            return Enumerable.Empty<T>();
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <typeparam name="TAttribute"></typeparam>
-        /// <param name="apiDesc"></param>
-        /// <returns></returns>
-        public static IEnumerable<TAttribute> GetControllerAndActionAttributes<TAttribute>(this ApiDescription apiDesc)
-            where TAttribute : Attribute
-        {
-            if (!apiDesc.TryGetMethodInfo(out var methodInfo)) return new List<TAttribute>();
-            if (methodInfo == null) return new List<TAttribute>();
-            var attrs = methodInfo.GetCustomAttributes<TAttribute>();
-            if (methodInfo.DeclaringType != null)
-                attrs = attrs.Concat(methodInfo.DeclaringType.GetCustomAttributes<TAttribute>());
-            return attrs;
-        }
-    }
-
+   
     internal static class ApiDescriptionExtensions
     {
         public static bool TryGetMethodInfo(
