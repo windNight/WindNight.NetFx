@@ -33,7 +33,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
         {
             if (context.ActionArguments != null)
                 foreach (var argument in context.ActionArguments)
-                    if (argument.Value.GetType().IsValueType || argument.Value == null || argument.Value is string)
+                    if (argument.Value == null || argument.Value.GetType().IsValueType ||  argument.Value is string)
                     {
                         CurrentItem.AddItem($"{argument.Key.ToLower()}", argument.Value?.ToString());
                     }

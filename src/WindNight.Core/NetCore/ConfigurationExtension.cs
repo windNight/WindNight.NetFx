@@ -2,6 +2,7 @@
 #if !NET45
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using WindNight.Core;
 
 namespace Microsoft.Extensions.Configuration.Extensions
@@ -10,6 +11,23 @@ namespace Microsoft.Extensions.Configuration.Extensions
     /// </summary>
     public static class ConfigurationExtension
     {
+        public static IServiceCollection ConfigureOption<TOptions>(this IServiceCollection services, IConfiguration configuration)
+            where TOptions : class, new()
+        {
+            var sectionKey = typeof(TOptions).Name;
+            services.ConfigureOption<TOptions>(configuration, sectionKey);
+            return services;
+        }
+
+        public static IServiceCollection ConfigureOption<TOptions>(this IServiceCollection services, IConfiguration configuration, string sectionKey)
+        where TOptions : class, new()
+        {
+            var config = configuration.GetSection(sectionKey);
+            services.Configure<TOptions>(config);
+            services.AddSingleton<TOptions>();
+            return services;
+        }
+
         /// <summary>
         /// </summary>
         /// <param name="sections"></param>
@@ -62,6 +80,9 @@ namespace Microsoft.Extensions.Configuration.Extensions
 
             return list;
         }
+
+
+
     }
 }
 #endif

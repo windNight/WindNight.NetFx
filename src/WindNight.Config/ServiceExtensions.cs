@@ -11,9 +11,9 @@ namespace WindNight.ConfigCenter.Extension
             IConfiguration configuration)
             where T : class, new()
         {
-            var section = configuration.GetSection(nameof(T));
+            var section = configuration.GetSection(typeof(T).Name);
             services.Configure<T>(section);
-
+            services.AddSingleton<T>();
             return services;
 
         }
@@ -23,7 +23,6 @@ namespace WindNight.ConfigCenter.Extension
         {
 
             services.AddSingleton<IConfigService, DefaultConfigService>();
-
             return services;
         }
 

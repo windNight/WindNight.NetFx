@@ -30,6 +30,7 @@ namespace WindNight.Extension.Logger.DbLog.Abstractions
 
         /// <summary> 是否输出日志 </summary>
         public bool IsConsoleLog { get; set; } = false;
+        public bool IsOpenDebug { get; set; } = false;
 
         /// <summary> 上报时进行Gzip压缩 </summary>
         public bool OpenGZip { get; set; } = false;

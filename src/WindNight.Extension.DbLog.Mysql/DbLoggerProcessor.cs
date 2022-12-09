@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text;
+using Newtonsoft.Json.Extension;
 using WindNight.Extension.Logger.DbLog.Abstractions;
 
 namespace WindNight.Extension.Logger.DbLog
@@ -41,6 +42,8 @@ namespace WindNight.Extension.Logger.DbLog
         public virtual void EnqueueMessage(SysLogs message)
         {
             if (message.Content.ToLower().Contains($"{nameof(SysLogs)}".ToLower())) return;
+            if (DbLogOptions.IsOpenDebug)
+                Console.WriteLine($"EnqueueMessage({message.ToJsonStr()})");
             MessageQueue.Enqueue(message);
         }
 
@@ -134,10 +137,12 @@ namespace WindNight.Extension.Logger.DbLog
         private void ProcessLog(params SysLogs[] messages)
         {
             var list = messages.ToList();
+            if (DbLogOptions.IsOpenDebug)
+                Console.WriteLine($"ProcessLog({list.ToJsonStr()})");
             _repo?.BatchInsert(list);
         }
 
-        private byte[] FixSenDbontent(byte[] originBytes)
+        private byte[] FixSendContent(byte[] originBytes)
         {
             if (DbLogOptions.OpenGZip && originBytes.Length > OpenGZipLimit) return MergerGZipFlag(originBytes);
 

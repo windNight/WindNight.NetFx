@@ -10,8 +10,8 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
     /// <summary> </summary>
     public static class DbLogHelper
     {
-        private static readonly IDbLoggerProcessor DbLoggerProcessor = DbLoggerExtensions.LoggerProcessor;
-        private static readonly DbLogOptions DbLogOptions = DbLoggerExtensions.DbLogOptions;
+        private static IDbLoggerProcessor DbLoggerProcessor => DbLoggerExtensions.LoggerProcessor;
+        private static DbLogOptions DbLogOptions => DbLoggerExtensions.DbLogOptions;
 
 
         /// <summary>
@@ -180,10 +180,11 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         public static void Add(string msg, LogLevels logLevel, Exception exception = null, string serialNumber = "",
             long millisecond = 0, string url = "", string serverIp = "", string clientIp = "")
         {
-            if (DbLoggerProcessor == null || DbLogOptions == null) return;
 
             try
             {
+                if (DbLoggerProcessor == null || DbLogOptions == null) return;
+
                 if ((int)logLevel < (int)DbLogOptions.MinLogLevel)
                 {
                     return;
@@ -191,7 +192,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
 
                 if (msg.Contains("syslogs"))
                 {
-                    Console.WriteLine($"MinLogLevel is {DbLogOptions.MinLogLevel}({(int)DbLogOptions.MinLogLevel})");
+                    // Console.WriteLine($"MinLogLevel is {DbLogOptions.MinLogLevel}({(int)DbLogOptions.MinLogLevel})");
                     return;
                 }
 
@@ -201,6 +202,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                 {
                     //Content = msg,
                     Level = logLevel.ToString(),
+                    LevelType = (int)logLevel,
                     LogAppCode = DbLogOptions?.LogAppCode,
                     LogAppName = DbLogOptions?.LogAppName,
                     ClientIp = clientIp,
@@ -229,6 +231,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
             catch (Exception ex)
             {
                 Console.WriteLine("日志异常:{0}", ex.ToJsonStr());
+
             }
         }
     }

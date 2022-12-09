@@ -1,20 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-	  <NoWarn>1701;1702;1705;1591</NoWarn>
-	  <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<Content Include="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
 	</ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\WindNight.Extension.DbLog.Mysql\WindNight.Extension.DbLog.Mysql.csproj" />
-    <ProjectReference Include="..\..\WindNight.Extension\WindNight.Extension.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\WindNight.Extension.DbLog.Mysql\WindNight.Extension.DbLog.Mysql.csproj" />
+		<ProjectReference Include="..\..\WindNight.Extension\WindNight.Extension.csproj" />
+	</ItemGroup>
 
 </Project>

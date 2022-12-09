@@ -57,6 +57,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
                         SerialNumber = stateEntry.SerialNumber,
                         LogTs = stateEntry.Timestamps,
                         Level = stateEntry.Level.ToString(),
+                        LevelType = (int)stateEntry.Level,
                         NodeCode = HardInfo.NodeCode ?? "",
 
 
@@ -98,6 +99,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
                 LogAppCode = _options.LogAppCode,
                 LogAppName = _options.LogAppName,
                 Level = logLevel.ToString(),
+                LevelType = (int)logLevel,
                 LogTs = logTimestamps,
                 NodeCode = HardInfo.NodeCode ?? "",
 

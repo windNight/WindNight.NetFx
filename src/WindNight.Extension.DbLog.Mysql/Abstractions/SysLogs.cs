@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using WindNight.Core.Abstractions;
 using WindNight.Core.SQL;
 
 namespace WindNight.Extension.Logger.DbLog.Abstractions
@@ -15,9 +16,10 @@ namespace WindNight.Extension.Logger.DbLog.Abstractions
         public long LogTs { get; set; } = 0;
         public string Level { get; set; } = "";
         /// <summary>
-        /// <see cref="LogLevel"/>
+        /// <see cref="LogLevels"/>
         /// </summary>
-        public LogLevel LevelType { get; set; }
+        public int LevelType { get; set; }
+
         public string Content { get; set; } = "";
         public string LogAppCode { get; set; } = "";
 

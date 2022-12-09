@@ -14,7 +14,7 @@ namespace Schedule
             LogHelper.Info($"{JobContext.CurrentJobBaseInfo}: {message}", url: FixActionName(actionName));
         }
 
-        public static void Warn(string message, Exception ex, string actionName = "")
+        public static void Warn(string message, Exception ex = null, string actionName = "")
         {
             LogHelper.Warn($"{JobContext.CurrentJobBaseInfo}: {message}", ex, url: FixActionName(actionName));
         }

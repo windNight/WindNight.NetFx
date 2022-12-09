@@ -39,7 +39,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
 
         public bool BatchInsert(List<SysLogs> entities)
         {
-            entities = entities.Where(m => m.Content.Contains("syslogs")).ToList();
+            entities = entities.Where(m => !m.Content.Contains("syslogs")).ToList();
             if (entities.IsNullOrEmpty()) return true;
             var rtl = BatchInsertUseValues(entities);
             return rtl;
@@ -47,7 +47,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
 
         public async Task<bool> BatchInsertAsync(List<SysLogs> entities)
         {
-            entities = entities.Where(m => m.Content.Contains("syslogs")).ToList();
+            entities = entities.Where(m => !m.Content.Contains("syslogs")).ToList();
             if (entities.IsNullOrEmpty()) return true;
             var rtl = await BatchInsertUseValuesAsync(entities);
             return rtl; ;

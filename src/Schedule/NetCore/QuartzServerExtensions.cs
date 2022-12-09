@@ -16,6 +16,7 @@ namespace Schedule.NetCore
             var jobConfigs = ConfigItems.JobsConfig;
             if (jobConfigs == null || !jobConfigs.Items.Any())
             {
+                //  configuration.GetSectionValue<JobsConfig>(ConfigItemsKey.ScheduleJobNodeName));
                 services.Configure<JobsConfig>(configuration.GetSection(ConfigItemsKey.ScheduleJobNodeName));
                 jobConfigs = configuration.GetSection(ConfigItemsKey.ScheduleJobNodeName).Get<JobsConfig>();
                 if (jobConfigs == null || !jobConfigs.Items.Any())
