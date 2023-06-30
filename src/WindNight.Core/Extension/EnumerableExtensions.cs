@@ -42,7 +42,7 @@ namespace WindNight.Linq.Extensions.Expressions
         /// ]]>
         /// </code>
         /// </example>
-        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> items,
+        public static IEnumerable<TSource> DistinctByItem<TSource, TKey>(this IEnumerable<TSource> items,
             Func<TSource, TKey> property)
         {
             var comparer = new GeneralPropertyComparer<TSource, TKey>(property);
@@ -107,7 +107,7 @@ namespace WindNight.Linq.Extensions.Expressions
             if (list.IsNullOrEmpty()) return new List<T>();
 
             // list 去重
-            var lookup = list.DistinctBy(m => m.Id).ToDictionary(n => n.Id, n => n);
+            var lookup = list.DistinctByItem(m => m.Id).ToDictionary(n => n.Id, n => n);
 
             var rootNodes = new List<T>();
 

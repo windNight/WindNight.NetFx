@@ -254,8 +254,15 @@ namespace System
         public static DateTime FirstDayOfWeek(this DateTime date)
         {
             if (date.DayOfWeek == DayOfWeek.Monday)
+            {
                 return date.Date;
-            return date.Date.AddDays(1 - (int)date.DayOfWeek);
+            }
+            var dayOfWeekInt = (int)date.DayOfWeek;
+            if (date.DayOfWeek == DayOfWeek.Sunday)
+            {
+                dayOfWeekInt = 7;
+            }
+            return date.Date.AddDays(1 - dayOfWeekInt);
         }
 
         /// <summary>
@@ -288,7 +295,7 @@ namespace System
             //var dateTime = date.FirstDayOfYear();
             //var d = ((date.Date - dateTime.Date).Days + (int)dateTime.DayOfWeek) / 7.0;
             //return d.Ceiling();
-             
+
         }
 
         public static
@@ -350,7 +357,8 @@ namespace System
             return list;
         }
 
-        public static List<T> GeneratorMonthSelfList<T>(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false, Func<DateTime, T> func = null)
+        public static List<T> GeneratorMonthSelfList<T>(this DateTime beginDate, 
+            DateTime? endDateParam = null, bool withLastDay = false, Func<DateTime, T> func = null)
         {
 
             beginDate = beginDate.FirstDayOfMonth();
@@ -372,7 +380,7 @@ namespace System
 
             return list;
         }
-
+      
         public static List<int> GeneratorDateIntList(this int beginDateInt, DateTime? endDateParam = null, bool withLastDay = false)
         {
             return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.ToDateInt());
