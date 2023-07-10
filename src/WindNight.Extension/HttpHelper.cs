@@ -36,8 +36,9 @@ namespace WindNight.Extension
         /// <param name="url"></param>
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
+        /// <param name="timeOut">Timeout in milliseconds to be used for the request </param>
         /// <returns></returns>
-        public static T Get<T>(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200) //where T : new()
+        public static T Get<T>(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
             {
@@ -45,7 +46,7 @@ namespace WindNight.Extension
                 headerDict = GeneratorHeaderDict(headerDict);
 
                 foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-                return ExecuteHttpClient<T>(url, request);
+                return ExecuteHttpClient<T>(url, request, timeOut);
             }, $"HttpGet({url})", warnMiSeconds: warnMiSeconds);
         }
 
@@ -57,12 +58,12 @@ namespace WindNight.Extension
         /// <param name="path"></param>
         /// <param name="queries"></param>
         /// <param name="headerDict"></param>
-        /// <param name="warnMiSeconds"></param>
+        /// <param name="warnMiSeconds">Timeout in milliseconds to be used for the request</param>
         /// <returns></returns>
         public static T Get<T>(string domain, string path,
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200) //where T : new()
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
             {
@@ -75,7 +76,7 @@ namespace WindNight.Extension
                     foreach (var query in queries)
                         request.AddParameter(query.Key, query.Value);
 
-                return ExecuteHttpClient<T>(domain, request);
+                return ExecuteHttpClient<T>(domain, request, timeOut);
             }, $"HttpGet({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 
@@ -88,11 +89,12 @@ namespace WindNight.Extension
         /// <param name="queries"></param>
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
+        /// <param name="timeOut">Timeout in milliseconds to be used for the request</param>
         /// <returns></returns>
         public static async Task<T> GetAsync<T>(string domain, string path,
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200) //where T : new()
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
             {
@@ -118,9 +120,10 @@ namespace WindNight.Extension
         /// <param name="bodyObjects"></param>
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
+        /// <param name="timeOut">Timeout in milliseconds to be used for the request</param>
         /// <returns></returns>
         public static T Post<T>(string domain, string path, object bodyObjects,
-            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200) //where T : new()
+            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
             {
@@ -132,7 +135,7 @@ namespace WindNight.Extension
 
                 request.AddJsonBody(bodyObjects);
 
-                return ExecuteHttpClient<T>(domain, request);
+                return ExecuteHttpClient<T>(domain, request, timeOut);
             }, $"HttpPost({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
@@ -146,9 +149,10 @@ namespace WindNight.Extension
         /// <param name="bodyObjects"></param>
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
+        /// <param name="timeOut">Timeout in milliseconds to be used for the request</param>
         /// <returns></returns>
         public static async Task<T> PostAsync<T>(string domain, string path, object bodyObjects,
-            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200) //where T : new()
+            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
             {
@@ -160,31 +164,31 @@ namespace WindNight.Extension
 
                 request.AddJsonBody(bodyObjects);
 
-                return await ExecuteHttpClientAsync<T>(domain, request);
+                return await ExecuteHttpClientAsync<T>(domain, request, timeOut: timeOut);
             },
                 $"HttpPostAsync({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
 
 
-        private static T ExecuteHttpClient<T>(string domain, IRestRequest request)
+        private static T ExecuteHttpClient<T>(string domain, IRestRequest request, int timeOut = 1000 * 60 * 20)
         {
             var client = new RestClient(domain)
             {
                 Proxy = null,
-                Timeout = 1000 * 60 * 20
+                Timeout = timeOut,
             };
             var response = client.Execute(request);
             return DeserializeResponse<T>(response);
         }
 
 
-        private static async Task<T> ExecuteHttpClientAsync<T>(string domain, IRestRequest request, CancellationToken token = default(CancellationToken))
+        private static async Task<T> ExecuteHttpClientAsync<T>(string domain, IRestRequest request, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
         {
             var client = new RestClient(domain)
             {
                 Proxy = null,
-                Timeout = 1000 * 60 * 20
+                Timeout = timeOut,// 1000 * 60 * 20
             };
 #if  NET45
             var response = await client.ExecuteTaskAsync(request);
