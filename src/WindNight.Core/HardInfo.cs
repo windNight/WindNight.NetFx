@@ -25,11 +25,34 @@ namespace System
 
         public static DateTime LastDayOfThisWeek => Now.LastDayOfWeek();
 
+        public static
+#if NET45LATER
+            (DateTime beginDate, DateTime endDate)
+#else      
+            Tuple<DateTime, DateTime>
+#endif
+            CurrentWeekDateRange
+        {
+            get
+            {
+
+                var beginDate = FirstDayOfThisWeek;
+                var endDate = LastDayOfThisWeek;
+#if NET45LATER
+                return (beginDate, endDate);
+#else
+                return new Tuple<DateTime, DateTime>(beginDate, endDate);
+#endif
+            }
+        }
+
         public static DateTime FirstDayOfThisYear => Now.FirstDayOfYear();
 
         public static DateTime LastDayOfThisYear => Now.LastDayOfYear();
 
         public static int NowDateInt => DateTime.Now.ToDateInt();
+
+        public static int YesterdayDateInt => DateTime.Now.AddDays(-1).ToDateInt();
 
         public static long NowUnixTime => DateTime.Now.ConvertToUnixTime();
 
@@ -147,7 +170,7 @@ namespace System
                     ?.Select(m => m.Address.ToString())
                     ?.ToList() ?? new List<string> { DefaultIp };
 
-            } 
+            }
             catch (Exception ex)
             {
                 LogHelper.Error($"NetworkInterface handler error {ex.Message}", ex, appendMessage: false);
