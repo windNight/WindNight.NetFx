@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.WnExtensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
@@ -16,6 +17,8 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         protected abstract string NamespaceName { get; }
         protected abstract void UseBizConfigure(IApplicationBuilder app);
         protected abstract void ConfigBizServices(IServiceCollection services);
+        protected virtual StaticFileOptions FileOptions { get; } = null;
+        protected virtual Action<IEndpointRouteBuilder> SelfRouter { get; } = null;
 
         public WebStartupBase(IConfiguration configuration)
         {
@@ -52,7 +55,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             return serviceProvider;
         }
 
- 
+
         protected virtual void UseSysConfigure(IApplicationBuilder app)
         {
             var env = Ioc.GetService<IWebHostEnvironment>();
@@ -61,14 +64,40 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             app.UseSwaggerConfig(NamespaceName);
 
             app.UseRouting();
-            app.UseStaticFiles();
+            UseStaticFiles(app);
+
 
             app.UseAuthorization();
 
             app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            UseEndpoints(app);
+
         }
+
+        protected virtual IApplicationBuilder UseStaticFiles(IApplicationBuilder app)
+        {
+            if (FileOptions == null)
+                app.UseStaticFiles();
+            else
+            {
+                app.UseStaticFiles(FileOptions);
+            }
+
+            return app;
+        }
+        protected virtual IApplicationBuilder UseEndpoints(IApplicationBuilder app)
+        {
+            app.UseEndpoints(endpoints =>
+            {
+                SelfRouter?.Invoke(endpoints);
+                endpoints.MapControllers();
+
+            });
+
+            return app;
+        }
+
 
         protected virtual IServiceCollection ConfigSysServices(IServiceCollection services,
             IConfiguration configuration)
