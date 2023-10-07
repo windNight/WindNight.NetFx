@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text.Extension;
 using System.Threading;
 using System.Threading.Tasks;
+using WindNight.Extension;
 
 namespace Schedule
 {
@@ -80,6 +81,7 @@ namespace Schedule
         {
             SetJobId(context);
             Debug(nameof(ITriggerListener), nameof(TriggerFired));
+            CurrentItem.AddItem("serialnumber", JobContext.JobId);
 
             await DoNoticeAsync($"begin with TriggerFired_ITriggerListener:NowTicks({DateTime.Now.Ticks})");
 

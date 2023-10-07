@@ -18,5 +18,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />
+		<ProjectReference Include="..\WindNight.Extension\WindNight.Extension.csproj" />
 	</ItemGroup>
 </Project>
