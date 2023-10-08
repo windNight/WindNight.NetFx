@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Extensions;
 using System;
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Microsoft.AspNetCore.Hosting.WnExtensions
 {
@@ -17,8 +20,13 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         protected abstract string NamespaceName { get; }
         protected abstract void UseBizConfigure(IApplicationBuilder app);
         protected abstract void ConfigBizServices(IServiceCollection services);
-        protected virtual StaticFileOptions FileOptions { get; } = null;
+        protected virtual StaticFileOptions SelfFileOptions { get; } = null;
         protected virtual Action<IEndpointRouteBuilder> SelfRouter { get; } = null;
+        protected virtual Action<SwaggerOptions> SelfSwaggerOptionsAction { get; } = null;
+        protected virtual Action<SwaggerUIOptions> SelfSwaggerUIOptionsAction { get; } = null;
+        protected virtual Action<SwaggerGenOptions> SelfSwaggerGenOptionsAction { get; } = null;
+
+        // protected virtual Action<Mvc.MvcJsonOptions>? mvcJsonOption { get; } = null;
 
         public WebStartupBase(IConfiguration configuration)
         {
@@ -61,7 +69,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             var env = Ioc.GetService<IWebHostEnvironment>();
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
-            app.UseSwaggerConfig(NamespaceName);
+            app.UseSwaggerConfig(NamespaceName, swaggerOptionsAction: SelfSwaggerOptionsAction, swaggerUIOptionsAction: SelfSwaggerUIOptionsAction);
 
             app.UseRouting();
             UseStaticFiles(app);
@@ -77,11 +85,11 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
         protected virtual IApplicationBuilder UseStaticFiles(IApplicationBuilder app)
         {
-            if (FileOptions == null)
+            if (SelfFileOptions == null)
                 app.UseStaticFiles();
             else
             {
-                app.UseStaticFiles(FileOptions);
+                app.UseStaticFiles(SelfFileOptions);
             }
 
             return app;
@@ -105,7 +113,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
             services.AddMvcBuilderWithDefaultFilters();
 
-            services.AddSwaggerConfig(NamespaceName, configuration);
+            services.AddSwaggerConfig(NamespaceName, configuration, swaggerGenOptionsAction: SelfSwaggerGenOptionsAction);
             return services;
         }
     }
