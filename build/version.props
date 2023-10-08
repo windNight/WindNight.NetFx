@@ -25,7 +25,7 @@ Patch：仅可向后兼容的 bug 修复
 		<VersionMinor>0</VersionMinor>
 		<VersionPatch>3</VersionPatch>
 		<VersionQuality>4</VersionQuality>
-		<VersionTT>-beta.23071001</VersionTT>
+		<VersionTT>-beta.23100701</VersionTT>
 		<VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</VersionPrefix>
 		<AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
 		<FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</FileVersion>

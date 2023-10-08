@@ -52,8 +52,11 @@ namespace WindNight.LogExtension
 
         private static string Log4NetConfigDir => Path.GetDirectoryName(Log4NetConfigPath);
 
+        /// <summary>
+        ///  需要区分windows 和linux 
+        /// </summary>
         private static string Log4NetConfigPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-            ConfigItems.Log4netConfigPath.TrimStart('/').Replace("/", "\\"));
+            HardInfo.IsWindows ? ConfigItems.Log4netConfigPath.TrimStart('/').Replace("/", "\\") : ConfigItems.Log4netConfigPath);
 
         static void CheckLog4netConfigPath()
         {

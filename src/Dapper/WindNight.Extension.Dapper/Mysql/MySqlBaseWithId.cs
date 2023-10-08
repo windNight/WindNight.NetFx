@@ -7,17 +7,20 @@ namespace WindNight.Extension.Dapper.Mysql
 {
     ///<inheritdoc />
     public abstract partial class MySqlBase<TEntity, TId> : NoIdMysqlBase<TEntity>
-    where TEntity : class, IEntity<TId>, new()
-    where TId : IEquatable<TId>, IComparable<TId>
+        where TEntity : class, IEntity<TId>, new()
+        where TId : IEquatable<TId>, IComparable<TId>
     {
         protected string QueryDataByIdSql => $"SELECT * FROM {BaseTableName} WHERE Id=@Id;";
 
-        private string QueryListByStatusSql => $"SELECT * FROM {BaseTableName} WHERE Status=@QueryStatus";
+        protected virtual string QueryListByStatusSql => $"SELECT * FROM {BaseTableName} WHERE Status=@QueryStatus";
 
 
-        private string DeleteByIdSql =>
-$@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
+        protected virtual string DeleteByIdSql =>
+            $@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
 
+        /// <summary>
+        ///  有些表 是没有 delete 字段的  暂不处理 delete 字段
+        /// </summary>
         protected virtual string QueryAllSqlStr => $"SELECT * FROM {BaseTableName}";
 
         /// <summary>
@@ -123,41 +126,11 @@ $@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
 
 
 
+        #endregion // end Id opt
 
-        #endregion// end Id opt
-
-
-        /// <summary>
-        /// 分页
-        /// impl<see cref="IPagedListRepositoryService{TEntity, TId}"/>
-        /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="condition"></param>
-        /// <param name="orderBy"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public virtual IPagedList<TEntity> QueryPagedList(int pageIndex, int pageSize, string condition, string orderBy,
-            IDictionary<string, object> parameters = null)
-        {
-            return DbPagedList(pageIndex, pageSize, condition, orderBy, parameters);
-        }
-
-        /// <summary>
-        /// 异步分页
-        /// impl<see cref="IPagedListRepositoryService{TEntity, TId}"/>
-        /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="condition"></param>
-        /// <param name="orderBy"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public virtual async Task<IPagedList<TEntity>> QueryPagedListAsync(int pageIndex, int pageSize, string condition,
-            string orderBy, IDictionary<string, object> parameters = null)
-        {
-            return await DbPagedListAsync(pageIndex, pageSize, condition, orderBy, parameters);
-        }
 
     }
+
+
+
 }

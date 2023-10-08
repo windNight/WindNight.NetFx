@@ -157,7 +157,7 @@ namespace WindNight.Extension.Dapper.Mssql
 
         #region PageResut
 
-        protected IEnumerable<T> PagedListInternal<T>(string connStr, QueryPageInfo pageInfo, out int recordCount, IDictionary<string, object> parameters)
+        protected IEnumerable<T> PagedListInternal<T>(string connStr, IQueryPageInfo pageInfo, out int recordCount, IDictionary<string, object> parameters)
             where T : class, new()
         {
             if (pageInfo.PageIndex <= 0 || pageInfo.PageSize <= 0 || pageInfo.TableName.IsNullOrEmpty())
@@ -195,7 +195,7 @@ namespace WindNight.Extension.Dapper.Mssql
         (IEnumerable<T> list, int recordCount) GetEmpty<T>() => (null, 0)!;
 
         protected async Task<(IEnumerable<T> list, int recordCount)>
-            PagedListInternalAsync<T>(string connStr, QueryPageInfo pageInfo, IDictionary<string, object> parameters)
+            PagedListInternalAsync<T>(string connStr, IQueryPageInfo pageInfo, IDictionary<string, object> parameters)
             where T : class, new()
         {
             var recordCount = 0;
@@ -232,14 +232,14 @@ namespace WindNight.Extension.Dapper.Mssql
             }
         }
 
-        public async Task<IPagedList<T>> PagedListAsync<T>(string connStr, QueryPageInfo sqlPageInfo, IDictionary<string, object> parameters)
+        public async Task<IPagedList<T>> PagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters)
             where T : class, new()
         {
             var dbData = await PagedListInternalAsync<T>(connStr, sqlPageInfo, parameters);
             return GeneratorPagedList(dbData.list, m => m, sqlPageInfo, dbData.recordCount);
         }
 
-        public IPagedList<T> PagedList<T>(string connStr, QueryPageInfo sqlPageInfo,
+        public IPagedList<T> PagedList<T>(string connStr, IQueryPageInfo sqlPageInfo,
             IDictionary<string, object> parameters)
             where T : class, new()
         {
@@ -274,6 +274,7 @@ namespace WindNight.Extension.Dapper.Mssql
             return dynamicParameters;
         }
 
+   
         #endregion
 
 

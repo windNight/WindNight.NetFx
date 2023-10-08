@@ -91,12 +91,12 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected int DbExecute(string sql, object param = null)
+        protected virtual int DbExecute(string sql, object param = null)
         {
             return SqlTimer((_sql, _param) => Execute(DbConnectString, _sql, _param),
                 sql, param, nameof(DbExecute));
         }
-        protected int DbExecute(string conn, string sql, object param = null)
+        protected virtual int DbExecute(string conn, string sql, object param = null)
         {
             return SqlTimer(Execute, conn, sql, param, nameof(DbExecute));
         }
@@ -108,13 +108,13 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected T DbExecuteScalar<T>(string sql, object param = null)
+        protected virtual T DbExecuteScalar<T>(string sql, object param = null)
         {
             return SqlTimer((_sql, _param) => ExecuteScalar<T>(DbConnectString, _sql, _param),
                 sql, param, nameof(ExecuteScalar));
         }
 
-        protected T DbExecuteScalar<T>(string conn, string sql, object param = null)
+        protected virtual T DbExecuteScalar<T>(string conn, string sql, object param = null)
         {
             return SqlTimer(ExecuteScalar<T>, conn, sql, param, nameof(ExecuteScalar));
         }
@@ -145,7 +145,47 @@ namespace WindNight.Extension.Dapper.Mysql
             return PagedList<TEntity>(DbConnectString, pagedInfo, parameters);
         }
 
+        protected virtual IPagedList<T> DbPagedList<T>(int pageIndex, int pageSize, string condition,
+            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "")
+        where T : class, new()
+        {
+            var pagedInfo = new QueryPageInfo
+            {
+                TableName = queryTableName.IsNullOrEmpty() ? BaseTableName : queryTableName,
+                Fields = "*",
+                SqlWhere = condition,
+                OrderField = orderBy,
+                PageIndex = pageIndex,
+                PageSize = pageSize
+            };
 
+            return PagedList<T>(DbConnectString, pagedInfo, parameters);
+        }
+
+        /// <summary>
+        ///   
+        /// </summary>
+        /// <param name="pagedInfo"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        protected virtual IPagedList<T> DbPagedList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
+            where T : class, new()
+        {
+
+            return PagedList<T>(DbConnectString, pagedInfo, parameters);
+        }
+
+        /// <summary>
+        ///   
+        /// </summary>
+        /// <param name="pagedInfo"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        protected virtual IPagedList<TEntity> DbPagedList(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
+        {
+
+            return PagedList<TEntity>(DbConnectString, pagedInfo, parameters);
+        }
 
         #endregion //end Sync
 
@@ -232,13 +272,13 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected async Task<int> DbExecuteAsync(string sql, object param = null)
+        protected virtual async Task<int> DbExecuteAsync(string sql, object param = null)
         {
             return await SqlTimerAsync(async (_sql, _param) => await ExecuteAsync(DbConnectString, _sql, _param),
                 sql, param, nameof(DbExecute));
         }
 
-        protected async Task<int> DbExecuteAsync(string conn, string sql, object param = null)
+        protected virtual async Task<int> DbExecuteAsync(string conn, string sql, object param = null)
         {
             return await SqlTimerAsync(async (_1, _sql, _param) => await ExecuteAsync(_1, _sql, _param),
                 conn, sql, param, nameof(DbExecute));
@@ -251,14 +291,14 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected async Task<T> DbExecuteScalarAsync<T>(string sql, object param = null)
+        protected virtual async Task<T> DbExecuteScalarAsync<T>(string sql, object param = null)
         {
             return await SqlTimerAsync(
                 async (_sql, _param) => await ExecuteScalarAsync<T>(DbConnectString, _sql, _param),
                 sql, param, nameof(ExecuteScalar));
         }
 
-        protected async Task<T> DbExecuteScalarAsync<T>(string conn, string sql, object param = null)
+        protected virtual async Task<T> DbExecuteScalarAsync<T>(string conn, string sql, object param = null)
         {
             return await SqlTimerAsync(
                 async (_1, _sql, _param) => await ExecuteScalarAsync<T>(_1, _sql, _param),
@@ -280,7 +320,7 @@ namespace WindNight.Extension.Dapper.Mysql
         {
             var pagedInfo = new QueryPageInfo
             {
-                TableName = queryTableName.IsNullOrEmpty()? BaseTableName: queryTableName,
+                TableName = queryTableName.IsNullOrEmpty() ? BaseTableName : queryTableName,
                 Fields = "*",
                 SqlWhere = condition,
                 OrderField = orderBy,
@@ -291,6 +331,59 @@ namespace WindNight.Extension.Dapper.Mysql
             return await PagedListAsync<TEntity>(DbConnectString, pagedInfo, parameters);
         }
 
+        /// <summary>
+        ///  异步分页
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="condition"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="parameters"></param>
+        /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName"/></param>
+        /// <returns></returns>
+        protected virtual async Task<IPagedList<T>> DbPagedListAsync<T>(
+            int pageIndex, int pageSize,
+            string condition, string orderBy,
+            IDictionary<string, object> parameters = null, string queryTableName = "")
+        where T : class, new()
+        {
+            var pagedInfo = new QueryPageInfo
+            {
+                TableName = queryTableName.IsNullOrEmpty() ? BaseTableName : queryTableName,
+                Fields = "*",
+                SqlWhere = condition,
+                OrderField = orderBy,
+                PageIndex = pageIndex,
+                PageSize = pageSize
+            };
+
+            return await PagedListAsync<T>(DbConnectString, pagedInfo, parameters);
+        }
+
+        /// <summary>
+        ///  异步分页
+        /// </summary>
+        /// <param name="pagedInfo"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        protected virtual async Task<IPagedList<T>> DbPagedListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
+            where T : class, new()
+        {
+
+            return await PagedListAsync<T>(DbConnectString, pagedInfo, parameters);
+        }
+
+        /// <summary>
+        ///  异步分页
+        /// </summary>
+        /// <param name="pagedInfo"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
+        {
+
+            return await PagedListAsync<TEntity>(DbConnectString, pagedInfo, parameters);
+        }
 
         #endregion
 

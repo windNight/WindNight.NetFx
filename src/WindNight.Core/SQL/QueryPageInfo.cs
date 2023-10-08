@@ -3,7 +3,7 @@
 namespace WindNight.Core.SQL
 {
 
-    public class QueryPageInfo : IQueryPageBase
+    public class QueryPageInfo : IQueryPageInfo
     {
         /// <summary>
         ///     分页信息实例

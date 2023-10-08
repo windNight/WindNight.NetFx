@@ -11,7 +11,7 @@ namespace WindNight.Extension.Dapper.Mysql
     /// <inheritdoc />
     public partial class MySqlBase : IBaseDbExecute
     {
-        public IDbConnection GetConnection(string connStr)
+        public virtual IDbConnection GetConnection(string connStr)
         {
             IDbConnection connection = new MySqlConnection(connStr);
             connection.Open();
@@ -20,7 +20,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         #region Sync
 
-        public T ExecuteScalar<T>(string connStr, string sql, object param = null)
+        public virtual T ExecuteScalar<T>(string connStr, string sql, object param = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -35,7 +35,7 @@ namespace WindNight.Extension.Dapper.Mysql
             }
         }
 
-        public int Execute(string connStr, string sql, object param = null)
+        public virtual int Execute(string connStr, string sql, object param = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -50,7 +50,7 @@ namespace WindNight.Extension.Dapper.Mysql
             }
         }
 
-        public IEnumerable<T> QueryList<T>(string connStr, string sql, object param = null)
+        public virtual IEnumerable<T> QueryList<T>(string connStr, string sql, object param = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -66,7 +66,7 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public T Query<T>(string connStr, string sql, object param = null)
+        public virtual T Query<T>(string connStr, string sql, object param = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -85,14 +85,14 @@ namespace WindNight.Extension.Dapper.Mysql
 
         #region PagedList
 
-        public async Task<IPagedList<T>> PagedListAsync<T>(string connStr, QueryPageInfo sqlPageInfo, IDictionary<string, object> parameters)
+        public virtual async Task<IPagedList<T>> PagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters)
             where T : class, new()
         {
             var dbData = await PagedListInternalAsync<T>(connStr, sqlPageInfo, parameters);
             return GeneratorPagedList(dbData.list, m => m, sqlPageInfo, dbData.recordCount);
         }
 
-        public IPagedList<T> PagedList<T>(string connStr, QueryPageInfo sqlPageInfo, IDictionary<string, object> parameters)
+        public virtual IPagedList<T> PagedList<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters)
             where T : class, new()
         {
             var list = PagedListInternal<T>(connStr, sqlPageInfo, out var recordCount, parameters);
@@ -110,7 +110,7 @@ namespace WindNight.Extension.Dapper.Mysql
             return dynamicParameters;
         }
 
-        private IEnumerable<T> PagedListInternal<T>(string connStr, QueryPageInfo sqlPageInfo, out int recordCount, IDictionary<string, object> parameters)
+        private IEnumerable<T> PagedListInternal<T>(string connStr, IQueryPageInfo sqlPageInfo, out int recordCount, IDictionary<string, object> parameters)
             where T : class, new()
         {
             if (sqlPageInfo.PageIndex <= 0 || sqlPageInfo.PageSize <= 0 ||
@@ -139,7 +139,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
 
         private async Task<(IEnumerable<T> list, int recordCount)>
-            PagedListInternalAsync<T>(string connStr, QueryPageInfo sqlPageInfo, IDictionary<string, object> parameters)
+            PagedListInternalAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters)
             where T : class, new()
         {
             var recordCount = 0;
@@ -179,7 +179,7 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        private string GeneratorQueryCountSql(QueryPageInfo sqlPageInfo)
+        private string GeneratorQueryCountSql(IQueryPageInfo sqlPageInfo)
         {
             var countSql = new StringBuilder($"SELECT COUNT(*) FROM {sqlPageInfo.TableName}");
             if (!sqlPageInfo.SqlWhere.IsNullOrEmpty())
@@ -187,7 +187,7 @@ namespace WindNight.Extension.Dapper.Mysql
             return countSql.ToString();
         }
 
-        private string GeneratorQueryPageListSql(QueryPageInfo sqlPageInfo)
+        private string GeneratorQueryPageListSql(IQueryPageInfo sqlPageInfo)
         {
             var querySql = new StringBuilder($"SELECT {sqlPageInfo.Fields} FROM {sqlPageInfo.TableName}");
             if (!sqlPageInfo.SqlWhere.IsNullOrEmpty())
@@ -210,7 +210,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         #region Async
 
-        public async Task<T> ExecuteScalarAsync<T>(string connStr, string sql, object param = null)
+        public virtual async Task<T> ExecuteScalarAsync<T>(string connStr, string sql, object param = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -226,7 +226,7 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public async Task<int> ExecuteAsync(string connStr, string sql, object param = null)
+        public virtual async Task<int> ExecuteAsync(string connStr, string sql, object param = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -242,7 +242,7 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public async Task<IEnumerable<T>> QueryListAsync<T>(string connStr, string sql, object param = null)
+        public virtual async Task<IEnumerable<T>> QueryListAsync<T>(string connStr, string sql, object param = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -258,7 +258,7 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public async Task<T> QueryAsync<T>(string connStr, string sql, object param = null)
+        public virtual async Task<T> QueryAsync<T>(string connStr, string sql, object param = null)
         {
             using (var connection = GetConnection(connStr))
             {

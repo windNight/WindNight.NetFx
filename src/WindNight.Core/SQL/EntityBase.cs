@@ -25,7 +25,7 @@ namespace WindNight.Core.SQL
 
         public int CreateDate { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
+        public int IsDeleted { get; set; } = 0;
     }
 
 
@@ -42,6 +42,10 @@ namespace WindNight.Core.SQL
     /// <inheritdoc cref="IUpdateEntityBase" />
     public class CreateAndUpdateWithStatusBase<TPrimaryKey> : CreateAndUpdateBase<TPrimaryKey>, IStatusEntity
     {
+        public CreateAndUpdateWithStatusBase() : base()
+        {
+            Status = (int)DataStatusEnums.Enable;
+        }
         public int Status { get; set; }
     }
 

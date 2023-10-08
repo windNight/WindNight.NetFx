@@ -5,12 +5,12 @@ namespace WindNight.Extension.Dapper.Mysql
 {
     public abstract partial class MySqlBase<TEntity, TId>
     {
-        protected string InsertSql =>
+        protected virtual string InsertSql =>
             $@"INSERT INTO {BaseTableName}({InsertTableColumns})
    VALUES ({InsertTableColumnValues});
    SELECT @@identity;";
 
-        protected string BatchInsertSql =>
+        protected virtual string BatchInsertSql =>
             $@"INSERT INTO {BaseTableName}({InsertTableColumns})
    VALUES ({InsertTableColumnValues})";
 
@@ -20,7 +20,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="insertList"></param>
         /// <returns></returns>
-        public bool BatchInsertUseValues(IList<TEntity> insertList)
+        public virtual bool BatchInsertUseValues(IList<TEntity> insertList)
         {
             if (insertList == null || !insertList.Any()) return false;
 
@@ -36,7 +36,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="insertList"></param>
         /// <returns></returns>
-        public async Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList)
+        public virtual async Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList)
         {
             if (insertList == null || !insertList.Any()) return false;
 
@@ -52,7 +52,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="insertSql"></param>
         /// <param name="insertList"></param>
-        public void BatchInsert(string insertSql, IList<TEntity> insertList)
+        public virtual void BatchInsert(string insertSql, IList<TEntity> insertList)
         {
             if (insertList == null || !insertList.Any()) return;
 
@@ -66,7 +66,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// 按条一条一条插入
         /// </summary>
         /// <param name="insertList"></param>
-        public void ListInsertOneByOne(IList<TEntity> insertList)
+        public virtual void ListInsertOneByOne(IList<TEntity> insertList)
         {
             var insertSql =
                 $@"INSERT INTO {BaseTableName}({InsertTableColumns})
@@ -89,7 +89,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="updateSql"></param>
         /// <param name="updateList"></param>
         /// <returns></returns>
-        public bool BatchUpdate(string updateSql, IList<TEntity> updateList)
+        public virtual bool BatchUpdate(string updateSql, IList<TEntity> updateList)
         {
             if (updateList == null || !updateList.Any()) return false;
             Parallel.ForEach(updateList, item =>
@@ -107,9 +107,10 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="action"></param>
         /// <param name="retryCount"></param>
-        public void BatchInsertWithRetry(Action action, int retryCount = 3)
+        public virtual void BatchInsertWithRetry(Action action, int retryCount = 3)
         {
             DoRetryWhenHandlerSocketException(action, $"BatchInsert_{BaseTableName}", retryCount);
         }
+
     }
 }

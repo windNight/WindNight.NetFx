@@ -1,7 +1,7 @@
 ﻿namespace WindNight.Core.SQL.Abstractions
 {
- 
- public interface IEntity
+
+    public interface IEntity
     {
     }
 
@@ -14,7 +14,7 @@
     public interface IDeletedEntity
     {
         /// <summary> 软删除标志 </summary>
-        bool IsDeleted { get; set; }
+        int IsDeleted { get; set; }
     }
 
     public interface IStatusEntity
@@ -56,7 +56,7 @@
         int CreateDate { get; set; }
     }
 
- 
+
 
     /// <summary>
     ///     运行数据或者非配置数据
@@ -72,5 +72,5 @@
         /// <summary> 更新日期, 格式 yyyyMMdd, 举例: 20171231 </summary>
         int UpdateDate { get; set; }
     }
- 
+
 }

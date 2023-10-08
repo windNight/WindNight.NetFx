@@ -17,6 +17,30 @@ namespace WindNight.Extension.Dapper.Mysql
         protected abstract string InsertTableColumnValues { get; }
         protected abstract string EqualEntityCondition { get; }
 
+        protected virtual string BaseStatusColumns => $"Status,{BaseCUColumns}";
+        protected virtual string BaseStatusColumnValues => $"@Status,{BaseCUColumnValues}";
+
+        protected virtual string BaseCColumns => "CreateUserId,CreateDate,CreateUnixTime,IsDeleted";
+        protected virtual string BaseCColumnValues => "@CreateUserId,@CreateDate,@CreateUnixTime,@IsDeleted";
+        protected virtual string BaseCUColumns => $"{BaseCColumns},UpdateUserId,UpdateDate,UpdateUnixTime";
+
+        protected virtual string BaseCUColumnValues => $"{BaseCColumnValues},@UpdateUserId,@UpdateDate,@UpdateUnixTime";
+
+        protected string DefaultUpdateInfoFiled = "UpdateUserId=@UpdateUserId,UpdateUnixTime=@UpdateUnixTime,UpdateDate=@UpdateDate";
+        protected virtual string QueryByUniqueKeySql => EqualEntityCondition.IsNullOrEmpty() ? "" : $"SELECT * FROM {BaseTableName} WHERE {EqualEntityCondition} ";
+
+        protected virtual string ToBeUpdateFiled { get; }
+
+        protected virtual string DefaultInsertOrUpdateSql =>
+            @$"INSERT INTO {BaseTableName}({InsertTableColumns}) 
+VALUES ({InsertTableColumnValues})
+ON DUPLICATE KEY 
+UPDATE {ToBeUpdateFiled}
+;"; 
+
+
+
+
         protected abstract string Db { get; }
 
         protected abstract string GetConnStr();
@@ -35,7 +59,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="param"></param>
         /// <param name="actionName"></param>
         /// <returns></returns>
-        protected T SqlTimer<T>(Func<string, string, object, T> sqlFunc, string connectString, string sql, object param = null,
+        protected virtual T SqlTimer<T>(Func<string, string, object, T> sqlFunc, string connectString, string sql, object param = null,
             string actionName = "")
         {
             var ticks = DateTime.Now.Ticks;
@@ -69,7 +93,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="param"></param>
         /// <param name="actionName"></param>
         /// <returns></returns>
-        protected T SqlTimer<T>(Func<string, object, T> sqlFunc, string sql, object param = null,
+        protected virtual T SqlTimer<T>(Func<string, object, T> sqlFunc, string sql, object param = null,
             string actionName = "")
         {
             var ticks = DateTime.Now.Ticks;
@@ -94,7 +118,7 @@ namespace WindNight.Extension.Dapper.Mysql
             return default;
         }
 
-        protected async Task<T> SqlTimerAsync<T>(Func<string, string, object, Task<T>> sqlFunc, string connectString, string sql, object param = null,
+        protected virtual async Task<T> SqlTimerAsync<T>(Func<string, string, object, Task<T>> sqlFunc, string connectString, string sql, object param = null,
             string actionName = "")
         {
             var ticks = DateTime.Now.Ticks;
@@ -119,7 +143,7 @@ namespace WindNight.Extension.Dapper.Mysql
             return default;
         }
 
-        protected async Task<T> SqlTimerAsync<T>(Func<string, object, Task<T>> sqlFunc, string sql, object param = null,
+        protected virtual async Task<T> SqlTimerAsync<T>(Func<string, object, Task<T>> sqlFunc, string sql, object param = null,
             string actionName = "")
         {
             var ticks = DateTime.Now.Ticks;
@@ -144,7 +168,7 @@ namespace WindNight.Extension.Dapper.Mysql
             return default;
         }
 
-        protected void DoRetryWhenHandlerSocketException(Action action, string actionName, int retryCount = 3)
+        protected virtual void DoRetryWhenHandlerSocketException(Action action, string actionName, int retryCount = 3)
         {
             var runCount = 0;
             var isRun = true;

@@ -7,6 +7,16 @@ using WindNight.Extension.Dapper.Internals;
 
 namespace WindNight.Extension.Dapper.Mysql
 {
+
+
+    public abstract partial class MySqlTreeBase<TEntity> : MySqlTreeBase<TEntity, int>
+        where TEntity : class, ITreeEntity<int>, IEntity<int>, new()
+    {
+
+
+    }
+
+
     ///<inheritdoc />
     public abstract partial class MySqlTreeBase<TEntity, TId> : MySqlBase<TEntity, TId>, ITreeRepositoryService<TEntity, TId>
         where TEntity : class, ITreeEntity<TId>, IEntity<TId>, new()
@@ -32,6 +42,8 @@ namespace WindNight.Extension.Dapper.Mysql
     UNION ALL
     SELECT c.* FROM {0} c ,td WHERE c.Id = td.ParentId
 ) SELECT * FROM td WHERE td.IsDeleted=0  ORDER BY td.Id; ";
+        protected virtual string BaseTreeColumns => $"ParentId,{BaseStatusColumns}";
+        protected virtual string BaseTreeColumnValues => $"@ParentId,{BaseStatusColumnValues}";
 
 
         #region ITreeRepositoryService
