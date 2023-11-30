@@ -26,6 +26,7 @@ namespace WindNight.Extension.Dapper.Internals
         //}
 
         public static bool IsLogConnectString => GetConfigBoolValue(ConfigItemsKey.IsLogConnectStringKey);
+        public static int DapperWarnMs => GetConfigIntValue(ConfigItemsKey.DapperWarnMsKey, 100);
         //{
         //    get
         //    {
@@ -46,8 +47,26 @@ namespace WindNight.Extension.Dapper.Internals
 
         }
 
+        static int GetConfigIntValue(string key, int defaultValue = 0)
+        {
+            try
+            {
+                var config = Ioc.Instance.CurrentConfigService;
+                if (config == null) return defaultValue;
+                var value1 = config.Configuration.GetSection(key).Get<int>();
+                var value2 = config.GetAppSetting(key, defaultValue, false);
+                return Math.Max(value2, value1);
+            }
+            catch (Exception ex)
+            {
+                return defaultValue;
+            }
+
+        }
+
         static class ConfigItemsKey
         {
+            internal static string DapperWarnMsKey = "DapperConfig:WarnMs";
             internal static string OpenDapperLogKey = "DapperConfig:OpenDapperLog";
             internal static string IsLogConnectStringKey = "DapperConfig:IsLogConnectString";
 
