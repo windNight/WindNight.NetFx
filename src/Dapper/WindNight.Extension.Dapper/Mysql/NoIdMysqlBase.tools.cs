@@ -78,13 +78,13 @@ UPDATE {ToBeUpdateFiled}
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                     if (milliseconds > ConfigItems.DapperWarnMs)
                     {
-                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
 
                     }
                     else if (ConfigItems.OpenDapperLog)
                     {
                         LogHelper.Info(
-                            $"sql执行耗时：{milliseconds} ms.【{(ConfigItems.IsLogConnectString ? connectString : "")} 】sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
                     }
                 }
                 catch
@@ -124,13 +124,13 @@ UPDATE {ToBeUpdateFiled}
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                     if (milliseconds > ConfigItems.DapperWarnMs)
                     {
-                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
 
                     }
                     else if (ConfigItems.OpenDapperLog)
                     {
                         LogHelper.Info(
-                            $"sql执行耗时：{milliseconds} ms.【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
                     }
                 }
                 catch
@@ -161,13 +161,13 @@ UPDATE {ToBeUpdateFiled}
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                     if (milliseconds > ConfigItems.DapperWarnMs)
                     {
-                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
 
                     }
                     else if (ConfigItems.OpenDapperLog)
                     {
                         LogHelper.Info(
-                            $"sql执行耗时：{milliseconds} ms.【{(ConfigItems.IsLogConnectString ? connectString : "")} 】 {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
                     }
                 }
                 catch
@@ -200,12 +200,13 @@ UPDATE {ToBeUpdateFiled}
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                     if (milliseconds > ConfigItems.DapperWarnMs)
                     {
-                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
 
                     }
                     else if (ConfigItems.OpenDapperLog)
                     {
-                        LogHelper.Info($"sql执行耗时：{milliseconds} ms. 【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 sql:{sql} {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                        LogHelper.Info(
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
                     }
                 }
                 catch

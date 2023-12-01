@@ -55,11 +55,12 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
                         ClientIp = stateEntry.ClientIP,
                         ServerIp = stateEntry.ServerIP,
                         SerialNumber = stateEntry.SerialNumber,
-                        LogTs = stateEntry.Timestamps,
+                        RunMs = stateEntry.Timestamps,
+                        LogTs = HardInfo.NowUnixTime,
                         Level = stateEntry.Level.ToString(),
                         LevelType = (int)stateEntry.Level,
                         NodeCode = HardInfo.NodeCode ?? "",
-
+                        
 
                     };
                     if (exception != null)

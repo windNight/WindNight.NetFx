@@ -13,6 +13,13 @@ namespace WindNight.Extension.Logger.DbLog.Abstractions
 
         public string? ServerIp { get; set; } = "";
         public string ClientIp { get; set; } = "";
+        /// <summary>
+        ///  运行耗时 毫秒
+        /// </summary>
+        public long RunMs { get; set; } = 0;
+        /// <summary>
+        ///  日志触发时间戳
+        /// </summary>
         public long LogTs { get; set; } = 0;
         public string Level { get; set; } = "";
         /// <summary>
