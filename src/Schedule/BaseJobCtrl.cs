@@ -49,6 +49,7 @@ namespace Schedule
                 job.SetJobRunParams(jobParam.RunParams);
                 job.SetAutoClose(jobParam.AutoClose);
                 job.SetIsDoNotice(jobParam.IsDoNotice);
+                job.SetIsLogJobLC(jobParam.IsLogJobLC);
 
                 ScheduleModConfig.Instance.DefaultScheduler.ScheduleJob(job, trigger);
 
@@ -92,7 +93,8 @@ namespace Schedule
                 DepJobs = jobMeta.DepJobs,
                 AutoClose = jobMeta.AutoClose,
                 JobParamsDesc = jobMeta.JobParamsDesc,
-                IsDoNotice = jobMeta.IsDoNotice
+                IsDoNotice = jobMeta.IsDoNotice,
+                IsLogJobLC = jobMeta.IsLogJobLC,
             };
         }
 

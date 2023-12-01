@@ -241,6 +241,24 @@ namespace Schedule.Func
         }
 
         /// <summary>
+        /// </summary>
+        /// <param name="jobDetail"></param>
+        /// <param name="isLogJobLC"></param>
+        public static void SetIsLogJobLC(this IJobDetail jobDetail, bool isLogJobLC)
+        {
+            jobDetail.JobDataMap["isLogJobLC"] = isLogJobLC;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static bool GetIsLogJobLC(this IJobExecutionContext context)
+        {
+            return context.JobDetail.JobDataMap.ContainsKey("isLogJobLC") && bool.Parse(context.JobDetail.JobDataMap["isLogJobLC"].ToString());
+        }
+
+        /// <summary>
         ///     设置 job 被否决的原因
         /// </summary>
         /// <param name="jobDetail"></param>

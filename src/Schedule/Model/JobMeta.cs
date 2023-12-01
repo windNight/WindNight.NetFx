@@ -80,5 +80,9 @@ namespace Schedule.Model
         public string JobParamsDesc { set; get; }
 
         public bool IsDoNotice { set; get; } = true;
+        /// <summary>
+        ///  是否记录job的生命周期
+        /// </summary>
+        public bool IsLogJobLC { set; get; } = true;
     }
 }

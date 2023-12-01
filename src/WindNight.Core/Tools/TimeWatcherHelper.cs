@@ -182,9 +182,9 @@ namespace WindNight.Core.Tools
                 realTs = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                 var fwarnMiS = FixWarnMiSeconds(warnMiSeconds);
                 if (realTs > fwarnMiS)
-                    LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage);
+                    LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage, millisecond: realTs);
                 else if (realTs > 1 && TimeWatcherIsOpen)
-                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ");
+                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ", millisecond: realTs);
             }
         }
 
@@ -216,9 +216,9 @@ namespace WindNight.Core.Tools
                 realTs = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                 var fwarnMiS = FixWarnMiSeconds(warnMiSeconds);
                 if (realTs > fwarnMiS)
-                    LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage);
+                    LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage, millisecond: realTs);
                 else if (realTs > 1 && TimeWatcherIsOpen)
-                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ");
+                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ", millisecond: realTs);
             }
 
             return rlt;
@@ -254,9 +254,9 @@ namespace WindNight.Core.Tools
                 var realTs = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
                 var fwarnMiS = FixWarnMiSeconds(warnMiSeconds);
                 if (realTs > fwarnMiS)
-                    LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage);
+                    LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage, millisecond: realTs);
                 else if (realTs > 1 && TimeWatcherIsOpen)
-                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ");
+                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ", millisecond: realTs);
             }
 
             return rlt;

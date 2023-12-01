@@ -33,7 +33,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
         {
             if (context.ActionArguments != null)
                 foreach (var argument in context.ActionArguments)
-                    if (argument.Value == null || argument.Value.GetType().IsValueType ||  argument.Value is string)
+                    if (argument.Value == null || argument.Value.GetType().IsValueType || argument.Value is string)
                     {
                         CurrentItem.AddItem($"{argument.Key.ToLower()}", argument.Value?.ToString());
                     }
@@ -63,9 +63,9 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 var ms = (long)(DateTime.Now - beginTime).TotalMilliseconds;
 
                 if (ms > ConfigItems.ApiWarningMis)
-                    LogHelper.Warn($"请求共耗时:{ms} ms ");
+                    LogHelper.Warn($"请求共耗时:{ms} ms ", millisecond: ms);
                 else if (ConfigItems.LogProcessOpened)
-                    LogHelper.Info($"请求共耗时:{ms} ms ");
+                    LogHelper.Info($"请求共耗时:{ms} ms ", millisecond: ms);
 
                 if (ConfigItems.ApiUrlOpened)
                     LogHelper.Add($"请求耗时{ms} {request.Path}", LogLevels.ApiUrl, url: request.Path, millisecond: ms,

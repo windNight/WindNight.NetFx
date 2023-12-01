@@ -5,23 +5,23 @@ namespace Schedule
     public static class JobLogHelper
     {
 
-        public static void Debug(string message, string actionName = "")
+        public static void Debug(string message, string actionName = "", long millisecond = 0)
         {
-            LogHelper.Debug($"{JobContext.CurrentJobBaseInfo}: {message}", url: FixActionName(actionName));
+            LogHelper.Debug($"{JobContext.CurrentJobBaseInfo}: {message}", url: FixActionName(actionName), millisecond: millisecond);
         }
-        public static void Info(string message, string actionName = "")
+        public static void Info(string message, string actionName = "", long millisecond = 0)
         {
-            LogHelper.Info($"{JobContext.CurrentJobBaseInfo}: {message}", url: FixActionName(actionName));
-        }
-
-        public static void Warn(string message, Exception ex = null, string actionName = "")
-        {
-            LogHelper.Warn($"{JobContext.CurrentJobBaseInfo}: {message}", ex, url: FixActionName(actionName));
+            LogHelper.Info($"{JobContext.CurrentJobBaseInfo}: {message}", url: FixActionName(actionName), millisecond: millisecond);
         }
 
-        public static void Error(string message, Exception ex, string actionName = "")
+        public static void Warn(string message, Exception ex = null, string actionName = "", long millisecond = 0)
         {
-            LogHelper.Error($"{JobContext.CurrentJobBaseInfo}: {message}", ex, url: FixActionName(actionName));
+            LogHelper.Warn($"{JobContext.CurrentJobBaseInfo}: {message}", ex, url: FixActionName(actionName), millisecond: millisecond);
+        }
+
+        public static void Error(string message, Exception ex, string actionName = "", long millisecond = 0)
+        {
+            LogHelper.Error($"{JobContext.CurrentJobBaseInfo}: {message}", ex, url: FixActionName(actionName), millisecond: millisecond);
         }
 
         static string FixActionName(string actionName = "")

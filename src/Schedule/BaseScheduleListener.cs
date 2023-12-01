@@ -133,9 +133,17 @@ namespace Schedule
             var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - beginTicks).TotalMilliseconds;
 
             if (milliseconds > 5 * 1000)
-                JobLogHelper.Warn($"{JobInfo} 耗时{milliseconds} ms ", null, nameof(TriggerComplete));
+                JobLogHelper.Warn($"{JobInfo} 耗时{milliseconds} ms ", null, nameof(TriggerComplete), millisecond: milliseconds);
             else if (milliseconds > 0)
-                JobLogHelper.Info($"{JobInfo} 耗时{milliseconds} ms ", nameof(TriggerComplete));
+            {
+                var isLogJobLC = context.GetIsLogJobLC();
+                if (isLogJobLC)
+                {
+                    JobLogHelper.Info($"{JobInfo} 耗时{milliseconds} ms ", nameof(TriggerComplete), millisecond: milliseconds);
+                }
+
+            }
+
             var bizState = context.GetJobBusinessState();
             var bizStatsStr = bizState.ToString();
             if (bizState == JobBusinessStateEnum.Success)
@@ -217,8 +225,14 @@ namespace Schedule
                 var autoClose = context.GetAutoClose();
                 var runParams = context.GetJobRunParams();
 
-                var msg = $"{JobInfo} begin time:{DateTime.Now:yyyy-MM-dd HH:mm:sss}, autoClose:{autoClose}, runParams:{runParams}";
-                JobLogHelper.Info(msg, nameof(JobToBeExecuted));
+
+                var isLogJobLC = context.GetIsLogJobLC();
+                if (isLogJobLC)
+                {
+                    var msg = $"{JobInfo} begin time:{DateTime.Now:yyyy-MM-dd HH:mm:sss}, autoClose:{autoClose}, runParams:{runParams}";
+                    JobLogHelper.Info(msg, nameof(JobToBeExecuted));
+                }
+
 
                 // 检查依赖选项是否满足
                 //  var isOnceJob = JobContextFunc.IsOnceJob(context);
@@ -313,7 +327,7 @@ namespace Schedule
                     var delJobRet = await new ScheduleCtrl().StopJobAsync(jobName);
                     if (delJobRet != JobActionRetEnum.Success)
                         JobLogHelper.Error(
-                            $"{JobInfo}:单次运行job结束后删除job失败，job ：{JobContext.CurrentJobBaseInfo}，返回结果：{delJobRet }", null, nameof(JobWasExecuted));
+                            $"{JobInfo}:单次运行job结束后删除job失败，job ：{JobContext.CurrentJobBaseInfo}，返回结果：{delJobRet}", null, nameof(JobWasExecuted));
                 }
 
                 var jobId = JobId;
@@ -347,9 +361,12 @@ namespace Schedule
                     }
                 }
 
-                var msg =
-                    $"{JobInfo} end time:{DateTime.Now:yyyy-MM-dd HH:mm:sss}, jobRunState:{jobRunState},autoClose:{autoClose}, runParams:{runParams}";
-                JobLogHelper.Info(msg, nameof(JobWasExecuted));
+                var isLogJobLC = context.GetIsLogJobLC();
+                if (isLogJobLC)
+                {
+                    var msg = $"{JobInfo} end time:{DateTime.Now:yyyy-MM-dd HH:mm:sss}, jobRunState:{jobRunState},autoClose:{autoClose}, runParams:{runParams}";
+                    JobLogHelper.Info(msg, nameof(JobWasExecuted));
+                }
 
                 // DoJobLog 
                 var ctrl = Ioc.GetService<IScheduleOrderCtrl>();

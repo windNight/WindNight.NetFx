@@ -110,7 +110,7 @@ namespace Schedule.Ctrl
             jobParams.RunParams = runParams;
             jobParams.StartTime = execTime;
             jobParams.JobId = GuidHelper.GetGuid();
-            jobParams.JobName = string.Format("{0}_{1}", jobParams.JobName, jobParams.JobId);
+            jobParams.JobName = $"{jobParams.JobName}_{jobParams.JobId}";
             jobParams.AutoClose = autoClose;
 
             //保存配置

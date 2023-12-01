@@ -7,6 +7,7 @@ using WindNight.Core.Abstractions;
 using WindNight.Core.SQL;
 using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Dapper.Internals;
+using Microsoft.Extensions.Configuration;
 
 namespace WindNight.Extension.Dapper.Mssql
 {
@@ -67,7 +68,7 @@ namespace WindNight.Extension.Dapper.Mssql
             return SqlTimer((_sql, _param) => Query<TEntity>(DbConnectString, _sql, _param),
                 sql, param, nameof(DbQuery));
         }
-       
+
         protected virtual TEntity DbQuery(string conn, string sql, object param = null)
         {
             return SqlTimer(Query<TEntity>, conn, sql, param, nameof(DbQuery));
@@ -84,12 +85,12 @@ namespace WindNight.Extension.Dapper.Mssql
             return SqlTimer((_sql, _param) => QueryList<TEntity>(DbConnectString, _sql, _param),
                 sql, param, nameof(DbQueryList));
         }
-       
+
         protected virtual IEnumerable<TEntity> DbQueryList(string conn, string sql, object param = null)
         {
             return SqlTimer(QueryList<TEntity>, conn, sql, param, nameof(DbQueryList));
         }
-        
+
         /// <summary>
         /// 执行受影响行数
         /// </summary>
@@ -119,7 +120,7 @@ namespace WindNight.Extension.Dapper.Mssql
             return SqlTimer((_sql, _param) => ExecuteScalar<T>(DbConnectString, _sql, _param),
                 sql, param, nameof(DbExecuteScalar));
         }
-       
+
         protected T DbExecuteScalar<T>(string conn, string sql, object param = null)
         {
             return SqlTimer(ExecuteScalar<T>, conn, sql, param, nameof(DbExecuteScalar));
@@ -317,7 +318,7 @@ namespace WindNight.Extension.Dapper.Mssql
             string actionName = "")
         {
 
-   
+
             var ticks = DateTime.Now.Ticks;
             try
             {
@@ -325,15 +326,27 @@ namespace WindNight.Extension.Dapper.Mssql
             }
             catch (Exception ex)
             {
-                LogHelper.Error($" 【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  {actionName} Failed，{sql} .param is {param.ToJsonStr()}", ex);
             }
             finally
             {
-                if (ConfigItems.OpenDapperLog)
+                try
                 {
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
-                    LogHelper.Info(
-                        $"【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                    if (milliseconds > ConfigItems.DapperWarnMs)
+                    {
+                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+
+                    }
+                    else if (ConfigItems.OpenDapperLog)
+                    {
+                        LogHelper.Info(
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+                    }
+                }
+                catch
+                {
+
                 }
             }
 
@@ -351,15 +364,27 @@ namespace WindNight.Extension.Dapper.Mssql
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】{actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
             }
             finally
             {
-                if (ConfigItems.OpenDapperLog)
+                try
                 {
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
-                    LogHelper.Info(
-                        $"【{(ConfigItems.IsLogConnectString ? DbConnectString : "")} 】 sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                    if (milliseconds > ConfigItems.DapperWarnMs)
+                    {
+                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+
+                    }
+                    else if (ConfigItems.OpenDapperLog)
+                    {
+                        LogHelper.Info(
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+                    }
+                }
+                catch
+                {
+
                 }
             }
 
@@ -378,15 +403,27 @@ namespace WindNight.Extension.Dapper.Mssql
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】 {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
             }
             finally
             {
-                if (ConfigItems.OpenDapperLog)
+                try
                 {
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
-                    LogHelper.Info(
-                        $"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】 sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                    if (milliseconds > ConfigItems.DapperWarnMs)
+                    {
+                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+
+                    }
+                    else if (ConfigItems.OpenDapperLog)
+                    {
+                        LogHelper.Info(
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+                    }
+                }
+                catch
+                {
+
                 }
             }
 
@@ -404,15 +441,27 @@ namespace WindNight.Extension.Dapper.Mssql
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】{actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")} {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
             }
             finally
             {
-                if (ConfigItems.OpenDapperLog)
+                try
                 {
                     var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
-                    LogHelper.Info(
-                        $"【{(ConfigItems.IsLogConnectString ? connectString : "")} 】 sql:{sql} 耗时：{milliseconds} ms. {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}");
+                    if (milliseconds > ConfigItems.DapperWarnMs)
+                    {
+                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+
+                    }
+                    else if (ConfigItems.OpenDapperLog)
+                    {
+                        LogHelper.Info(
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+                    }
+                }
+                catch
+                {
+
                 }
             }
 
@@ -472,11 +521,30 @@ namespace WindNight.Extension.Dapper.Mssql
                     return config.GetAppSetting(ConfigItemsKey.IsLogConnectStringKey, false, false);
                 }
             }
+            public static int DapperWarnMs => GetConfigIntValue(ConfigItemsKey.DapperWarnMsKey, 100);
+          
+            static int GetConfigIntValue(string key, int defaultValue = 0)
+            {
+                try
+                {
+                    var config = Ioc.Instance.CurrentConfigService;
+                    if (config == null) return defaultValue;
+                    var value1 = config.Configuration.GetSection(key).Get<int>();
+                    var value2 = config.GetAppSetting(key, defaultValue, false);
+                    return Math.Max(value2, value1);
+                }
+                catch (Exception ex)
+                {
+                    return defaultValue;
+                }
+
+            }
 
             static class ConfigItemsKey
             {
                 internal static string OpenDapperLogKey = "DapperConfig:OpenDapperLog";
                 internal static string IsLogConnectStringKey = "DapperConfig:IsLogConnectString";
+                internal static string DapperWarnMsKey = "DapperConfig:WarnMs";
 
             }
         }
