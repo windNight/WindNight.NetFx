@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using WindNight.Core.Extension;
 
@@ -7,11 +8,12 @@ namespace System
     /// <summary>
     /// private DefaultDateTime is <see cref="DefaultDateTime"/> (1970-01-01)
     /// </summary>
-    public static class DateTimeExtensions
+    public static partial class DateTimeExtensions
     {
         private static readonly DateTime DefaultDateTime = new DateTime(1970, 1, 1);
 
         private const int DefaultDateInt = 19700101;
+        private const int DefaultDateMonth = 197001;
 
         /// <summary>
         ///     DateTime 转 时间戳
@@ -226,6 +228,18 @@ namespace System
             return dateTime.ToString(format).ToInt(defaultValue);
         }
 
+        /// <summary>
+        ///     格式为 2015-01-15 的时间转成为 201501  
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <param name="defaultValue"><see cref="DefaultDateMonth"/> </param>
+        /// <returns></returns>
+        public static int ToDateMonth(this DateTime dateTime, int defaultValue = DefaultDateMonth)
+        {
+            return dateTime.ToString("yyyyMM").ToInt(defaultValue);
+        }
+
+
         public static DateTime FirstDayOfMonth(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, 1);
@@ -298,6 +312,42 @@ namespace System
 
         }
 
+        public static int FirstWeekOfYear(this DateTime date)
+        {
+            return date.FirstDayOfYear().WeekOfYear();
+        }
+
+        public static int LastWeekOfYear(this DateTime date)
+        {
+            return date.LastDayOfYear().WeekOfYear();
+        }
+
+
+        public static
+#if NET45LATER
+
+            (int FirstYearWeek, int EndYearWeek)
+#else
+                Tuple<int, int>
+#endif
+            CalcCurrentYearWeekRange(this DateTime date, int year = 0)
+        {
+            if (year == 0)
+                year = date.Year;
+            var beginDate = new DateTime(year, 1, 1);
+            var endDate = new DateTime(year + 1, 1, 1).AddDays(-1);
+
+            var beginWeek = beginDate.WeekOfYear();
+            var endWeek = endDate.WeekOfYear();
+#if NET45LATER
+            return (beginWeek, endWeek);
+#else
+            return new Tuple<int, int>(beginWeek, endWeek);
+#endif
+
+        }
+
+
         public static
 #if NET45LATER
             (DateTime beginDate, DateTime endDate)
@@ -357,7 +407,7 @@ namespace System
             return list;
         }
 
-        public static List<T> GeneratorMonthSelfList<T>(this DateTime beginDate, 
+        public static List<T> GeneratorMonthSelfList<T>(this DateTime beginDate,
             DateTime? endDateParam = null, bool withLastDay = false, Func<DateTime, T> func = null)
         {
 
@@ -380,7 +430,7 @@ namespace System
 
             return list;
         }
-      
+
         public static List<int> GeneratorDateIntList(this int beginDateInt, DateTime? endDateParam = null, bool withLastDay = false)
         {
             return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.ToDateInt());
@@ -418,6 +468,83 @@ namespace System
             return beginDate.GeneratorDateSelfList(endDate, withLastDay, func);
 
         }
+
+
+    }
+
+
+    public static partial class DateTimeExtensions
+    {
+        public static List<int> GeneratorDateMonthList(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false)
+        {
+            var list = beginDate.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.ToDateMonth());
+
+            return list.Distinct().ToList();
+        }
+
+
+
+        public static List<int> GeneratorDateWeekList(this DateTime beginDate, DateTime? endDateParam = null)
+        {
+            var endDate = endDateParam ?? DateTime.Now.Date;
+
+            if (beginDate > endDate)
+            {
+                return new List<int>();
+            }
+
+            var beginYear = beginDate.Year;
+            var endYear = endDate.Year;
+            var beginWeek = beginDate.WeekOfYear();
+            var endWeek = endDate.WeekOfYear();
+            var list = new List<int>();
+            if (beginYear == endYear)
+            {
+                for (var yeakWeek = beginWeek; yeakWeek <= endWeek; yeakWeek++)
+                {
+                    list.Add($"{beginYear}{yeakWeek:00}".ToInt());
+                }
+
+                return list;
+            }
+
+            var lastWeekOfYeark = beginDate.LastWeekOfYear();
+            for (var yeakWeek = beginWeek; yeakWeek <= lastWeekOfYeark; yeakWeek++)
+            {
+                list.Add($"{beginYear}{yeakWeek:00}".ToInt());
+            }
+
+            for (var year = beginYear + 1; year < endYear; year++)
+            {
+                var day1 = new DateTime(year, 1, 1);
+                var yearWeekItem = day1.CalcCurrentYearWeekRange();
+#if NET45LATER
+                var _1YearWeek = yearWeekItem.FirstYearWeek;
+                var endYearWeek = yearWeekItem.EndYearWeek;
+#else
+                var _1YearWeek = yearWeekItem.Item1;
+                var endYearWeek = yearWeekItem.Item2;
+#endif
+
+                for (var yeakWeek = _1YearWeek; yeakWeek <= endYearWeek; yeakWeek++)
+                {
+                    list.Add(yeakWeek);
+                }
+            }
+
+
+            var firstWeekOfYear = endDate.FirstWeekOfYear();
+            Trace.Write($"endDate is {endDate} endWeek is {endWeek} endYear is {endWeek} endYear FirstYearWeek is {firstWeekOfYear} ");
+            for (var yeakWeek = firstWeekOfYear; yeakWeek <= endWeek; yeakWeek++)
+            {
+                list.Add($"{endYear}{yeakWeek:00}".ToInt());
+            }
+
+            return list;
+        }
+
+
+
 
 
     }

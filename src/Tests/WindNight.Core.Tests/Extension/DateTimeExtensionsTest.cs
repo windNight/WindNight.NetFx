@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Extension;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -78,6 +80,8 @@ namespace WindNight.Core.Tests
         [InlineData("2022-02-13", 7)]
         [InlineData("2022-02-14", 8)]
         [InlineData("2022-02-20", 8)]
+        [InlineData("2024-01-31", 5)]
+        [InlineData("2024-02-01", 5)]
         public void WeekOfYearTest(DateTime toTestDate, int expectWeek)
         {
             var rlt = toTestDate.WeekOfYear();
@@ -132,7 +136,43 @@ namespace WindNight.Core.Tests
             Assert.True(expectEndDateInt == rltE, $"GeneratorDateIntList({beginDateInt}).LastOrDefault =>{rltE} !=expectBeginDateInt({expectEndDateInt})");
         }
 
+        [Theory(DisplayName = "GeneratorDateMonthListTest")]
+        [InlineData("2023-01-01", "2023-12-01", 12, 202301, 202312)]
+        [InlineData("2023-01-01", "2024-12-01", 24, 202301, 202412)]
+        public void GeneratorDateMonthListTest(DateTime beginDate, DateTime endDate, int expectCount, int expectBeginMonth, int expectEndMonth)
+        {
+            var execList = beginDate.GeneratorDateMonthList(endDate, withLastDay: true);
+            var execCount = execList.Count();
+            var rltB = execList.FirstOrDefault();
+            var rltE = execList.LastOrDefault();
+            Output($"GeneratorDateMonthList({beginDate:yyyyMMdd},{endDate:yyyyMMdd})=>(execList:{execList.ToJsonStr()})");
 
+            Assert.True(execCount == expectCount, $"GeneratorDateMonthList({beginDate},{endDate}).Count =>{execCount} !=expectCount({expectCount})");
+            Assert.True(expectBeginMonth == rltB, $"GeneratorDateMonthList({beginDate},{endDate}).FirstOrDefault =>{rltB} !=expectBeginMonth({expectBeginMonth})");
+            Assert.True(expectEndMonth == rltE, $"GeneratorDateMonthList({beginDate},{endDate}).LastOrDefault =>{rltE} !=expectEndMonth({expectEndMonth})");
+
+
+
+        }
+        [Theory(DisplayName = "GeneratorDateWeekListTest")]
+        [InlineData("2023-01-01", "2023-12-31", 53, 202301, 202353)]
+        [InlineData("2023-01-01", "2024-01-31", 58, 202301, 202405)]
+        [InlineData("2023-01-01", "2025-01-31", 111, 202301, 202505)]// 53+53+5
+        public void GeneratorDateWeekListTest(DateTime beginDate, DateTime endDate, int expectCount, int expectBeginYearWeek, int expectEndYearWeek)
+        {
+            var execList = beginDate.GeneratorDateWeekList(endDate);
+            var execCount = execList.Count();
+            var rltB = execList.FirstOrDefault();
+            var rltE = execList.LastOrDefault();
+            Output($"GeneratorDateWeekList({beginDate:yyyyMMdd},{endDate:yyyyMMdd})=>(execList:{execList.ToJsonStr()})");
+
+            Assert.True(execCount == expectCount, $"GeneratorDateWeekList({beginDate},{endDate}).Count =>{execCount} !=expectCount({expectCount})");
+            Assert.True(expectBeginYearWeek == rltB, $"GeneratorDateWeekList({beginDate},{endDate}).FirstOrDefault =>{rltB} !=expectBeginYearWeek({expectBeginYearWeek})");
+            Assert.True(expectEndYearWeek == rltE, $"GeneratorDateWeekList({beginDate},{endDate}).LastOrDefault =>{rltE} !=expectEndYearWeek({expectEndYearWeek})");
+
+
+
+        }
 
 
     }

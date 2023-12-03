@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace WindNight.Core.Tests
         public TestBase(ITestOutputHelper outputHelper)
         {
             OutputHelper = outputHelper;
+            // Debug.SetProvider();
+
         }
 
         protected void Output(string message)
@@ -23,4 +26,6 @@ namespace WindNight.Core.Tests
         }
 
     }
+
+
 }
