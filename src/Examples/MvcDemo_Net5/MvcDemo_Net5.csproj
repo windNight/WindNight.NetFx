@@ -12,12 +12,15 @@
 
 		<!--<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />-->
 		<!--<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2" />-->
-		<PackageReference Include="WindNight.AspNetCore.Hosting" Version="1.0.3.3" />
+
+
+		<!--<PackageReference Include="WindNight.AspNetCore.Hosting" Version="1.0.3.3" />-->
 	</ItemGroup>
 
-	<ItemGroup><!--<ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />-->
-	
-	  <Folder Include="Logs\" />
+	<ItemGroup>
+		<ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
+
+		<Folder Include="Logs\" />
 	</ItemGroup>
 
 </Project>

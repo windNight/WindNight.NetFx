@@ -11,14 +11,14 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 {
     public class LogProcessAttribute : ActionFilterAttribute
     {
-        private const string ACCESSTOKENKEY = "accesstoken";
+        protected const string ACCESSTOKENKEY = "accesstoken";
 
         public LogProcessAttribute()
         {
-            Order = ExecOrder;
+            Order = -99999;
         }
 
-        public int ExecOrder { get; set; } = -9999;
+        // public int ExecOrder { get; set; } = -99999;
 
         protected virtual void AppendHeaderInfo(HttpContext context)
         {

@@ -12,10 +12,10 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
     internal class MysqlLogsProcess : MysqlDbBase<SysLogs>, ISystemLogsProcess
     {
         private readonly string BusinessColumns =
-            "LevelType,`Level`,SerialNumber,RequestUrl,ServerIp,ClientIp,LogTs,Content,NodeCode,LogAppCode,LogAppName,Exceptions";
+            "LevelType,`Level`,SerialNumber,RequestUrl,ServerIp,ClientIp,RunMs,LogTs,Content,NodeCode,LogAppCode,LogAppName,Exceptions";
 
         private readonly string BusinessColumnValues =
-            "@LevelType,@Level,@SerialNumber,@RequestUrl,@ServerIp,@ClientIp,@LogTs,@Content,@NodeCode,@LogAppCode,@LogAppName,@Exceptions";
+            "@LevelType,@Level,@SerialNumber,@RequestUrl,@ServerIp,@ClientIp,@RunMs,@LogTs,@Content,@NodeCode,@LogAppCode,@LogAppName,@Exceptions";
 
 
         protected override string InsertTableColumns => $"{BusinessColumns},{BaseCreateColumns}";

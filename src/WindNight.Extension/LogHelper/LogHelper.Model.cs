@@ -13,7 +13,14 @@ namespace WindNight.LogExtension
             public Exception? Exceptions { get; set; }
             public string? ServerIp { get; set; }
             public string? ClientIp { get; set; }
+            /// <summary>
+            ///  耗时 毫秒数
+            /// </summary>
             public long Timestamps { get; set; }
+            /// <summary>
+            ///  日志产生的时间
+            /// </summary>
+            public long LogTs { get; set; }
             public LogLevels Level { get; set; }
             public string? Content { get; set; }
             public string? NodeCode { get; set; }

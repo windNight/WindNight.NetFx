@@ -56,7 +56,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
                         ServerIp = stateEntry.ServerIP,
                         SerialNumber = stateEntry.SerialNumber,
                         RunMs = stateEntry.Timestamps,
-                        LogTs = HardInfo.NowUnixTime,
+                        LogTs = stateEntry.LogTs,
                         Level = stateEntry.Level.ToString(),
                         LevelType = (int)stateEntry.Level,
                         NodeCode = HardInfo.NodeCode ?? "",

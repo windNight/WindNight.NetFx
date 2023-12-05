@@ -60,5 +60,9 @@
 		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET60;CORE31LATER;NET45LATER;</DefineConstants>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(TargetFramework)'=='net7.0'">
+		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET70;CORE31LATER;NET45LATER;</DefineConstants>
+	</PropertyGroup>
+
 
 </Project>

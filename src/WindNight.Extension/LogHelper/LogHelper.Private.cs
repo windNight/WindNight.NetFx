@@ -43,9 +43,10 @@ namespace WindNight.LogExtension
                 ServerIp = serverIp,
                 RequestUrl = url,
                 Timestamps = millisecond,
+                LogTs = HardInfo.NowUnixTime,
                 SerialNumber = CurrentItem.GetSerialNumber,
                 NodeCode = HardInfo.NodeCode,
-            }; 
+            };
             FixLogInfo(logInfo, appendMessage);
             return logInfo;
         }

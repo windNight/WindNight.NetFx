@@ -196,6 +196,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     Msg = msg,
                     Timestamps = millisecond,
                     SerialNumber = serialNumber,
+                    LogTs = HardInfo.NowUnixTime,
 
                 };
 
@@ -273,7 +274,8 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     EventName = eventName,
                     Msg = msg,
                     Timestamps = millisecond,
-                    SerialNumber = serialNumber
+                    SerialNumber = serialNumber,
+                    LogTs = HardInfo.NowUnixTime,
                 };
 
                 logger.Log(logLevel.SwitchLogLevel(), new EventId(), state, exception, MessageFormatter);

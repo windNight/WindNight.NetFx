@@ -19,8 +19,14 @@ namespace WindNight.Extension.Logger.DbLog.Abstractions
         public string ServerIP { get; set; } = "";
 
         public string EventName { get; set; } = "";
-        public long Timestamps { get; set; } = 0;
-
+        /// <summary>
+        ///  耗时 毫秒数
+        /// </summary>
+        public long Timestamps { get; set; } = 0L;
+        /// <summary>
+        ///  日志产生的时间
+        /// </summary>
+        public long LogTs { get; set; }
         public string SerialNumber { get; set; } = "";
         public string Msg { get; set; } = "";
 

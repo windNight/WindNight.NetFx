@@ -40,6 +40,7 @@ namespace MvcDemo_Net5.Controllers
         [HttpGet("getip")]
         public object GetServerIp()
         {
+            var d = CurrentItem.Items;
             return new
             {
                 LocalServerIp = HttpContextExtension.LocalServerIp,
