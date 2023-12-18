@@ -74,6 +74,7 @@ namespace Microsoft.AspNetCore.GRpc.WnExtensions
                  options.EnableFilter();
                  options.ShowExtensions();
                  options.EnableValidator();
+                 options.DefaultModelExpandDepth(-1);
              });
 
             //app.UseSwagger();

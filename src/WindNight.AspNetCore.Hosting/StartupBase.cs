@@ -23,8 +23,8 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         protected virtual StaticFileOptions SelfFileOptions { get; } = null;
         protected virtual Action<IEndpointRouteBuilder> SelfRouter { get; } = null;
         protected virtual Action<SwaggerOptions> SelfSwaggerOptionsAction { get; } = null;
-        protected virtual Action<SwaggerUIOptions> SelfSwaggerUIOptionsAction { get; } = null;
-        protected virtual Action<SwaggerGenOptions> SelfSwaggerGenOptionsAction { get; } = null;
+        protected virtual Action<SwaggerUIOptions> SelfSwaggerUIOptionsAction { get; private set; } = null;
+        protected virtual Action<SwaggerGenOptions> SelfSwaggerGenOptionsAction { get; private set; } = null;
 
         // protected virtual Action<Mvc.MvcJsonOptions>? mvcJsonOption { get; } = null;
 
@@ -68,8 +68,10 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         {
             var env = Ioc.GetService<IWebHostEnvironment>();
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
-
-            app.UseSwaggerConfig(NamespaceName, swaggerOptionsAction: SelfSwaggerOptionsAction, swaggerUIOptionsAction: SelfSwaggerUIOptionsAction);
+            SelfSwaggerUIOptionsAction ??= (opt => opt.DefaultModelsExpandDepth(-1)); 
+            app.UseSwaggerConfig(NamespaceName,
+                swaggerOptionsAction: SelfSwaggerOptionsAction,
+                swaggerUIOptionsAction: SelfSwaggerUIOptionsAction);
 
             app.UseRouting();
             UseStaticFiles(app);

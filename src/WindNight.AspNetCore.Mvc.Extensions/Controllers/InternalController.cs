@@ -32,6 +32,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [NonAuth]
         public object GetConfigs()
         {
+            if (!ConfigItems.OpenInternalApi)
+            {
+                return false;
+            }
             return new
             {
                 Configuration = GetConfiguration()
@@ -41,6 +45,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [NonAuth]
         public object GetConfigs2()
         {
+            if (!ConfigItems.OpenInternalApi)
+            {
+                return false;
+            }
             return new
             {
                 Configuration = ConfigItems.AllConfigs,
@@ -48,6 +56,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         }
         private object GetConfiguration(IEnumerable<IConfigurationSection> sections = null)
         {
+            if (!ConfigItems.OpenInternalApi)
+            {
+                return false;
+            }
             var _config = Ioc.GetService<IConfiguration>();
             return _config.GetConfiguration(sections);
         }
@@ -56,6 +68,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [NonAuth]
         public object GetProjectVersion()
         {
+            if (!ConfigItems.OpenInternalApi)
+            {
+                return false;
+            }
             return new
             {
                 DateTime = DateTime.Now,
@@ -73,6 +89,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [NonAuth]
         public object GetVersion()
         {
+            if (!ConfigItems.OpenInternalApi)
+            {
+                return false;
+            }
             return new
             {
                 DateTime = DateTime.Now,
@@ -84,6 +104,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [NonAuth]
         public object GetVersions()
         {
+            if (!ConfigItems.OpenInternalApi)
+            {
+                return false;
+            }
             return new
             {
                 DateTime = DateTime.Now,

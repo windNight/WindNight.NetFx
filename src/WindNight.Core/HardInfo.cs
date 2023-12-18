@@ -13,7 +13,9 @@ namespace System
 {
     public partial class HardInfo
     {
+        public static DateTime Yesterday => DateTime.Now.AddDays(-1);
         public static DateTime Now => DateTime.Now;
+        public static DateTime Tomorrow => DateTime.Now.AddDays(1);
 
         public static int WeekOfYear => Now.WeekOfYear();
 
@@ -52,13 +54,16 @@ namespace System
 
         public static int NowDateInt => DateTime.Now.ToDateInt();
 
-        public static int YesterdayDateInt => DateTime.Now.AddDays(-1).ToDateInt();
+        public static int YesterdayDateInt => Yesterday.ToDateInt();
+        public static int TomorrowDateInt => Tomorrow.ToDateInt();
 
         public static long NowUnixTime => DateTime.Now.ConvertToUnixTime();
 
         public static int NowYearInt => DateTime.Now.Year;
 
         public static int NowMonthInt => DateTime.Now.TryToDateInt("yyyyMM");
+        public static int LastMonthInt => DateTime.Now.FirstDayOfMonth().AddMonths(-1).TryToDateInt("yyyyMM");
+        public static int NextMonthInt => DateTime.Now.FirstDayOfMonth().AddMonths(1).TryToDateInt("yyyyMM");
 
     }
 

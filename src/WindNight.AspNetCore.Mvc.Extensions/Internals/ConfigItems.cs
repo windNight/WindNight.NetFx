@@ -15,6 +15,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Internals
         internal static int ApiWarningMis => GetConfigValue("ApiWarningMis", DEFAULT_API_WARNING_MIS, false);
         internal static bool LogProcessOpened => GetConfigValue("LogProcessOpened", false, false);
         internal static bool ApiUrlOpened => GetConfigValue("ApiUrlOpened", false, false);
+        internal static bool OpenInternalApi => GetConfigValue("OpenInternalApi", false, false);
         internal static bool IsValidateInput => GetConfigValue("IsValidateInput", false, false);
     }
 }
