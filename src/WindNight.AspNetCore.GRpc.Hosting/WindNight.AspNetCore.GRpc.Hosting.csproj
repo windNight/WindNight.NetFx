@@ -14,7 +14,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Grpc.Swagger" Version="0.1.0-alpha.21317.5" />
-		<PackageReference Include="WindNight.AspNetCore.Hosting" Version="1.0.3.3" />
+		<PackageReference Include="WindNight.AspNetCore.Hosting" Version="1.0.3.4-beta.23121201" />
 	</ItemGroup>
 
 	<ItemGroup>
