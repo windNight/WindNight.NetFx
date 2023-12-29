@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using RestSharp;
 using RestSharp.Extensions;
+using WindNight.Core;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Tools;
 using WindNight.Extension.Internals;
@@ -13,7 +15,7 @@ using WindNight.Extension.Internals;
 
 namespace WindNight.Extension
 {
-    public static class HttpHelper
+    public static partial class HttpHelper
     {
         class ConfigItems// : ConfigItemsBase
         {
@@ -111,6 +113,7 @@ namespace WindNight.Extension
             }, $"HttpGetAsync({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 
+
         /// <summary>
         ///     HttpPost 同步请求
         /// </summary>
@@ -169,6 +172,11 @@ namespace WindNight.Extension
                 $"HttpPostAsync({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
+
+
+
+
+
 
 
         private static T ExecuteHttpClient<T>(string domain, IRestRequest request, int timeOut = 1000 * 60 * 20)
@@ -231,5 +239,8 @@ namespace WindNight.Extension
 
             return headerDict ?? new Dictionary<string, string>();
         }
+
+
     }
+
 }
