@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Text.Extension;
 using Newtonsoft.Json.Extension;
 using WindNight.Extension.Internals;
+
 #if NET45
 using System.Collections;
 using HttpContext = WindNight.Extension.HttpContextExtension;
@@ -61,6 +62,7 @@ namespace WindNight.Extension
                 }
             }
         }
+
 
         /// <summary>  </summary>
         public static string GetSerialNumber

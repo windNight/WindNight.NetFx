@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
+using WindNight.Extension;
 
 namespace Schedule
 {
@@ -66,6 +67,10 @@ namespace Schedule
             {
                 if (level < minLogLevels) return;
                 var logService = Ioc.Instance.CurrentLogService;
+                if (!JobContext.JobId.IsNullOrEmpty() && CurrentItem.GetSerialNumber != JobContext.JobId)
+                {
+                    CurrentItem.AddItem("serialnumber", JobContext.JobId);
+                }
                 if (logService != null)
                     logService?.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage);
                 else

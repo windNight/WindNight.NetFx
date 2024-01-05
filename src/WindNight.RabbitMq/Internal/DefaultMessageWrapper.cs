@@ -128,7 +128,7 @@ internal class DefaultMessageWrapper : IMessageWrapper
         var root = doc.DocumentElement.SelectSingleNode("//Root");
         while (queueList.TryDequeue(out var msgLocal))
         {
-            if (msgLocal.IsEncrypt) msgLocal.Message = msgLocal.Message.ToBase64String();
+            if (msgLocal.IsEncrypt) msgLocal.Message = msgLocal.Message.Base64Encrypt();
 
             var node = doc.CreateElement("item");
             node.InnerText = msgLocal.ToJsonStr();
@@ -176,7 +176,7 @@ internal class DefaultMessageWrapper : IMessageWrapper
         foreach (XmlNode node in nodes)
         {
             var msgLocal = node.InnerText.Trim().To<MessageLocal>();
-            if (msgLocal.IsEncrypt) msgLocal.Message = msgLocal.Message.FromBase64String();
+            if (msgLocal.IsEncrypt) msgLocal.Message = msgLocal.Message.Base64Decrypt();
 
             queueList.Enqueue(msgLocal);
         }

@@ -8,6 +8,47 @@ namespace System.Security.Cryptography.Extensions
     public static class EncryptHelper
     {
 
+        /// <summary>
+        ///     Base64加密
+        /// </summary>
+        /// <param name="str">待加密字符串</param>
+        /// <param name="encoding">字符编码，默认UTD-8</param>
+        /// <returns>Base64后的字符串</returns>
+        public static string Base64Encrypt(this string str, Encoding? encoding = null)
+        {
+            if (str.IsNullOrEmpty()) return str;
+            try
+            {
+                return str.ToBytes().ToBase64String();
+            }
+            catch (Exception ex)
+            {
+                return str;
+            }
+
+        }
+
+
+        /// <summary>
+        ///     Base64解密
+        /// </summary>
+        /// <param name="str">待解密字符串</param>
+        /// <param name="encoding">字符编码，默认UTD-8</param>
+        /// <returns>Base64解密后的字符串</returns>
+        public static string Base64Decrypt(this string str, Encoding? encoding = null)
+        {
+            if (str.IsNullOrEmpty()) return str;
+            try
+            {
+                return BytesExtension.FromBase64String(str).ToGetString(encoding);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+
 
         /// <summary>
         ///     Base64加密
@@ -15,6 +56,7 @@ namespace System.Security.Cryptography.Extensions
         /// <param name="str">待加密字符串</param>
         /// <param name="encoding">字符编码，默认UTD-8</param>
         /// <returns>Base64后的字符串</returns>
+        [Obsolete("Please Use Base64Encrypt", true)]
         public static string ToBase64String(this string str, Encoding? encoding = null)
         {
             if (str.IsNullOrEmpty()) return str;
@@ -36,6 +78,7 @@ namespace System.Security.Cryptography.Extensions
         /// <param name="str">待解密字符串</param>
         /// <param name="encoding">字符编码，默认UTD-8</param>
         /// <returns>Base64解密后的字符串</returns>
+        [Obsolete("Please Use Base64Decrypt", true)]
         public static string FromBase64String(this string str, Encoding? encoding = null)
         {
             if (str.IsNullOrEmpty()) return str;
@@ -163,7 +206,7 @@ namespace System.Security.Cryptography.Extensions
         {
             try
             {
-                var inputByteArray = decryptString.ToToHexByte();
+                var inputByteArray = decryptString.ToHexByte();
                 SymmetricAlgorithm des = Rijndael.Create();
                 des.Key = Encoding.ASCII.GetBytes(keyLength > 0 ? key.Substring(0, keyLength) : key);
                 des.IV = Encoding.ASCII.GetBytes(ivLength > 0 ? iv.Substring(0, ivLength) : iv);
@@ -188,7 +231,7 @@ namespace System.Security.Cryptography.Extensions
         /// </summary>
         /// <param name="hexString">待转换字符串</param>
         /// <returns></returns>
-        public static byte[] ToToHexByte(this string hexString)
+        public static byte[] ToHexByte(this string hexString)
         {
             try
             {
