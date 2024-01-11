@@ -27,6 +27,12 @@ namespace WindNight.ConfigCenter.Extension
             return ConfigItemsBase.GetAppSetting(configKey, defaultValue, isThrow);
         }
 
+
+        public new long GetAppSetting(string configKey, long defaultValue = ZeroInt64, bool isThrow = false)
+        {
+            return ConfigItemsBase.GetAppSetting(configKey, defaultValue, isThrow);
+        }
+
         public new bool GetAppSetting(string configKey, bool defaultValue = false, bool isThrow = false)
         {
             return ConfigItemsBase.GetAppSetting(configKey, defaultValue, isThrow);

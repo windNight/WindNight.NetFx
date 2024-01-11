@@ -7,12 +7,12 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 {
     public class DefaultConfigService : IConfigService
     {
-     //   private readonly IConfiguration _configuration;
+        //   private readonly IConfiguration _configuration;
         public IConfiguration Configuration => Ioc.GetService<IConfiguration>();
 
-        public DefaultConfigService( )
+        public DefaultConfigService()
         {
-           // _configuration = configuration;
+            // _configuration = configuration;
         }
 
         T GetConfig<T>(string configKey, T defaultValue = default(T), bool isThrow = true)
@@ -76,6 +76,9 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
         public int GetAppSetting(string configKey, int defaultValue = 0, bool isThrow = true)
             => GetConfig<int>(configKey, defaultValue, isThrow);
+
+        public long GetAppSetting(string configKey, long defaultValue = 0L, bool isThrow = true)
+            => GetConfig<long>(configKey, defaultValue, isThrow);
 
         public bool GetAppSetting(string configKey, bool defaultValue = false, bool isThrow = true)
             => GetConfig<bool>(configKey, defaultValue, isThrow);

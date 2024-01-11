@@ -59,6 +59,7 @@ namespace WindNight.ConfigCenter.Extension
         protected static string[] TrueStrings = new[] { "1", "true" }, FalseStrings = new[] { "0", "false" };
         protected const string ZeroString = "0";
         protected const int ZeroInt = 0;
+        protected const long ZeroInt64 = 0L;
 
         public static object AllConfigs => ConfigCenterContext.GetAllConfig();
 

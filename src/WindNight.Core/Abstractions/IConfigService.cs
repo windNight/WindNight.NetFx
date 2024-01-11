@@ -41,6 +41,14 @@ namespace WindNight.Core.Abstractions
         /// <param name="defaultValue"></param>
         /// <param name="isThrow"></param>
         /// <returns></returns>
+        long GetAppSetting(string configKey, long defaultValue = 0L, bool isThrow = true);
+
+        /// <summary>
+        /// </summary>
+        /// <param name="configKey"></param>
+        /// <param name="defaultValue"></param>
+        /// <param name="isThrow"></param>
+        /// <returns></returns>
         bool GetAppSetting(string configKey, bool defaultValue = false, bool isThrow = true);
 
         /// <summary>
