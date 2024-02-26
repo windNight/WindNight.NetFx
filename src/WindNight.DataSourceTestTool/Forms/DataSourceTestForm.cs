@@ -6,12 +6,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using WindNight.DataSourceTestTool.RabbitMQ;
 using WindNight.DataSourceTestTool.Redis;
 
 namespace WindNight.DataSourceTestTool.Forms
 {
+
+    public delegate void UpdateMsgHandler(string message);
 
     public partial class DataSourceTestForm : Form
     {
@@ -20,6 +23,7 @@ namespace WindNight.DataSourceTestTool.Forms
             InitializeComponent();
 
             InitControl();
+            UpdateMsg += UpdateMsg2TextBox;
         }
 
         void InitControl()
@@ -304,6 +308,72 @@ namespace WindNight.DataSourceTestTool.Forms
 
         }
 
+
+        public event UpdateMsgHandler UpdateMsg;
+
+        void AppendLine(string message)
+        {
+            UpdateMsg2TextBox(tb_Output, message);
+            //  c.Text = $"{message}\r\n" + c.Text;
+        }
+
+        void AppendLine(TextBoxBase c, string message)
+        {
+            //   UpdateMsg2TextBox(c, message);
+            UpdateMsg?.Invoke(message);
+            //  c.Text = $"{message}\r\n" + c.Text;
+        }
+
+        public void UpdateMsg2TextBox(TextBoxBase c, string message)
+        {
+            // _smTips.UpdateText(message);
+            this.SafeControlUpdate(() =>
+            {
+                c.Text = $"{message}\r\n" + c.Text;
+            });
+        }
+        public void UpdateMsg2TextBox(string message)
+        {
+            // _smTips.UpdateText(message);
+            this.SafeControlUpdate(() =>
+            {
+                tb_Output.Text = $"{message}\r\n" + tb_Output.Text;
+            });
+        }
+
+        bool DbTypeIsConsumer => DbType.ToLower() == "consumer";
+
+        bool DbTypeIsProducer => DbType.ToLower() == "producer";
+
+        bool DbTypeIsRedis => DbType.ToLower() == "redis";
+
+        bool DbTypeIsMssql => DbType.ToLower() == "mssql";
+
+        bool DbTypeIsMysql => DbType.ToLower() == "mysql";
+
+        bool DbTypeIsMongodb => DbType.ToLower() == "mongodb";
+
+        private void btn_Stop_Click(object sender, EventArgs e)
+        {
+            btn_Stop.Enabled = false;
+            btn_Test.Enabled = false;
+
+            btn_Stop.Enabled = true;
+            btn_Test.Enabled = true;
+
+        }
+
+        private void btn_Start_Click(object sender, EventArgs e)
+        {
+            btn_Start.Enabled = false;
+
+            btn_Start.Enabled = true;
+
+        }
+
+
+
+
         void TestConsumer()
         {
             (string amqpUrl, string queueName) GetConsumerInfo(string config)
@@ -336,42 +406,59 @@ namespace WindNight.DataSourceTestTool.Forms
             int loop = 0;
             bool isAck = false;
             var deliveryTag = 0UL;
-            //TODO 使用异步
-            while (loop < 10)
+            Task.Run(() =>
             {
-                try
-                {
-                    if (consumer.ReceiveNeedAck(out var message, out deliveryTag, out var routingKey))
-                    {
-                        AppendLine(tb_Output, $"ReceiveNeedAck(loop:{loop}) message is {message} deliveryTag is {deliveryTag}\r\nroutingKey is {routingKey}");
-                        isAck = cb_IsAck.Checked;// false; // maybe true
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    AppendLine(tb_Output, $"ReceiveNeedAck(loop:{loop}) Handler Error {ex.Message}\r\n{ex}");
-                    isAck = false;
-
-                }
-
-                if (!isAck)
+                //TODO 使用异步
+                while (loop < 10)
                 {
                     try
                     {
-                        consumer.NoAck(deliveryTag, false, true);
-                        AppendLine(tb_Output, $"message with deliveryTag {deliveryTag} NoAck Success!");
+                        if (consumer.ReceiveNeedAck(out var message, out deliveryTag, out var routingKey))
+                        {
+                            AppendLine(tb_Output, $"ReceiveNeedAck(loop:{loop}) message is {message} deliveryTag is {deliveryTag}\r\nroutingKey is {routingKey}");
+                            isAck = cb_IsAck.Checked;// false; // maybe true
+                        }
 
                     }
                     catch (Exception ex)
                     {
-                        AppendLine(tb_Output, $"message with deliveryTag {deliveryTag} NoAck Failed With  Error {ex.Message}\r\n{ex}");
-                    }
-                }
-                loop++;
-                Thread.Sleep(1000 * 5);
+                        AppendLine(tb_Output, $"ReceiveNeedAck(loop:{loop}) Handler Error {ex.Message}\r\n{ex}");
+                        isAck = false;
 
-            }
+                    }
+
+                    if (!isAck)
+                    {
+                        try
+                        {
+                            consumer.NoAck(deliveryTag, false, true);
+                            AppendLine(tb_Output, $"message with deliveryTag {deliveryTag} NoAck Success!");
+
+                        }
+                        catch (Exception ex)
+                        {
+                            AppendLine(tb_Output, $"message with deliveryTag {deliveryTag} NoAck Failed With  Error {ex.Message}\r\n{ex}");
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            consumer.Ack(deliveryTag, false);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            AppendLine($"message with deliveryTag {deliveryTag} Ack Failed With  Error {ex.Message}\r\n{ex}");
+                        }
+                    }
+
+                    loop++;
+                    Thread.Sleep(1000 * 5);
+                }
+            });
+
+            btn_Stop.Enabled = true;
 
             try
             {
@@ -462,44 +549,26 @@ namespace WindNight.DataSourceTestTool.Forms
 
         }
 
-        void AppendLine(TextBoxBase c, string message)
-        {
-            c.Text += $"{message}\r\n";
-        }
-
-        bool DbTypeIsConsumer => DbType.ToLower() == "consumer";
-
-        bool DbTypeIsProducer => DbType.ToLower() == "producer";
-
-        bool DbTypeIsRedis => DbType.ToLower() == "redis";
-
-        bool DbTypeIsMssql => DbType.ToLower() == "mssql";
-
-        bool DbTypeIsMysql => DbType.ToLower() == "mysql";
-
-        bool DbTypeIsMongodb => DbType.ToLower() == "mongodb";
-
-        private void btn_Stop_Click(object sender, EventArgs e)
-        {
-            btn_Stop.Enabled = false;
-            btn_Test.Enabled = false;
-
-            btn_Stop.Enabled = true;
-            btn_Test.Enabled = true;
-
-        }
-
-        private void btn_Start_Click(object sender, EventArgs e)
-        {
-            btn_Start.Enabled = false;
-
-            btn_Start.Enabled = true;
-
-        }
-
 
     }
 
+
+
+    static class FormExtension
+    {
+        public static void SafeControlUpdate(this Control control, Action action, Exception ex = null)
+        {
+            if (control == null || !control.IsHandleCreated) return;
+            control?.Invoke(new EventHandler(delegate { action.Invoke(); }), ex);
+        }
+
+        public static object SafeControlUpdate(this Control control, Func<object> func, Exception ex = null)
+        {
+            if (control == null || !control.IsHandleCreated) return null;
+            return control?.Invoke(new EventHandler(delegate { func.Invoke(); }), ex);
+        }
+
+    }
     internal static class ConstConfig
     {
         // Redis #HOST#:#PORT#,password=#PASSWORD#,defaultDataBase=#DATABASE#,timeout=20000,connectRetry=1,connectTimeout=1000,Prefix=xxx
@@ -508,7 +577,7 @@ namespace WindNight.DataSourceTestTool.Forms
         // Mongodb mongodb://#USER#:#PASSWORD#@#HOST1#:#PORT1#,#HOST2#:#PORT2#/#DATABASE#?replicaSet=YourReplicaSet
         // Consumer  amqp://#USER#:#PASSWORD#@#HOST#:#PORT#,#QUEUENAME#
         // Producer  amqp://#USER#:#PASSWORD#@#HOST#:#PORT#,#TOPICNAME#
-    
+
 #if DEBUG
         public static Dictionary<string, string> DbConnTemplateDict = new()
         {
