@@ -24,7 +24,7 @@ namespace WindNight.LogExtension
             }
             catch (Exception ex)
             {
-                Log(LogLevels.Warning, $"AddLogs error {ex.Message}", ex);
+                Log4(LogLevels.Warning, $"AddLogs error {ex.Message}", ex);
                 DoConsoleLog(LogLevels.Warning, $"AddLogs error {ex.Message}", ex);
             }
         }

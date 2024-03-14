@@ -1,11 +1,10 @@
 ﻿using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
-using WindNight.Extension.Logger.DbLog.Abstractions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
-using WindNight.Extension.Logger.Mysql.DbLog;
+using WindNight.Extension.Logger.DcLog.Internal;
 using IpHelper = WindNight.Extension.Logger.DcLog.Internal.HttpContextExtension;
 
-namespace WindNight.Extension.Logger.DbLog.Extensions
+namespace WindNight.Extension.Logger.DcLog.Extensions
 {
     /// <summary> </summary>
     public static class DcLogHelper
@@ -196,8 +195,10 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     return;
                 }
 
-                var now = DateTime.Now;
-
+                if (serialNumber.IsNullOrEmpty())
+                {
+                    serialNumber = CurrentItem.GetSerialNumber;
+                }
                 var messageEntity = new SysLogs
                 {
                     //Content = msg,
@@ -225,7 +226,11 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     messageEntity.Exceptions = "{}";
                 }
 
-                messageEntity.Content = DcLogOptions.ContentMaxLength > 0 && msg.Length > DcLogOptions.ContentMaxLength ? msg.Substring(0, DcLogOptions.ContentMaxLength) : msg;
+                var logMsg = FixLogMessage(msg);
+                messageEntity.Content = DcLogOptions.ContentMaxLength > 0 && logMsg.Length > DcLogOptions.ContentMaxLength ?
+                    logMsg.Substring(0, DcLogOptions.ContentMaxLength)
+                    :
+                    logMsg;
 
                 DbLoggerProcessor.EnqueueMessage(messageEntity);
             }
@@ -235,5 +240,9 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
 
             }
         }
+
+        static string FixLogMessage(string msg) => msg;
+        //  string.Concat(ConfigItems.SystemAppName, $" [请求序列号：{CurrentItem.GetSerialNumber}]-0: ", msg);
+
     }
 }

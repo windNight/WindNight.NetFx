@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
-using WindNight.Extension.Logger.DbLog.Abstractions;
-using WindNight.Extension.Logger.Mysql.DbLog;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 using WindNight.Extension.Logger.DcLog.Internal;
 
-namespace WindNight.Extension.Logger.DbLog
+namespace WindNight.Extension.Logger.DcLog
 {
     [ProviderAlias("DbLogger")]
     public class DcLoggerProvider : ILoggerProvider, ISupportExternalScope

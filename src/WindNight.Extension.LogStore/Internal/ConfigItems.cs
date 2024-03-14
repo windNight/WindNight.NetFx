@@ -11,10 +11,11 @@ namespace WindNight.Extension.Logger.DcLog.Internal
 
         private static IConfiguration configuration => Ioc.GetService<IConfiguration>();
 
-        internal static int SysAppId => configuration.GetAppConfigValue("AppId", 0, false);
-        internal static string SysAppCode => configuration.GetAppConfigValue("AppCode", "", false);
-        internal static string SysAppName => configuration.GetAppConfigValue("AppName", "", false);
+        internal static int SystemAppId => configuration.GetAppConfigValue("AppId", 0, false);
+        internal static string SystemAppCode => configuration.GetAppConfigValue("AppCode", "", false);
+        internal static string SystemAppName => configuration.GetAppConfigValue("AppName", "", false);
 
+    
 
         public static DcLogOptions DcLogOptions => configuration.GetSectionValue<DcLogOptions>();
 

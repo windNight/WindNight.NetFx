@@ -4,12 +4,10 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection.Emit;
 using System.Text;
-using WindNight.Extension.Logger.DbLog.Abstractions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 
-namespace WindNight.Extension.Logger.DbLog
+namespace WindNight.Extension.Logger.DcLog
 {
     public class DcLoggerProcessor : IDcLoggerProcessor
     {
@@ -157,7 +155,11 @@ namespace WindNight.Extension.Logger.DbLog
                     //var data = obj.ToJsonStr().ToBytes();// Encoding.UTF8.GetBytes();
                     var data = message.ToJsonStr().ToBytes();// Encoding.UTF8.GetBytes();
                     var sendData = FixSendContent(data);
-                    udpClient.Send(sendData, sendData.Length, EndPoint);
+                    var count = udpClient.Send(sendData, sendData.Length, EndPoint);
+                    if (count != sendData.Length)
+                    {
+                        Console.WriteLine($"Send Msg:{message}  Count ({count})");
+                    }
                     if (DcLogOptions.IsConsoleLog)
                     {
                         Console.WriteLine($"send msg success {EndPoint.Address}:{EndPoint.Port} :{message.ToJsonStr()}, Current Length In Queue is {MessageQueue.Count}");

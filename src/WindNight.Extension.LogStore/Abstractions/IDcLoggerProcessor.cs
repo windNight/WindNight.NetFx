@@ -1,6 +1,4 @@
-﻿using WindNight.Extension.Logger.DcLog.Abstractions;
-
-namespace WindNight.Extension.Logger.DbLog.Abstractions
+﻿namespace WindNight.Extension.Logger.DcLog.Abstractions
 {
     public interface IDcLoggerProcessor : IDisposable
     {

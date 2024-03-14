@@ -39,8 +39,10 @@ namespace WindNight.Extension.Logger.DcLog.Abstractions
         public string NodeCode { get; set; } = "";
         public string LogPluginVersion { get; set; } = "1.0.0";
 
-
-
+        public override string ToString()
+        {
+            return Content;
+        }
     }
 
     public class ExceptionData

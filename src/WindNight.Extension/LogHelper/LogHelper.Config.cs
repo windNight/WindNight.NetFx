@@ -22,7 +22,7 @@ namespace WindNight.LogExtension
             protected const int ZeroInt = 0;
 
             public static string Log4netConfigPath
-                => GetAppSetting(ConstKeys.Log4netConfigPathKey, "/Config/log4net.config", false);
+                => GetAppSetting(ConstKeys.Log4netConfigPathKey, "Config/log4net.config", false);
 
             internal static bool Log4netOpen
                 => GetAppSetting(ConstKeys.Log4netOpenKey, false, false);

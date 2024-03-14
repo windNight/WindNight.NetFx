@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using log4net;
 using log4net.Config;
+using log4net.Core;
+using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 
 namespace WindNight.LogExtension
@@ -41,7 +44,8 @@ namespace WindNight.LogExtension
                     var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
                     XmlConfigurator.ConfigureAndWatch(logRepository, fileInfo);
                     _log = LogManager.GetLogger(Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly(), "DefalutLogger");
-                    RegisterProcessEvent(Log4NetPublish);
+                    RegisterProcessEvent(Log4NetSubscribe);
+                    //RegisterProcessEvent(Log4NetPublish);
                 }
             }
             catch (Exception ex)
@@ -50,13 +54,38 @@ namespace WindNight.LogExtension
             }
         }
 
-        private static string Log4NetConfigDir => Path.GetDirectoryName(Log4NetConfigPath);
+        private static string Log4NetConfigDir => Path.GetDirectoryName(Log4NetConfigPath) ?? "";
+
+        private static string CurrentAppDir =>
+            Environment.CurrentDirectory;
 
         /// <summary>
         ///  需要区分windows 和linux 
         /// </summary>
-        private static string Log4NetConfigPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-            HardInfo.IsWindows ? ConfigItems.Log4netConfigPath.TrimStart('/').Replace("/", "\\") : ConfigItems.Log4netConfigPath);
+        private static string Log4NetConfigPath => Path.Combine(
+            // AppDomain.CurrentDomain.BaseDirectory,
+            CurrentAppDir,
+            HardInfo.IsWindows ?
+                ConfigItems.Log4netConfigPath.TrimStart('/').Replace("/", "\\")
+                :
+                ConfigItems.Log4netConfigPath);
+
+        public static string CurrentLog4NetConfigPath
+        {
+            get
+            {
+                try
+                {
+                    return Log4NetConfigPath;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+
+                return "";
+            }
+        }
 
         static void CheckLog4netConfigPath()
         {
@@ -64,6 +93,7 @@ namespace WindNight.LogExtension
             {
                 if (!File.Exists(Log4NetConfigPath))
                 {
+                    DoConsoleLog(LogLevels.Warning, $" LogHelper Log4netConfigPath ({Log4NetConfigPath}) not exist use default config  ");
                     if (!Directory.Exists(Log4NetConfigDir))
                         Directory.CreateDirectory(Log4NetConfigDir);
                     if (File.Exists(Log4NetConfigPath)) return;
@@ -246,10 +276,88 @@ namespace WindNight.LogExtension
         static void Log4NetPublish(LogInfo? logInfo)
         {
             if (logInfo == null) return;
-            Log(logInfo.Level, logInfo.Content, logInfo.Exceptions);
+            Log4(logInfo.Level, logInfo.Content, logInfo.Exceptions);
         }
 
-        private static void Log(LogLevels level, string? message, Exception? logException = null)
+
+        public static void Log4NetSubscribe(LogInfo? logInfo)
+        {
+            try
+            {
+                Log4(logInfo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Log4NetSubscribe:上报日志异常:{0}", ex.ToJsonStr());
+                RecordLog.WriteLog($"Log4NetSubscribe:上报日志异常:{ex.ToJsonStr()}");
+            }
+        }
+
+
+        public static void Log4(LogLevels level, string message, Exception? logException = null)
+        {
+            Log4Internal(level, message, logException);
+
+        }
+
+
+        /// <summary>
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="logException"></param> 
+        public static void Log4Debug(string msg, Exception? logException = null)
+        {
+            Log4(LogLevels.Debug, msg, logException);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="logException"></param> 
+        public static void Log4Info(string msg, Exception? logException = null)
+        {
+            Log4(LogLevels.Information, msg, logException);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="logException"></param> 
+        public static void Log4Warn(string msg, Exception? logException = null)
+        {
+            Log4(LogLevels.Warning, msg, logException);
+
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="logException"></param> 
+        public static void Log4Error(string msg, Exception? logException)
+        {
+            Log4(LogLevels.Error, msg, logException);
+
+
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="logException"></param> 
+        public static void Log4Fatal(string msg, Exception? logException)
+        {
+            Log4(LogLevels.Critical, msg, logException);
+        }
+
+        public static void Log4(LogInfo? logInfo)
+        {
+            if (logInfo == null) return;
+            Log4Internal(logInfo.Level, logInfo.Content, logInfo.Exceptions);
+
+        }
+
+
+        private static void Log4Internal(LogLevels level, string? message, Exception? logException = null)
         {
             try
             {

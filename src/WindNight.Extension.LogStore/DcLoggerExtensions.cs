@@ -6,11 +6,9 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Options;
-using WindNight.Extension.Logger.DbLog;
-using WindNight.Extension.Logger.DbLog.Abstractions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 
-namespace WindNight.Extension.Logger.Mysql.DbLog
+namespace WindNight.Extension.Logger.DcLog
 {
 
     public static class DcLoggerExtensions

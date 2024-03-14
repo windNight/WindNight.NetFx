@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
-using WindNight.Extension.Logger.DbLog.Abstractions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 using WindNight.Extension.Logger.DcLog.Internal;
 
-namespace WindNight.Extension.Logger.Mysql.DbLog
+namespace WindNight.Extension.Logger.DcLog
 {
     internal class DcLogger : ILogger
     {
