@@ -62,11 +62,18 @@ public abstract class BaseConsumerBackgroundService : BackgroundService
         return Task.CompletedTask;
     }
 
-    protected virtual void WhileTrueSafe(Action action, string actName)
+    protected virtual void WhileTrueSafe(Action action, string actName, CancellationToken stoppingToken)
     {
         while (true)
             try
             {
+                if (IsStop || stoppingToken.IsCancellationRequested)
+                {
+                    LogHelper.Warn($"【{ConfigItems.SysAppName}】 {actName} 开始等待 将等待 IsStopConsumer 开启. Thread.Sleep(60000)");
+                    Thread.Sleep(60000);
+                    break;
+                }
+
                 action.Invoke();
             }
             catch (Exception ex)
@@ -79,11 +86,15 @@ public abstract class BaseConsumerBackgroundService : BackgroundService
             }
     }
 
-    protected virtual T WhileTrueSafe<T>(Func<T> func, string actName)
+    protected virtual T WhileTrueSafe<T>(Func<T> func, string actName, CancellationToken stoppingToken)
     {
         while (true)
+        {
+
             try
             {
+
+
                 var rlt = func.Invoke();
             }
             catch (Exception ex)
@@ -94,6 +105,8 @@ public abstract class BaseConsumerBackgroundService : BackgroundService
             {
                 Thread.Sleep(1);
             }
+        }
+
     }
 
     protected virtual void RunSafe(Action action, string actName)
@@ -159,6 +172,21 @@ public abstract class BaseConsumerBackgroundService : BackgroundService
                 return default;
             }
         }, cancellationToken);
+    }
+
+
+    private bool IsStop
+    {
+        get
+        {
+            if (ConfigItems.IsStopConsumer)
+            {
+
+                return true;
+            }
+
+            return false;
+        }
     }
 
     //protected virtual bool RedisLockTake(Func<string, string, bool> func, RedisLockPrefixKey preKey, string message, string messageMd5, long expireMs = 0L)

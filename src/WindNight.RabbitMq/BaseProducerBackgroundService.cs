@@ -11,6 +11,9 @@ namespace WindNight.RabbitMq;
 
 public abstract class BaseProducerService
 {
+
+    public IRabbitMqProducerSettings CurrentProducerSettings => DefaultRabbitMqProducerSettings;
+
     protected readonly IRabbitMqProducer Producer;
 
     public BaseProducerService(IRabbitMqProducerFactory producerFactory, IRabbitMqProducerSettings producerSettings)
