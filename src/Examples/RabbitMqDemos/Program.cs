@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting.WnExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
 using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;
 using WindNight.RabbitMq;
+using WindNight.RabbitMq.Abstractions;
 
 namespace RabbitMqDemos;
 
@@ -29,6 +31,10 @@ internal class Program
     {
         Console.WriteLine("testcode hear");
 #if DEBUG
+        var producer = Ioc.GetService<ITestProducerService>();
+        var config = producer.CurrentProducerSettings;
+        var co = Ioc.GetService<IConfiguration>();
+        var dd = co.GetSection("RabbitMqOptions").Get<RabbitMqOptions>();
 
 #endif
     }
@@ -42,6 +48,7 @@ internal class Program
                 configBuilder.SetBasePath(AppContext.BaseDirectory)
                     .AddJsonFile("Config/AppSettings.json", false, true)
                     .AddJsonFile("Config/rabbitMqConfig.json", false, true)
+                    .AddJsonFile("Config/rabbitMqConfigV2.json", false, true)
                     ;
             },
             configureServicesDelegate: (context, services) =>
@@ -53,11 +60,15 @@ internal class Program
                 services.AddHostedService<TestConsumerBackgroundService>();
 
                 services.AddRabbitMqProducer();
+
+
+
                 services.AddSingleton<ITestProducerService, TestProducerService>();
 
                 services.AddHostedService<TestProducerBackgroundService1>();
                 services.AddHostedService<TestProducerBackgroundService2>();
                 services.AddHostedService<TestProducerBackgroundService>();
+
             });
     }
 }

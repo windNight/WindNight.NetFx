@@ -5,10 +5,13 @@ namespace RabbitMqDemos;
 
 public interface ITestProducerService
 {
+    IRabbitMqProducerSettings CurrentProducerSettings { get; }
+
     bool SendWithNotRetry(string message, string routingKey, bool isMessageDurable = true);
 
     bool SendWithNotRetry(byte[] messageBodyBytes, string routingKey, bool isMessageDurable = true);
     void Send(string message, string routingKey, bool isMessageDurable = true);
+
 }
 
 public class TestProducerService : BaseProducerService, ITestProducerService
