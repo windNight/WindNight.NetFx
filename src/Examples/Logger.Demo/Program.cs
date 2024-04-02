@@ -7,8 +7,11 @@ using Newtonsoft.Json.Linq;
 using System.Configuration;
 using Newtonsoft.Json.Extension;
 using WindNight.Extension.Logger.DbLog.Extensions;
+using WindNight.Extension.Logger.DcLog;
+using WindNight.Extension.Logger.DcLog.Extensions;
 using WindNight.Extension.Logger.Mysql.DbLog;
 using WindNight.LogExtension;
+using LoggerExtensions = WindNight.Extension.Logger.DbLog.Extensions.LoggerExtensions;
 
 namespace Logger.Demo
 {
@@ -18,7 +21,8 @@ namespace Logger.Demo
         {
             try
             {
-                UseDbLogInConfigureServices(args);
+                // UseDbLogInConfigureServices(args);
+                UseDcLogInConfigureServices(args);
                 DoTestLogV2(args);
             }
             catch (Exception ex)
@@ -121,6 +125,55 @@ namespace Logger.Demo
             return host;
         }
 
+
+        private static IHost UseDcLogInConfigureServices(string[] args)
+        {
+            var builder = Host.CreateDefaultBuilder(args)
+                .ConfigureHostConfiguration(configHost =>
+                {
+                    configHost.SetBasePath(Directory.GetCurrentDirectory());
+                    configHost.AddJsonFile("appsettings.json", true, true);
+                })
+                .ConfigureLogging((context, logging) =>
+                {
+                    logging.AddFilter((provider, category, logLevel) =>
+                    {
+                        if (provider.Contains("ConsoleLoggerProvider")
+                            && category.Contains("Controller")
+                            && logLevel >= LogLevel.Information)
+                            return true;
+                        if (provider.Contains("ConsoleLoggerProvider")
+                            && category.Contains("Microsoft")
+                            && logLevel >= LogLevel.Information)
+                            return true;
+                        return false;
+                    });
+                    var configuration = context.Configuration;
+                    // logging.AddDbLogger(configuration);
+
+                }).ConfigureServices((context, services) =>
+                {
+                    //services.AddDbLogger(configure: opt =>
+                    //{
+                    //    opt.LogAppCode = logAppCode;
+                    //    opt.LogAppName = logAppName;
+                    //    //   opt.DbLogVersion = "1.0.1";
+                    //    opt.MinLogLevel = LogLevel.Information;
+                    //    opt.IsConsoleLog = true;
+                    //    opt.DbConnectString = "";
+                    //});
+                    var configuration = context.Configuration;
+                    services.AddDcLogger(configuration: configuration);
+                    LogHelper.RegisterProcessEvent(DcLogSubscribe);
+                    Ioc.Instance.InitServiceProvider(services.BuildServiceProvider());
+                    DcLogHelper.Warn($"test warn");
+                });
+
+            var host = builder.Build();
+            return host;
+        }
+
+
         private static void DoTestLogV1(string[] args)
         {
 
@@ -136,21 +189,21 @@ namespace Logger.Demo
             var limit = 1;
             Parallel.For(0, limit, i =>
             {
-                log.LogRegisterInfo(buildType, 1, logAppCode, $"{i}_测试");
+                LoggerExtensions.LogRegisterInfo(log, buildType, 1, logAppCode, $"{i}_测试");
                 var debugMsg = $"{i} I'm Debug Log";
                 var infoMsg = $"{i} I'm Info Log";
                 var warnMsg = $"{i} I'm Warn Log";
                 var errorMsg = $"{i} I'm Error Log";
                 var fatalMsg = $"{i} I'm Fatal Log";
-                log.Debug(debugMsg);
-                log.Info(infoMsg);
-                log.Warn(warnMsg);
-                log.Error(errorMsg, new Exception("test Error exception"));
-                log.Fatal(fatalMsg, new Exception("test Fatal exception"));
-                log.ApiUrlCall($"{i}_aaa.html", $"{i} 测试地址统计", 100, "127.0.0.1");
-                log.ApiUrlException($"{i}_aaa.html", $"{i} 测试地址统计", new Exception("test ApiUrlException exception"),
+                LoggerExtensions.Debug(log, debugMsg);
+                LoggerExtensions.Info(log, infoMsg);
+                LoggerExtensions.Warn(log, warnMsg);
+                LoggerExtensions.Error(log, errorMsg, new Exception("test Error exception"));
+                LoggerExtensions.Fatal(log, fatalMsg, new Exception("test Fatal exception"));
+                LoggerExtensions.ApiUrlCall(log, $"{i}_aaa.html", $"{i} 测试地址统计", 100, "127.0.0.1");
+                LoggerExtensions.ApiUrlException(log, $"{i}_aaa.html", $"{i} 测试地址统计", new Exception("test ApiUrlException exception"),
                     "127.0.0.1");
-                log.LogOfflineInfo(buildType, 1, logAppCode, $"{i}_测试");
+                LoggerExtensions.LogOfflineInfo(log, buildType, 1, logAppCode, $"{i}_测试");
                 var jo = JObject.FromObject(new
                 {
                     Url = $"{i} I'm Url http://",
@@ -237,15 +290,16 @@ namespace Logger.Demo
             var limit = 1;
             Parallel.For(0, limit, i =>
             {
-                // TestOnlineLog(i);
+                TestOnlineLog(i);
 
                 TestDebugLog(i);
                 TestInfoLog(i);
-                //TestWarnLog(i);
-                //TestErrorLog(i);
-                //TestFatalLog(i);
+                TestWarnLog(i);
+                TestErrorLog(i);
+                TestFatalLog(i);
 
-                // TestOfflineLog(i);
+                TestOfflineLog(i);
+
             });
         }
 
@@ -262,10 +316,11 @@ namespace Logger.Demo
             var log = Ioc.GetService<ILoggerProvider>().CreateLogger("log:online");
 
             var debugMsg = $"{i} I'm Debug Log";
-            log.Debug(debugMsg);
+            LoggerExtensions.Debug(log, debugMsg);
 
-            log.LogRegisterInfo(buildType, 1, logAppCode, $"{i}_测试");
+            LoggerExtensions.LogRegisterInfo(log, buildType, 1, logAppCode, $"{i}_测试");
             DbLogHelper.LogRegisterInfo(buildType, 1, logAppCode, $"{i}_测试_DbLogHelper");
+            DcLogHelper.LogRegisterInfo(buildType, 1, logAppCode, $"{i}_测试_DcLogHelper");
             LogHelper.LogRegisterInfo(buildType, 1, logAppCode, $"{i}_测试_LogHelper");
 
 
@@ -282,10 +337,11 @@ namespace Logger.Demo
             var log = Ioc.GetService<ILoggerProvider>().CreateLogger("log:offline");
 
             var debugMsg = $"{i} I'm Debug Log";
-            log.Debug(debugMsg);
+            LoggerExtensions.Debug(log, debugMsg);
 
-            log.LogOfflineInfo(buildType, 1, logAppCode, $"{i}_测试");
+            LoggerExtensions.LogOfflineInfo(log, buildType, 1, logAppCode, $"{i}_测试");
             DbLogHelper.LogOfflineInfo(buildType, 1, logAppCode, $"{i}_测试_DbLogHelper");
+            DcLogHelper.LogOfflineInfo(buildType, 1, logAppCode, $"{i}_测试_DcLogHelper");
             LogHelper.LogOfflineInfo(buildType, 1, logAppCode, $"{i}_测试_LogHelper");
 
 
@@ -303,8 +359,9 @@ namespace Logger.Demo
             var log = Ioc.GetService<ILoggerProvider>().CreateLogger("log:debug");
             var debugMsg = $"{i} I'm Debug Log";
 
-            log.Debug($"{debugMsg} use ILoggerProvider");
+            LoggerExtensions.Debug(log, $"{debugMsg} use ILoggerProvider");
             DbLogHelper.Debug($"{debugMsg} Use DbLogHelper ");
+            DcLogHelper.Debug($"{debugMsg} Use DcLogHelper ");
             LogHelper.Debug($"{debugMsg} Use LogHelper ");
 
 
@@ -322,8 +379,9 @@ namespace Logger.Demo
             var log = Ioc.GetService<ILoggerProvider>().CreateLogger("log:info");
             var infoMsg = $"{i} I'm Info Log";
 
-            log.Info($"{infoMsg} use ILoggerProvider");
+            LoggerExtensions.Info(log, $"{infoMsg} use ILoggerProvider");
             DbLogHelper.Info($"{infoMsg} Use DbLogHelper ");
+            DcLogHelper.Info($"{infoMsg} Use DcLogHelper ");
             LogHelper.Info($"{infoMsg} Use LogHelper ");
 
 
@@ -341,8 +399,9 @@ namespace Logger.Demo
             var log = Ioc.GetService<ILoggerProvider>().CreateLogger("log:warn");
             var warnMsg = $"{i} I'm Warn Log";
 
-            log.Warn($"{warnMsg} use ILoggerProvider");
+            LoggerExtensions.Warn(log, $"{warnMsg} use ILoggerProvider");
             DbLogHelper.Warn($"{warnMsg}  Use DbLogHelper ");
+            DcLogHelper.Warn($"{warnMsg}  Use DcLogHelper ");
             LogHelper.Warn($"{warnMsg}  Use LogHelper ");
 
 
@@ -360,9 +419,13 @@ namespace Logger.Demo
             var log = Ioc.GetService<ILoggerProvider>().CreateLogger("log:error");
             var errorMsg = $"{i} I'm Error Log";
 
-            log.Error($"{errorMsg} use ILoggerProvider", new Exception("test Error exception"));
+            LoggerExtensions.Error(log, $"{errorMsg} use ILoggerProvider", new Exception("test Error exception"));
             DbLogHelper.Error($"{errorMsg}  Use DbLogHelper ",
                 new Exception("test Error exception Use DbLogHelper"));
+
+            DcLogHelper.Error($"{errorMsg}  Use DcLogHelper ",
+                new Exception("test Error exception Use DcLogHelper"));
+
             LogHelper.Error($"{errorMsg}  Use LogHelper ", new Exception("test Error exception Use LogHelper"));
 
 
@@ -381,9 +444,13 @@ namespace Logger.Demo
 
 
             var fatalMsg = $"{i} I'm Fatal Log";
-            log.Fatal($"{fatalMsg} use ILoggerProvider", new Exception("test Fatal exception"));
+            LoggerExtensions.Fatal(log, $"{fatalMsg} use ILoggerProvider", new Exception("test Fatal exception"));
             DbLogHelper.Fatal($"{fatalMsg}  Use DbLogHelper ",
                 new Exception("test Fatal exception Use DbLogHelper"));
+            DcLogHelper.Fatal($"{fatalMsg}  Use DcLogHelper ",
+                new Exception("test Fatal exception Use DcLogHelper"));
+
+
             LogHelper.Fatal($"{fatalMsg}  Use LogHelper ", new Exception("test Fatal exception Use LogHelper"));
 
 
@@ -406,5 +473,25 @@ namespace Logger.Demo
                 // Log(LogLevels.Warning, $"EsLogAsync({logInfo.ToJsonStr()}) error {e.Message}", e);
             }
         }
+
+        internal static void DcLogSubscribe(LogHelper.LogInfo? logInfo)
+        {
+            try
+            {
+                if (logInfo == null) return;
+                // if (!ConfigItems.IsReportToE) return;
+#if !NET45
+                DcLogHelper.Add(logInfo.Content, logInfo.Level, logInfo.Exceptions, logInfo.SerialNumber,
+                    logInfo.Timestamps, logInfo.RequestUrl, logInfo.ServerIp, logInfo.ClientIp);
+#endif
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("上报日志异常:{0}", e.ToJsonStr());
+                // Log(LogLevels.Warning, $"EsLogAsync({logInfo.ToJsonStr()}) error {e.Message}", e);
+            }
+        }
+
+
     }
 }

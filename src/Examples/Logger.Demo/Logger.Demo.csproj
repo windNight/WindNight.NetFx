@@ -23,6 +23,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\WindNight.Extension.DbLog.Mysql\WindNight.Extension.DbLog.Mysql.csproj" />
+		<ProjectReference Include="..\..\WindNight.Extension.LogStore\WindNight.Extension.DcLog.csproj" />
 		<ProjectReference Include="..\..\WindNight.Extension\WindNight.Extension.csproj" />
 	</ItemGroup>
 
