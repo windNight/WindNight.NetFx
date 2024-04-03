@@ -5,7 +5,13 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Extension.Logger.DcLog.Abstractions;
+using System.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using WindNight.Core.Abstractions;
+using WindNight.Extension.Logger.DcLog.Internal;
 
 namespace WindNight.Extension.Logger.DcLog
 {
@@ -23,6 +29,7 @@ namespace WindNight.Extension.Logger.DcLog
 
         /// <summary> </summary>
         protected readonly ConcurrentQueue<SysLogs> MessageQueue;
+
 
         /// <summary>
         /// </summary>
@@ -153,6 +160,29 @@ namespace WindNight.Extension.Logger.DcLog
                     //    Items = message,
                     //};
                     //var data = obj.ToJsonStr().ToBytes();// Encoding.UTF8.GetBytes();
+
+                    if (message.LogAppCode.IsNullOrEmpty())
+                    {
+                        var config = Ioc.GetService<IConfigService>();
+                        if (config != null)
+                        {
+                            message.LogAppCode = config.SystemAppCode;
+                            message.LogAppName = config.SystemAppName;
+                        }
+
+                        if (message.LogAppCode.IsNullOrEmpty())
+                        {
+                            var s = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+                            var config1 = s.BuildServiceProvider().GetService<IConfiguration>();
+
+                            var d1 = config1?.GetAppConfigValue("AppId", 0, false) ?? 0;
+                            var d2 = config1?.GetAppConfigValue("AppCode", "", false) ?? "";
+                            var d3 = config1?.GetAppConfigValue("AppName", "", false) ?? "";
+
+                            return;
+                        }
+
+                    }
                     var data = message.ToJsonStr().ToBytes();// Encoding.UTF8.GetBytes();
                     var sendData = FixSendContent(data);
                     var count = udpClient.Send(sendData, sendData.Length, EndPoint);

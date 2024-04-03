@@ -6,7 +6,7 @@ using WindNight.Extension.Logger.DcLog.Internal;
 
 namespace WindNight.Extension.Logger.DcLog
 {
-    [ProviderAlias("DbLogger")]
+    [ProviderAlias("DcLogger")]
     public class DcLoggerProvider : ILoggerProvider, ISupportExternalScope
     {
         private readonly ConcurrentDictionary<string, DcLogger> _loggers;
