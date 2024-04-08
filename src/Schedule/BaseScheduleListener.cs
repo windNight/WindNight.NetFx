@@ -380,7 +380,7 @@ namespace Schedule
             }
             finally
             {
-                var autoClose = JobContextFunc.GetAutoClose(context);
+                var autoClose = context.GetAutoClose();
                 if (autoClose)
                     // TODO 通知注册中心下线 
                     Environment.Exit(retCode);

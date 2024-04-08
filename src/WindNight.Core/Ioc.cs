@@ -30,7 +30,8 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
 
     }
 
-    /// <summary> </summary>
+
+
     public partial class Ioc
     {
         //private static readonly Lazy<Ioc> LazyIocInstance = new Lazy<Ioc>(() => new Ioc());
@@ -97,6 +98,17 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
 
     }
 
+    /// <summary> </summary>
+    public partial class Ioc
+    {
+        ///// <summary> 服务编号 </summary>
+        //public int SystemAppId => CurrentConfigService?.SystemAppId ?? 0;
+        ///// <summary> 服务代号 </summary>
+        //public string SystemAppCode => CurrentConfigService?.SystemAppCode ?? "";
+        ///// <summary> 服务名称 </summary>
+        //public string SystemAppName => CurrentConfigService?.SystemAppCode ?? "";
+
+    }
 
     public static class IocExtension
     {
