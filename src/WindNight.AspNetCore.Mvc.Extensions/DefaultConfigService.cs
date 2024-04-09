@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
+using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions
@@ -9,11 +10,17 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
     {
         //   private readonly IConfiguration _configuration;
         public IConfiguration Configuration => Ioc.GetService<IConfiguration>();
+        public int SystemAppId => Configuration?.GetAppConfigValue("AppId", 0, false) ?? 0;
+        public string SystemAppCode => Configuration?.GetAppConfigValue("AppCode", "", false) ?? "";
+        public string SystemAppName => Configuration?.GetAppConfigValue("AppName", "", false) ?? "";
 
         public DefaultConfigService()
         {
             // _configuration = configuration;
         }
+
+
+
 
         T GetConfig<T>(string configKey, T defaultValue = default(T), bool isThrow = true)
         {

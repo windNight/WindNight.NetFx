@@ -4,12 +4,17 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core.Abstractions;
 using Newtonsoft.Json.Extension;
 using Microsoft.Extensions.Options;
+using WindNight.ConfigCenter.Extension;
 
 namespace WindNight.AspNetCore.Hosting.Internals
 {
     internal class DefaultConfigService : IConfigService
     {
         public IConfiguration Configuration => Ioc.GetService<IConfiguration>();
+
+        public int SystemAppId => Configuration?.GetAppConfigValue("AppId", 0, false) ?? 0;
+        public string SystemAppCode => Configuration?.GetAppConfigValue("AppCode", "", false) ?? "";
+        public string SystemAppName => Configuration?.GetAppConfigValue("AppName", "", false) ?? "";
 
         public DefaultConfigService()
         {

@@ -7,8 +7,15 @@ namespace WindNight.Core.Abstractions
     /// </summary>
     public interface IConfigService
     {
+
 #if !NET45
         IConfiguration Configuration { get; }
+        /// <summary> 服务编号 </summary>
+        int SystemAppId { get; }
+        /// <summary> 服务代号 </summary>
+        string SystemAppCode { get; }
+        /// <summary> 服务名称 </summary>
+        string SystemAppName { get; }
 #endif
 
         /// <summary>
