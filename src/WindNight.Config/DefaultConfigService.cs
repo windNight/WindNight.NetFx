@@ -10,6 +10,12 @@ namespace WindNight.ConfigCenter.Extension
     {
 #if !NET45
         public IConfiguration Configuration => Ioc.GetService<IConfiguration>();
+
+        public new int SystemAppId => Configuration?.GetAppConfigValue("AppId", 0, false) ?? 0;
+        public new string SystemAppCode => Configuration?.GetAppConfigValue("AppCode", "", false) ?? "";
+        public new string SystemAppName => Configuration?.GetAppConfigValue("AppName", "", false) ?? "";
+
+
 #endif
 
         public virtual string GetConnString(string connKey, string defaultValue = "", bool isThrow = false)
