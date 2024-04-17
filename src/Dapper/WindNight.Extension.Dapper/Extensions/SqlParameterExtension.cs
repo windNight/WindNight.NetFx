@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json.Extension;
+using WindNight.Core.SQL.Abstractions;
 using WindNight.Linq.Extensions.Expressions;
 
 namespace WindNight.Extension.SqlClient.Extensions
@@ -169,6 +170,34 @@ namespace WindNight.Extension.SqlClient.Extensions
 
             return parameters;
 
+        }
+
+        /// <summary>
+        ///  入参转 可执行的 sql 参数
+        /// </summary>
+        /// <param name="instance"></param>
+        public static string ToParamString(this IEntity instance)
+        {
+            var sb = new StringBuilder("SELECT ");
+            if (instance != null)
+            {
+                var properties = instance.GetType().GetProperties();
+                foreach (var property in properties)
+                {
+                    var value = property.GetValue(instance, null);
+                    if (property.PropertyType.Name == "String")
+                    {
+                        sb.Append($"@{property.Name}:='{value}',");
+                    }
+                    else
+                    {
+                        sb.Append($"@{property.Name}:={value},");
+
+                    }
+                }
+            }
+
+            return sb.ToString().TrimEnd(',');
         }
 
     }

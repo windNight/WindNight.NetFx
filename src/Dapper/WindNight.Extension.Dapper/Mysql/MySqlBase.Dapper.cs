@@ -7,6 +7,7 @@ using Newtonsoft.Json.Extension;
 using WindNight.Core.SQL;
 using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Dapper.Internals;
+using WindNight.Extension.SqlClient.Extensions;
 
 
 namespace WindNight.Extension.Dapper.Mysql
@@ -321,7 +322,15 @@ namespace WindNight.Extension.Dapper.Mysql
             }
             catch (Exception ex)
             {
-                LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                if (param is IEntity entity)
+                {
+                    LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}", ex);
+
+                }
+                else
+                {
+                    LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                }
             }
             finally
             {
@@ -358,7 +367,15 @@ namespace WindNight.Extension.Dapper.Mysql
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                if (param is IEntity entity)
+                {
+                    LogHelper.Error($"sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}", ex);
+                }
+                else
+                {
+                    LogHelper.Error($"sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+
+                }
             }
             finally
             {
