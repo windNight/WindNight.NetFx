@@ -25,8 +25,9 @@ namespace Schedule.Abstractions
         /// <param name="jobName"></param>
         /// <param name="jobCode"></param>
         /// <param name="runParams"></param>
+        /// <param name="onceJob"></param>
         /// <returns></returns>
-        Task StartJobSafety(string jobId, string jobName, string jobCode, string runParams);
+        Task StartJobSafety(string jobId, string jobName, string jobCode, string runParams, bool onceJob = false);
 
 
         /// <summary>

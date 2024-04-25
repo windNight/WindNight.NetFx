@@ -24,6 +24,8 @@ namespace Schedule.NetCore
                 SetJobsConfig(jobConfigs);
             }
 
+            services.AutoAddJobs(configuration);
+
             jobConfigs = ConfigItems.JobsConfig;
             //services.Add(jobs.Select(jobType => new ServiceDescriptor(typeof(IJob), jobType, ServiceLifetime.Singleton)));
             services.AddSingleton<IScheduleNotice, DefaultScheduleNotice>();

@@ -41,7 +41,7 @@ namespace Schedule
                 var job = JobBuilder.Create<T>()
                     .WithIdentity(jobkey)
                     .Build();
-
+               
                 job.SetJobName(jobParam.JobName);
                 job.SetJobCode(jobParam.JobCode);
                 job.SetOnceJobFlag(onceJob);
@@ -95,6 +95,7 @@ namespace Schedule
                 JobParamsDesc = jobMeta.JobParamsDesc,
                 IsDoNotice = jobMeta.IsDoNotice,
                 IsLogJobLC = jobMeta.IsLogJobLC,
+                CanRunTest = jobMeta.CanRunTest,
             };
         }
 

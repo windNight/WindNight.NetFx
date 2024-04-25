@@ -1,9 +1,14 @@
-﻿using Schedule.Abstractions;
+﻿using System;
+using System.Linq;
+using Schedule.Abstractions;
 using System.Threading;
+using Schedule.Model;
+using Quartz;
+using Schedule.Func;
 
 namespace Schedule
 {
-    public class JobContext
+    public static class JobContext
     {
         private static readonly AsyncLocal<JobBaseInfo> CurrentJobBaseInfoAsyncLocal = new AsyncLocal<JobBaseInfo>();
 
@@ -29,6 +34,19 @@ namespace Schedule
         public static string JobCode => CurrentJobBaseInfo?.JobCode ?? "";
 
         public static string JobName => CurrentJobBaseInfo?.JobName ?? "";
+
+
+        public static JobMeta FetchJobConfig(this IJobExecutionContext context)
+        {
+            var jobCode = context.GetJobCode();
+
+            var jobConfig = ScheduleModConfig.Instance.Jobs.FirstOrDefault(m =>
+                     string.Equals(m.JobCode, jobCode, StringComparison.OrdinalIgnoreCase));
+
+            return jobConfig;
+
+        }
+
 
 
     }

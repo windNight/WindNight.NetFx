@@ -78,11 +78,22 @@ namespace Schedule.Model
         /// <summary>
         /// </summary>
         public string JobParamsDesc { set; get; }
-
-        public bool IsDoNotice { set; get; } = true;
         /// <summary>
-        ///  是否记录job的生命周期
+        ///  是否需要通知 默认 true
+        /// </summary>
+        public bool IsDoNotice { set; get; } = true;
+
+        /// <summary>
+        ///  是否记录job的生命周期 默认true
         /// </summary>
         public bool IsLogJobLC { set; get; } = true;
+
+        /// <summary>
+        ///  是否可以进行冒烟测试,默认 false, 只是个标记 如果需要执行冒烟测试 测试内容由业务方实现
+        /// </summary>
+        public bool CanRunTest { set; get; } = false;
+
+
+
     }
 }

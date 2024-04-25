@@ -45,6 +45,7 @@ namespace Schedule
 
             ScheduleModConfig.Instance.DefaultScheduler =
                 new StdSchedulerFactory(properties).GetScheduler().GetAwaiter().GetResult();
+
             ScheduleModConfig.Instance.DefaultScheduler.Start();
 
             if (config != null) //在当天的用户指定时间运行一次指定的任务

@@ -235,21 +235,24 @@ namespace Schedule
 
 
                 // 检查依赖选项是否满足
-                //  var isOnceJob = JobContextFunc.IsOnceJob(context);
+                var isOnceJob = context.IsOnceJob();
                 //  var depJobs = JobContextFunc.GetDepJobs(context);
                 // var isContinueRun = (isOnceJob || string.IsNullOrEmpty(depJobs)) ? true : WaitJobCompleted(origJobName, depJobs.Split(',').ToList(), DateTime.Now.Date);
                 //JobContextFunc.SetContinueRunFlag(context.JobDetail, isContinueRun);
-
+                if (isOnceJob)
+                {
+                    jobName = context.FetchJobConfig()?.JobName ?? jobName;
+                }
 
                 //记录任务开始执行
                 // var jobParam = GetJobMeta(JobContextFunc.GetOrigJobName(context));
 
                 var ctrl = Ioc.GetService<IScheduleOrderCtrl>();
                 if (ctrl != null)
-                    await ctrl.StartJobSafety(JobId, jobName, jobCode, runParams);
+                    await ctrl.StartJobSafety(JobId, jobName, jobCode, runParams, isOnceJob);
 
                 /*
-                 
+
                 //TODO do job run log
                 ScheduleOrderCtrl ctrl = new ScheduleOrderCtrl();
                 var jobId = ctrl.StartJobSafety(jobName, origJobName, runParams);
@@ -322,7 +325,8 @@ namespace Schedule
 
                 // 如果是单次运行，则删除job 
                 // OnceJob not support now 
-                if (context.IsOnceJob())
+                var onceJob = context.IsOnceJob();
+                if (onceJob)
                 {
                     var delJobRet = await new ScheduleCtrl().StopJobAsync(jobName);
                     if (delJobRet != JobActionRetEnum.Success)

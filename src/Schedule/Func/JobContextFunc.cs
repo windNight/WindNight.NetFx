@@ -7,6 +7,8 @@ namespace Schedule.Func
     /// <summary>  </summary>
     public static class JobContextFunc
     {
+        static JobDataMap DataMap(this IJobDetail jobDetail) => jobDetail.JobDataMap;
+
         /// <summary>
         ///     设置原始job name
         /// </summary>
