@@ -3,6 +3,9 @@ using System.Collections.Concurrent;
 using System.Text.Extension;
 using Newtonsoft.Json.Extension;
 using WindNight.Extension.Internals;
+using System.Threading;
+using WindNight.Core.Extension;
+
 
 #if NET45
 using System.Collections;
@@ -18,6 +21,68 @@ namespace WindNight.Extension
     public class CurrentItem : IDisposable
     {
         private static readonly object LockSerialNumber = new object();
+
+#if !NET45
+
+        private bool UseAsyncLocal = false;
+        private static readonly AsyncLocal<ConcurrentDictionary<object, object>> ItemsAsyncLocal = new AsyncLocal<ConcurrentDictionary<object, object>>();
+
+        public static ConcurrentDictionary<object, object> CurrentItemsAsyncLocal => ItemsAsyncLocal.Value;
+
+        public static object GetItemsFromAsyncLocal(object key, object defaultValue = null)
+        {
+            try
+            {
+                var value = ItemsAsyncLocal.Value.SafeGetValue(key);
+                return value;
+            }
+            catch (Exception e)
+            {
+                return defaultValue;
+            }
+        }
+
+        public static object SetItems2AsyncLocal(object key, object setValue = null, bool isForce = false)
+        {
+            try
+            {
+                if (!ItemsAsyncLocal.Value.ContainsKey(key))
+                {
+                    ItemsAsyncLocal.Value.TryAdd(key, setValue);
+                    return setValue;
+                }
+                else if (ItemsAsyncLocal.Value.ContainsKey(key) && isForce)
+                {
+                    ItemsAsyncLocal.Value[key] = setValue;
+                    return setValue;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+
+        bool ClearItemsAsyncLocal()
+        {
+            try
+            {
+                ItemsAsyncLocal.Value.Clear();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+
+            }
+
+        }
+#endif
 
         private static
 #if NET45
@@ -51,14 +116,19 @@ namespace WindNight.Extension
                     return HttpContext.GetHttpContext()?.Items ?? (_items ??= new ConcurrentDictionary<object, object>());
 #else
 
-                    return Ioc.GetService<IHttpContextAccessor>()?.HttpContext?.Items ?? (_items ??= new ConcurrentDictionary<object, object>());
+                    return Ioc.GetService<IHttpContextAccessor>()?.HttpContext?.Items ?? (_items ??= CurrentItemsAsyncLocal);
 #endif
                 }
                 catch
                 {
-                    //TODO 需要优化
+#if NET45
+    //TODO 需要优化
                     // return _items ?? (_items = new ConcurrentDictionary<object, object>());
                     return new ConcurrentDictionary<object, object>();
+#else
+                    return CurrentItemsAsyncLocal;
+#endif
+
                 }
             }
         }
@@ -90,6 +160,10 @@ namespace WindNight.Extension
         public void Dispose()
         {
             Items?.Clear();
+
+#if !NET45
+            ClearItemsAsyncLocal();
+#endif
         }
 
         /// <summary>    </summary>
@@ -145,9 +219,14 @@ namespace WindNight.Extension
                 if (key.IsNullOrWhiteSpace() || value == null || Items == null)
                     return;
                 if (!ContainKey(key))
+
                     Items.Add(key, value);
                 else
                     Items[key] = value;
+
+#if !NET45
+                SetItems2AsyncLocal(key, value, true);
+#endif
             }
             catch
             {
@@ -165,6 +244,10 @@ namespace WindNight.Extension
                 if (!ContainKey(key))
                     return;
                 Items.Add(key, value);
+
+#if !NET45
+                SetItems2AsyncLocal(key, value, false);
+#endif
             }
             catch
             {
