@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using RestSharp.Extensions;
 using WindNight.Core;
@@ -173,9 +177,191 @@ namespace WindNight.Extension
                 warnMiSeconds: warnMiSeconds);
         }
 
+        static RestRequest GenHeadRequest(string url, Dictionary<string, string> headerDict = null)
+        {
+            var request = new RestRequest(url, Method.HEAD);
+            request.AddHeader("Accept", "*/*");
+            headerDict = GeneratorHeaderDict(headerDict);
+
+            foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
+
+            return request;
+        }
+
+        static RestRequest GenDownloadRequest(string url, Dictionary<string, string> headerDict = null)
+        {
+            var request = new RestRequest(url, Method.GET);
+            request.AddHeader("Accept", "*/*");
+            headerDict = GeneratorHeaderDict(headerDict);
+
+            foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
+            request.AlwaysMultipartFormData = true;
+            return request;
+        }
+
+        public static bool CheckRemoteFile(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+        {
+            return TimeWatcherHelper.TimeWatcher(() =>
+                {
+                    var request = GenHeadRequest(url, headerDict);
+
+                    var client = new RestClient(url)
+                    {
+                        Proxy = null,
+                        Timeout = timeOut,// 1000 * 60 * 20
+                    };
+
+                    var response = client.Execute(request);
+                    var isOk = response.StatusCode == HttpStatusCode.OK;
+                    return isOk;
+                },
+                $"HttpHead({url})   , header={headerDict?.ToJsonStr()}",
+                warnMiSeconds: warnMiSeconds);
+        }
+
+
+        public static async Task<bool> CheckRemoteFileAsync(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+        {
+            return await TimeWatcherHelper.TimeWatcher(async () =>
+                {
+                    var request = GenHeadRequest(url, headerDict);
+
+                    var client = new RestClient(url)
+                    {
+                        Proxy = null,
+                        Timeout = timeOut,// 1000 * 60 * 20
+                    };
+
+#if NET45
+            var response = await client.ExecuteTaskAsync(request);
+#else
+                    var response = await client.ExecuteAsync(request, default(CancellationToken));
+#endif
+                    var isOk = response.StatusCode == HttpStatusCode.OK;
+                    return isOk;
+                },
+                $"HttpHead({url})   , header={headerDict?.ToJsonStr()}",
+                warnMiSeconds: warnMiSeconds);
+        }
 
 
 
+        public static RemoteFileInfo HttpHead(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+        {
+            return TimeWatcherHelper.TimeWatcher(() =>
+                {
+                    var request = GenHeadRequest(url, headerDict);
+
+                    var client = new RestClient(url)
+                    {
+                        Proxy = null,
+                        Timeout = timeOut,// 1000 * 60 * 20
+
+                    };
+                    var fileName = Path.GetFileName(url);
+                    var remoteInfo = new RemoteFileInfo
+                    {
+                        FileName = fileName,
+                    };
+                    var response = client.Execute(request);
+
+                    var isOk = response.StatusCode == HttpStatusCode.OK;
+                    remoteInfo.IsExist = isOk;
+                    if (isOk)
+                    {
+                        remoteInfo.ContentLength = response.ContentLength;
+                        var eTagHeader = response.Headers.FirstOrDefault(m =>
+                            string.Equals(m.Name, "ETag", StringComparison.OrdinalIgnoreCase));
+                        if (eTagHeader != null)
+                        {
+
+                            var etag = eTagHeader?.Value?.ToString() ?? "";
+                            remoteInfo.ETag = etag;
+                        }
+                    }
+
+                    return remoteInfo;
+                },
+                $"HttpHead({url})   , header={headerDict?.ToJsonStr()}",
+                warnMiSeconds: warnMiSeconds);
+
+        }
+
+        public static async Task<RemoteFileInfo> HttpHeadAsync(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+        {
+            return await TimeWatcherHelper.TimeWatcher(async () =>
+                {
+                    var request = GenHeadRequest(url, headerDict);
+
+                    var client = new RestClient(url)
+                    {
+                        Proxy = null,
+                        Timeout = timeOut,// 1000 * 60 * 20
+                    };
+                    var fileName = Path.GetFileName(url);
+                    var remoteInfo = new RemoteFileInfo
+                    {
+                        FileName = fileName,
+                    };
+#if NET45
+            var response = await client.ExecuteTaskAsync(request);
+#else
+                    var response = await client.ExecuteAsync(request, default(CancellationToken));
+#endif
+
+                    var isOk = response.StatusCode == HttpStatusCode.OK;
+                    remoteInfo.IsExist = isOk;
+                    if (isOk)
+                    {
+                        remoteInfo.ContentLength = response.ContentLength;
+                        var eTagHeader = response.Headers.FirstOrDefault(m =>
+                            string.Equals(m.Name, "ETag", StringComparison.OrdinalIgnoreCase));
+                        if (eTagHeader != null)
+                        {
+
+                            var etag = eTagHeader?.Value?.ToString() ?? "";
+                            remoteInfo.ETag = etag;
+                        }
+                    }
+
+                    return remoteInfo;
+                },
+                $"HttpHead({url})   , header={headerDict?.ToJsonStr()}",
+                warnMiSeconds: warnMiSeconds);
+
+        }
+
+
+
+        public static byte[] HttpDownload(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, bool checkExist = true)
+        {
+
+            return TimeWatcherHelper.TimeWatcher(() =>
+                {
+                    if (checkExist)
+                    {
+                        var isExist = CheckRemoteFile(url, headerDict, warnMiSeconds, timeOut);
+                        if (!isExist)
+                        {
+                            return null;
+                        }
+                    }
+
+                    var request = GenDownloadRequest(url, headerDict);
+
+                    var client = new RestClient(url)
+                    {
+                        Proxy = null,
+                        Timeout = timeOut,// 1000 * 60 * 20
+
+                    };
+                    var bytes = client.DownloadData(request);
+                    return bytes;
+                },
+                $"HttpDownload({url})   , header={headerDict?.ToJsonStr()}, checkExist={checkExist} ",
+                warnMiSeconds: warnMiSeconds);
+
+        }
 
 
 
