@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
@@ -86,6 +87,25 @@ namespace WindNight.Extension
             }, $"HttpGet({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 
+
+        public static T Get<T>(string domain, string path,
+            object queries,
+            Dictionary<string, string> headerDict = null,
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+        {
+
+            var queryDict = queries.GenQueryDict();
+            return Get<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut);
+
+        }
+
+
+        public static Dictionary<string, object> GenQueryDict(this object queries)
+        {
+            var queryDict = queries.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty).ToDictionary(q => q.Name, q => q.GetValue(queries));
+            return queryDict;
+        }
+
         /// <summary>
         ///     HttpGet 同步请求
         /// </summary>
@@ -115,6 +135,18 @@ namespace WindNight.Extension
 
                 return await ExecuteHttpClientAsync<T>(domain, request);
             }, $"HttpGetAsync({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
+        }
+
+
+        public static async Task<T> GetAsync<T>(string domain, string path,
+            object queries,
+            Dictionary<string, string> headerDict = null,
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+        {
+
+            var queryDict = queries.GenQueryDict();
+            return await GetAsync<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut);
+
         }
 
 
@@ -287,7 +319,7 @@ namespace WindNight.Extension
 
         }
 
-        public static async Task<RemoteFileInfo> HttpHeadAsync(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+        public static async Task<RemoteFileInfo> HeadAsync(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
                 {
@@ -333,7 +365,7 @@ namespace WindNight.Extension
 
 
 
-        public static byte[] HttpDownload(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, bool checkExist = true)
+        public static byte[] Download(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, bool checkExist = true)
         {
 
             return TimeWatcherHelper.TimeWatcher(() =>
@@ -358,7 +390,7 @@ namespace WindNight.Extension
                     var bytes = client.DownloadData(request);
                     return bytes;
                 },
-                $"HttpDownload({url})   , header={headerDict?.ToJsonStr()}, checkExist={checkExist} ",
+                $"Download({url})   , header={headerDict?.ToJsonStr()}, checkExist={checkExist} ",
                 warnMiSeconds: warnMiSeconds);
 
         }

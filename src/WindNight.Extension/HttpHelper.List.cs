@@ -65,6 +65,33 @@ namespace WindNight.Extension
             return default;
         }
 
+        public static async Task<IEnumerable<T>> GetListAsync<T>(string domain, string path,
+            object queries,
+            Dictionary<string, string> headerDict = null,
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
+            bool isThrow = false) //where T : new()
+        {
+
+            var queryDict = queries.GenQueryDict();
+            return await GetListAsync<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, isThrow);
+
+
+        }
+
+        public static IEnumerable<T> GetList<T>(string domain, string path,
+          object queries,
+            Dictionary<string, string> headerDict = null,
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
+            bool isThrow = false) //where T : new()
+        {
+
+            var queryDict = queries.GenQueryDict();
+            return GetList<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, isThrow);
+
+
+        }
+
+
         public static IEnumerable<T> GetList<T>(string domain, string path,
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
@@ -85,7 +112,6 @@ namespace WindNight.Extension
             return default;
 
         }
-
 
 
 

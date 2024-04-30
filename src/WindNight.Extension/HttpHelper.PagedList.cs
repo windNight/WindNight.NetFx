@@ -29,7 +29,7 @@ namespace WindNight.Extension
                     return ExecuteHttpClient2<T>(url, request, timeOut);
                 }, $"HttpGet({url})", warnMiSeconds: warnMiSeconds);
         }
-         
+
         public static async Task<IPagedList<T>> GetPagedListAsync<T>(string domain, string path,
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
@@ -48,6 +48,15 @@ namespace WindNight.Extension
 
                     return await ExecuteHttpClientAsync2<T>(domain, request);
                 }, $"GetListAsync({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
+        }
+
+        public static async Task<IPagedList<T>> GetPagedListAsync<T>(string domain, string path,
+            object queries,
+            Dictionary<string, string> headerDict = null,
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+        {
+            var queryDict = queries.GenQueryDict();
+            return await GetPagedListAsync<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut);
         }
 
 
@@ -70,7 +79,17 @@ namespace WindNight.Extension
                     return ExecuteHttpClient2<T>(domain, request);
                 }, $"GetList({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
-         
+
+        public static IPagedList<T> GetPagedList<T>(string domain, string path,
+           object queries,
+            Dictionary<string, string> headerDict = null,
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+        {
+            var queryDict = queries.GenQueryDict();
+            return GetPagedList<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut);
+        }
+
+
         public static IPagedList<T> PostPagedList<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20) //where T : new()
         {
@@ -111,7 +130,7 @@ namespace WindNight.Extension
         }
 
 
-  
+
         private static IPagedList<T> DeserializeResponse2PageList<T>(IRestResponse response)
         {
             if (response.StatusCode == HttpStatusCode.OK)

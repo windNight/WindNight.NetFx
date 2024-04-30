@@ -6,6 +6,8 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using WindNight.Core.Abstractions;
+using WindNight.Linq.Extensions.Expressions;
+
 #if NETFRAMEWORK
 using System.Web;
 using System.Runtime.Remoting.Messaging;
@@ -218,6 +220,32 @@ namespace WindNight.Extension
             }
         }
 
+
+#if !NETFRAMEWORK
+
+        public static Dictionary<string, string> GetClientIps(this HttpContext context)
+        {
+            var dict = new Dictionary<string, string>();
+            try
+            {
+                if (context == null) return dict;
+                var headerDict = GetHeaderDict(context);
+                if (headerDict.IsNullOrEmpty())
+                {
+                    headerDict.Add("RemoteIpAddress", context.Connection.RemoteIpAddress?.ToString());
+
+                }
+
+                return headerDict;
+            }
+            catch
+            {
+                return dict;
+            }
+        }
+
+#endif
+
         public static HttpContext? GetHttpContext()
         {
             HttpContext? context = null;
@@ -239,7 +267,7 @@ namespace WindNight.Extension
             var headerDict = new Dictionary<string, string>();
 #if !NETFRAMEWORK
 
-            var validIPKeys = new[] { "X-Real-IP", "HTTP_X_REAL_IP", "x-forwarded-for" };
+            var validIPKeys = new[] { "X-Real-IP", "HTTP_X_REAL_IP", "x-forwarded-for", "REMOTE_ADDR" };
             foreach (var item in context.Request.Headers.Where(m => validIPKeys.Contains(m.Key)))
                 headerDict.Add(item.Key, item.Value);
 #else
