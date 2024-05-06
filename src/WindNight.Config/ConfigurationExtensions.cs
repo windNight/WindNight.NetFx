@@ -33,7 +33,7 @@ namespace WindNight.ConfigCenter.Extension
                     return defaultValue;
                 }
 
-                var configValue = configuration.GetAppConfigValue(keyName, "false", isThrow).ToLower();
+                var configValue = configuration.GetAppConfigValue(keyName, defaultValue.ToString(), isThrow).ToLower();
 
                 if (TrueStrings.Contains(configValue))
                 {

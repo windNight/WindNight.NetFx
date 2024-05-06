@@ -172,12 +172,12 @@ namespace WindNight.Extension.Logger.DcLog
 
                         if (message.LogAppCode.IsNullOrEmpty())
                         {
-                            var s = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
-                            var config1 = s.BuildServiceProvider().GetService<IConfiguration>();
+                            //var s = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+                            //var config1 = s.BuildServiceProvider().GetService<IConfiguration>();
 
-                            var d1 = config1?.GetAppConfigValue("AppId", 0, false) ?? 0;
-                            var d2 = config1?.GetAppConfigValue("AppCode", "", false) ?? "";
-                            var d3 = config1?.GetAppConfigValue("AppName", "", false) ?? "";
+                            //var d1 = config1?.GetAppConfigValue("AppId", 0, false) ?? 0;
+                            //var d2 = config1?.GetAppConfigValue("AppCode", "", false) ?? "";
+                            //var d3 = config1?.GetAppConfigValue("AppName", "", false) ?? "";
 
                             return;
                         }

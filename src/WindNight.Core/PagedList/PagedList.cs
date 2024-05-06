@@ -4,6 +4,19 @@ namespace System.Collections.Generic
 {
     public class PagedListExtension
     {
+        public static IPagedList<T> GeneratorPagedList<T>(int pageIndex, int pageSize, int pageCount, IList<T> list)
+        {
+            return new PagedList<T>
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                IndexFrom = 1,
+                RecordCount = list.Count,
+                PageCount = pageCount,
+                List = list
+            };
+        }
+
         public static IPagedList<T> GeneratorPagedList<T>(int pageIndex, int pageSize, int indexFrom, int recordCount,
             int pageCount, IList<T> list)
         {
@@ -17,6 +30,7 @@ namespace System.Collections.Generic
                 List = list
             };
         }
+
 
         public static IPagedList<TResult> GeneratorPagedList<TSource, TResult>(IPagedList<TSource> source,
             Func<IEnumerable<TSource>, IEnumerable<TResult>> converter)
