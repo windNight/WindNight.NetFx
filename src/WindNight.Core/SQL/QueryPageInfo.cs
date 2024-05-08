@@ -12,6 +12,52 @@ namespace WindNight.Core.SQL
         {
         }
 
+
+        /// <summary>
+        ///     分页信息实例
+        /// </summary>
+        /// <param name="tableName">表名(多表连接表名实例："test1 as a left join test2 as b on a.cid=b.cid")</param>
+        /// <param name="fields">字段名(全部字段为*)</param>
+        /// <param name="sqlWhere">条件语句(不用加where)</param>
+        /// <param name="orderField">排序字段(必须需要!支持多字段，不用加order by)</param>
+        /// <param name="pageInfo"> <see cref="IQueryPageBase"/> </param>
+        public QueryPageInfo(string tableName, string fields, string sqlWhere, string orderField, IQueryPageBase pageInfo) : this(pageInfo)
+        {
+            TableName = tableName;
+            Fields = fields;
+            SqlWhere = sqlWhere;
+            OrderField = orderField;
+        }
+
+        /// <summary>
+        ///     分页信息实例
+        /// </summary> 
+        /// <param name="pageInfo"> <see cref="IQueryPageBase"/> </param>
+        public QueryPageInfo(IQueryPageBase pageInfo)
+        {
+            PageIndex = pageInfo.PageIndex;
+            PageSize = pageInfo.PageSize;
+        }
+
+        /// <summary>
+        ///     分页信息实例
+        /// </summary> 
+        /// <param name="pageInfo"> <see cref="IQueryPageBase"/> </param>
+        public static QueryPageInfo GenQueryPageInfo<T>(IQueryPageBase pageInfo)
+            where T : ICreateEntityBase
+
+        {
+            return new QueryPageInfo
+            {
+                TableName = typeof(T).Name,
+                PageIndex = pageInfo.PageIndex,
+                PageSize = pageInfo.PageSize,
+                Fields = "*",
+                OrderField = "CreateUnixTime DESC" 
+            };
+
+
+        }
         /// <summary>
         ///     分页信息实例
         /// </summary>
@@ -41,7 +87,7 @@ namespace WindNight.Core.SQL
         /// <summary>
         ///     字段名(全部字段为*)
         /// </summary>
-        public string Fields { get; set; } = string.Empty;
+        public string Fields { get; set; } = "*";
 
         /// <summary>
         ///     条件语句(不用加where)
