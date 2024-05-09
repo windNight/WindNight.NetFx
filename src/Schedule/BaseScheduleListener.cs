@@ -83,7 +83,7 @@ namespace Schedule
             Debug(nameof(ITriggerListener), nameof(TriggerFired));
             CurrentItem.AddItem("serialnumber", JobContext.JobId);
 
-            await DoNoticeAsync($"begin with TriggerFired_ITriggerListener:NowTicks({DateTime.Now.Ticks})");
+            await DoNoticeAsync($"begin with TriggerFired_ITriggerListener:NowTicks({HardInfo.Now.Ticks})");
 
             await Task.CompletedTask;
         }
@@ -130,7 +130,7 @@ namespace Schedule
         {
             Debug(nameof(ITriggerListener), nameof(TriggerComplete));
             var beginTicks = context.GetJobBeginDateTimeTicks();
-            var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - beginTicks).TotalMilliseconds;
+            var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - beginTicks).TotalMilliseconds;
 
             if (milliseconds > 5 * 1000)
                 JobLogHelper.Warn($"{JobInfo} 耗时{milliseconds} ms ", null, nameof(TriggerComplete), millisecond: milliseconds);
@@ -184,7 +184,7 @@ namespace Schedule
             //检查依赖选项是否满足
             var isOnceJob = context.IsOnceJob();
             var depJobs = context.GetDepJobs(); //jobcodes
-            var isContinueRun = isOnceJob || depJobs.IsNullOrEmpty() || await WaitJobCompleted(origJobName, depJobs.Split(',').ToList(), DateTime.Now.Date);
+            var isContinueRun = isOnceJob || depJobs.IsNullOrEmpty() || await WaitJobCompleted(origJobName, depJobs.Split(',').ToList(), HardInfo.Now.Date);
             context.JobDetail.SetContinueRunFlag(isContinueRun);
 
             if (!isContinueRun)
@@ -229,7 +229,7 @@ namespace Schedule
                 var isLogJobLC = context.GetIsLogJobLC();
                 if (isLogJobLC)
                 {
-                    var msg = $"{JobInfo} begin time:{DateTime.Now:yyyy-MM-dd HH:mm:sss}, autoClose:{autoClose}, runParams:{runParams}";
+                    var msg = $"{JobInfo} begin time:{HardInfo.Now:yyyy-MM-dd HH:mm:sss}, autoClose:{autoClose}, runParams:{runParams}";
                     JobLogHelper.Info(msg, nameof(JobToBeExecuted));
                 }
 
@@ -237,7 +237,7 @@ namespace Schedule
                 // 检查依赖选项是否满足
                 var isOnceJob = context.IsOnceJob();
                 //  var depJobs = JobContextFunc.GetDepJobs(context);
-                // var isContinueRun = (isOnceJob || string.IsNullOrEmpty(depJobs)) ? true : WaitJobCompleted(origJobName, depJobs.Split(',').ToList(), DateTime.Now.Date);
+                // var isContinueRun = (isOnceJob || string.IsNullOrEmpty(depJobs)) ? true : WaitJobCompleted(origJobName, depJobs.Split(',').ToList(), HardInfo.Now.Date);
                 //JobContextFunc.SetContinueRunFlag(context.JobDetail, isContinueRun);
                 if (isOnceJob)
                 {
@@ -294,7 +294,7 @@ namespace Schedule
 
         protected void Debug(string interfaceName, string actionName)
         {
-            JobLogHelper.Debug($"{JobInfo}:{actionName}:{interfaceName}:NowTicks({DateTime.Now.Ticks})", actionName);
+            JobLogHelper.Debug($"{JobInfo}:{actionName}:{interfaceName}:NowTicks({HardInfo.Now.Ticks})", actionName);
         }
 
         /// <summary>
@@ -368,7 +368,7 @@ namespace Schedule
                 var isLogJobLC = context.GetIsLogJobLC();
                 if (isLogJobLC)
                 {
-                    var msg = $"{JobInfo} end time:{DateTime.Now:yyyy-MM-dd HH:mm:sss}, jobRunState:{jobRunState},autoClose:{autoClose}, runParams:{runParams}";
+                    var msg = $"{JobInfo} end time:{HardInfo.Now:yyyy-MM-dd HH:mm:sss}, jobRunState:{jobRunState},autoClose:{autoClose}, runParams:{runParams}";
                     JobLogHelper.Info(msg, nameof(JobWasExecuted));
                 }
 

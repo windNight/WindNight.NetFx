@@ -13,9 +13,12 @@ namespace System
 {
     public partial class HardInfo
     {
-        public static DateTime Yesterday => DateTime.Now.AddDays(-1);
+        public static DateTime MaxDate => DateTime.MaxValue;
+        public static DateTime MinDate => DateTime.MinValue;
+
         public static DateTime Now => DateTime.Now;
-        public static DateTime Tomorrow => DateTime.Now.AddDays(1);
+        public static DateTime Yesterday => Now.AddDays(-1);
+        public static DateTime Tomorrow => Now.AddDays(1);
 
         public static int WeekOfYear => Now.WeekOfYear();
 
@@ -52,18 +55,18 @@ namespace System
 
         public static DateTime LastDayOfThisYear => Now.LastDayOfYear();
 
-        public static int NowDateInt => DateTime.Now.ToDateInt();
+        public static int NowDateInt => Now.ToDateInt();
 
         public static int YesterdayDateInt => Yesterday.ToDateInt();
         public static int TomorrowDateInt => Tomorrow.ToDateInt();
 
-        public static long NowUnixTime => DateTime.Now.ConvertToUnixTime();
+        public static long NowUnixTime => Now.ConvertToUnixTime();
 
-        public static int NowYearInt => DateTime.Now.Year;
+        public static int NowYearInt => Now.Year;
 
-        public static int NowMonthInt => DateTime.Now.TryToDateInt("yyyyMM");
-        public static int LastMonthInt => DateTime.Now.FirstDayOfMonth().AddMonths(-1).TryToDateInt("yyyyMM");
-        public static int NextMonthInt => DateTime.Now.FirstDayOfMonth().AddMonths(1).TryToDateInt("yyyyMM");
+        public static int NowMonthInt => Now.TryToDateInt("yyyyMM");
+        public static int LastMonthInt => Now.FirstDayOfMonth().AddMonths(-1).TryToDateInt("yyyyMM");
+        public static int NextMonthInt => Now.FirstDayOfMonth().AddMonths(1).TryToDateInt("yyyyMM");
 
     }
 

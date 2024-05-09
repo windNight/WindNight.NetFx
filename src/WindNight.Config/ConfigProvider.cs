@@ -301,7 +301,7 @@ namespace WindNight.ConfigCenter.Extension
                         string.Equals(configMd5, lastMd5, StringComparison.OrdinalIgnoreCase)) return;
                     ConfigCenterContext.SetDomainSwitch(dict);
                     _updateFlagDict.TryAdd(nameof(ConfigType.DomainSwitch), configMd5);
-                    configUpdateTime[nameof(ConfigType.DomainSwitch)] = DateTime.Now;
+                    configUpdateTime[nameof(ConfigType.DomainSwitch)] = HardInfo.Now;
                 }
             }
             catch (Exception ex)
@@ -362,7 +362,7 @@ namespace WindNight.ConfigCenter.Extension
                         string.Equals(configMd5, lastMd5, StringComparison.OrdinalIgnoreCase)) return;
                     ConfigCenterContext.SetAppSettings(dict);
                     _updateFlagDict.TryAdd(nameof(ConfigType.AppSettings), configMd5);
-                    configUpdateTime[nameof(ConfigType.AppSettings)] = DateTime.Now;
+                    configUpdateTime[nameof(ConfigType.AppSettings)] = HardInfo.Now;
                 }
 
             }
@@ -415,7 +415,7 @@ namespace WindNight.ConfigCenter.Extension
                         string.Equals(configMd5, lastMd5, StringComparison.OrdinalIgnoreCase)) return;
                     ConfigCenterContext.SetConnectionStrings(dict);
                     _updateFlagDict.TryAdd(nameof(ConfigType.ConnectionStrings), configMd5);
-                    configUpdateTime[nameof(ConfigType.ConnectionStrings)] = DateTime.Now;
+                    configUpdateTime[nameof(ConfigType.ConnectionStrings)] = HardInfo.Now;
                 }
             }
             catch (Exception ex)

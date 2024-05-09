@@ -1,4 +1,6 @@
-﻿namespace Schedule.Model.Enums
+﻿using System;
+
+namespace Schedule.Model.Enums
 {
     public enum JobActionRetEnum
     {
@@ -12,5 +14,25 @@
 
         /// <summary> 操作不支持  </summary>
         Conflict = 30
+    }
+}
+
+namespace Schedule.Model.Enums.Ex
+{
+    public static class EnumEx
+    {
+
+        public static string ToName(this JobActionRetEnum status)
+        {
+            var name = status switch
+            {
+                JobActionRetEnum.Success => "执行成功",
+                JobActionRetEnum.Failed => "执行失败",
+                JobActionRetEnum.Conflict => "操作不支持",
+                JobActionRetEnum.Unknown => "未知",
+                _ => "未知",
+            };
+            return name;
+        }
     }
 }

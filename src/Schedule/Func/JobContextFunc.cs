@@ -214,7 +214,7 @@ namespace Schedule.Func
 
         public static void SetJobBeginDateTimeTicks(this IJobDetail jobDetail)
         {
-            jobDetail.JobDataMap.Add("jobbeginticks", DateTime.Now.Ticks);
+            jobDetail.JobDataMap.Add("jobbeginticks", HardInfo.Now.Ticks);
         }
 
         public static long GetJobBeginDateTimeTicks(this IJobExecutionContext context)
