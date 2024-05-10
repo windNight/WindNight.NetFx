@@ -29,14 +29,14 @@ namespace WindNight.Extension.Db.Abstractions
         /// </summary>
         /// <param name="id">主键Id </param>
         /// <returns></returns>
-        TEntity QueryById(TId id);
+        TEntity QueryById(TId id, long warnMs = -1);
 
         /// <summary>
         ///     异步 根据Id获取数据
         /// </summary>
         /// <param name="id">主键Id</param>
         /// <returns></returns>
-        Task<TEntity> QueryByIdAsync(TId id);
+        Task<TEntity> QueryByIdAsync(TId id, long warnMs = -1);
     }
 
     /// <summary>
@@ -49,12 +49,12 @@ namespace WindNight.Extension.Db.Abstractions
         ///     同步 获取所有列表
         /// </summary>
         /// <returns></returns>
-        IEnumerable<TEntity> QueryAllList();
+        IEnumerable<TEntity> QueryAllList(long warnMs = -1);
 
         /// <summary>
         ///     异步 获取所有列表
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<TEntity>> QueryAllListAsync();
+        Task<IEnumerable<TEntity>> QueryAllListAsync(long warnMs = -1);
     }
 }

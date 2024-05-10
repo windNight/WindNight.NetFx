@@ -36,7 +36,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="queryTableName"></param>
         /// <returns></returns>
         IPagedList<TEntity> QueryPagedList(int pageIndex, int pageSize, string condition, string orderBy,
-            IDictionary<string, object> parameters = null, string queryTableName = "");
+            IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1);
 
         /// <summary>
         ///     常规分页 异步
@@ -49,7 +49,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="queryTableName"></param>
         /// <returns></returns>
         Task<IPagedList<TEntity>> QueryPagedListAsync(int pageIndex, int pageSize, string condition,
-            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "");
+            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1);
 
         /// <summary>
         ///   
@@ -57,7 +57,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        IPagedList<TEntity> QueryPagedList(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters);
+        IPagedList<TEntity> QueryPagedList(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1);
 
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters);
+        Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1);
 
         #endregion //end IEntity
 
@@ -74,7 +74,7 @@ namespace WindNight.Extension.Db.Abstractions
 
 
         IPagedList<T> QueryPagedEList<T>(int pageIndex, int pageSize, string condition,
-            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "")
+            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
             where T : class, new();
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        IPagedList<T> QueryPagedEList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
+        IPagedList<T> QueryPagedEList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1)
             where T : class, new();
 
 
@@ -102,7 +102,7 @@ namespace WindNight.Extension.Db.Abstractions
         Task<IPagedList<T>> QueryPagedEListAsync<T>(
                  int pageIndex, int pageSize,
                  string condition, string orderBy,
-                 IDictionary<string, object> parameters = null, string queryTableName = "")
+                 IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
                  where T : class, new();
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
+        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1)
                  where T : class, new();
 
 

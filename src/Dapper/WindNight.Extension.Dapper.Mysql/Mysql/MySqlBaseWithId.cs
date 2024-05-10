@@ -6,60 +6,61 @@ using WindNight.Extension.Dapper.Mysql.@internal;
 namespace WindNight.Extension.Dapper.Mysql
 {
     ///<inheritdoc />
-    public abstract partial class MySqlBase<TEntity, TId> : NoIdMysqlBase<TEntity>
-        where TEntity : class, IEntity<TId>, new()
+    public abstract partial class MySqlBase<TEntity, TId> : NoIdMysqlBase<TEntity>,
+          IBaseRepositoryServiceWithId<TEntity, TId>
+        where TEntity : class, IEntity<TId> , new()
         where TId : IEquatable<TId>, IComparable<TId>
     {
-        protected string QueryDataByIdSql => $"SELECT * FROM {BaseTableName} WHERE Id=@Id;";
+        protected virtual string QueryDataByIdSql => $"SELECT * FROM {BaseTableName} WHERE Id=@Id; ";
 
-        protected virtual string QueryListByStatusSql => $"SELECT * FROM {BaseTableName} WHERE Status=@QueryStatus";
+        protected virtual string QueryListByStatusSql => $"SELECT * FROM {BaseTableName} WHERE Status=@QueryStatus ";
 
 
         protected virtual string DeleteByIdSql =>
-            $@"UPDATE {BaseTableName} SET IsDeleted={1} WHERE Id=@Id;";
+            $@"UPDATE {BaseTableName} SET IsDeleted=1 WHERE Id=@Id; ";
 
         /// <summary>
         ///  有些表 是没有 delete 字段的  暂不处理 delete 字段
         /// </summary>
-        protected virtual string QueryAllSqlStr => $"SELECT * FROM {BaseTableName}";
+        protected virtual string QueryAllSqlStr => $"SELECT * FROM {BaseTableName} ";
 
         /// <summary>
         ///  获取整表数据 慎用
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<TEntity> QueryAllList()
+        public virtual IEnumerable<TEntity> QueryAllList(long warnMs = -1)
         {
-            return DbQueryList(QueryAllSqlStr);
+            return DbQueryList(QueryAllSqlStr, warnMs: warnMs);
         }
 
         /// <summary>
         /// 异步获取整表数据 慎用
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<TEntity>> QueryAllListAsync()
+        public virtual async Task<IEnumerable<TEntity>> QueryAllListAsync(long warnMs = -1)
         {
-            return await DbQueryListAsync(QueryAllSqlStr);
+            return await DbQueryListAsync(QueryAllSqlStr, warnMs: warnMs);
         }
 
 
         #region Id opt
 
-        public virtual TEntity QueryById(TId id)
+        public virtual TEntity QueryById(TId id, long warnMs = -1)
         {
-            return DbQuery(QueryDataByIdSql, new { Id = id });
+            return DbQuery(QueryDataByIdSql, new { Id = id }, warnMs: warnMs);
         }
 
-        public virtual async Task<TEntity> QueryByIdAsync(TId id)
+        public virtual async Task<TEntity> QueryByIdAsync(TId id, long warnMs = -1)
         {
-            return await DbQueryAsync(QueryDataByIdSql, new { Id = id });
+            return await DbQueryAsync(QueryDataByIdSql, new { Id = id }, warnMs: warnMs);
         }
 
-        public virtual TId InsertOne(TEntity entity)
+        public virtual TId InsertOne(TEntity entity, long warnMs = -1)
         {
             if (entity == null) return default;
 
 
-            var id = DbExecuteScalar<TId>(InsertSql, entity);
+            var id = DbExecuteScalar<TId>(InsertSql, entity, warnMs: warnMs);
             if (id.CompareTo(default) < 0)
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {entity.ToJsonStr()} . ",
                     appendMessage: false);
@@ -67,11 +68,11 @@ namespace WindNight.Extension.Dapper.Mysql
             return id;
         }
 
-        public virtual async Task<TId> InsertOneAsync(TEntity entity)
+        public virtual async Task<TId> InsertOneAsync(TEntity entity, long warnMs = -1)
         {
             if (entity == null) return default;
 
-            var id = await DbExecuteScalarAsync<TId>(InsertSql, entity);
+            var id = await DbExecuteScalarAsync<TId>(InsertSql, entity, warnMs: warnMs);
             if (id.CompareTo(default) < 0)
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {entity.ToJsonStr()} . ",
                     appendMessage: false);
@@ -84,15 +85,15 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual bool DeleteById(TId id)
+        public virtual bool DeleteById(TId id, long warnMs = -1)
         {
             var flag = DbExecute(DeleteByIdSql, new { Id = id });
             return flag > 0;
         }
 
-        public virtual async Task<bool> DeleteByIdAsync(TId id)
+        public virtual async Task<bool> DeleteByIdAsync(TId id, long warnMs = -1)
         {
-            var flag = await DbExecuteAsync(DeleteByIdSql, new { Id = id });
+            var flag = await DbExecuteAsync(DeleteByIdSql, new { Id = id }, warnMs: warnMs);
             return flag > 0;
         }
 
@@ -104,9 +105,9 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="status"></param>
         /// <returns></returns>
-        public virtual IEnumerable<TEntity> QueryListByStatus(DataStatusEnums status)
+        public virtual IEnumerable<TEntity> QueryListByStatus(DataStatusEnums status, long warnMs = -1)
         {
-            return DbQueryList(QueryListByStatusSql, new { QueryStatus = (int)status });
+            return DbQueryList(QueryListByStatusSql, new { QueryStatus = (int)status }, warnMs: warnMs);
         }
 
 
@@ -116,9 +117,9 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="status"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<TEntity>> QueryListByStatusAsync(DataStatusEnums status)
+        public virtual async Task<IEnumerable<TEntity>> QueryListByStatusAsync(DataStatusEnums status, long warnMs = -1)
         {
-            return await DbQueryListAsync(QueryListByStatusSql, new { QueryStatus = (int)status });
+            return await DbQueryListAsync(QueryListByStatusSql, new { QueryStatus = (int)status }, warnMs: warnMs);
         }
 
         #endregion // end IStatusRepositoryService

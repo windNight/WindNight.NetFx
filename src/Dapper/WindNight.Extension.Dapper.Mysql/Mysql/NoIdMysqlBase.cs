@@ -21,16 +21,12 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual T DbQueryE<T>(string sql, object param = null) => DbQueryE<T>(DbConnectString, sql, param);
+        protected virtual T DbQueryE<T>(string sql, object param = null, long warnMs = -1) => DbQueryE<T>(DbConnectString, sql, param, warnMs);
+ 
 
-        //    {
-        //        return SqlTimer((_sql, _param) => Query<T>(DbConnectString, _sql, _param),
-        //            sql, param, nameof(DbQueryE));
-        //}
-
-        protected virtual T DbQueryE<T>(string conn, string sql, object param = null)
+        protected virtual T DbQueryE<T>(string conn, string sql, object param = null, long warnMs = -1)
         {
-            return SqlTimer(Query<T>, conn, sql, param, nameof(DbQueryE));
+            return SqlTimer(Query<T>, conn, sql, param, nameof(DbQueryE), warnMs);
         }
 
         /// <summary>
@@ -40,15 +36,15 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual IEnumerable<T> DbQueryEList<T>(string sql, object param = null)
+        protected virtual IEnumerable<T> DbQueryEList<T>(string sql, object param = null, long warnMs = -1)
         {
             return SqlTimer((_sql, _param) => QueryList<T>(DbConnectString, _sql, _param),
-                sql, param, nameof(DbQueryEList));
+                sql, param, nameof(DbQueryEList), warnMs);
         }
 
-        protected virtual IEnumerable<T> DbQueryEList<T>(string conn, string sql, object param = null)
+        protected virtual IEnumerable<T> DbQueryEList<T>(string conn, string sql, object param = null, long warnMs = -1)
         {
-            return SqlTimer(QueryList<T>, conn, sql, param, nameof(DbQueryEList));
+            return SqlTimer(QueryList<T>, conn, sql, param, nameof(DbQueryEList), warnMs);
         }
 
         /// <summary>
@@ -57,15 +53,15 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual TEntity DbQuery(string sql, object param = null)
+        protected virtual TEntity DbQuery(string sql, object param = null, long warnMs = -1)
         {
             return SqlTimer((_sql, _param) => Query<TEntity>(DbConnectString, _sql, _param),
-                sql, param, nameof(DbQuery));
+                sql, param, nameof(DbQuery), warnMs);
         }
 
-        protected virtual TEntity DbQuery(string conn, string sql, object param = null)
+        protected virtual TEntity DbQuery(string conn, string sql, object param = null, long warnMs = -1)
         {
-            return SqlTimer(Query<TEntity>, conn, sql, param, nameof(DbQuery));
+            return SqlTimer(Query<TEntity>, conn, sql, param, nameof(DbQuery), warnMs);
         }
 
         /// <summary>
@@ -74,15 +70,15 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual IEnumerable<TEntity> DbQueryList(string sql, object param = null)
+        protected virtual IEnumerable<TEntity> DbQueryList(string sql, object param = null, long warnMs = -1)
         {
             return SqlTimer((_sql, _param) => QueryList<TEntity>(DbConnectString, _sql, _param),
-                sql, param, nameof(DbQueryList));
+                sql, param, nameof(DbQueryList), warnMs);
         }
 
-        protected virtual IEnumerable<TEntity> DbQueryList(string conn, string sql, object param = null)
+        protected virtual IEnumerable<TEntity> DbQueryList(string conn, string sql, object param = null, long warnMs = -1)
         {
-            return SqlTimer(QueryList<TEntity>, conn, sql, param, nameof(DbQueryList));
+            return SqlTimer(QueryList<TEntity>, conn, sql, param, nameof(DbQueryList), warnMs);
         }
 
         /// <summary>
@@ -91,14 +87,14 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual int DbExecute(string sql, object param = null)
+        protected virtual int DbExecute(string sql, object param = null, long warnMs = -1)
         {
             return SqlTimer((_sql, _param) => Execute(DbConnectString, _sql, _param),
-                sql, param, nameof(DbExecute));
+                sql, param, nameof(DbExecute), warnMs);
         }
-        protected virtual int DbExecute(string conn, string sql, object param = null)
+        protected virtual int DbExecute(string conn, string sql, object param = null, long warnMs = -1)
         {
-            return SqlTimer(Execute, conn, sql, param, nameof(DbExecute));
+            return SqlTimer(Execute, conn, sql, param, nameof(DbExecute), warnMs);
         }
 
         /// <summary>
@@ -108,15 +104,15 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual T DbExecuteScalar<T>(string sql, object param = null)
+        protected virtual T DbExecuteScalar<T>(string sql, object param = null, long warnMs = -1)
         {
             return SqlTimer((_sql, _param) => ExecuteScalar<T>(DbConnectString, _sql, _param),
-                sql, param, nameof(ExecuteScalar));
+                sql, param, nameof(ExecuteScalar), warnMs);
         }
 
-        protected virtual T DbExecuteScalar<T>(string conn, string sql, object param = null)
+        protected virtual T DbExecuteScalar<T>(string conn, string sql, object param = null, long warnMs = -1)
         {
-            return SqlTimer(ExecuteScalar<T>, conn, sql, param, nameof(ExecuteScalar));
+            return SqlTimer(ExecuteScalar<T>, conn, sql, param, nameof(ExecuteScalar), warnMs);
         }
 
         /// <summary>
@@ -130,7 +126,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="parameters"></param>
         /// <returns></returns>
         protected virtual IPagedList<TEntity> DbPagedList(int pageIndex, int pageSize, string condition,
-            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "")
+            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
         {
             var pagedInfo = new QueryPageInfo
             {
@@ -142,11 +138,11 @@ namespace WindNight.Extension.Dapper.Mysql
                 PageSize = pageSize
             };
 
-            return PagedList<TEntity>(DbConnectString, pagedInfo, parameters);
+            return PagedList<TEntity>(DbConnectString, pagedInfo, parameters, warnMs);
         }
 
         protected virtual IPagedList<T> DbPagedList<T>(int pageIndex, int pageSize, string condition,
-            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "")
+            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
         where T : class, new()
         {
             var pagedInfo = new QueryPageInfo
@@ -159,7 +155,7 @@ namespace WindNight.Extension.Dapper.Mysql
                 PageSize = pageSize
             };
 
-            return PagedList<T>(DbConnectString, pagedInfo, parameters);
+            return PagedList<T>(DbConnectString, pagedInfo, parameters, warnMs);
         }
 
         /// <summary>
@@ -168,11 +164,11 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual IPagedList<T> DbPagedList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
+        protected virtual IPagedList<T> DbPagedList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1)
             where T : class, new()
         {
 
-            return PagedList<T>(DbConnectString, pagedInfo, parameters);
+            return PagedList<T>(DbConnectString, pagedInfo, parameters, warnMs);
         }
 
         /// <summary>
@@ -181,10 +177,10 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual IPagedList<TEntity> DbPagedList(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
+        protected virtual IPagedList<TEntity> DbPagedList(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1)
         {
 
-            return PagedList<TEntity>(DbConnectString, pagedInfo, parameters);
+            return PagedList<TEntity>(DbConnectString, pagedInfo, parameters, warnMs);
         }
 
         #endregion //end Sync
@@ -198,15 +194,16 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual async Task<T> DbQueryEAsync<T>(string sql, object param = null)
+        protected virtual async Task<T> DbQueryEAsync<T>(string sql, object param = null, long warnMs = -1)
         {
             return await SqlTimerAsync((_1, _2) => QueryAsync<T>(DbConnectString, _1, _2),
-                sql, param, nameof(DbQueryE));
+                sql, param, nameof(DbQueryE), warnMs);
         }
 
-        protected virtual async Task<T> DbQueryEAsync<T>(string conn, string sql, object param = null)
+        protected virtual async Task<T> DbQueryEAsync<T>(string conn, string sql, object param = null, long warnMs = -1)
         {
-            return await SqlTimerAsync(async (_1, _sql, _param) => await QueryAsync<T>(_1, _sql, _param), conn, sql, param, nameof(DbQueryE));
+            return await SqlTimerAsync(async (_1, _sql, _param) => await QueryAsync<T>(_1, _sql, _param), conn, sql, param, 
+                nameof(DbQueryE), warnMs);
         }
 
         /// <summary>
@@ -216,16 +213,16 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual async Task<IEnumerable<T>> DbQueryEListAsync<T>(string sql, object param = null)
+        protected virtual async Task<IEnumerable<T>> DbQueryEListAsync<T>(string sql, object param = null, long warnMs = -1)
         {
             return await SqlTimerAsync(async (_sql, _param) => await QueryListAsync<T>(DbConnectString, _sql, _param),
-                sql, param, nameof(DbQueryEList));
+                sql, param, nameof(DbQueryEList), warnMs);
         }
 
-        protected virtual async Task<IEnumerable<T>> DbQueryEListAsync<T>(string conn, string sql, object param = null)
+        protected virtual async Task<IEnumerable<T>> DbQueryEListAsync<T>(string conn, string sql, object param = null, long warnMs = -1)
         {
             return await SqlTimerAsync(async (_1, _sql, _param) => await QueryListAsync<T>(_1, _sql, _param), conn,
-                sql, param, nameof(DbQueryEList));
+                sql, param, nameof(DbQueryEList), warnMs);
         }
 
         /// <summary>
@@ -234,16 +231,16 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual async Task<TEntity> DbQueryAsync(string sql, object param = null)
+        protected virtual async Task<TEntity> DbQueryAsync(string sql, object param = null, long warnMs = -1)
         {
             return await SqlTimerAsync(async (_sql, _param) => await QueryAsync<TEntity>(DbConnectString, _sql, _param),
-                sql, param, nameof(DbQuery));
+                sql, param, nameof(DbQuery), warnMs);
         }
 
-        protected virtual async Task<TEntity> DbQueryAsync(string conn, string sql, object param = null)
+        protected virtual async Task<TEntity> DbQueryAsync(string conn, string sql, object param = null, long warnMs = -1)
         {
             return await SqlTimerAsync(async (_1, _sql, _param) => await QueryAsync<TEntity>(_1, _sql, _param),
-               conn, sql, param, nameof(DbQuery));
+               conn, sql, param, nameof(DbQuery), warnMs);
         }
 
         /// <summary>
@@ -252,18 +249,18 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual async Task<IEnumerable<TEntity>> DbQueryListAsync(string sql, object param = null)
+        protected virtual async Task<IEnumerable<TEntity>> DbQueryListAsync(string sql, object param = null, long warnMs = -1)
         {
             return await SqlTimerAsync(
                 async (_sql, _param) => await QueryListAsync<TEntity>(DbConnectString, _sql, _param),
-                sql, param, nameof(DbQueryList));
+                sql, param, nameof(DbQueryList), warnMs);
         }
 
-        protected virtual async Task<IEnumerable<TEntity>> DbQueryListAsync(string conn, string sql, object param = null)
+        protected virtual async Task<IEnumerable<TEntity>> DbQueryListAsync(string conn, string sql, object param = null, long warnMs = -1)
         {
             return await SqlTimerAsync(
                 async (_1, _sql, _param) => await QueryListAsync<TEntity>(_1, _sql, _param),
-                conn, sql, param, nameof(DbQueryList));
+                conn, sql, param, nameof(DbQueryList), warnMs);
         }
 
         /// <summary>
@@ -272,16 +269,16 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual async Task<int> DbExecuteAsync(string sql, object param = null)
+        protected virtual async Task<int> DbExecuteAsync(string sql, object param = null, long warnMs = -1)
         {
             return await SqlTimerAsync(async (_sql, _param) => await ExecuteAsync(DbConnectString, _sql, _param),
-                sql, param, nameof(DbExecute));
+                sql, param, nameof(DbExecute), warnMs);
         }
 
-        protected virtual async Task<int> DbExecuteAsync(string conn, string sql, object param = null)
+        protected virtual async Task<int> DbExecuteAsync(string conn, string sql, object param = null, long warnMs = -1)
         {
             return await SqlTimerAsync(async (_1, _sql, _param) => await ExecuteAsync(_1, _sql, _param),
-                conn, sql, param, nameof(DbExecute));
+                conn, sql, param, nameof(DbExecute), warnMs);
         }
 
         /// <summary>
@@ -291,18 +288,18 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual async Task<T> DbExecuteScalarAsync<T>(string sql, object param = null)
+        protected virtual async Task<T> DbExecuteScalarAsync<T>(string sql, object param = null, long warnMs = -1)
         {
             return await SqlTimerAsync(
                 async (_sql, _param) => await ExecuteScalarAsync<T>(DbConnectString, _sql, _param),
-                sql, param, nameof(ExecuteScalar));
+                sql, param, nameof(ExecuteScalar), warnMs);
         }
 
-        protected virtual async Task<T> DbExecuteScalarAsync<T>(string conn, string sql, object param = null)
+        protected virtual async Task<T> DbExecuteScalarAsync<T>(string conn, string sql, object param = null, long warnMs = -1)
         {
             return await SqlTimerAsync(
                 async (_1, _sql, _param) => await ExecuteScalarAsync<T>(_1, _sql, _param),
-                conn, sql, param, nameof(ExecuteScalar));
+                conn, sql, param, nameof(ExecuteScalar), warnMs);
         }
 
         /// <summary>
@@ -316,7 +313,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName"/></param>
         /// <returns></returns>
         protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(int pageIndex,
-            int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "")
+            int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
         {
             var pagedInfo = new QueryPageInfo
             {
@@ -328,7 +325,7 @@ namespace WindNight.Extension.Dapper.Mysql
                 PageSize = pageSize
             };
 
-            return await PagedListAsync<TEntity>(DbConnectString, pagedInfo, parameters);
+            return await PagedListAsync<TEntity>(DbConnectString, pagedInfo, parameters, warnMs);
         }
 
         /// <summary>
@@ -344,7 +341,7 @@ namespace WindNight.Extension.Dapper.Mysql
         protected virtual async Task<IPagedList<T>> DbPagedListAsync<T>(
             int pageIndex, int pageSize,
             string condition, string orderBy,
-            IDictionary<string, object> parameters = null, string queryTableName = "")
+            IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
         where T : class, new()
         {
             var pagedInfo = new QueryPageInfo
@@ -357,7 +354,7 @@ namespace WindNight.Extension.Dapper.Mysql
                 PageSize = pageSize
             };
 
-            return await PagedListAsync<T>(DbConnectString, pagedInfo, parameters);
+            return await PagedListAsync<T>(DbConnectString, pagedInfo, parameters, warnMs);
         }
 
         /// <summary>
@@ -366,11 +363,11 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual async Task<IPagedList<T>> DbPagedListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
+        protected virtual async Task<IPagedList<T>> DbPagedListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1)
             where T : class, new()
         {
 
-            return await PagedListAsync<T>(DbConnectString, pagedInfo, parameters);
+            return await PagedListAsync<T>(DbConnectString, pagedInfo, parameters, warnMs);
         }
 
         /// <summary>
@@ -379,10 +376,10 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
+        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1)
         {
 
-            return await PagedListAsync<TEntity>(DbConnectString, pagedInfo, parameters);
+            return await PagedListAsync<TEntity>(DbConnectString, pagedInfo, parameters, warnMs);
         }
 
         #endregion

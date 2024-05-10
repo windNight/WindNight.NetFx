@@ -319,7 +319,7 @@ namespace WindNight.Extension.Dapper.Mssql
         {
 
 
-            var ticks = DateTime.Now.Ticks;
+            var ticks = HardInfo.Now.Ticks;
             try
             {
                 return sqlFunc(sql, param);
@@ -332,7 +332,7 @@ namespace WindNight.Extension.Dapper.Mssql
             {
                 try
                 {
-                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                    var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
                     if (milliseconds > ConfigItems.DapperWarnMs)
                     {
                         LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
@@ -357,7 +357,7 @@ namespace WindNight.Extension.Dapper.Mssql
         protected async Task<T> SqlTimerAsync<T>(Func<string, object, Task<T>> sqlFunc, string sql, object param = null,
             string actionName = "")
         {
-            var ticks = DateTime.Now.Ticks;
+            var ticks = HardInfo.Now.Ticks;
             try
             {
                 return await sqlFunc(sql, param);
@@ -370,7 +370,7 @@ namespace WindNight.Extension.Dapper.Mssql
             {
                 try
                 {
-                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                    var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
                     if (milliseconds > ConfigItems.DapperWarnMs)
                     {
                         LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
@@ -396,7 +396,7 @@ namespace WindNight.Extension.Dapper.Mssql
         protected T SqlTimer<T>(Func<string, string, object, T> sqlFunc, string connectString, string sql, object param = null,
             string actionName = "")
         {
-            var ticks = DateTime.Now.Ticks;
+            var ticks = HardInfo.Now.Ticks;
             try
             {
                 return sqlFunc(connectString, sql, param);
@@ -409,7 +409,7 @@ namespace WindNight.Extension.Dapper.Mssql
             {
                 try
                 {
-                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                    var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
                     if (milliseconds > ConfigItems.DapperWarnMs)
                     {
                         LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
@@ -434,7 +434,7 @@ namespace WindNight.Extension.Dapper.Mssql
         protected async Task<T> SqlTimerAsync<T>(Func<string, string, object, Task<T>> sqlFunc, string connectString, string sql, object param = null,
             string actionName = "")
         {
-            var ticks = DateTime.Now.Ticks;
+            var ticks = HardInfo.Now.Ticks;
             try
             {
                 return await sqlFunc(connectString, sql, param);
@@ -447,7 +447,7 @@ namespace WindNight.Extension.Dapper.Mssql
             {
                 try
                 {
-                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                    var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
                     if (milliseconds > ConfigItems.DapperWarnMs)
                     {
                         LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);

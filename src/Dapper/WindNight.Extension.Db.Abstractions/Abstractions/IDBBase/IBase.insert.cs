@@ -24,7 +24,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// </summary>
         /// <param name="entity">need inherit from <see cref="IEntity" /></param>
         /// <returns></returns>
-        TId InsertOne(TEntity entity);
+        TId InsertOne(TEntity entity, long warnMs = -1);
 
 
         /// <summary>
@@ -32,20 +32,20 @@ namespace WindNight.Extension.Db.Abstractions
         /// </summary>
         /// <param name="entity">need inherit from <see cref="IEntity" /></param>
         /// <returns></returns>
-        Task<TId> InsertOneAsync(TEntity entity);
+        Task<TId> InsertOneAsync(TEntity entity, long warnMs = -1);
 
         /// <summary>
         ///     同步 批量插入数据
         /// </summary>
         /// <param name="insertList">list of <see cref="IEntity" /></param>
         /// <returns></returns>
-        bool BatchInsertUseValues(IList<TEntity> insertList);
+        bool BatchInsertUseValues(IList<TEntity> insertList, long warnMs = -1);
 
         /// <summary>
         ///     异步 批量插入数据
         /// </summary>
         /// <param name="insertList">list of <see cref="IEntity" /></param>
         /// <returns></returns>
-        Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList);
+        Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList, long warnMs = -1);
     }
 }

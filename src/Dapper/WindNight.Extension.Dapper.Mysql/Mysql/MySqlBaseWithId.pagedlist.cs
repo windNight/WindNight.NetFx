@@ -4,7 +4,7 @@ using WindNight.Extension.Db.Abstractions;
 namespace WindNight.Extension.Dapper.Mysql
 {
     ///<inheritdoc /> 
-    public abstract partial class MySqlBase<TEntity, TId>
+    public abstract partial class MySqlBase<TEntity, TId>: IPagedListRepositoryService<TEntity, TId>
     {
 
         #region TEntity 
@@ -22,9 +22,9 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="queryTableName"></param>
         /// <returns></returns>
         public virtual IPagedList<TEntity> QueryPagedList(int pageIndex, int pageSize, string condition, string orderBy,
-            IDictionary<string, object> parameters = null, string queryTableName = "")
+            IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
         {
-            return DbPagedList(pageIndex, pageSize, condition, orderBy, parameters, queryTableName);
+            return DbPagedList(pageIndex, pageSize, condition, orderBy, parameters, queryTableName, warnMs: warnMs);
         }
 
         /// <summary>
@@ -39,9 +39,9 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="queryTableName"></param>
         /// <returns></returns>
         public virtual async Task<IPagedList<TEntity>> QueryPagedListAsync(int pageIndex, int pageSize, string condition,
-            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "")
+            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
         {
-            return await DbPagedListAsync(pageIndex, pageSize, condition, orderBy, parameters, queryTableName);
+            return await DbPagedListAsync(pageIndex, pageSize, condition, orderBy, parameters, queryTableName, warnMs: warnMs);
         }
 
 
@@ -52,9 +52,9 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="parameters"></param>
         /// <returns></returns>
         public virtual IPagedList<TEntity> QueryPagedList(IQueryPageInfo pagedInfo,
-            IDictionary<string, object> parameters)
+            IDictionary<string, object> parameters, long warnMs = -1)
         {
-            return DbPagedList(pagedInfo, parameters);
+            return DbPagedList(pagedInfo, parameters, warnMs: warnMs);
 
         }
 
@@ -66,18 +66,18 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="parameters"></param>
         /// <returns></returns>
         public virtual async Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageInfo pagedInfo,
-            IDictionary<string, object> parameters)
+            IDictionary<string, object> parameters, long warnMs = -1)
         {
-            return await DbPagedListAsync(pagedInfo, parameters);
+            return await DbPagedListAsync(pagedInfo, parameters, warnMs: warnMs);
         }
 
         #endregion //end  TEntity
 
         public virtual IPagedList<T> QueryPagedEList<T>(int pageIndex, int pageSize, string condition,
-            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "")
+            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
             where T : class, new()
         {
-            return DbPagedList<T>(pageIndex, pageSize, condition, orderBy, parameters, queryTableName);
+            return DbPagedList<T>(pageIndex, pageSize, condition, orderBy, parameters, queryTableName, warnMs: warnMs);
 
         }
 
@@ -87,10 +87,10 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public virtual IPagedList<T> QueryPagedEList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
+        public virtual IPagedList<T> QueryPagedEList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1)
             where T : class, new()
         {
-            return DbPagedList<T>(pagedInfo, parameters);
+            return DbPagedList<T>(pagedInfo, parameters, warnMs: warnMs);
 
         }
 
@@ -109,10 +109,10 @@ namespace WindNight.Extension.Dapper.Mysql
         public virtual async Task<IPagedList<T>> QueryPagedEListAsync<T>(
             int pageIndex, int pageSize,
             string condition, string orderBy,
-            IDictionary<string, object> parameters = null, string queryTableName = "")
+            IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
             where T : class, new()
         {
-            return await DbPagedListAsync<T>(pageIndex, pageSize, condition, orderBy, parameters, queryTableName);
+            return await DbPagedListAsync<T>(pageIndex, pageSize, condition, orderBy, parameters, queryTableName, warnMs: warnMs);
 
         }
 
@@ -123,10 +123,10 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="parameters"></param>
         /// <returns></returns>
         public virtual async Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageInfo pagedInfo,
-            IDictionary<string, object> parameters)
+            IDictionary<string, object> parameters, long warnMs = -1)
             where T : class, new()
         {
-            return await DbPagedListAsync<T>(pagedInfo, parameters);
+            return await DbPagedListAsync<T>(pagedInfo, parameters, warnMs: warnMs);
 
         }
 

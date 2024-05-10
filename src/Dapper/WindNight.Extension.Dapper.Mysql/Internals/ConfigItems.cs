@@ -9,33 +9,11 @@ namespace WindNight.Extension.Dapper.Mysql.@internal
     internal class ConfigItems //: ConfigItemsBase
     {
         public static bool OpenDapperLog => GetConfigBoolValue(ConfigItemsKey.OpenDapperLogKey);
-        //{
-        //    get
-        //    {
-        //        var config = Ioc.Instance.CurrentConfigService;// Ioc.GetService<IConfigService>();
-        //        if (config == null)
-        //        {
-
-        //            return false;
-        //        }
-
-        //        return config.Configuration.GetSection(ConfigItemsKey.OpenDapperLogKey).Get<bool>() ||
-        //               config.GetAppSetting(ConfigItemsKey.OpenDapperLogKey, false, false);
-
-        //    }
-        //}
+      
 
         public static bool IsLogConnectString => GetConfigBoolValue(ConfigItemsKey.IsLogConnectStringKey);
-        public static int DapperWarnMs => GetConfigIntValue(ConfigItemsKey.DapperWarnMsKey, 100);
-        //{
-        //    get
-        //    {
-        //        return GetConfigBoolValue(ConfigItemsKey.IsLogConnectStringKey);
-        //        // var config = Ioc.Instance.CurrentConfigService;
-        //        // if (config == null) return false;
-        //        // return config.GetAppSetting(ConfigItemsKey.IsLogConnectStringKey, false, false);
-        //    }
-        //}
+        public static long DapperWarnMs => GetConfigIntValue(ConfigItemsKey.DapperWarnMsKey, 100L);
+ 
 
         static bool GetConfigBoolValue(string key)
         {
@@ -64,6 +42,22 @@ namespace WindNight.Extension.Dapper.Mysql.@internal
 
         }
 
+        static long GetConfigIntValue(string key, long defaultValue = 0L)
+        {
+            try
+            {
+                var config = Ioc.Instance.CurrentConfigService;
+                if (config == null) return defaultValue;
+                var value1 = config.Configuration.GetSection(key).Get<long>();
+                var value2 = config.GetAppSetting(key, defaultValue, false);
+                return Math.Max(value2, value1);
+            }
+            catch (Exception ex)
+            {
+                return defaultValue;
+            }
+
+        }
         static class ConfigItemsKey
         {
             internal static string DapperWarnMsKey = "DapperConfig:WarnMs";

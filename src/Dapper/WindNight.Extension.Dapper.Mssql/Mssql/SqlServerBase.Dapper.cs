@@ -232,7 +232,7 @@ namespace WindNight.Extension.Dapper.Mssql
             }
         }
 
-        public async Task<IPagedList<T>> PagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters)
+        public async Task<IPagedList<T>> PagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters, long warnMs = -1)
             where T : class, new()
         {
             var dbData = await PagedListInternalAsync<T>(connStr, sqlPageInfo, parameters);
@@ -240,7 +240,7 @@ namespace WindNight.Extension.Dapper.Mssql
         }
 
         public IPagedList<T> PagedList<T>(string connStr, IQueryPageInfo sqlPageInfo,
-            IDictionary<string, object> parameters)
+            IDictionary<string, object> parameters, long warnMs = -1)
             where T : class, new()
         {
             var list = PagedListInternal<T>(connStr, sqlPageInfo, out var recordCount, parameters);

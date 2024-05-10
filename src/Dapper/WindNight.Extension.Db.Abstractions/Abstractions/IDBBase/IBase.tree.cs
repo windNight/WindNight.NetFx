@@ -28,7 +28,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<TEntity> QueryChildrenByParentId(TId parentId, string rootCondition = "", Dictionary<string, object> param = null);
+        IEnumerable<TEntity> QueryChildrenByParentId(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1);
 
         /// <summary>
         ///     异步 根据父节点获取树形列表
@@ -37,7 +37,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        Task<IEnumerable<TEntity>> QueryChildrenByParentIdAsync(TId parentId, string rootCondition = "", Dictionary<string, object> param = null);
+        Task<IEnumerable<TEntity>> QueryChildrenByParentIdAsync(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1);
 
         /// <summary>
         ///     同步 根据子节点获取树形列表
@@ -46,7 +46,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<TEntity> QueryParentsByChildId(TId childId, string rootCondition = "", Dictionary<string, object> param = null);
+        IEnumerable<TEntity> QueryParentsByChildId(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1);
 
         /// <summary>
         ///     异步 根据子节点获取树形列表
@@ -55,7 +55,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        Task<IEnumerable<TEntity>> QueryParentsByChildIdAsync(TId childId, string rootCondition = "", Dictionary<string, object> param = null);
+        Task<IEnumerable<TEntity>> QueryParentsByChildIdAsync(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1);
 
 
         /// <summary>
@@ -65,7 +65,8 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<T> QueryChildrenByParentId<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null) where T : class, ITreeEntity<TId>, new();
+        IEnumerable<T> QueryChildrenByParentId<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+            where T : class, ITreeEntity<TId>, new();
 
         /// <summary>
         /// 
@@ -75,7 +76,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<T> QueryChildrenByParentId<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null)
+        IEnumerable<T> QueryChildrenByParentId<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
              where T : class, ITreeEntity<TId>, new();
 
 
@@ -86,7 +87,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<T> QueryParentsByChildId<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null)
+        IEnumerable<T> QueryParentsByChildId<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
             where T : class, ITreeEntity<TId>, new();
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        IEnumerable<T> QueryParentsByChildId<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null)
+        IEnumerable<T> QueryParentsByChildId<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
             where T : class, ITreeEntity<TId>, new();
 
         /// <summary>
@@ -107,7 +108,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null)
+        Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
                   where T : class, ITreeEntity<TId>, new();
 
         /// <summary>
@@ -118,7 +119,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null)
+        Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
                   where T : class, ITreeEntity<TId>, new();
 
 

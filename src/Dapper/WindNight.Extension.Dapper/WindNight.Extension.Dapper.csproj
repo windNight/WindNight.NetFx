@@ -12,14 +12,12 @@
 		<OutputPath>..\..\..\Output\$(Configuration)</OutputPath>
 
 	</PropertyGroup>
+
 	<ItemGroup>
-		<PackageReference Include="Dapper" Version="2.1.24" />
-		<PackageReference Include="FastMember" Version="1.5.0" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.1" />
-		<PackageReference Include="MySql.Data" Version="8.0.31" />
-	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
+		<ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
+		<ProjectReference Include="..\WindNight.Extension.Dapper.Mssql\WindNight.Extension.Dapper.Mssql.csproj" />
+		<ProjectReference Include="..\WindNight.Extension.Dapper.Mysql\WindNight.Extension.Dapper.Mysql.csproj" />
+		<ProjectReference Include="..\WindNight.Extension.Db.Abstractions\WindNight.Extension.Db.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

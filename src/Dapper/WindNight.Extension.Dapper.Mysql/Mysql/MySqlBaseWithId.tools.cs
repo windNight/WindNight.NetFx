@@ -20,11 +20,11 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="insertList"></param>
         /// <returns></returns>
-        public virtual bool BatchInsertUseValues(IList<TEntity> insertList)
+        public virtual bool BatchInsertUseValues(IList<TEntity> insertList, long warnMs = -1)
         {
             if (insertList == null || !insertList.Any()) return false;
 
-            var flag = DbExecute(BatchInsertSql, insertList.ToArray()) > 0;
+            var flag = DbExecute(BatchInsertSql, insertList.ToArray(), warnMs: warnMs) > 0;
             if (!flag)
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {insertList.ToJsonStr()} . ",
                     appendMessage: false);
@@ -36,11 +36,11 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="insertList"></param>
         /// <returns></returns>
-        public virtual async Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList)
+        public virtual async Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList, long warnMs = -1)
         {
             if (insertList == null || !insertList.Any()) return false;
 
-            var flag = await DbExecuteAsync(BatchInsertSql, insertList.ToArray()) > 0;
+            var flag = await DbExecuteAsync(BatchInsertSql, insertList.ToArray(), warnMs: warnMs) > 0;
             if (!flag)
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {insertList.ToJsonStr()} . ",
                     appendMessage: false);
@@ -52,11 +52,11 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="insertSql"></param>
         /// <param name="insertList"></param>
-        public virtual void BatchInsert(string insertSql, IList<TEntity> insertList)
+        public virtual void BatchInsert(string insertSql, IList<TEntity> insertList, long warnMs = -1)
         {
             if (insertList == null || !insertList.Any()) return;
 
-            var flag = DbExecute(insertSql, insertList.ToArray()) > 0;
+            var flag = DbExecute(insertSql, insertList.ToArray(), warnMs: warnMs) > 0;
             if (!flag)
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {insertList.ToJsonStr()} . ",
                     appendMessage: false);
@@ -66,7 +66,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// 按条一条一条插入
         /// </summary>
         /// <param name="insertList"></param>
-        public virtual void ListInsertOneByOne(IList<TEntity> insertList)
+        public virtual void ListInsertOneByOne(IList<TEntity> insertList, long warnMs = -1)
         {
             var insertSql =
                 $@"INSERT INTO {BaseTableName}({InsertTableColumns})
@@ -76,7 +76,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
             Parallel.ForEach(insertList, item =>
             {
-                var flag = DbExecute(insertSql, item) > 0;
+                var flag = DbExecute(insertSql, item, warnMs: warnMs) > 0;
                 if (!flag)
                     LogHelper.Warn($"Insert Into {BaseTableName} handler Failed ,entity is {item.ToJsonStr()} . ",
                         appendMessage: false);
@@ -89,12 +89,12 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="updateSql"></param>
         /// <param name="updateList"></param>
         /// <returns></returns>
-        public virtual bool BatchUpdate(string updateSql, IList<TEntity> updateList)
+        public virtual bool BatchUpdate(string updateSql, IList<TEntity> updateList, long warnMs = -1)
         {
             if (updateList == null || !updateList.Any()) return false;
             Parallel.ForEach(updateList, item =>
             {
-                var flag = DbExecute(updateSql, item) > 0;
+                var flag = DbExecute(updateSql, item, warnMs: warnMs) > 0;
                 if (!flag)
                     LogHelper.Warn($"Update {BaseTableName} handler Failed ,entity is {item.ToJsonStr()} . ",
                         appendMessage: false);

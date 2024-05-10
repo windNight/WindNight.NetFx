@@ -1,5 +1,6 @@
 ﻿using System.Net.Sockets;
 using Newtonsoft.Json.Extension;
+using WindNight.Core.SQL;
 using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Dapper.Mysql.@internal;
 using WindNight.Extension.Db.Extensions;
@@ -44,63 +45,63 @@ UPDATE {ToBeUpdateFiled}
 
         protected abstract string GetConnStr();
 
-        protected virtual string BaseTableName => typeof(TEntity).Name.ToLower();
+        protected virtual string BaseTableName => this.GenDefaultTableName<TEntity>(); // typeof(TEntity).Name.ToLower();
 
         protected virtual string DbConnectString => GetConnStr();
 
-        /// <summary>
-        /// 使用自定义连接
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="sqlFunc"></param>
-        /// <param name="connectString"></param>
-        /// <param name="sql"></param>
-        /// <param name="param"></param>
-        /// <param name="actionName"></param>
-        /// <returns></returns>
-        protected virtual T SqlTimer<T>(Func<string, string, object, T> sqlFunc, string connectString, string sql, object param = null,
-            string actionName = "")
-        {
-            var ticks = DateTime.Now.Ticks;
-            try
-            {
-                return sqlFunc(connectString, sql, param);
-            }
-            catch (Exception ex)
-            {
-                if (param is IEntity entity)
-                {
-                    LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}", ex);
-                }
-                else
-                {
-                    LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
-                }
+        ///// <summary>
+        ///// 使用自定义连接
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="sqlFunc"></param>
+        ///// <param name="connectString"></param>
+        ///// <param name="sql"></param>
+        ///// <param name="param"></param>
+        ///// <param name="actionName"></param>
+        ///// <returns></returns>
+        //protected virtual T SqlTimer<T>(Func<string, string, object, T> sqlFunc, string connectString, string sql, object param = null,
+        //    string actionName = "")
+        //{
+        //    var ticks = HardInfo.Now.Ticks;
+        //    try
+        //    {
+        //        return sqlFunc(connectString, sql, param);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (param is IEntity entity)
+        //        {
+        //            LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}", ex);
+        //        }
+        //        else
+        //        {
+        //            LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+        //        }
 
-            }
-            finally
-            {
-                try
-                {
-                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
-                    if (milliseconds > ConfigItems.DapperWarnMs)
-                    {
-                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+        //    }
+        //    finally
+        //    {
+        //        try
+        //        {
+        //            var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
+        //            if (milliseconds > ConfigItems.DapperWarnMs)
+        //            {
+        //                LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
 
-                    }
-                    else if (ConfigItems.OpenDapperLog)
-                    {
-                        LogHelper.Info($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
-                    }
-                }
-                catch
-                {
+        //            }
+        //            else if (ConfigItems.OpenDapperLog)
+        //            {
+        //                LogHelper.Info($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+        //            }
+        //        }
+        //        catch
+        //        {
 
-                }
-            }
+        //        }
+        //    }
 
-            return default;
-        }
+        //    return default;
+        //}
 
         /// <summary>
         ///  使用默认连接
@@ -112,9 +113,10 @@ UPDATE {ToBeUpdateFiled}
         /// <param name="actionName"></param>
         /// <returns></returns>
         protected virtual T SqlTimer<T>(Func<string, object, T> sqlFunc, string sql, object param = null,
-            string actionName = "")
+            string actionName = "", long warnMs = -1)
         {
-            var ticks = DateTime.Now.Ticks;
+
+            var ticks = HardInfo.Now.Ticks;
             try
             {
                 return sqlFunc(sql, param);
@@ -135,8 +137,9 @@ UPDATE {ToBeUpdateFiled}
             {
                 try
                 {
-                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
-                    if (milliseconds > ConfigItems.DapperWarnMs)
+                    var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
+                    warnMs = FixWarnMs(warnMs);
+                    if (milliseconds > warnMs)
                     {
                         LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
 
@@ -154,57 +157,63 @@ UPDATE {ToBeUpdateFiled}
             }
 
             return default;
+
+
         }
 
-        protected virtual async Task<T> SqlTimerAsync<T>(Func<string, string, object, Task<T>> sqlFunc, string connectString, string sql, object param = null,
-            string actionName = "")
-        {
-            var ticks = DateTime.Now.Ticks;
-            try
-            {
-                return await sqlFunc(connectString, sql, param);
-            }
-            catch (Exception ex)
-            {
-                if (param is IEntity entity)
-                {
-                    LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}", ex);
-                }
-                else
-                {
-                    LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
-                }
 
-            }
-            finally
-            {
-                try
-                {
-                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
-                    if (milliseconds > ConfigItems.DapperWarnMs)
-                    {
-                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+        //protected virtual async Task<T> SqlTimerAsync<T>(Func<string, string, object, Task<T>> sqlFunc, string connectString, string sql, object param = null,
+        //    string actionName = "", long warnMs = -1)
+        //{
+        //    var ticks = HardInfo.Now.Ticks;
+        //    try
+        //    {
+        //        return await sqlFunc(connectString, sql, param);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (param is IEntity entity)
+        //        {
+        //            LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}", ex);
+        //        }
+        //        else
+        //        {
+        //            LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+        //        }
 
-                    }
-                    else if (ConfigItems.OpenDapperLog)
-                    {
-                        LogHelper.Info(
-                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
-                    }
-                }
-                catch
-                {
+        //    }
+        //    finally
+        //    {
+        //        try
+        //        {
+        //            var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
+        //            warnMs = FixWarnMs(warnMs);
+        //            if (milliseconds > warnMs)
+        //            {
+        //                LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
 
-                }
-            }
+        //            }
+        //            else if (ConfigItems.OpenDapperLog)
+        //            {
+        //                LogHelper.Info(
+        //                    $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+        //            }
+        //        }
+        //        catch
+        //        {
 
-            return default;
-        }
+        //        }
+        //    }
+
+        //    return default;
+        //}
+
+
 
         protected virtual async Task<T> SqlTimerAsync<T>(Func<string, object, Task<T>> sqlFunc, string sql, object param = null,
-            string actionName = "")
+            string actionName = "", long warnMs = -1)
         {
-            var ticks = DateTime.Now.Ticks;
+            var ticks = HardInfo.Now.Ticks;
             try
             {
                 return await sqlFunc(sql, param);
@@ -224,8 +233,9 @@ UPDATE {ToBeUpdateFiled}
             {
                 try
                 {
-                    var milliseconds = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
-                    if (milliseconds > ConfigItems.DapperWarnMs)
+                    var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
+                    warnMs = FixWarnMs(warnMs);
+                    if (milliseconds > warnMs)
                     {
                         LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{DbConnectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
 
@@ -243,40 +253,41 @@ UPDATE {ToBeUpdateFiled}
             }
 
             return default;
+
         }
 
-        protected virtual void DoRetryWhenHandlerSocketException(Action action, string actionName, int retryCount = 3)
-        {
-            var runCount = 0;
-            var isRun = true;
-            while (isRun)
-                try
-                {
-                    runCount++;
-                    action.Invoke();
-                    if (runCount > 1) LogHelper.Warn($"[{actionName}] 经过[{runCount}]次重试后成功！");
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    if (ex is SocketException)
-                    {
-                        LogHelper.Warn($"[{actionName}] 第{runCount}次重试后失败并捕获异常SocketException！{ex.Message}", ex);
-                        if (runCount >= retryCount)
-                        {
-                            LogHelper.Error(
-                                $"[{actionName}] 第[{runCount}]次重试后达到重试次数上限[{retryCount}]次，将不再重试！{ex.Message}", ex);
-                            isRun = false;
-                        }
+        //protected virtual void DoRetryWhenHandlerSocketException(Action action, string actionName, int retryCount = 3)
+        //{
+        //    var runCount = 0;
+        //    var isRun = true;
+        //    while (isRun)
+        //        try
+        //        {
+        //            runCount++;
+        //            action.Invoke();
+        //            if (runCount > 1) LogHelper.Warn($"[{actionName}] 经过[{runCount}]次重试后成功！");
+        //            break;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            if (ex is SocketException)
+        //            {
+        //                LogHelper.Warn($"[{actionName}] 第{runCount}次重试后失败并捕获异常SocketException！{ex.Message}", ex);
+        //                if (runCount >= retryCount)
+        //                {
+        //                    LogHelper.Error(
+        //                        $"[{actionName}] 第[{runCount}]次重试后达到重试次数上限[{retryCount}]次，将不再重试！{ex.Message}", ex);
+        //                    isRun = false;
+        //                }
 
-                        Thread.Sleep(1000 * 1);
-                        continue;
-                    }
+        //                Thread.Sleep(1000 * 1);
+        //                continue;
+        //            }
 
-                    isRun = false;
-                    LogHelper.Error($"[{actionName}] 捕获未知异常，将不再重试！{ex.Message}", ex);
-                }
-        }
+        //            isRun = false;
+        //            LogHelper.Error($"[{actionName}] 捕获未知异常，将不再重试！{ex.Message}", ex);
+        //        }
+        //}
 
 
     }
