@@ -1,7 +1,7 @@
 ﻿namespace WindNight.Core.SQL.Abstractions
 {
 
-    public interface IEntity
+    public interface IEntity : ICanPageEntity
     {
     }
 

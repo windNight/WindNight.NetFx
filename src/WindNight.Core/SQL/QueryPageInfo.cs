@@ -3,7 +3,22 @@
 namespace WindNight.Core.SQL
 {
 
-    public class QueryPageInfo : IQueryPageInfo
+
+    public class QueryPageBase : IQueryPageBase
+    {
+        /// <summary>
+        ///     指定当前为第几页
+        /// </summary>
+        public int PageIndex { get; set; }
+
+        /// <summary>
+        ///     每页多少条记录
+        /// </summary>
+        public int PageSize { get; set; }
+
+    }
+
+    public class QueryPageInfo : QueryPageBase, IQueryPageInfo
     {
         /// <summary>
         ///     分页信息实例
@@ -43,21 +58,36 @@ namespace WindNight.Core.SQL
         ///     分页信息实例
         /// </summary> 
         /// <param name="pageInfo"> <see cref="IQueryPageBase"/> </param>
-        public static QueryPageInfo GenQueryPageInfo<T>(IQueryPageBase pageInfo)
-            where T : ICreateEntityBase
+        public static QueryPageInfo GenQueryPageInfoForCreateEntity<TEntity>(IQueryPageBase pageInfo)
+            where TEntity : class, ICreateEntityBase, IEntity, new()
 
         {
-            return new QueryPageInfo
+            return new QueryPageInfo(pageInfo)
             {
-                TableName = typeof(T).Name,
-                PageIndex = pageInfo.PageIndex,
-                PageSize = pageInfo.PageSize,
+                TableName = pageInfo.GenDefaultTableName<TEntity>(),
                 Fields = "*",
-                OrderField = "CreateUnixTime DESC" 
+                OrderField = "CreateUnixTime DESC"
             };
 
 
         }
+        /// <summary>
+        ///     分页信息实例
+        /// </summary> 
+        /// <param name="pageInfo"> <see cref="IQueryPageBase"/> </param>
+        public static QueryPageInfo GenQueryPageInfo<TEntity>(IQueryPageBase pageInfo)
+            where TEntity : class, ICanPageEntity, IEntity, new()
+
+        {
+            return new QueryPageInfo(pageInfo)
+            {
+                TableName = pageInfo.GenDefaultTableName<TEntity>(),
+                Fields = "*",
+                OrderField = "Id DESC"
+            };
+        }
+
+
         /// <summary>
         ///     分页信息实例
         /// </summary>
@@ -99,14 +129,5 @@ namespace WindNight.Core.SQL
         /// </summary>
         public string OrderField { get; set; } = string.Empty;
 
-        /// <summary>
-        ///     指定当前为第几页
-        /// </summary>
-        public int PageIndex { get; set; }
-
-        /// <summary>
-        ///     每页多少条记录
-        /// </summary>
-        public int PageSize { get; set; }
     }
 }

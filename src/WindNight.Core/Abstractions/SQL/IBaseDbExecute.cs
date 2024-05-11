@@ -9,31 +9,11 @@ namespace WindNight.Core.SQL.Abstractions
         #region PagedList
 
         Task<IPagedList<T>> PagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo,
-            IDictionary<string, object> parameters) where T : class, new();
+            IDictionary<string, object> parameters, long warnMs = -1) where T : class, new();
 
 
         IPagedList<T> PagedList<T>(string connStr, IQueryPageInfo sqlPageInfo,
-          IDictionary<string, object> parameters) where T : class, new();
-
-
-        //IPagedList<T> DbPagedList<T>(int pageIndex, int pageSize, string condition,
-        //    string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "")
-        //    where T : class, new();
-
-        //IPagedList<T> DbPagedList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
-        //    where T : class, new();
-
-        //Task<IPagedList<T>> DbPagedListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters)
-        //    where T : class, new();
-
-        //Task<IPagedList<T>> DbPagedListAsync<T>(
-        //    int pageIndex, int pageSize,
-        //    string condition, string orderBy,
-        //    IDictionary<string, object> parameters = null, string queryTableName = "")
-        //    where T : class, new();
-
-
-
+          IDictionary<string, object> parameters, long warnMs = -1) where T : class, new();
 
 
         #endregion
