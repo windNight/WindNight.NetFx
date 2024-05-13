@@ -3,8 +3,9 @@
 
     public interface IQueryPageBase
     {
-        public int PageIndex { get; set; }
-        public int PageSize { get; set; }
+        int PageIndex { get; set; }
+        int PageSize { get; set; }
+        int IndexFrom { get; set; }
     }
 
     public interface IQueryPageInfo : IQueryPageBase

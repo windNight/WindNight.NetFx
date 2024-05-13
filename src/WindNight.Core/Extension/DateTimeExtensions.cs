@@ -24,7 +24,7 @@ namespace System
         ///     Simple example to use ConvertToUnixTime :
         ///     <code lang="c#">
         ///     <![CDATA[   
-        ///      DateTime.Now.ConvertToUnixTime();
+        ///      HardInfo.Now.ConvertToUnixTime();
         ///     ]]>
         /// </code>
         /// </example>
@@ -64,7 +64,7 @@ namespace System
         ///     Simple example to use ConvertToTimeUseUnix :
         ///     <code lang="c#">
         ///         <![CDATA[   
-        ///          var ts = DateTime.Now.ConvertToUnixTime();
+        ///          var ts = HardInfo.Now.ConvertToUnixTime();
         ///          var dateTime = ts.ConvertToTimeUseUnix();
         ///         ]]>
         /// </code>
@@ -389,7 +389,7 @@ namespace System
 
         public static List<T> GeneratorDateSelfList<T>(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false, Func<DateTime, T> func = null)
         {
-            var endDate = endDateParam ?? DateTime.Now.Date;
+            var endDate = endDateParam ?? HardInfo.Now.Date;
 
             if (withLastDay)
             {
@@ -412,7 +412,7 @@ namespace System
         {
 
             beginDate = beginDate.FirstDayOfMonth();
-            var endDate = endDateParam ?? DateTime.Now.Date;
+            var endDate = endDateParam ?? HardInfo.Now.Date;
             if (withLastDay)
             {
                 endDate = endDate.AddDays(1);
@@ -460,10 +460,10 @@ namespace System
             var beginDate = beginDateInt.TryToDateTime();
             if (beginDate == DefaultDateTime) return new List<T>();
 
-            var endDate = endDateInt == 0 ? DateTime.Now.Date : endDateInt.TryToDateTime();
+            var endDate = endDateInt == 0 ? HardInfo.Now.Date : endDateInt.TryToDateTime();
             if (endDate == DefaultDateTime)
             {
-                endDate = DateTime.Now.Date;
+                endDate = HardInfo.Now.Date;
             }
             return beginDate.GeneratorDateSelfList(endDate, withLastDay, func);
 
@@ -486,7 +486,7 @@ namespace System
 
         public static List<int> GeneratorDateWeekList(this DateTime beginDate, DateTime? endDateParam = null)
         {
-            var endDate = endDateParam ?? DateTime.Now.Date;
+            var endDate = endDateParam ?? HardInfo.Now.Date;
 
             if (beginDate > endDate)
             {

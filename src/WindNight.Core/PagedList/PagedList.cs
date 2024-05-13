@@ -1,9 +1,23 @@
 ﻿using System.Linq;
+using WindNight.Core.SQL.Abstractions;
 
 namespace System.Collections.Generic
 {
     public class PagedListExtension
     {
+        public static IPagedList<T> GeneratorPagedList<T>(IQueryPageBase pagedInfo, int pageCount, IList<T> list)
+        {
+            return new PagedList<T>
+            {
+                PageIndex = pagedInfo.PageIndex,
+                PageSize = pagedInfo.PageSize,
+                IndexFrom = pagedInfo.IndexFrom,
+                RecordCount = list.Count,
+                PageCount = pageCount,
+                List = list
+            };
+        }
+
         public static IPagedList<T> GeneratorPagedList<T>(int pageIndex, int pageSize, int pageCount, IList<T> list)
         {
             return new PagedList<T>
@@ -32,6 +46,20 @@ namespace System.Collections.Generic
         }
 
 
+        public static IPagedList<T> GeneratorPagedList<T>(IQueryPageBase pagedInfo, int recordCount, int pageCount, IList<T> list)
+        {
+            return new PagedList<T>
+            {
+                PageIndex = pagedInfo.PageIndex,
+                PageSize = pagedInfo.PageSize,
+                IndexFrom = pagedInfo.IndexFrom,
+                RecordCount = recordCount,
+                PageCount = pageCount,
+                List = list
+            };
+        }
+
+
         public static IPagedList<TResult> GeneratorPagedList<TSource, TResult>(IPagedList<TSource> source,
             Func<IEnumerable<TSource>, IEnumerable<TResult>> converter)
         {
@@ -45,11 +73,19 @@ namespace System.Collections.Generic
                 List = new List<TResult>(converter(source.List))
             };
         }
+
     }
 
 
     public class PagedList<T> : IPagedList<T>
     {
+
+        internal PagedList(IEnumerable<T> source, IQueryPageBase pagedInfo)
+            : this(source, pagedInfo?.PageIndex ?? 1, pagedInfo?.PageSize ?? 20, pagedInfo?.IndexFrom ?? 1)
+        {
+
+        }
+
         internal PagedList(IEnumerable<T> source, int pageIndex, int pageSize, int indexFrom)
         {
             if (indexFrom > pageIndex)
@@ -102,6 +138,14 @@ namespace System.Collections.Generic
 
     internal class PagedList<TSource, TResult> : IPagedList<TResult>
     {
+
+
+        public PagedList(IEnumerable<TSource> source, Func<IEnumerable<TSource>, IEnumerable<TResult>> converter, IQueryPageBase pagedInfo)
+        : this(source, converter, pagedInfo?.PageIndex ?? 1, pagedInfo?.PageSize ?? 20, pagedInfo?.IndexFrom ?? 1)
+        {
+
+        }
+
         public PagedList(IEnumerable<TSource> source, Func<IEnumerable<TSource>, IEnumerable<TResult>> converter,
             int pageIndex, int pageSize, int indexFrom)
         {
@@ -175,5 +219,6 @@ namespace System.Collections.Generic
         {
             return new PagedList<TSource, TResult>(source, converter);
         }
+
     }
 }

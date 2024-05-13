@@ -16,6 +16,9 @@ namespace WindNight.Core.SQL
         /// </summary>
         public int PageSize { get; set; }
 
+        /// <summary> 从第几页开始 默认 1 大部分都是1   </summary>
+        public int IndexFrom { get; set; } = 1;
+
     }
 
     public class QueryPageInfo : QueryPageBase, IQueryPageInfo

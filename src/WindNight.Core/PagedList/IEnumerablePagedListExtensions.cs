@@ -1,9 +1,28 @@
-﻿namespace System.Collections.Generic
+﻿using WindNight.Core.SQL.Abstractions;
+
+namespace System.Collections.Generic
 {
     /// <summary>
     /// </summary>
     public static class IEnumerablePagedListExtensions
     {
+        /// <summary>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="pagedInfo"></param> 
+        /// <returns></returns>
+        public static IPagedList<T> ToPagedList<T>(this IEnumerable<T> source, IQueryPageBase pagedInfo)
+        {
+            return new PagedList<T>(source, pagedInfo);
+        }
+
+        public static IPagedList<TResult> ToPagedList<TSource, TResult>(this IEnumerable<TSource> source,
+            Func<IEnumerable<TSource>, IEnumerable<TResult>> converter, IQueryPageBase pagedInfo)
+        {
+            return new PagedList<TSource, TResult>(source, converter, pagedInfo);
+        }
+
         /// <summary>
         /// </summary>
         /// <typeparam name="T"></typeparam>
