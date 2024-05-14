@@ -98,7 +98,7 @@ namespace WindNight.Core.Tests
         public void CalcDateRangeByWeekTest(int week, int year, DateTime expectBeginDate, DateTime expectEndDate)
         {
 
-            var range = DateTime.Now.CalcDateRangeByWeek(week, year);
+            var range = HardInfo.Now.CalcDateRangeByWeek(week, year);
             Assert.True(expectBeginDate == range.beginDate, $"CalcDateRangeByWeek({week},{year}).beginDate({range.beginDate:yyyyMMdd}) !=expectBeginDate({expectBeginDate:yyyyMMdd})");
             Assert.True(expectBeginDate == range.beginDate, $"CalcDateRangeByWeek({week},{year}).beginDate({range.endDate:yyyyMMdd}) !=expectEndDate({expectEndDate:yyyyMMdd})");
             Output($"CalcDateRangeByWeek({week},{year})=>(beginDate:{range.beginDate:yyyyMMdd},endDate:{range.endDate:yyyyMMdd})");
@@ -111,7 +111,7 @@ namespace WindNight.Core.Tests
         public void GeneratorDateIntListTest(DateTime beginDate)
         {
             var expectBeginDateInt = beginDate.ToDateInt();
-            var expectEndDateInt = DateTime.Now.ToDateInt();
+            var expectEndDateInt = HardInfo.Now.ToDateInt();
             var list = beginDate.GeneratorDateIntList(withLastDay: true);
             var rltB = list.FirstOrDefault();
             var rltE = list.LastOrDefault();
@@ -127,7 +127,7 @@ namespace WindNight.Core.Tests
         [InlineData(20220201)]
         public void GeneratorDateIntListV2Test(int beginDateInt)
         {
-            var expectEndDateInt = DateTime.Now.ToDateInt();
+            var expectEndDateInt = HardInfo.Now.ToDateInt();
             var list = beginDateInt.GeneratorDateIntList(withLastDay: true);
             var rltB = list.FirstOrDefault();
             var rltE = list.LastOrDefault();

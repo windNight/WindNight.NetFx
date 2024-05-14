@@ -39,7 +39,7 @@ internal static class RecordLog
             //    CtRabbitMQLogger.LogCustom.Log(level, msg, ex);
             //else
             //{
-            var dt = DateTime.Now;
+            var dt = HardInfo.Now;
             var path = AppDomain.CurrentDomain.BaseDirectory + "Logs/RabbitMQLog";
             var filename = path + "/" + (dt.Year * 10000 + dt.Month * 100 + dt.Day) + ".txt";
 

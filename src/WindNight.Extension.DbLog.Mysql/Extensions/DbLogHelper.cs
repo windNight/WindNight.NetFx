@@ -196,7 +196,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     return;
                 }
 
-                var now = DateTime.Now;
+                var now = HardInfo.Now;
 
                 var messageEntity = new SysLogs
                 {

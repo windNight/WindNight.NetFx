@@ -388,7 +388,7 @@ public class Producer // : IDisposable
     {
         try
         {
-            var now = DateTime.Now;
+            var now = HardInfo.Now;
             var msgLocal = new MessageLocal
             {
                 Message = message,

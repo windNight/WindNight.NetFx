@@ -110,8 +110,8 @@ namespace ConsoleExamples_NetCore5
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                Console.WriteLine($"Hello I'm {nameof(TestBackgroundService)} {DateTime.Now:yyyy-MM-dd HH:mm:sss}");
-                Console.WriteLine($"AppSettings is {Ioc.GetService<IConfigService>()?.GetFileConfig<AppSettings>("AppSettings", false)}  {DateTime.Now:yyyy-MM-dd HH:mm:sss}");
+                Console.WriteLine($"Hello I'm {nameof(TestBackgroundService)} {HardInfo.Now:yyyy-MM-dd HH:mm:sss}");
+                Console.WriteLine($"AppSettings is {Ioc.GetService<IConfigService>()?.GetFileConfig<AppSettings>("AppSettings", false)}  {HardInfo.Now:yyyy-MM-dd HH:mm:sss}");
                 Thread.Sleep(1000 * 5);
 
 

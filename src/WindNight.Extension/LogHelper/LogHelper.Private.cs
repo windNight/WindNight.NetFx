@@ -112,7 +112,7 @@ namespace WindNight.LogExtension
             {
                 try
                 {
-                    var now = DateTime.Now;
+                    var now = HardInfo.Now;
                     var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "LogException");
                     var filePath = Path.Combine(dir, now.FormatDateTime("yyyyMMdd"), "err.log");
                     if (!Directory.Exists(dir))

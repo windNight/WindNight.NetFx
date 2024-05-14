@@ -19,8 +19,8 @@ public class TestProducerBackgroundService : BackgroundService
             while (!stoppingToken.IsCancellationRequested)
                 try
                 {
-                    var message = $"TestProducerSvr:sendtestmsg:{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
-                    var routingKey = $"engrid.test.testproducersvr.{DateTime.Now:yyyMMdd}";
+                    var message = $"TestProducerSvr:sendtestmsg:{HardInfo.Now:yyyy-MM-dd HH:mm:ss}";
+                    var routingKey = $"engrid.test.testproducersvr.{HardInfo.Now:yyyMMdd}";
                     _testProducer.Send(message, routingKey);
                     LogHelper.Info($"publish:message->{message} \r\n routingKey->{routingKey}");
                     Thread.Sleep(TimeSpan.FromSeconds(5));

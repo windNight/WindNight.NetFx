@@ -304,8 +304,8 @@ Background
 
         protected void Output(string message)
         {
-            Console.WriteLine($"Console:{DateTime.Now:yyyy-MM-dd HH:mm:sss}  {message}");
-            OutputHelper.WriteLine($"ITestOutputHelper:{DateTime.Now:yyyy-MM-dd HH:mm:sss}  {message}");
+            Console.WriteLine($"Console:{HardInfo.Now:yyyy-MM-dd HH:mm:sss}  {message}");
+            OutputHelper.WriteLine($"ITestOutputHelper:{HardInfo.Now:yyyy-MM-dd HH:mm:sss}  {message}");
 
         }
 

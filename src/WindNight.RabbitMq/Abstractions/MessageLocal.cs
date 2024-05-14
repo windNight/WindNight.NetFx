@@ -50,7 +50,7 @@ public class MessageLocal
         get
         {
             // 时间超过36小时
-            if (DateTime.Now.ConvertToUnixTime() - CreateTime > DefaultGiveUpTimeOut) return true;
+            if (HardInfo.Now.ConvertToUnixTime() - CreateTime > DefaultGiveUpTimeOut) return true;
             return false;
         }
     }

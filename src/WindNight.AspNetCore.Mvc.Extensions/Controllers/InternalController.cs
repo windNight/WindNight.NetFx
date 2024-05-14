@@ -74,7 +74,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             }
             return new
             {
-                DateTime = DateTime.Now,
+                DateTime = HardInfo.Now,
                 ConfigItems.SysAppId,
                 ConfigItems.SysAppCode,
                 ConfigItems.SysAppName,
@@ -95,7 +95,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             }
             return new
             {
-                DateTime = DateTime.Now,
+                DateTime = HardInfo.Now,
                 AssemblyVersion = typeof(InternalController).Assembly?.GetName()?.Version?.ToString()
             };
         }
@@ -110,7 +110,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             }
             return new
             {
-                DateTime = DateTime.Now,
+                DateTime = HardInfo.Now,
                 AssemblyVersions = GetAssemblyVersions()
             };
         }

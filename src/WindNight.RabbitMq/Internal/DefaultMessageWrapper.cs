@@ -151,7 +151,7 @@ internal class DefaultMessageWrapper : IMessageWrapper
 
         lock (lockObj)
         {
-            var now = DateTime.Now.ConvertToUnixTime();
+            var now = HardInfo.Now.ConvertToUnixTime();
             if (now - lastReadEmptyTime > 30) //30秒内不重复读空文件
             {
                 ReadFromFile();

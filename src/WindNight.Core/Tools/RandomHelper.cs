@@ -48,7 +48,7 @@ namespace System
             var rand = new Random();
             for (var i = 0; i < CodeCount; i++)
             {
-                if (temp != -1) rand = new Random(temp * i * (int) DateTime.Now.Ticks);
+                if (temp != -1) rand = new Random(temp * i * (int) HardInfo.Now.Ticks);
 
                 var t = rand.Next(allCharArray.Length - 1);
 
@@ -131,7 +131,7 @@ namespace System
         public static string GenerateCheckCodeNum(int codeCount)
         {
             var str = string.Empty;
-            var num2 = DateTime.Now.Ticks + rep;
+            var num2 = HardInfo.Now.Ticks + rep;
             rep++;
             var random = new Random((int) ((ulong) num2 & 0xffffffffL) | (int) (num2 >> rep));
             for (var i = 0; i < codeCount; i++)
@@ -147,7 +147,7 @@ namespace System
         public static string GenerateCheckCode(int codeCount)
         {
             var str = string.Empty;
-            var num2 = DateTime.Now.Ticks + rep;
+            var num2 = HardInfo.Now.Ticks + rep;
             rep++;
             var random = new Random((int) ((ulong) num2 & 0xffffffffL) | (int) (num2 >> rep));
             for (var i = 0; i < codeCount; i++)

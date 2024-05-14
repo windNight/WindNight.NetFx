@@ -41,7 +41,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
 
             var message = formatter(state, exception);
 
-            var now = DateTime.Now;
+            var now = HardInfo.Now;
             if (!string.IsNullOrEmpty(message) || exception != null)
             {
                 if (state is StateDataEntry stateEntry)
@@ -92,7 +92,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
 
         private SysLogs FixLogMessage<TState>(LogLevel logLevel, TState state, string message)
         {
-            var now = DateTime.Now;
+            var now = HardInfo.Now;
             var logTimestamps = now.ConvertToUnixTime();
             var logDate = now.ToString("yyyyMMdd");
             var logMsg = new SysLogs

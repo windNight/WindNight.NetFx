@@ -160,7 +160,7 @@ namespace WindNight.Core.Tools
         private static void DoWatcherAction(Action action, string watcherName, bool appendMessage, int warnMiSeconds,
             bool isThrow, out long realTs)
         {
-            var ticks = DateTime.Now.Ticks;
+            var ticks = HardInfo.Now.Ticks;
             try
             {
                 action.Invoke();
@@ -179,7 +179,7 @@ namespace WindNight.Core.Tools
             finally
             {
                 if (watcherName.IsNullOrEmpty()) watcherName = nameof(action);
-                realTs = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                realTs = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
                 var fwarnMiS = FixWarnMiSeconds(warnMiSeconds);
                 if (realTs > fwarnMiS)
                     LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage, millisecond: realTs);
@@ -192,7 +192,7 @@ namespace WindNight.Core.Tools
             bool isThrow, out long realTs)
         {
             T rlt;
-            var ticks = DateTime.Now.Ticks;
+            var ticks = HardInfo.Now.Ticks;
             // TODO Try to get real name of this func
             if (watcherName.IsNullOrEmpty()) watcherName = nameof(func);
             try
@@ -213,7 +213,7 @@ namespace WindNight.Core.Tools
             }
             finally
             {
-                realTs = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                realTs = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
                 var fwarnMiS = FixWarnMiSeconds(warnMiSeconds);
                 if (realTs > fwarnMiS)
                     LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage, millisecond: realTs);
@@ -230,7 +230,7 @@ namespace WindNight.Core.Tools
             bool isThrow)
         {
             T rlt;
-            var ticks = DateTime.Now.Ticks;
+            var ticks = HardInfo.Now.Ticks;
             // TODO Try to get real name of this func
             if (watcherName.IsNullOrEmpty()) watcherName = nameof(func);
             try
@@ -251,7 +251,7 @@ namespace WindNight.Core.Tools
             }
             finally
             {
-                var realTs = (long)TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
+                var realTs = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
                 var fwarnMiS = FixWarnMiSeconds(warnMiSeconds);
                 if (realTs > fwarnMiS)
                     LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage, millisecond: realTs);

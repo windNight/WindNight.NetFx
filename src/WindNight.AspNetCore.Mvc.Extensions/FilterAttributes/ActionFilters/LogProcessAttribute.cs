@@ -54,13 +54,13 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
         {
             try
             {
-                CurrentItem.AddItem(WebConst.ENDTIME, DateTime.Now);
+                CurrentItem.AddItem(WebConst.ENDTIME, HardInfo.Now);
 
                 var result = context.Result;
                 CurrentItem.AddItem(WebConst.RESPONSE, result);
                 var request = context.HttpContext.Request;
                 DateTime beginTime = CurrentItem.GetItem<DateTime>(WebConst.BEGINTIME);
-                var ms = (long)(DateTime.Now - beginTime).TotalMilliseconds;
+                var ms = (long)(HardInfo.Now - beginTime).TotalMilliseconds;
 
                 if (ms > ConfigItems.ApiWarningMis)
                     LogHelper.Warn($"请求共耗时:{ms} ms ", millisecond: ms);
@@ -79,7 +79,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
         protected virtual void AppendCommonContext(ActionExecutingContext context)
         {
             CurrentItem.AddItem(WebConst.HEARDER, context.HttpContext.Request.Headers);
-            CurrentItem.AddItem(WebConst.BEGINTIME, DateTime.Now);
+            CurrentItem.AddItem(WebConst.BEGINTIME, HardInfo.Now);
             if (!CurrentItem.Items.ContainsKey(WebConst.SERIZLNUMBER))
                 CurrentItem.AddItem(WebConst.SERIZLNUMBER, $"{GuidHelper.GenerateOrderNumber()}");
 
