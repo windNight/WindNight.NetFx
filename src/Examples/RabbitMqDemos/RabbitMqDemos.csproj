@@ -27,4 +27,11 @@
 		</None>
 	</ItemGroup>
 
+
+	<ItemGroup>
+	  <None Update="Config\rabbitMqConfigV2.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

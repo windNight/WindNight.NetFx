@@ -13,9 +13,9 @@
 	<ItemGroup>
 		<!--<PackageReference Include="WindNight.Config" Version="1.0.3.2" />-->
 		<!--<PackageReference Include="WindNight.Core" Version="1.0.3.1" />-->
-		<PackageReference Include="WindNight.Extension" Version="1.0.3.4-beta.23121201" />
+		<PackageReference Include="WindNight.Extension" Version="1.0.3.6-beta.240425803" />
 		<PackageReference Include="WindNight.ParserIp.Ip2Region" Version="1.0.1.1" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
 		<!--<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />-->
 		<PackageReference Include="Phonedata_NetCore" Version="1.0.0" />
 	</ItemGroup>

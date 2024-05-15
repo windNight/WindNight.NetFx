@@ -63,10 +63,8 @@ namespace RepoDemos.Internal
             {
                 if (isThrow)
                 {
-                    // LogHelper.Error($"GetAppConfigValue(keyName:{keyName},defaultValue:{defaultValue},isThrow:{isThrow}) -> configValue({configValue})", ex);
                     throw;
                 }
-                // LogHelper.Warn($"GetAppConfigValue(keyName:{keyName},defaultValue:{defaultValue},isThrow:{isThrow}) -> configValue({configValue}) ", ex);
                 return defaultValue;
             }
         }
@@ -105,11 +103,9 @@ namespace RepoDemos.Internal
             {
                 if (isThrow)
                 {
-                    //  LogHelper.Error($"GetSection({sectionKey}) configValue({configValue}) defaultValue({defaultValue}) isThrow({isThrow}) handler error {ex.Message}", ex);
                     throw;
                 }
 
-                //LogHelper.Warn($"GetSection({sectionKey})  configValue({configValue}) defaultValue({defaultValue}) isThrow({isThrow})  handler error {ex.Message}", ex);
             }
 
             return defaultValue;

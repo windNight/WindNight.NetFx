@@ -2,9 +2,8 @@
 using System.Collections.Concurrent;
 using System.Text.Extension;
 using Newtonsoft.Json.Extension;
-using WindNight.Extension.Internals;
-using System.Threading;
-using WindNight.Core.Extension;
+using WindNight.Extension.Internals; 
+using WindNight.Core.Abstractions;
 
 
 #if NET45
@@ -14,9 +13,73 @@ using HttpContext = WindNight.Extension.HttpContextExtension;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
+using System.Threading;
+using WindNight.Core.Extension;
 #endif
+
+
+
 namespace WindNight.Extension
 {
+
+    public class DefaultCurrentContext : ICurrentContext
+    {
+
+        public string SerialNumber => CurrentItem.GetSerialNumber;
+
+        public
+#if NET45
+            IDictionary
+#else
+
+                    IDictionary<object, object>
+#endif
+                  CurrentItems => CurrentItem.Items;
+
+        public T GetItem<T>(string key)
+        {
+            return CurrentItem.GetItem<T>(key);
+        }
+
+        public void AddItem(string key, object value)
+        {
+            CurrentItem.AddItem(key, value);
+        }
+
+        public void AddItemIfNotExits(string key, object value)
+        {
+            CurrentItem.AddItemIfNotExits(key, value);
+        }
+
+#if !NET45
+
+        public T GetItemsFromAsyncLocal<T>(string key, T defaultValue = default)
+        {
+            var cacheValue = CurrentItem.GetItemsFromAsyncLocal(key);
+            return cacheValue.To<T>();
+        }
+
+
+        public T SetItems2AsyncLocal<T>(string key, T setValue = default, bool isForce = false)
+        {
+            try
+            {
+                CurrentItem.SetItems2AsyncLocal(key, setValue, isForce);
+                return setValue;
+            }
+            catch (Exception e)
+            {
+                return default;
+            }
+
+        }
+
+#endif
+
+    }
+
+
+
     // 建议在web项目中使用
     public class CurrentItem : IDisposable
     {

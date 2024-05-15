@@ -8,17 +8,7 @@ namespace RepoDemos
     public abstract class DbBase<TEntity> : DbBase<TEntity, int>
         where TEntity : class, IEntity<int>, new()
     {
-        //        protected string DefaultUpdateInfoFiled =
-        //            "UpdateUserId=@UpdateUserId,UpdateUnixTime=@UpdateUnixTime,UpdateDate=@UpdateDate";
-
-        //        protected virtual string ToBeUpdateFiled { get; }
-
-        //        protected string InsertOrUpdateSql => @$"INSERT INTO
-        //{BaseTableName}({InsertTableColumns})
-        //VALUES ({InsertTableColumnValues})
-        //ON DUPLICATE KEY
-        //UPDATE {ToBeUpdateFiled}
-        //;";
+        
 
     }
 
@@ -30,7 +20,7 @@ namespace RepoDemos
         where TEntity : class, IEntity<TId>, new()
         where TId : IEquatable<TId>, IComparable<TId>
     {
-        protected override string Db => "engridplcdb";
+        protected override string Db => "db1";
 
         protected override string QueryAllSqlStr => $"SELECT * FROM {BaseTableName} WHERE IsDeleted=0;";
 
@@ -45,7 +35,7 @@ namespace RepoDemos
         where TEntity : class, ITreeEntity<int>, IEntity<int>, new()
     {
 
-        protected override string Db => "testdb1";
+        protected override string Db => "db1";
     }
 
     public abstract partial class DbTreeBase<TEntity, TId>

@@ -75,4 +75,12 @@ namespace WindNight.Core.Abstractions
         T GetFileConfig<T>(string fileName, bool isThrow = true) where T : new();
 
     }
+
+
+
+    public interface IConfigItems
+    {
+        
+    }
+
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using WindNight.Core.SQL;
-using WindNight.Extension.Dapper.Abstractions.DB;
+using WindNight.Extension.Db.Abstractions;
 using WindNight.Extension.Dapper.Mysql;
 
 namespace RepoDemos

@@ -15,7 +15,7 @@
 
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Dapper\WindNight.Extension.Dapper\WindNight.Extension.Dapper.csproj" />
+		<ProjectReference Include="..\Dapper\WindNight.Extension.Dapper.Mysql\WindNight.Extension.Dapper.Mysql.csproj" />
 		<ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />
 	</ItemGroup>
 

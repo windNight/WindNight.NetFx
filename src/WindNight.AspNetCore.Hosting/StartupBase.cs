@@ -9,9 +9,11 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Extensions;
 using System;
+using System.Collections.Generic;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using WindNight.ConfigCenter.Extension;
 
 namespace Microsoft.AspNetCore.Hosting.WnExtensions
 {
@@ -20,11 +22,14 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         protected abstract string NamespaceName { get; }
         protected abstract void UseBizConfigure(IApplicationBuilder app);
         protected abstract void ConfigBizServices(IServiceCollection services);
-        protected virtual StaticFileOptions SelfFileOptions { get; } = null;
+        //protected virtual StaticFileOptions SelfFileOptions { get; } = null;
+        protected virtual Func<IEnumerable<StaticFileOptions>> SelfFileOptions { get; } = null;
         protected virtual Action<IEndpointRouteBuilder> SelfRouter { get; } = null;
         protected virtual Action<SwaggerOptions> SelfSwaggerOptionsAction { get; } = null;
         protected virtual Action<SwaggerUIOptions> SelfSwaggerUIOptionsAction { get; private set; } = null;
         protected virtual Action<SwaggerGenOptions> SelfSwaggerGenOptionsAction { get; private set; } = null;
+
+        protected virtual Func<IEnumerable<Type>> ActionFiltersFunc { get; } = null;
 
         // protected virtual Action<Mvc.MvcJsonOptions>? mvcJsonOption { get; } = null;
 
@@ -68,7 +73,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         {
             var env = Ioc.GetService<IWebHostEnvironment>();
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
-            SelfSwaggerUIOptionsAction ??= (opt => opt.DefaultModelsExpandDepth(-1)); 
+            SelfSwaggerUIOptionsAction ??= (opt => opt.DefaultModelsExpandDepth(-1));
             app.UseSwaggerConfig(NamespaceName,
                 swaggerOptionsAction: SelfSwaggerOptionsAction,
                 swaggerUIOptionsAction: SelfSwaggerUIOptionsAction);
@@ -87,15 +92,20 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
         protected virtual IApplicationBuilder UseStaticFiles(IApplicationBuilder app)
         {
-            if (SelfFileOptions == null)
-                app.UseStaticFiles();
-            else
+            app.UseStaticFiles();
+
+            if (SelfFileOptions != null)
             {
-                app.UseStaticFiles(SelfFileOptions);
+                var selfConfigs = SelfFileOptions.Invoke();
+                foreach (var item in selfConfigs)
+                {
+                    app.UseStaticFiles(item);
+                }
             }
 
             return app;
         }
+
         protected virtual IApplicationBuilder UseEndpoints(IApplicationBuilder app)
         {
             app.UseEndpoints(endpoints =>
@@ -113,10 +123,21 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             IConfiguration configuration)
         {
             services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
-            services.AddMvcBuilderWithDefaultFilters();
-
-            services.AddSwaggerConfig(NamespaceName, configuration, swaggerGenOptionsAction: SelfSwaggerGenOptionsAction);
+            if (ActionFiltersFunc != null)
+            {
+                services.AddMvcBuilderWithSelfFilters(ActionFiltersFunc.Invoke());
+            }
+            else
+            {
+                services.AddMvcBuilderWithDefaultFilters();
+            }
+            var appName = configuration.GetAppConfigValue("AppName", "");
+            var appCode = configuration.GetAppConfigValue("AppCode", "");
+            var prefix = $"{appName}[{appCode}] ";
+            var title = $"{prefix}{NamespaceName}";
+            services.AddSwaggerConfig(title, configuration, swaggerGenOptionsAction: SelfSwaggerGenOptionsAction);
             return services;
+
         }
     }
 }

@@ -15,6 +15,16 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             _httpContextAccessor = httpContextAccessor;
         }
+        /// <summary>
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("check/ips")]
+        [NonAuth]
+        [ClearResult]
+        public object HealthCheckIps()
+        {
+            return _httpContextAccessor.HttpContext.GetClientIps();
+        }
 
         /// <summary>
         /// </summary>
