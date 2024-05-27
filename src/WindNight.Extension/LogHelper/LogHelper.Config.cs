@@ -83,7 +83,11 @@ namespace WindNight.LogExtension
 #endif
                 if (configService != null)
                 {
-                    return configService.GetAppSetting(configKey, defaultValue, isThrow);
+                    var configValue = configService.GetAppSetting(configKey, defaultValue, isThrow);
+                    if (!configValue.IsNullOrEmpty())
+                    {
+                        return configValue;
+                    }
                 }
 
                 return defaultValue;

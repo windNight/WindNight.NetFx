@@ -5,7 +5,7 @@ using System.Linq;
 using WindNight.Core.Abstractions;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
-namespace Microsoft.AspNetCore.WindNight.Hosting.Internals
+namespace Microsoft.AspNetCore.WindNight.Hosting.@internal
 {
     internal static class LogHelper
     {

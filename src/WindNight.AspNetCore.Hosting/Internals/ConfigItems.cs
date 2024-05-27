@@ -1,6 +1,6 @@
 ﻿using WindNight.ConfigCenter.Extension;
 
-namespace Microsoft.AspNetCore.WindNight.Hosting.Internals
+namespace Microsoft.AspNetCore.WindNight.Hosting.@internal
 {
     internal class ConfigItems : ConfigItemsBase
     {

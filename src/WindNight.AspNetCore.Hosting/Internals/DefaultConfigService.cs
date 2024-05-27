@@ -6,7 +6,7 @@ using Newtonsoft.Json.Extension;
 using Microsoft.Extensions.Options;
 using WindNight.ConfigCenter.Extension;
 
-namespace WindNight.AspNetCore.Hosting.Internals
+namespace WindNight.AspNetCore.Hosting.@internal
 {
     internal class DefaultConfigService : IConfigService
     {
