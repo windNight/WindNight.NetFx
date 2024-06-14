@@ -25,7 +25,7 @@
 	<ItemGroup>
 		<Compile Include="..\..\CodeSnippets\Shared\ServiceDescriptorHelpers.cs" Link="Internal\Shared\ServiceDescriptorHelpers.cs" />
 		<!--<FrameworkReference Include="Microsoft.AspNetCore.App" />-->
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\WindNight.AspNetCore.GRpc.HttpApi\WindNight.AspNetCore.GRpc.HttpApi.csproj" />

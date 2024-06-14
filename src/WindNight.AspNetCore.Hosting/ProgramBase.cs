@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using WindNight.AspNetCore.Hosting.Internals;
+using WindNight.AspNetCore.Hosting.@internal;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;
 using WindNight.LogExtension;

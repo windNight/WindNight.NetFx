@@ -2,8 +2,10 @@
 using System.Configuration;
 using System.Numerics;
 using System.Text;
+using Microsoft.AspNetCore.Hosting.WnExtensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
+using WindNight.AspNetCore.Hosting;
 using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DcLog;
@@ -13,12 +15,57 @@ using WindNight.LogExtension;
 
 namespace WebApiDemo
 {
-    public class Program
+    public class Program : DefaultProgramBase
+    {
+        public static void Main(string[] args)
+        {
+            var buildType = "";
+#if DEBUG
+            buildType = "Debug";
+#else
+            buildType = "Release";
+#endif
+            Init(CreateHostBuilder, buildType, () =>
+            {
+
+                
+            }, args);
+        }
+
+        private static IHostBuilder CreateHostBuilder(string buildType, string[] args)
+        {
+            return CreateHostBuilderDefaults(buildType, args,
+                         (hostingContext, configBuilder) =>
+                         { 
+                             configBuilder.SetBasePath(AppContext.BaseDirectory)
+                                 .AddJsonFile("Config/AppSettings.json", false, true)
+
+                                 ; 
+                         },
+                webHostConfigure: webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                },
+                configureServicesDelegate: (context, services) =>
+                {
+                    //  ConfigItems.Init(configuration: context.Configuration);
+                })
+
+                ;
+        }
+
+
+
+
+    }
+   
+    
+    public class Program2
     {
 
 
 
-        public static void Main(string[] args)
+        public static void Main11(string[] args)
         {
             TestDemo122();
             var buildType = "";

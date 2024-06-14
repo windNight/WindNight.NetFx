@@ -8,12 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
     <ProjectReference Include="..\..\WindNight.AspNetCore.Mvc.Extensions\WindNight.AspNetCore.Mvc.Extensions.csproj" />
+    <ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
     <ProjectReference Include="..\..\WindNight.Extension.LogStore\WindNight.Extension.DcLog.csproj" />
   </ItemGroup>
 

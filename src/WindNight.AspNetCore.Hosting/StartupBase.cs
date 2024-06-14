@@ -17,7 +17,7 @@ using WindNight.ConfigCenter.Extension;
 
 namespace Microsoft.AspNetCore.Hosting.WnExtensions
 {
-    public abstract class WebStartupBase : IWnWebStartup
+    public abstract class WebStartupBase : IWnWebStartup//, IStartup
     {
         protected abstract string NamespaceName { get; }
         protected abstract void UseBizConfigure(IApplicationBuilder app);
@@ -53,6 +53,8 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             ConfigSysServices(services, Configuration);
             ConfigBizServices(services);
             BuildServices(services);
+
+            // return BuildServices(services);
         }
 
         public virtual void Configure(IApplicationBuilder app)

@@ -34,6 +34,10 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
+
+<!--
+https://learn.microsoft.com/en-us/dotnet/standard/frameworks
+-->
 	<PropertyGroup Condition="'$(TargetFramework)'=='net45'">
 		<DefineConstants>$(DefineConstants);__WIN__;NET45;NETFX;</DefineConstants>
 	</PropertyGroup>
@@ -64,5 +68,8 @@
 		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET70;CORE31LATER;NET45LATER;</DefineConstants>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
+		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET80;CORE31LATER;NET45LATER;</DefineConstants>
+	</PropertyGroup>
 
 </Project>
