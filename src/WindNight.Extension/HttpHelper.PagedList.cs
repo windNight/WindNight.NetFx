@@ -46,8 +46,11 @@ namespace WindNight.Extension
                         foreach (var query in queries)
                             request.AddParameter(query.Key, query.Value);
 
-                    return await ExecuteHttpClientAsync2<T>(domain, request);
-                }, $"GetListAsync({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
+                    return await ExecuteHttpClientAsync2<T>(domain, request, timeOut: timeOut);
+                },
+                $"GetListAsync({domain}{path}) with params {queries.ToJsonStr()}",
+                warnMiSeconds: warnMiSeconds);
+
         }
 
         public static async Task<IPagedList<T>> GetPagedListAsync<T>(string domain, string path,

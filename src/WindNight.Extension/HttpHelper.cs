@@ -66,6 +66,7 @@ namespace WindNight.Extension
         /// <param name="queries"></param>
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds">Timeout in milliseconds to be used for the request</param>
+        /// <param name="timeOut"></param>
         /// <returns></returns>
         public static T Get<T>(string domain, string path,
             Dictionary<string, object> queries,
