@@ -44,6 +44,14 @@ namespace WindNight.Extension.Logger.DbLog
             if (message.Content.ToLower().Contains($"{nameof(SysLogs)}".ToLower())) return;
             if (DbLogOptions.IsOpenDebug)
                 Console.WriteLine($"EnqueueMessage({message.ToJsonStr()})");
+            if (message.LogAppCode.IsNullOrEmpty())
+            {
+                message.LogAppCode = "";
+            }
+            if (message.LogAppName.IsNullOrEmpty())
+            {
+                message.LogAppName = "";
+            }
             MessageQueue.Enqueue(message);
         }
 

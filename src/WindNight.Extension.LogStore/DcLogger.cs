@@ -49,8 +49,8 @@ namespace WindNight.Extension.Logger.DcLog
 
                     var messageEntity = new SysLogs
                     {
-                        LogAppCode = _options.LogAppCode,
-                        LogAppName = _options.LogAppName,
+                        LogAppCode = _options?.LogAppCode ?? "",
+                        LogAppName = _options?.LogAppName ?? "",
                         RequestUrl = stateEntry.ApiUrl,
                         ClientIp = stateEntry.ClientIP,
                         ServerIp = stateEntry.ServerIP,
@@ -97,8 +97,8 @@ namespace WindNight.Extension.Logger.DcLog
             var logDate = now.ToString("yyyyMMdd");
             var logMsg = new SysLogs
             {
-                LogAppCode = _options.LogAppCode,
-                LogAppName = _options.LogAppName,
+                LogAppCode = _options?.LogAppCode ?? "",
+                LogAppName = _options?.LogAppName ?? "",
                 Level = logLevel.ToString(),
                 LevelType = (int)logLevel,
                 LogTs = logTimestamps,

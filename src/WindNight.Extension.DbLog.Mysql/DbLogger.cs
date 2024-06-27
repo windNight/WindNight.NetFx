@@ -49,8 +49,8 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
 
                     var messageEntity = new SysLogs
                     {
-                        LogAppCode = _options.LogAppCode,
-                        LogAppName = _options.LogAppName,
+                        LogAppCode = _options?.LogAppCode ?? "",
+                        LogAppName = _options?.LogAppName ?? "",
                         RequestUrl = stateEntry.ApiUrl,
                         ClientIp = stateEntry.ClientIP,
                         ServerIp = stateEntry.ServerIP,
@@ -60,7 +60,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
                         Level = stateEntry.Level.ToString(),
                         LevelType = (int)stateEntry.Level,
                         NodeCode = HardInfo.NodeCode ?? "",
-                        
+
 
                     };
                     if (exception != null)
@@ -97,8 +97,8 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
             var logDate = now.ToString("yyyyMMdd");
             var logMsg = new SysLogs
             {
-                LogAppCode = _options.LogAppCode,
-                LogAppName = _options.LogAppName,
+                LogAppCode = _options?.LogAppCode ?? "",
+                LogAppName = _options?.LogAppName ?? "",
                 Level = logLevel.ToString(),
                 LevelType = (int)logLevel,
                 LogTs = logTimestamps,
