@@ -32,22 +32,22 @@ namespace Microsoft.Extensions.Configuration.Extensions
         /// </summary>
         /// <param name="sections"></param>
         /// <returns></returns>
-        public static List<ConfigBaseInfo> GetConfiguration(IEnumerable<IConfigurationSection>? sections = null)
+        public static List<ConfigBaseInfo2> GetConfiguration(IEnumerable<IConfigurationSection>? sections = null)
         {
             var _config = Ioc.GetService<IConfiguration>();
             if (sections == null) sections = _config.GetChildren();
 
-            var list = new List<ConfigBaseInfo>();
+            var list = new List<ConfigBaseInfo2>();
             foreach (var m in sections)
             {
                 if (m.Value != null)
                 {
-                    list.Add(new ConfigBaseInfo { Key = m.Key, Path = m.Path, Value = m.Value });
+                    list.Add(new ConfigBaseInfo2 { Key = m.Key, Path = m.Path, Value = m.Value });
                     continue;
                 }
 
                 var _section = _config.GetSection(m.Path);
-                list.Add(new ConfigBaseInfo { Key = m.Key, Path = m.Path, Value = GetConfiguration(_section.GetChildren()) });
+                list.Add(new ConfigBaseInfo2 { Key = m.Key, Path = m.Path, Value = GetConfiguration(_section.GetChildren()) });
             }
 
             return list;
@@ -58,24 +58,24 @@ namespace Microsoft.Extensions.Configuration.Extensions
         /// <param name="configuration"></param>
         /// <param name="sections"></param>
         /// <returns></returns>
-        public static List<ConfigBaseInfo> GetConfiguration(this IConfiguration configuration,
+        public static List<ConfigBaseInfo2> GetConfiguration(this IConfiguration configuration,
             IEnumerable<IConfigurationSection>? sections = null)
         {
-            if (configuration == null) return new List<ConfigBaseInfo>();
+            if (configuration == null) return new List<ConfigBaseInfo2>();
             var _config = configuration;
             if (sections == null) sections = _config.GetChildren();
 
-            var list = new List<ConfigBaseInfo>();
+            var list = new List<ConfigBaseInfo2>();
             foreach (var m in sections)
             {
                 if (m.Value != null)
                 {
-                    list.Add(new ConfigBaseInfo { Key = m.Key, Path = m.Path, Value = m.Value });
+                    list.Add(new ConfigBaseInfo2 { Key = m.Key, Path = m.Path, Value = m.Value });
                     continue;
                 }
 
                 var _section = _config.GetSection(m.Path);
-                list.Add(new ConfigBaseInfo { Key = m.Key, Path = m.Path, Value = _config.GetConfiguration(_section.GetChildren()) });
+                list.Add(new ConfigBaseInfo2 { Key = m.Key, Path = m.Path, Value = _config.GetConfiguration(_section.GetChildren()) });
             }
 
             return list;

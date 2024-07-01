@@ -207,18 +207,100 @@ namespace System.Collections.Generic
         public bool HasNextPage => PageIndex - IndexFrom + 1 < PageCount;
     }
 
-    public static class PagedList
-    {
-        public static IPagedList<T> Empty<T>()
-        {
-            return new PagedList<T>();
-        }
 
-        public static IPagedList<TResult> From<TResult, TSource>(IPagedList<TSource> source,
+    public static partial class PagedList
+    {
+
+
+        public static IPagedList<TResult> From<TResult, TSource>(this IPagedList<TSource> source,
             Func<IEnumerable<TSource>, IEnumerable<TResult>> converter)
         {
             return new PagedList<TSource, TResult>(source, converter);
         }
 
     }
+
+
+    public static partial class PagedList
+    {
+        public static IPagedList<T> Empty<T>()
+        {
+            return new PagedList<T>();
+        }
+
+
+
+        public static IPagedList<T> GeneratorPagedList<T>(this IQueryPageBase pagedInfo, int pageCount, IList<T> list)
+        {
+            return new PagedList<T>
+            {
+                PageIndex = pagedInfo.PageIndex,
+                PageSize = pagedInfo.PageSize,
+                IndexFrom = pagedInfo.IndexFrom,
+                RecordCount = list.Count,
+                PageCount = pageCount,
+                List = list
+            };
+        }
+
+        public static IPagedList<T> GeneratorPagedList<T>(int pageIndex, int pageSize, int pageCount, IList<T> list)
+        {
+            return new PagedList<T>
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                IndexFrom = 1,
+                RecordCount = list.Count,
+                PageCount = pageCount,
+                List = list
+            };
+        }
+
+        public static IPagedList<T> GeneratorPagedList<T>(int pageIndex, int pageSize, int indexFrom, int recordCount,
+            int pageCount, IList<T> list)
+        {
+            return new PagedList<T>
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                IndexFrom = indexFrom,
+                RecordCount = recordCount,
+                PageCount = pageCount,
+                List = list
+            };
+        }
+
+
+        public static IPagedList<T> GeneratorPagedList<T>(this IQueryPageBase pagedInfo, int recordCount, int pageCount, IList<T> list)
+        {
+            return new PagedList<T>
+            {
+                PageIndex = pagedInfo.PageIndex,
+                PageSize = pagedInfo.PageSize,
+                IndexFrom = pagedInfo.IndexFrom,
+                RecordCount = recordCount,
+                PageCount = pageCount,
+                List = list
+            };
+        }
+
+
+        public static IPagedList<TResult> GeneratorPagedList<TSource, TResult>(this IPagedList<TSource> source,
+            Func<IEnumerable<TSource>, IEnumerable<TResult>> converter)
+        {
+            return new PagedList<TResult>
+            {
+                PageIndex = source.PageIndex,
+                PageSize = source.PageSize,
+                IndexFrom = source.IndexFrom,
+                RecordCount = source.RecordCount,
+                PageCount = source.PageCount,
+                List = new List<TResult>(converter(source.List))
+            };
+        }
+
+
+
+    }
+
 }

@@ -3,10 +3,10 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 #if !NET45
-
-using WindNight.Config.Internal;
+using WindNight.Config.@internal; 
 #endif
-namespace WindNight.ConfigCenter.Extension.Internal
+
+namespace WindNight.ConfigCenter.Extension.@internal
 {
     internal static class LogHelper
     {

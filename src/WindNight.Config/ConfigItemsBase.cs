@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
-using WindNight.ConfigCenter.Extension.Internal;
+using WindNight.ConfigCenter.Extension.@internal;
 #if !NET45
 using Microsoft.Extensions.Configuration;
 #endif
@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 namespace WindNight.ConfigCenter.Extension
 {
 
-    public class ConfigItemsBase
+    public partial class ConfigItemsBase
     {
 
         /// <summary>
@@ -57,11 +57,12 @@ namespace WindNight.ConfigCenter.Extension
         }
 
         protected static string[] TrueStrings = new[] { "1", "true" }, FalseStrings = new[] { "0", "false" };
+
         protected const string ZeroString = "0";
         protected const int ZeroInt = 0;
         protected const long ZeroInt64 = 0L;
+        protected const decimal ZeroDecimal = 0m;
 
-        public static object AllConfigs => ConfigCenterContext.GetAllConfig();
 
 
         /// <summary> 服务编号： </summary>
@@ -282,22 +283,22 @@ namespace WindNight.ConfigCenter.Extension
 
         #region DomainSwitch
 
-        protected static string GetDomainSiteHost(string nodeName, string defaultValue = "", bool isThrow = false)
-        {
-            return GetDomainSwitchConfig(nodeName, DomainSwitchNodeType.SiteHost, defaultValue, isThrow);
-        }
+        //protected static string GetDomainSiteHost(string nodeName, string defaultValue = "", bool isThrow = false)
+        //{
+        //    return GetDomainSwitchConfig(nodeName, DomainSwitchNodeType.SiteHost, defaultValue, isThrow);
+        //}
 
-        protected static string GetDomainServiceUrl(string nodeName, string defaultValue = "", bool isThrow = false)
-        {
-            return GetDomainSwitchConfig(nodeName, DomainSwitchNodeType.ServiceUrl, defaultValue, isThrow);
-        }
+        //protected static string GetDomainServiceUrl(string nodeName, string defaultValue = "", bool isThrow = false)
+        //{
+        //    return GetDomainSwitchConfig(nodeName, DomainSwitchNodeType.ServiceUrl, defaultValue, isThrow);
+        //}
 
 
-        private static string GetDomainSwitchConfig(string nodeName, DomainSwitchNodeType nodeType,
-            string defaultValue = "", bool isThrow = false)
-        {
-            return ReadFromConfig(ConfigCenterContext.GetDomainSwitchConfig, nodeName, nodeType, defaultValue, isThrow);
-        }
+        //private static string GetDomainSwitchConfig(string nodeName, DomainSwitchNodeType nodeType,
+        //    string defaultValue = "", bool isThrow = false)
+        //{
+        //    return ReadFromConfig(ConfigCenterContext.GetDomainSwitchConfig, nodeName, nodeType, defaultValue, isThrow);
+        //}
 
         #endregion //end DomainSwitch
 
@@ -310,7 +311,7 @@ namespace WindNight.ConfigCenter.Extension
             {
                 if (sectionKey.IsNullOrEmpty())
                 {
-                    sectionKey = nameof(T);
+                    sectionKey = typeof(T).Name;
                 }
                 return GetSectionConfigValue<T>(sectionKey, defaultValue, isThrow);
             }

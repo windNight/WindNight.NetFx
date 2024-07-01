@@ -6,7 +6,7 @@ namespace WindNight.ConfigCenter.Extension
 {
     internal partial class ConfigCenterContext
     {
-        private static string AppSettingsPathPrefix => $"{ConfigType.AppSettings}:";
+        private static string AppSettingsPathPrefix => $"{ConfigType.AppSettings}";
 
 
         public static List<AppSettingInfo> AppSettingList
@@ -17,7 +17,13 @@ namespace WindNight.ConfigCenter.Extension
                 var list = new List<AppSettingInfo>();
                 foreach (var key in keys)
                 {
+                    if (key.Contains(".json"))
+                    {
+                        continue;
+                    }
+
                     var keysp = key.Split(':');
+
                     list.Add(new AppSettingInfo
                     {
                         Path = key,

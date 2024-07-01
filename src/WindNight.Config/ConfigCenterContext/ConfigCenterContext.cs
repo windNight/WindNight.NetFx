@@ -17,8 +17,9 @@ namespace WindNight.ConfigCenter.Extension
             var obj = new
             {
                 AppSettingList,
-                DomainSwitchList,
+                //DomainSwitchList,
                 JsonConfigList,
+                XmlConfigList,
                 ConnectionStringList,
                 ConfigProvider.Instance.UpdateFlagDict,
                 ConfigProvider.Instance.ConfigUpdateTime
@@ -35,15 +36,19 @@ namespace WindNight.ConfigCenter.Extension
                 case ConfigType.AppSettings:
                     prefix = AppSettingsPathPrefix;
                     break;
-                case ConfigType.DomainSwitch:
-                    prefix = DomainSwitchPathPrefix;
-                    break;
+                //case ConfigType.DomainSwitch:
+                //    prefix = DomainSwitchPathPrefix;
+                //    break;
                 case ConfigType.ConnectionStrings:
                     prefix = ConnectionStringsPathPrefix;
                     break;
                 case ConfigType.JsonConfig:
                     prefix = JsonConfigPathPrefix;
                     break;
+                case ConfigType.XmlConfig:
+                    prefix = XmlConfigPathPrefix;
+                    break;
+
                 case ConfigType.Unknown:
                 default:
                     break;
@@ -54,7 +59,8 @@ namespace WindNight.ConfigCenter.Extension
 
         private static string FixDictKey(ConfigType configType, string configKey)
         {
-            return $"{FixConfigPathPrefix(configType)}{configKey}";
+
+            return $"{FixConfigPathPrefix(configType)}:{configKey}";
         }
 
 

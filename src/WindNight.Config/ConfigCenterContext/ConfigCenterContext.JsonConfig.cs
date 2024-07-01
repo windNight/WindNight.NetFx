@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using WindNight.Config.@internal;
 
 namespace WindNight.ConfigCenter.Extension
 {
     internal partial class ConfigCenterContext
     {
-        private static string JsonConfigPathPrefix => $"{ConfigType.JsonConfig}:";
+        private static string JsonConfigPathPrefix => $"{ConfigType.JsonConfig}";
 
 
         public static List<JsonFileConfigInfo> JsonConfigList
@@ -36,13 +37,25 @@ namespace WindNight.ConfigCenter.Extension
 
         #region Json Config
 
+        ///// <summary>
+        /////     设置配置中心中配置列表的值
+        ///// </summary>
+        ///// <param name="dict"></param>
+        //public static void SetJsonConfigList(Dictionary<string, string> dict)
+        //{
+        //    foreach (var item in dict) SetJsonConfig(item.Key, item.Value);
+        //}
+
         /// <summary>
         ///     设置配置中心中配置列表的值
         /// </summary>
         /// <param name="dict"></param>
-        public static void SetJsonConfigList(Dictionary<string, string> dict)
+        public static void SetConfigList(Dictionary<string, string> dict)
         {
-            foreach (var item in dict) SetJsonConfig(item.Key, item.Value);
+            foreach (var item in dict)
+            {
+                SetConfig(item.Key, item.Value);
+            }
         }
 
         /// <summary>
@@ -50,11 +63,33 @@ namespace WindNight.ConfigCenter.Extension
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="fileContent"></param>
-        public static void SetJsonConfig(string fileName, string fileContent)
+        public static void SetConfig(string fileName, string fileContent, bool fixKey = true)
         {
-            var key = FixDictKey(ConfigType.JsonConfig, fileName);
+            var key = fileName;
+            if (fixKey)
+            {
+                var configType = fileName.ParserConfigType();
+                key = FixDictKey(configType, fileName);
+            }
+
             CurrentConfiguration[key] = fileContent;
         }
+
+        ///// <summary>
+        /////     设置配置中心中配置列表的值
+        ///// </summary>
+        ///// <param name="fileName"></param>
+        ///// <param name="fileContent"></param>
+        //public static void SetJsonConfig(string fileName, string fileContent, bool fixKey = true)
+        //{
+        //    var key = fileName;
+        //    if (fixKey)
+        //    {
+        //        var configType = fileName.ParserConfigType();
+        //        key = FixDictKey(configType, fileName);
+        //    }
+        //    CurrentConfiguration[key] = fileContent;
+        //}
 
         /// <summary>
         ///     获取配置中心中配置列表的值
@@ -68,7 +103,7 @@ namespace WindNight.ConfigCenter.Extension
             var configValue = GetFromConfigurationDict(key, defaultValue);
             if (!configValue.IsNullOrEmpty()) return configValue;
 
-            var loadRlt = ConfigProvider.Instance.LoadJsonConfig(configValue);
+            var loadRlt = ConfigProvider.Instance.LoadConfigFile(configValue);
 
             if (loadRlt.Item1 == 0)
                 configValue = loadRlt.Item3;

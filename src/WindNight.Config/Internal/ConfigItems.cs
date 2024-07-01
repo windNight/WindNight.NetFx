@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Configuration;
 using WindNight.ConfigCenter.Extension;
 
-namespace WindNight.Config.Internal
+namespace WindNight.Config.@internal
 {
     internal static class ConfigItems
     {

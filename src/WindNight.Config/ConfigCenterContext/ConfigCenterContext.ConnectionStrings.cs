@@ -6,7 +6,7 @@ namespace WindNight.ConfigCenter.Extension
 {
     internal partial class ConfigCenterContext
     {
-        private static string ConnectionStringsPathPrefix => $"{ConfigType.ConnectionStrings}:";
+        private static string ConnectionStringsPathPrefix => $"{ConfigType.ConnectionStrings}";
 
 
         public static List<ConnectionStringInfo> ConnectionStringList
@@ -17,6 +17,10 @@ namespace WindNight.ConfigCenter.Extension
                 var list = new List<ConnectionStringInfo>();
                 foreach (var key in keys)
                 {
+                    if (key.Contains(".json"))
+                    {
+                        continue;
+                    }
                     var keysp = key.Split(':');
                     list.Add(new ConnectionStringInfo
                     {

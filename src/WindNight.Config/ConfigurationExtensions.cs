@@ -6,7 +6,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Configuration;
-using WindNight.ConfigCenter.Extension.Internal;
+using WindNight.ConfigCenter.Extension.@internal;
 
 namespace WindNight.ConfigCenter.Extension
 {
