@@ -1,18 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection.WnExtension;
-using Newtonsoft.Json.Extension;
-using RestSharp;
-using RestSharp.Extensions;
 using WindNight.Core;
-using WindNight.Core.Abstractions;
-using WindNight.Core.Tools;
-using WindNight.Extension.Internals;
-//using WindNight.NetCore.Extension;
 
 namespace WindNight.Extension
 {
@@ -26,6 +15,7 @@ namespace WindNight.Extension
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
         /// <param name="timeOut">Timeout in milliseconds to be used for the request </param>
+        /// <param name="isThrow"></param>
         /// <returns></returns>
         public static IEnumerable<T> GetList<T>(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20, bool isThrow = false)

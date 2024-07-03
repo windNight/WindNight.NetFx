@@ -19,8 +19,7 @@ namespace WindNight.Extension.Tests
         [Fact]
         public void HttpCheckFileTest()
         {
-            //var url = "https://r.bing.com/rp/TrZ6uPwHDjuq464yPHzr6MbATo4.br.js";
-            var url = "http://res.engrid.cn/en-firmware-update/dtu/ML302ANLM-downgrade-pac111-100.bin";
+            var url = "https://r.bing.com/rp/TrZ6uPwHDjuq464yPHzr6MbATo4.br.js";
 
             var res = HttpHelper.HttpHead(url);
             var exist = HttpHelper.CheckRemoteFile(url);
@@ -34,6 +33,13 @@ namespace WindNight.Extension.Tests
 
         }
 
+
+        [Fact]
+        public void HttpHelperTest1()
+        {
+
+
+        }
 
     }
 }
