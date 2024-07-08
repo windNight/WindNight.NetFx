@@ -82,9 +82,56 @@ namespace WindNight.Extension
         }
 
         static Func<string, T> DefaultConvertFunc<T>() => _ => _.To<T>();
+
+        static Func<string, T> DefaultResConvertFunc<T>()
+        {
+            return s =>
+            {
+                var res = s.To<ResponseResult<T>>();
+                if (res.Code == 0)
+                {
+                    return res.Data;
+                }
+                LogHelper.Warn($"Code({res.Code}) res is {res.ToJsonStr()}");
+                return default;
+            };
+        }
+
+        static Func<string, IEnumerable<T>> DefaultEnumerableResConvertFunc<T>()// => _ => _.To<ResponseResult<IEnumerable<T>>>()?.Data ?? Array.Empty<T>();
+        {
+            return s =>
+            {
+                var res = s.To<ResponseResult<IEnumerable<T>>>();//?.Data ?? Array.Empty<T>();
+                if (res.Code == 0)
+                {
+                    return res.Data;
+                }
+                LogHelper.Warn($"Code({res.Code}) res is {res.ToJsonStr()}");
+
+                return EmptyArray<T>();
+            };
+        }
+
+
+        static Func<string, IPagedList<T>> DefaultPagedConvertFunc<T>() //=> _ => _.To<ResponseResult<PagedList<T>>>()?.Data ?? PagedList.Empty<T>();
+        {
+            return s =>
+            {
+                var res = s.To<ResponseResult<PagedList<T>>>();//?.Data ?? Array.Empty<T>();
+                if (res.Code == 0)
+                {
+                    return res.Data;
+                }
+                LogHelper.Warn($"Code({res.Code}) res is {res.ToJsonStr()}");
+                return PagedList.Empty<T>();
+
+            };
+        }
+
         //{
         //    return _ => _.To<T>();
         //}
+
 
         public static T DeserializeResponse<T>(this IRestResponse response, Func<string, T> convertFunc, T defaultValue = default)
         {
@@ -112,6 +159,7 @@ namespace WindNight.Extension
             }
 
         }
+
 
         public static T DeserializeResponse<T>(this IRestResponse response)
         {
@@ -147,9 +195,118 @@ namespace WindNight.Extension
         }
 
 
+        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response)
+        {
+            return response.DeserializePageListResponse<T>(DefaultPagedConvertFunc<T>());
+        }
 
 
+        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response, Func<string, IPagedList<T>> convertFunc)
+        {
+            try
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    if (ConfigItems.DebugIsOpen)
+                    {
+                        LogHelper.Debug($" response.Content is {response.Content} ", appendMessage: false);
+                    }
 
+                    convertFunc ??= DefaultPagedConvertFunc<T>();
+                    return convertFunc.Invoke(response.Content);
+
+                }
+
+                LogHelper.Warn($" ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}", appendMessage: false);
+                //return PagedList.Empty<T>();
+
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"DeserializeResponse Handler Error {ex.Message}", ex);
+            }
+
+            return PagedList.Empty<T>();
+
+        }
+
+        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response)
+        {
+            return response.DeserializeListResponse<T>(DefaultEnumerableResConvertFunc<T>());
+
+        }
+        static IEnumerable<T> EmptyArray<T>()
+        {
+#if NET45
+            return new List<T>();
+#else
+            return Array.Empty<T>();
+#endif
+
+        }
+        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response, Func<string, IEnumerable<T>> convertFunc)
+        {
+            try
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    if (ConfigItems.DebugIsOpen)
+                    {
+                        LogHelper.Debug($" response.Content is {response.Content} ", appendMessage: false);
+                    }
+
+                    convertFunc ??= DefaultEnumerableResConvertFunc<T>();
+                    return convertFunc.Invoke(response.Content);
+
+                }
+
+                LogHelper.Warn($" ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}", appendMessage: false);
+                //return PagedList.Empty<T>();
+
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"DeserializeResponse Handler Error {ex.Message}", ex);
+            }
+
+            return EmptyArray<T>();
+
+        }
+
+        public static T DeserializeResResponse<T>(this IRestResponse response, T defaultValue = default)
+        {
+            return response.DeserializeResResponse<T>(DefaultResConvertFunc<T>(), defaultValue);
+
+        }
+
+        public static T DeserializeResResponse<T>(this IRestResponse response, Func<string, T> convertFunc, T defaultValue = default)
+        {
+            try
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    if (ConfigItems.DebugIsOpen)
+                    {
+                        LogHelper.Debug($" response.Content is {response.Content} ", appendMessage: false);
+                    }
+
+                    convertFunc ??= DefaultResConvertFunc<T>();
+                    return convertFunc.Invoke(response.Content);
+
+                }
+
+                LogHelper.Warn($" ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}", appendMessage: false);
+                //return PagedList.Empty<T>();
+
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"DeserializeResponse Handler Error {ex.Message}", ex);
+            }
+
+            return defaultValue;
+
+        }
 
     }
 

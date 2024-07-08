@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using RestSharp;
@@ -100,7 +101,8 @@ namespace WindNight.Extension
 
         }
 
-        private static T ExecuteHttpClient<T>(string domain, IRestRequest request, int timeOut = 1000 * 60 * 20)
+        private static T ExecuteHttpClient<T>(string domain, IRestRequest request, int timeOut = 1000 * 60 * 20
+            , Func<string, T> convertFunc = null)
         {
             //var client = GenRestClient(domain, timeOut);
             //var client = new RestClient(domain)
@@ -112,7 +114,7 @@ namespace WindNight.Extension
             //var response = client.Execute(request);
             //var response = DoExecute(client, request);
             var response = ExecuteHttpClient(domain, request, timeOut);
-            return DeserializeResponse<T>(response);
+            return DeserializeResponse<T>(response, convertFunc);
         }
 
         private static async Task<IRestResponse> ExecuteHttpClientAsync(string domain, IRestRequest request, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
@@ -136,7 +138,8 @@ namespace WindNight.Extension
         }
 
 
-        private static async Task<T> ExecuteHttpClientAsync<T>(string domain, IRestRequest request, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
+        private static async Task<T> ExecuteHttpClientAsync<T>(string domain, IRestRequest request, Func<string, T> convertFunc = null,
+            CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
         {
             //            var client = GenRestClient(domain, timeOut);
             //            //var client = new RestClient(domain)
@@ -153,7 +156,7 @@ namespace WindNight.Extension
 
             var response = await ExecuteHttpClientAsync(domain, request, token);
 
-            return DeserializeResponse<T>(response);
+            return DeserializeResponse<T>(response, convertFunc);
 
 
             // return DeserializeResponse<T>(response);
@@ -208,7 +211,7 @@ namespace WindNight.Extension
 
             var response = ExecuteHttpClient(domain, request, timeOut);
 
-            return DeserializeResponse2PageList<T>(response);
+            return DeserializePageListResponse<T>(response);
         }
 
         private static async Task<IPagedList<T>> ExecuteHttpClientAsync2<T>(string domain, IRestRequest request, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
@@ -229,12 +232,43 @@ namespace WindNight.Extension
 
             var response = await ExecuteHttpClientAsync(domain, request, token);
 
-            return DeserializeResponse2PageList<T>(response);
+            return response.DeserializePageListResponse<T>();
 
 
         }
 
 
+        private static T ExecuteHttpClient3<T>(string domain, IRestRequest request, int timeOut = 1000 * 60 * 20)
+        {
+            var response = ExecuteHttpClient(domain, request, timeOut);
+
+            return response.DeserializeResResponse<T>();
+        }
+
+        private static async Task<T> ExecuteHttpClientAsync3<T>(string domain, IRestRequest request, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
+        {
+
+            var response = await ExecuteHttpClientAsync(domain, request, token);
+
+            return response.DeserializeResResponse<T>();
+
+        }
+
+        private static IEnumerable<T> ExecuteHttpClient4<T>(string domain, IRestRequest request, int timeOut = 1000 * 60 * 20)
+        {
+            var response = ExecuteHttpClient(domain, request, timeOut);
+
+            return response.DeserializeListResponse<T>();
+        }
+
+        private static async Task<IEnumerable<T>> ExecuteHttpClientAsync4<T>(string domain, IRestRequest request, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
+        {
+
+            var response = await ExecuteHttpClientAsync(domain, request, token);
+
+            return response.DeserializeListResponse<T>();
+
+        }
 
     }
 

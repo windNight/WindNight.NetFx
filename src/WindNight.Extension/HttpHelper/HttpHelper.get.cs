@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Extension;
@@ -7,7 +8,7 @@ using WindNight.Core.Tools;
 namespace WindNight.Extension
 {
     public static partial class HttpHelper
-    { 
+    {
         /// <summary>
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -15,8 +16,10 @@ namespace WindNight.Extension
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
         /// <param name="timeOut">Timeout in milliseconds to be used for the request </param>
+        /// <param name="convertFunc"></param>
         /// <returns></returns>
-        public static T Get<T>(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20) //where T : new()
+        public static T Get<T>(string url, Dictionary<string, string> headerDict = null,
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
             {
@@ -24,7 +27,7 @@ namespace WindNight.Extension
                 //var request = new RestRequest(Method.GET);
                 //headerDict = GeneratorHeaderDict(headerDict);
                 //foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-                return ExecuteHttpClient<T>(url, request, timeOut);
+                return ExecuteHttpClient<T>(url, request, timeOut, convertFunc);
             }, $"HttpGet({url})", warnMiSeconds: warnMiSeconds);
         }
 
@@ -38,11 +41,13 @@ namespace WindNight.Extension
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds">Timeout in milliseconds to be used for the request</param>
         /// <param name="timeOut"></param>
+        /// <param name="convertFunc"></param>
         /// <returns></returns>
         public static T Get<T>(string domain, string path,
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20) //where T : new()
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
+            Func<string, T> convertFunc = null) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
             {
@@ -57,7 +62,7 @@ namespace WindNight.Extension
 
                 var request = GenGetRequest(path, headerDict, queries);
 
-                return ExecuteHttpClient<T>(domain, request, timeOut);
+                return ExecuteHttpClient<T>(domain, request, timeOut, convertFunc);
             }, $"HttpGet({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 
@@ -65,7 +70,8 @@ namespace WindNight.Extension
         public static T Get<T>(string domain, string path,
             object queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
+            Func<string, T> convertFunc = null)
         {
 
             var queryDict = queries.GenQueryDict();
@@ -86,11 +92,14 @@ namespace WindNight.Extension
         /// <param name="warnMiSeconds"></param>
         /// <param name="timeOut">Timeout in milliseconds to be used for the request</param>
         /// <param name="token"></param>
+        /// <param name="convertFunc"></param>
         /// <returns></returns>
         public static async Task<T> GetAsync<T>(string domain, string path,
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, CancellationToken token = default(CancellationToken)) //where T : new()
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
+            Func<string, T> convertFunc = null,
+            CancellationToken token = default(CancellationToken)) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
             {
@@ -104,7 +113,7 @@ namespace WindNight.Extension
                 //        request.AddParameter(query.Key, query.Value);
                 var request = GenGetRequest(path, headerDict, queries);
 
-                return await ExecuteHttpClientAsync<T>(domain, request, token);
+                return await ExecuteHttpClientAsync<T>(domain, request, convertFunc, token);
             }, $"HttpGetAsync({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 
@@ -112,11 +121,13 @@ namespace WindNight.Extension
         public static async Task<T> GetAsync<T>(string domain, string path,
             object queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, CancellationToken token = default(CancellationToken))
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
+            Func<string, T> convertFunc = null,
+            CancellationToken token = default(CancellationToken))
         {
 
             var queryDict = queries.GenQueryDict();
-            return await GetAsync<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, token);
+            return await GetAsync<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, convertFunc, token);
 
         }
 

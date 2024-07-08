@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Extension;
@@ -19,9 +20,11 @@ namespace WindNight.Extension
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
         /// <param name="timeOut">Timeout in milliseconds to be used for the request</param>
+        /// <param name="convertFunc"></param>
         /// <returns></returns>
         public static T Post<T>(string domain, string path, object bodyObjects,
-            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20) //where T : new()
+            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
+            int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
             {
@@ -34,7 +37,7 @@ namespace WindNight.Extension
 
                 //request.AddJsonBody(bodyObjects);
 
-                return ExecuteHttpClient<T>(domain, request, timeOut);
+                return ExecuteHttpClient<T>(domain, request, timeOut, convertFunc);
             }, $"HttpPost({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
@@ -49,9 +52,13 @@ namespace WindNight.Extension
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
         /// <param name="timeOut">Timeout in milliseconds to be used for the request</param>
+        /// <param name="convertFunc"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
         public static async Task<T> PostAsync<T>(string domain, string path, object bodyObjects,
-            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, CancellationToken token = default(CancellationToken)) //where T : new()
+            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
+            int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null,
+            CancellationToken token = default(CancellationToken)) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
             {
@@ -65,7 +72,7 @@ namespace WindNight.Extension
 
                 //request.AddJsonBody(bodyObjects);
 
-                return await ExecuteHttpClientAsync<T>(domain, request, timeOut: timeOut, token: token);
+                return await ExecuteHttpClientAsync<T>(domain, request, timeOut: timeOut, token: token, convertFunc: convertFunc);
             },
                 $"HttpPostAsync({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
