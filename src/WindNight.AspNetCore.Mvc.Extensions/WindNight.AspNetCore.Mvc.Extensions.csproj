@@ -2,9 +2,9 @@
 	<Import Project="..\..\build\common.props" />
 	<PropertyGroup>
 		<TargetFrameworks>
-			netstandard2.1;
+			<!--netstandard2.1;
 			netstandard2.0;
-			netcoreapp3.1;
+			netcoreapp3.1;-->
 			net5.0;
 			net6.0;
 			net7.0;
@@ -15,12 +15,13 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
+
+
 	<ItemGroup>
-		<!--<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />-->
-		<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.2" />
+		<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.24062401" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+	<!--<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
 		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
@@ -32,7 +33,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
 			<Version>3.1.32</Version>
 		</PackageReference>
-	</ItemGroup>
+	</ItemGroup>-->
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
@@ -60,5 +61,4 @@
 		<ProjectReference Include="..\WindNight.Config\WindNight.Config.csproj" />
 		<ProjectReference Include="..\WindNight.Extension\WindNight.Extension.csproj" />
 	</ItemGroup>
-
 </Project>

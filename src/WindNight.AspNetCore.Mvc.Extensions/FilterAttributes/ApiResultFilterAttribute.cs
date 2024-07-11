@@ -25,15 +25,23 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
             var noClear = car?.IsClear ?? false;
             if (noClear) return;
             if (!(context.Result is ObjectResult objectResult) || objectResult.Value is ResponseResult) return;
-            if (objectResult.Value == null)
+            if (objectResult.Value is null)
             {
                 context.Result = new ObjectResult(new ResponseResult<object>().NotFound());
             }
             else
             {
-                var apiResult = Activator.CreateInstance(
-                    typeof(ResponseResult<>).MakeGenericType(objectResult.DeclaredType), objectResult.Value);
-                context.Result = new ObjectResult(apiResult);
+                try
+                {
+                    var apiResult = Activator.CreateInstance(
+                        typeof(ResponseResult<>).MakeGenericType(objectResult.DeclaredType), objectResult.Value);
+                    context.Result = new ObjectResult(apiResult);
+                }
+                catch (Exception ex)
+                {
+                    context.Result = new ObjectResult(new ResponseResult<object>().SystemError(ex.Message));
+                }
+
             }
         }
 

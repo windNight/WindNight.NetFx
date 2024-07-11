@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc.WnExtensions.Internals;
 
 namespace WindNight.AspNetCore.Mvc.Extensions.Extensions
 {

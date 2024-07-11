@@ -51,7 +51,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             }
             return new
             {
-                Configuration = ConfigItems.AllConfigs,
+                Configuration = ConfigItems.GetAllConfigs(),
             };
         }
         private object GetConfiguration(IEnumerable<IConfigurationSection> sections = null)
