@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core;
 using WindNight.Core.Abstractions;
-using WindNight.Core.Internals;
+using WindNight.Core.@internal;
 
 namespace WindNight.Core.Tools
 {

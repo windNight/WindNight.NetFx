@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
     <ProjectReference Include="..\..\WindNight.AspNetCore.Mvc.Extensions\WindNight.AspNetCore.Mvc.Extensions.csproj" />
+    <ProjectReference Include="..\..\WindNight.Config.Extensions\WindNight.Config.Extensions.csproj" />
     <ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
     <ProjectReference Include="..\..\WindNight.Extension.LogStore\WindNight.Extension.DcLog.csproj" />
   </ItemGroup>

@@ -3,7 +3,7 @@ using System.Threading;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using WindNight.RabbitMq.Abstractions;
-using WindNight.RabbitMq.Internal;
+using WindNight.RabbitMq.@internal;
 
 namespace WindNight.RabbitMq;
 

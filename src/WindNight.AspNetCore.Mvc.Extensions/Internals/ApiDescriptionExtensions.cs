@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
-namespace Microsoft.AspNetCore.Mvc.WnExtensions.Internals
+namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
 {
    
     internal static class ApiDescriptionExtensions

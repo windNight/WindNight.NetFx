@@ -1,6 +1,6 @@
 ﻿using WindNight.ConfigCenter.Extension;
 
-namespace Microsoft.AspNetCore.Mvc.WnExtensions.Internals
+namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
 {
     internal class ConfigItems : ConfigItemsBase
     {

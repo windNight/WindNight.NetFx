@@ -30,7 +30,7 @@
 	<ItemGroup>
 
 		<!--<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />-->
-		<PackageReference Include="WindNight.AspNetCore.Mvc.Extensions" Version="1.0.3.7-beta.24062101" />
+		<PackageReference Include="WindNight.AspNetCore.Mvc.Extensions" Version="1.0.3.7-beta.24071001" />
 
 
 	</ItemGroup>

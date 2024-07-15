@@ -2,7 +2,7 @@
 using System.Text.Extension;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.WnExtensions;
-using Microsoft.AspNetCore.Mvc.WnExtensions.Internals;
+using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;

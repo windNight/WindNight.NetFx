@@ -191,7 +191,7 @@ namespace WindNight.ConfigCenter.Extension
         {
             Dictionary<string, string>? dict = null;
             // read file from project /Config *.json
-            var configFiles = Directory.GetFiles(ConfigPath).Where(m => CheckFileExtension(Path.GetExtension(m)));
+            var configFiles = GetFiles(ConfigPath).Where(m => CheckFileExtension(Path.GetExtension(m)));
             dict = new Dictionary<string, string>();
             foreach (var file in configFiles)
             {
@@ -421,8 +421,8 @@ namespace WindNight.ConfigCenter.Extension
                     LastModifyTime = default,
                 };
             }
-            var text = File.ReadAllText(filePath);
-            var lastModifyTime = Directory.GetLastWriteTime(filePath);
+            var text = ReadAllText(filePath);
+            var lastModifyTime = GetLastWriteTime(filePath);
 
             return new JsonFileConfigInfo
             {
@@ -440,7 +440,7 @@ namespace WindNight.ConfigCenter.Extension
         {
             // var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileDir, fileName);
             var filePath = Path.Combine(Environment.CurrentDirectory, FixDirPath(fileDir), fileName);
-           
+
             if (!File.Exists(filePath))
             {
                 return new FileConfigInfo
@@ -451,8 +451,8 @@ namespace WindNight.ConfigCenter.Extension
                     LastModifyTime = default,
                 };
             }
-            var text = File.ReadAllText(filePath);
-            var lastModifyTime = Directory.GetLastWriteTime(filePath);
+            var text = ReadAllText(filePath);
+            var lastModifyTime = GetLastWriteTime(filePath);
 
             return new FileConfigInfo
             {

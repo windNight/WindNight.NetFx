@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions.Attributes;
-using Microsoft.AspNetCore.Mvc.WnExtensions.Internals;
+using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using WindNight.AspNetCore.Mvc.Extensions.Extensions;
 using WindNight.Core;
 

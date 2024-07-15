@@ -23,8 +23,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         public static void ApiUrlCall(string url, string msg, long millisecond, string serialNumber = "",
-            string serverIp = "",
-            string clientIp = "")
+            string serverIp = "",  string clientIp = "")
         {
             Add(msg, LogLevels.ApiUrl, serialNumber: serialNumber, millisecond: millisecond, url: url,
                 serverIp: serverIp, clientIp: clientIp
@@ -39,6 +38,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="serialNumber"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
+        /// <param name="millisecond"></param>
         public static void ApiUrlException(string url, string msg, Exception exception, string serialNumber = "",
             string serverIp = "", long millisecond = 0,
             string clientIp = "")
@@ -57,7 +57,8 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         public static void Debug(string msg, string serialNumber = "", string url = "", string serverIp = "", long millisecond = 0,
             string clientIp = "")
         {
-            Add(msg, LogLevels.Debug, serialNumber: serialNumber, url: url, serverIp: serverIp, clientIp: clientIp, millisecond: millisecond);
+            Add(msg, LogLevels.Debug, serialNumber: serialNumber, url: url,
+                serverIp: serverIp, clientIp: clientIp, millisecond: millisecond);
         }
 
         /// <summary>
@@ -99,8 +100,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         public static void Error(string msg, Exception exception, string serialNumber = "", string url = "", long millisecond = 0,
-            string serverIp = "",
-            string clientIp = "")
+            string serverIp = "", string clientIp = "")
         {
             Add(msg, LogLevels.Error, exception, serialNumber, url: url, serverIp: serverIp,
                 clientIp: clientIp, millisecond: millisecond);
@@ -203,7 +203,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     //Content = msg,
                     Level = logLevel.ToString(),
                     LevelType = (int)logLevel,
-                    LogAppCode = DbLogOptions?.LogAppCode??"",
+                    LogAppCode = DbLogOptions?.LogAppCode ?? "",
                     LogAppName = DbLogOptions?.LogAppName ?? "",
                     ClientIp = clientIp,
                     ServerIp = serverIp,

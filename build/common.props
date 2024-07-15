@@ -57,19 +57,19 @@ https://learn.microsoft.com/en-us/dotnet/standard/frameworks
 		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;COREAPP31;CORE31LATER;NET45LATER;</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(TargetFramework)'=='net5.0'">
-		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET50;CORE31LATER;NET45LATER;</DefineConstants>
+		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET50;CORE31LATER;NET45LATER;;_NETN_</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
-		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET60;CORE31LATER;NET45LATER;</DefineConstants>
+		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET60;CORE31LATER;NET45LATER;;_NETN_</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='net7.0'">
-		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET70;CORE31LATER;NET45LATER;</DefineConstants>
+		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET70;CORE31LATER;NET45LATER;;_NETN_</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
-		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET80;CORE31LATER;NET45LATER;</DefineConstants>
+		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET80;CORE31LATER;NET45LATER;;_NETN_</DefineConstants>
 	</PropertyGroup>
 
 </Project>

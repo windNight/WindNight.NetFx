@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Extension;
 using WindNight.RabbitMq.Abstractions;
-using WindNight.RabbitMq.Internal;
+using WindNight.RabbitMq.@internal;
 
 namespace WindNight.RabbitMq;
 

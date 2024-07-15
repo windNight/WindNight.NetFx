@@ -23,12 +23,21 @@ namespace WindNight.ConfigCenter.Extension
 
     }
 
-    public class FileConfigInfo
+    public class FileConfigInfo : ConfigFileBaseInfo
+    {
+        //public string Path { get; set; }
+        //public string FileName { get; set; }
+        public string FileContent { get; set; }
+        //public DateTime LastModifyTime { get; set; }
+    }
+
+
+    public class ConfigFileBaseInfo
     {
         public string Path { get; set; }
         public string FileName { get; set; }
-        public string FileContent { get; set; }
         public DateTime LastModifyTime { get; set; }
+
     }
 
     public class AppSettingInfo : ConfigBaseInfo

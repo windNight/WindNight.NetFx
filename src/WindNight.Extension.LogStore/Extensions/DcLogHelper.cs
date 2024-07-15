@@ -9,7 +9,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
     /// <summary> </summary>
     public static class DcLogHelper
     {
-        private static IDcLoggerProcessor DbLoggerProcessor => DcLoggerExtensions.LoggerProcessor;
+        private static IDcLoggerProcessor DcLoggerProcessor => DcLoggerExtensions.LoggerProcessor;
         private static DcLogOptions DcLogOptions => DcLoggerExtensions.DcLogOptions;
 
 
@@ -182,7 +182,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
 
             try
             {
-                if (DbLoggerProcessor == null || DcLogOptions == null) return;
+                if (DcLoggerProcessor == null || DcLogOptions == null) return;
 
                 if ((int)logLevel < (int)DcLogOptions.MinLogLevel)
                 {
@@ -232,7 +232,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                     :
                     logMsg;
 
-                DbLoggerProcessor.EnqueueMessage(messageEntity);
+                DcLoggerProcessor.EnqueueMessage(messageEntity);
             }
             catch (Exception ex)
             {

@@ -7,7 +7,7 @@ using System.Text.Extension;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Extension;
-using WindNight.Core.Internals;
+using WindNight.Core.@internal;
 
 namespace System
 {

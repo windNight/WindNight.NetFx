@@ -17,7 +17,44 @@ namespace WindNight.ConfigCenter.Extension
             return HardInfo.IsWindows
                 ? fileDir.TrimStart('/').Replace('/', Path.DirectorySeparatorChar)
                 : fileDir;
+        }
 
+
+        public IEnumerable<ConfigFileBaseInfo> FetchSelfConfigFileInfos(string fileDir)
+        {
+            var filePath = Path.Combine(Environment.CurrentDirectory, FixDirPath(fileDir));
+            if (!Directory.Exists(filePath))
+            {
+
+                return Empty<ConfigFileBaseInfo>();
+            }
+
+            return GetConfigFileInfos(filePath);
+
+        }
+
+        public IEnumerable<ConfigFileBaseInfo> FetchConfigFileInfos()
+        {
+            var filePath = ConfigPath;
+            if (!Directory.Exists(filePath))
+            {
+
+                return Empty<ConfigFileBaseInfo>();
+
+            }
+
+            return GetConfigFileInfos(filePath);
+
+        }
+
+
+        IEnumerable<T> Empty<T>()
+        {
+#if NET45LATER
+            return Array.Empty<T>();
+#else
+            return new List<T>();
+#endif
         }
 
 
@@ -26,15 +63,13 @@ namespace WindNight.ConfigCenter.Extension
             var filePath = Path.Combine(Environment.CurrentDirectory, FixDirPath(fileDir));
             if (!Directory.Exists(filePath))
             {
-#if NET45LATER
-                return Array.Empty<string>();
-#else
-                return new List<string>();
-#endif
+
+                return Empty<string>();
+
             }
 
-            var configFiles = Directory.GetFiles(filePath).Where(m => CheckFileExtension(Path.GetExtension(m)));
-            var configFileNames = configFiles.Select(Path.GetFileName).ToList();
+            var configFiles = GetFiles(filePath).Where(m => CheckFileExtension(Path.GetExtension(m)));
+            var configFileNames = configFiles.Select(GetFileName).ToList();
             return configFileNames;
 
         }
@@ -45,18 +80,103 @@ namespace WindNight.ConfigCenter.Extension
             if (!Directory.Exists(filePath))
             {
 
-#if NET45LATER
-                return Array.Empty<string>();
-#else
-                return new List<string>();
-#endif
+                return Empty<string>();
 
             }
-            var configFiles = Directory.GetFiles(filePath).Where(m => CheckFileExtension(Path.GetExtension(m)));
+
+            var configFiles = GetFiles(filePath).Where(m => CheckFileExtension(Path.GetExtension(m)));
             var configFileNames = configFiles.Select(Path.GetFileName).ToList();
             return configFileNames;
 
         }
+
+
+
+        DateTime GetLastWriteTime(string filePath)
+        {
+            try
+            {
+                return Directory.GetLastWriteTime(filePath);
+            }
+            catch (Exception ex)
+            {
+                return DateTime.MinValue;
+            }
+        }
+
+        string ReadAllText(string filePath)
+        {
+            try
+            {
+                return File.ReadAllText(filePath);
+
+            }
+            catch (Exception ex)
+            {
+                return string.Empty;
+            }
+        }
+
+
+        string GetFileName(string filePath)
+        {
+            try
+            {
+                return Path.GetFileName(filePath);
+            }
+            catch (Exception ex)
+            {
+                return string.Empty;
+            }
+        }
+
+        IEnumerable<string> GetFiles(string filePath)
+        {
+
+            try
+            {
+
+                return Directory.GetFiles(filePath);
+            }
+            catch (Exception ex)
+            {
+                return Empty<string>();
+            }
+        }
+
+
+        IEnumerable<ConfigFileBaseInfo> GetConfigFileInfos(string filePath)
+        {
+            try
+            {
+                var list = new List<ConfigFileBaseInfo>();
+                var files = GetFiles(filePath);
+                foreach (var file in files)
+                {
+                    if (!CheckFileExtension(Path.GetExtension(file)))
+                    {
+                        continue;
+                    }
+
+                    var model = new ConfigFileBaseInfo
+                    {
+                        FileName = GetFileName(file),
+                        LastModifyTime = GetLastWriteTime(file),
+                        Path = file,
+                    };
+                    list.Add(model);
+                }
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+                return Empty<ConfigFileBaseInfo>();
+            }
+        }
+
+
+
 
 
     }

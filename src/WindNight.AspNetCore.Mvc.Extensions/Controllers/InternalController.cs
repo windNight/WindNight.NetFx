@@ -6,11 +6,10 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions.Attributes;
-using Microsoft.AspNetCore.Mvc.WnExtensions.Internals;
+using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Extensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
-using WindNight.ConfigCenter.Extension;
 using WindNight.Extension;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 

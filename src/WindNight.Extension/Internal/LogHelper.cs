@@ -3,44 +3,43 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 
-namespace WindNight.Extension.Internals
+namespace WindNight.Extension.@internal
 {
     internal static class LogHelper
     {
         internal static void Debug(string msg, long millisecond = 0, string url = "", string serverIp = "",
-            string clientIp = "", bool appendMessage = false)
+            string clientIp = "", bool appendMessage = false, string traceId = "")
         {
             Add(msg, LogLevels.Debug, millisecond: millisecond, url: url, serverIp: serverIp, clientIp: clientIp,
-                appendMessage: appendMessage);
+                appendMessage: appendMessage, traceId: traceId);
         }
 
         internal static void Info(string msg, long millisecond = 0, string url = "", string serverIp = "",
-            string clientIp = "", bool appendMessage = false)
+            string clientIp = "", bool appendMessage = false, string traceId = "")
         {
             Add(msg, LogLevels.Information, millisecond: millisecond, url: url, serverIp: serverIp, clientIp: clientIp,
-                appendMessage: appendMessage);
+                appendMessage: appendMessage, traceId: traceId);
         }
 
-        internal static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "",
-            string serverIp = "", string clientIp = "", bool appendMessage = true)
+        internal static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "", string serverIp = "",
+            string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             Add(msg, LogLevels.Warning, exception, millisecond: millisecond, url: url, serverIp: serverIp,
-                clientIp: clientIp, appendMessage: appendMessage);
+                clientIp: clientIp, appendMessage: appendMessage, traceId: traceId);
         }
 
-        internal static void Error(string msg, Exception exception, long millisecond = 0, string url = "",
-            string serverIp = "",
-            string clientIp = "", bool appendMessage = true)
+        internal static void Error(string msg, Exception exception, long millisecond = 0, string url = "", string serverIp = "",
+            string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             Add(msg, LogLevels.Error, exception, millisecond: millisecond, url: url, serverIp: serverIp,
-                clientIp: clientIp, appendMessage: appendMessage);
+                clientIp: clientIp, appendMessage: appendMessage, traceId: traceId);
         }
 
         internal static void Fatal(string msg, Exception exception, long millisecond = 0, string url = "",
-            string serverIp = "", string clientIp = "", bool appendMessage = false)
+            string serverIp = "", string clientIp = "", bool appendMessage = false, string traceId = "")
         {
             Add(msg, LogLevels.Critical, exception, millisecond: millisecond, url: url, serverIp: serverIp,
-                clientIp: clientIp, appendMessage: appendMessage);
+                clientIp: clientIp, appendMessage: appendMessage, traceId: traceId);
         }
 
         /// <summary>
@@ -55,14 +54,14 @@ namespace WindNight.Extension.Internals
         /// <param name="clientIp"></param>
         /// <param name="appendMessage"></param>
         internal static void Add(string msg, LogLevels level, Exception errorStack = null, bool isTimeout = false,
-            long millisecond = 0,
-            string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false)
+            long millisecond = 0, string url = "",
+            string serverIp = "", string clientIp = "", bool appendMessage = false, string traceId = "")
         {
             try
             {
                 var logService = Ioc.Instance.CurrentLogService;
                 if (logService != null)
-                    logService?.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage);
+                    logService?.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
                 else
                     DoConsoleLog(level, msg);
             }
@@ -81,4 +80,6 @@ namespace WindNight.Extension.Internals
             Console.ResetColor();
         }
     }
+
+
 }

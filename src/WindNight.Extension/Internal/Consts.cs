@@ -1,4 +1,4 @@
-﻿namespace WindNight.Extension.Internals
+﻿namespace WindNight.Extension.@internal
 {
     internal class Consts
     {

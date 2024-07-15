@@ -121,147 +121,105 @@ namespace WindNight.LogExtension
             }
         }
         private const string DefaultConfigContent =
-@"<?xml version='1.0' encoding='utf-8' ?>
-        <configuration>
-        	<log4net>
-        		<root>
-        			<level value='ALL'/>
-        			<appender-ref ref='DebugAppender' />
-        			<appender-ref ref='InfoAppender' />
-        			<appender-ref ref='WarnAppender'/>
-        			<appender-ref ref='ErrorAppender'/>
-        			<appender-ref ref='FatalAppender'/>
-        		</root>
-                <appender name='DebugAppender' type='log4net.Appender.RollingFileAppender'>
-        			<filter type='log4net.Filter.LevelRangeFilter'>
-        				<param name='LevelMin' value='DEBUG' />
-        				<param name='LevelMax' value='FATAL' />
-        			</filter>
-        			<param name='File' value='Logs/debug_'/>
-        			<param name = 'AppendToFile' value='true'/>
-        			<param name = 'RollingStyle' value='Composite'/>
-        			<param name = 'DatePattern' value='yyyy-MM-dd&quot;.log&quot;'/>
-        			<param name = 'MaximumFileSize' value='10MB'/>
-        			<param name = 'MaxSizeRollBackups' value='10'/>
-        			<param name = 'StaticLogFileName' value='false'/>
-        			<lockingModel type = 'log4net.Appender.FileAppender+MinimalLock' />
-        			<layout type='log4net.Layout.PatternLayout'>
-                        <param name = 'ConversionPattern' value='%n＝＝＝＝＝＝＝＝＝＝=============
-        %n【日志级别】%-5level
-        %n【记录时间】%date
-        %n【线程编号】[%thread]
-        %n【执行时间】[%r]毫秒
-        %n【出错文件】%F
-        %n【出错行号】%L
-        %n【日志的类】%logger 属性[%property{NDC}]
-        %n【日志描述】%message
-        %n【错误详情】%newline'/>
-        			</layout>
-        		</appender>
-        		<appender name='InfoAppender' type='log4net.Appender.RollingFileAppender'>
-        			<filter type='log4net.Filter.LevelRangeFilter'>
-        				<param name='LevelMin' value='INFO' />
-        				<param name='LevelMax' value='INFO' />
-        			</filter>
-        			<param name='File' value='Logs/info_'/>
-        			<param name = 'AppendToFile' value='true'/>
-        			<param name = 'RollingStyle' value='Composite'/>
-        			<param name = 'DatePattern' value='yyyy-MM-dd&quot;.log&quot;'/>
-        			<param name = 'MaximumFileSize' value='10MB'/>
-        			<param name = 'MaxSizeRollBackups' value='10'/>
-        			<param name = 'StaticLogFileName' value='false'/>
-        			<lockingModel type = 'log4net.Appender.FileAppender+MinimalLock' />
-        			<layout type='log4net.Layout.PatternLayout'>
-        			<param name = 'ConversionPattern' value='%n＝＝＝＝＝＝＝＝＝＝=============
-        %n【日志级别】%-5level
-        %n【记录时间】%date
-        %n【线程编号】[%thread]
-        %n【执行时间】[%r]毫秒
-        %n【日志的类】%logger 属性[%property{NDC}]
-        %n【日志描述】%message
-        %n【日志详情】%newline'/>
-        			</layout>
-        		</appender>
-                <appender name = 'WarnAppender' type='log4net.Appender.RollingFileAppender'>
-        			<filter type = 'log4net.Filter.LevelRangeFilter' >
-        				<param name='LevelMin' value='WARN' />
-        				<param name = 'LevelMax' value='WARN' />
-        			</filter>
-        			<param name = 'File' value='Logs/warn_'/>
-        			<param name = 'AppendToFile' value='true'/>
-        			<param name = 'RollingStyle' value='Composite'/>
-        			<param name = 'DatePattern' value='yyyy-MM-dd&quot;.log&quot;'/>
-        			<param name = 'MaximumFileSize' value='10MB'/>
-        			<param name = 'MaxSizeRollBackups' value='10'/>
-        			<param name = 'StaticLogFileName' value='false'/>
-        			<lockingModel type = 'log4net.Appender.FileAppender+MinimalLock' />
-        			<layout type='log4net.Layout.PatternLayout'>
-        			<param name = 'ConversionPattern' value='%n＝＝＝＝＝＝＝＝＝＝=============
-        %n【日志级别】%-5level
-        %n【记录时间】%date
-        %n【线程编号】[%thread]
-        %n【执行时间】[%r]毫秒
-        %n【出错文件】%F
-        %n【出错行号】%L
-        %n【出错的类】%logger 属性[%property{NDC}]
-        %n【错误描述】%message
-        %n【错误详情】%newline'/>
-        			</layout>
-        		</appender>
-        		<appender name = 'ErrorAppender' type='log4net.Appender.RollingFileAppender'>
-        			<filter type = 'log4net.Filter.LevelRangeFilter' >
-        				<param name='LevelMin' value='ERROR' />
-        				<param name = 'LevelMax' value='ERROR' />
-        			</filter>
-        			<param name = 'File' value='Logs/error_'/>
-        			<param name = 'AppendToFile' value='true'/>
-        			<param name = 'RollingStyle' value='Composite'/>
-        			<param name = 'DatePattern' value='yyyy-MM-dd&quot;.log&quot;'/>
-        			<param name = 'MaximumFileSize' value='10MB'/>
-        			<param name = 'MaxSizeRollBackups' value='10'/>
-        			<param name = 'StaticLogFileName' value='false'/>
-        			<lockingModel type = 'log4net.Appender.FileAppender+MinimalLock' />
-        			<layout type='log4net.Layout.PatternLayout'>
-        			<param name = 'ConversionPattern' value='%n＝＝＝＝＝＝＝＝＝＝=============
-        %n【日志级别】%-5level
-        %n【记录时间】%date
-        %n【线程编号】[%thread]
-        %n【执行时间】[%r]毫秒
-        %n【出错文件】%F
-        %n【出错行号】%L
-        %n【出错的类】%logger 属性[%property{NDC}]
-        %n【错误描述】%message
-        %n【错误详情】%newline'/>
-        			</layout>
-        		</appender>
-        		<appender name = 'FatalAppender' type='log4net.Appender.RollingFileAppender'>
-        			<filter type = 'log4net.Filter.LevelRangeFilter' >
-        				<param name='LevelMin' value='FATAL' />
-        				<param name = 'LevelMax' value='FATAL' />
-        			</filter>
-        			<param name = 'File' value='Logs/fatal_'/>
-        			<param name = 'AppendToFile' value='true'/>
-        			<param name = 'RollingStyle' value='Composite'/>
-        			<param name = 'DatePattern' value='yyyy-MM-dd&quot;.log&quot;'/>
-        			<param name = 'MaximumFileSize' value='10MB'/>
-        			<param name = 'MaxSizeRollBackups' value='10'/>
-        			<param name = 'StaticLogFileName' value='false'/>
-        			<lockingModel type = 'log4net.Appender.FileAppender+MinimalLock' />
-        			<layout type='log4net.Layout.PatternLayout'>
-        				 <param name = 'ConversionPattern' value='%n＝＝＝＝＝＝＝＝＝＝=============
-        %n【日志级别】%-5level
-        %n【记录时间】%date
-        %n【线程编号】[%thread]
-        %n【执行时间】[%r]毫秒
-        %n【出错文件】%F
-        %n【出错行号】%L
-        %n【出错的类】%logger 属性[%property{NDC}]
-        %n【错误描述】%message
-        %n【错误详情】%newline'/>
-        			</layout>
-        		</appender>
-        	</log4net>
-        </configuration>";
+@"<?xml version=""1.0"" encoding=""utf-8""?>
+
+<configuration>
+	<configSections>
+		<section name=""log4net"" type=""log4net.Config.Log4NetConfigurationSectionHandler, log4net"" />
+	</configSections>
+
+	<log4net>
+		<root>
+			<level value=""All"" />
+			<appender-ref ref=""ConsoleAppender"" />
+			<appender-ref ref=""AllFileAppender"" />
+			<appender-ref ref=""InfoFileAppender"" />
+			<appender-ref ref=""ErrorFileAppender"" />
+			<appender-ref ref=""WarnFileAppender"" />
+		</root>
+
+		<appender name=""AllFileAppender"" type=""log4net.Appender.RollingFileAppender"">
+			<param name=""File"" value=""Logs/all.log_"" />
+			<param name=""AppendToFile"" value=""true""/>
+			<param name=""RollingStyle"" value=""Composite""/>
+			<param name=""DatePattern"" value=""yyyy-MM-dd&quot;.log&quot;""/>
+			<param name=""MaximumFileSize"" value=""50MB""/>
+			<param name=""MaxSizeRollBackups"" value=""10""/>
+			<param name=""StaticLogFileName"" value=""false""/>
+			<lockingModel type=""log4net.Appender.FileAppender+MinimalLock"" />
+			<layout type=""log4net.Layout.PatternLayout"">
+				<param name=""ConversionPattern"" value=""[时间]:%d%n[%thread] %-5[级别]:%p%n[内容]:%m%n%n"" />
+			</layout>
+			<filter type='log4net.Filter.LevelRangeFilter'>
+				<param name='LevelMin' value='DEBUG' />
+				<param name='LevelMax' value='FATAL' />
+			</filter>
+		</appender>
+
+		<appender name=""InfoFileAppender"" type=""log4net.Appender.RollingFileAppender"">
+			<param name=""File"" value=""Logs/info.log_"" />
+			<param name=""AppendToFile"" value=""true""/>
+			<param name=""RollingStyle"" value=""Composite""/>
+			<param name=""DatePattern"" value=""yyyy-MM-dd&quot;.log&quot;""/>
+			<param name=""MaximumFileSize"" value=""50MB""/>
+			<param name=""MaxSizeRollBackups"" value=""10""/>
+			<param name=""StaticLogFileName"" value=""false""/>
+			<lockingModel type=""log4net.Appender.FileAppender+MinimalLock"" />
+			<layout type=""log4net.Layout.PatternLayout"">
+				<param name=""ConversionPattern"" value=""[时间]:%d%n[%thread] %-5[级别]:%p%n[内容]:%m%n%n"" />
+			</layout>
+			<filter type='log4net.Filter.LevelRangeFilter'>
+				<param name='LevelMin' value='INFO' />
+				<param name='LevelMax' value='INFO' />
+			</filter>
+		</appender>
+
+		<appender name=""ErrorFileAppender"" type=""log4net.Appender.RollingFileAppender"">
+			<filter type='log4net.Filter.LevelRangeFilter'>
+				<param name='LevelMin' value='ERROR' />
+				<param name='LevelMax' value='FATAL' />
+			</filter>
+			<param name=""File"" value=""Logs/error.log_"" />
+			<param name=""AppendToFile"" value=""true"" />
+			<param name=""RollingStyle"" value=""Composite"" />
+			<param name=""DatePattern"" value=""yyyy-MM-dd&quot;.log&quot;"" />
+			<param name=""MaximumFileSize"" value=""10MB"" />
+			<param name=""MaxSizeRollBackups"" value=""10"" />
+			<param name=""StaticLogFileName"" value=""false"" />
+			<lockingModel type=""log4net.Appender.FileAppender+MinimalLock"" />
+			<layout type=""log4net.Layout.PatternLayout"">
+				<param name=""ConversionPattern"" value=""[时间]:%d%n[%thread] %-5[级别]:%p%n[内容]:%m%n%n"" />
+			</layout>
+		</appender>
+
+		<appender name=""WarnFileAppender"" type=""log4net.Appender.RollingFileAppender"">
+			<filter type='log4net.Filter.LevelRangeFilter'>
+				<param name='LevelMin' value='WARN' />
+				<param name='LevelMax' value='WARN' />
+			</filter>
+			<param name=""File"" value=""Logs/warn.log_"" />
+			<param name=""AppendToFile"" value=""true"" />
+			<param name=""RollingStyle"" value=""Composite"" />
+			<param name=""DatePattern"" value=""yyyy-MM-dd&quot;.log&quot;"" />
+			<param name=""MaximumFileSize"" value=""10MB"" />
+			<param name=""MaxSizeRollBackups"" value=""10"" />
+			<param name=""StaticLogFileName"" value=""false"" />
+			<lockingModel type=""log4net.Appender.FileAppender+MinimalLock"" />
+			<layout type=""log4net.Layout.PatternLayout"">
+				<param name=""ConversionPattern"" value=""[时间]:%d%n[%thread] %-5[级别]:%p%n[内容]:%m%n%n"" />
+			</layout>
+		</appender>
+
+		<appender name=""ConsoleAppender"" type=""log4net.Appender.ConsoleAppender"">
+			<layout type=""log4net.Layout.PatternLayout"">
+				<conversionPattern value=""%date [%thread] %-5level %logger - %message%newline"" />
+			</layout>
+		</appender>
+
+
+
+	</log4net>
+</configuration>";
 
 
         private static void CreateConfigFile(FileInfo fileInfo)

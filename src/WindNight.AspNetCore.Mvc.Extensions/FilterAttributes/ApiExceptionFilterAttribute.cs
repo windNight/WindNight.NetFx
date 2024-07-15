@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.AspNetCore.Mvc.WnExtensions.Internals;
+using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using Newtonsoft.Json.Extension;
 using WindNight.Core;
 

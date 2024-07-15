@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using WindNight.Core.Internals;
+using WindNight.Core.@internal;
 
 namespace WindNight.Core.IO
 {

@@ -8,6 +8,20 @@ namespace Schedule
     internal class ConfigItems
     {
         private static IConfiguration configuration => Ioc.GetService<IConfiguration>();
+        protected static string[] TrueStrings = new string[2]
+        {
+            "1",
+            "true"
+        };
+        protected static string[] FalseStrings = new string[2]
+        {
+            "0",
+            "false"
+        };
+        protected const string ZeroString = "0";
+        protected const int ZeroInt = 0;
+        protected const long ZeroInt64 = 0;
+        protected const Decimal ZeroDecimal = 0M;
 
 
         internal static JobsConfig JobsConfig
@@ -33,7 +47,10 @@ namespace Schedule
             GetAppSettingConfig(ConfigItemsKey.DingtalkPhonesKey, "", false);
 
         public static bool DingtalkAtAll =>
-            GetAppSettingConfig(ConfigItemsKey.DingtalkAtAllKey, "false", false) == "true";
+            GetAppSettingConfig(ConfigItemsKey.DingtalkAtAllKey, false, false);
+
+        public static bool OpenDebug =>
+            GetAppSettingConfig(nameof(OpenDebug), false, false);
 
         private static JobsConfig _jobsConfig;
 
@@ -55,6 +72,31 @@ namespace Schedule
             }
 
             return configService.GetAppSetting(configKey, defaultValue, isThrow);
+        }
+
+
+        private static bool GetAppSettingConfig(string configKey, bool defaultValue = false, bool isThrow = true)
+        {
+
+            var configValue = GetAppSettingConfig(configKey, "", isThrow);
+            if (configValue.IsNullOrEmpty())
+                return defaultValue;
+
+            if (TrueStrings.Contains(configValue, StringComparer.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (FalseStrings.Contains(configValue, StringComparer.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            if (isThrow)
+                throw new ArgumentOutOfRangeException(nameof(configKey), $"configKey({configKey}) is not in TrueStrings({string.Join(",", TrueStrings)}) or FalseStrings({string.Join(",", FalseStrings)}");
+            return defaultValue;
+
+
         }
 
         private static T GetFileConfig<T>(string configKey, bool isThrow = true) where T : class, new()

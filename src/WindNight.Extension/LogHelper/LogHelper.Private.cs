@@ -13,12 +13,12 @@ namespace WindNight.LogExtension
         public static void Add(string msg, LogLevels logLevel, Exception? errorStack = null, bool isTimeout = false,
             long millisecond = 0,
             // [Maxlength(255)]
-            string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false)
+            string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false, string traceId = "")
         {
             try
             {
                 var logInfo = GeneratorLogInfo(msg, logLevel, errorStack, millisecond, url, serverIp, clientIp,
-                    appendMessage);
+                    appendMessage, traceId);
 
                 OnPublishLogInfoHandleEvent(logInfo);
             }
@@ -31,7 +31,7 @@ namespace WindNight.LogExtension
 
         private static LogInfo GeneratorLogInfo(string msg, LogLevels level, Exception? exceptions = null,
             long millisecond = 0, string url = "", string serverIp = "", string clientIp = "",
-            bool appendMessage = false)
+            bool appendMessage = false, string traceId = "")
         {
             var logMsg = FixLogMessage(msg);
             var logInfo = new LogInfo
@@ -44,7 +44,7 @@ namespace WindNight.LogExtension
                 RequestUrl = url,
                 Timestamps = millisecond,
                 LogTs = HardInfo.NowUnixTime,
-                SerialNumber = CurrentItem.GetSerialNumber,
+                SerialNumber = traceId.IsNullOrEmpty() ? CurrentItem.GetSerialNumber : traceId,
                 NodeCode = HardInfo.NodeCode,
             };
             FixLogInfo(logInfo, appendMessage);

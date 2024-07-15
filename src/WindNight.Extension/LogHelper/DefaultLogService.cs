@@ -9,32 +9,32 @@ namespace WindNight.LogExtension
     {
         public void AddLog(LogLevels logLevel, string msg, Exception? exception = null, long millisecond = 0,
             string url = "",
-            string serverIp = "", string clientIp = "", bool appendMessage = true)
+            string serverIp = "", string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             switch (logLevel)
             {
                 case LogLevels.Debug:
-                    LogHelper.Debug(msg, millisecond, url, serverIp, clientIp, appendMessage);
+                    LogHelper.Debug(msg, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
                     break;
                 case LogLevels.Information:
-                    LogHelper.Info(msg, millisecond, url, serverIp, clientIp, appendMessage);
+                    LogHelper.Info(msg, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
                     break;
                 case LogLevels.Warning:
-                    LogHelper.Warn(msg, exception, millisecond, url, serverIp, clientIp, appendMessage);
+                    LogHelper.Warn(msg, exception, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
                     break;
                 case LogLevels.Error:
-                    LogHelper.Error(msg, exception, millisecond, url, serverIp, clientIp, appendMessage);
+                    LogHelper.Error(msg, exception, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
                     break;
                 case LogLevels.Critical:
-                    LogHelper.Fatal(msg, exception, millisecond, url, serverIp, clientIp, appendMessage);
+                    LogHelper.Fatal(msg, exception, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
                     break;
                 case LogLevels.ApiUrl:
                     LogHelper.ApiUrlCall(msg: msg, millisecond: millisecond, url: url, serverIp: serverIp,
-                        clientIp: clientIp, appendMessage: appendMessage);
+                        clientIp: clientIp, appendMessage: appendMessage, traceId: traceId);
                     break;
                 case LogLevels.ApiUrlException:
                     LogHelper.ApiUrlException(msg: msg, exception: exception, url: url, serverIp: serverIp,
-                        clientIp: clientIp, appendMessage: appendMessage);
+                        clientIp: clientIp, appendMessage: appendMessage, traceId: traceId);
                     break;
                 case LogLevels.SysRegister:
                 case LogLevels.SysOffline:
@@ -46,61 +46,59 @@ namespace WindNight.LogExtension
             }
         }
 
-        public void Error(string msg, Exception? exception, long millisecond = 0, string url = "", string serverIp = "",
-            string clientIp = "", bool appendMessage = true)
+        public void Error(string msg, Exception? exception, long millisecond = 0, string url = "",
+            string serverIp = "", string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             AddLog(LogLevels.Error, msg, exception, millisecond, url,
-                serverIp, clientIp, appendMessage);
+                serverIp, clientIp, appendMessage, traceId: traceId);
         }
 
-        public void Fatal(string msg, Exception? exception, long millisecond = 0, string url = "", string serverIp = "",
-            string clientIp = "", bool appendMessage = false)
+        public void Fatal(string msg, Exception? exception, long millisecond = 0, string url = "",
+            string serverIp = "", string clientIp = "", bool appendMessage = false, string traceId = "")
         {
             AddLog(LogLevels.Critical, msg, exception, millisecond, url,
-                serverIp, clientIp, appendMessage);
+                serverIp, clientIp, appendMessage, traceId: traceId);
         }
 
-        public void Info(string msg, long millisecond = 0, string url = "", string serverIp = "", string clientIp = "",
-            bool appendMessage = false)
+        public void Info(string msg, long millisecond = 0, string url = "",
+            string serverIp = "", string clientIp = "", bool appendMessage = false, string traceId = "")
         {
             AddLog(LogLevels.Information, msg, null, millisecond, url,
-                serverIp, clientIp, appendMessage);
+                serverIp, clientIp, appendMessage, traceId: traceId);
         }
 
         public void Warn(string msg, Exception? exception = null, long millisecond = 0, string url = "",
-            string serverIp = "",
-            string clientIp = "", bool appendMessage = true)
+            string serverIp = "", string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             AddLog(LogLevels.Warning, msg, exception, millisecond, url,
-                serverIp, clientIp, appendMessage);
+                serverIp, clientIp, appendMessage, traceId: traceId);
         }
 
         public void Debug(string msg, long millisecond = 0, string url = "", string serverIp = "", string clientIp = "",
-            bool appendMessage = false)
+            bool appendMessage = false, string traceId = "")
         {
             AddLog(LogLevels.Debug, msg, null, millisecond, url,
-                serverIp, clientIp, appendMessage);
+                serverIp, clientIp, appendMessage, traceId: traceId);
         }
 
-        public void Trace(string msg, long millisecond = 0, string url = "", string serverIp = "", string clientIp = "",
-            bool appendMessage = false)
+        public void Trace(string msg, long millisecond = 0, string url = "",
+            string serverIp = "", string clientIp = "", bool appendMessage = false, string traceId = "")
         {
-            AddLog(LogLevels.Debug, msg, null, millisecond, url,
-                serverIp, clientIp, appendMessage);
+            AddLog(LogLevels.Debug, msg, null, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
         }
 
-        public void Register(string buildType, bool appendMessage = false)
+        public void Register(string buildType, bool appendMessage = false, string traceId = "")
         {
-            LogHelper.LogRegisterInfo(buildType);
+            LogHelper.LogRegisterInfo(buildType, traceId: traceId);
         }
 
 
-        public void Offline(string buildType, Exception? exception = null, bool appendMessage = false)
+        public void Offline(string buildType, Exception? exception = null, bool appendMessage = false, string traceId = "")
         {
-            LogHelper.LogOfflineInfo(buildType, exception);
+            LogHelper.LogOfflineInfo(buildType, exception, traceId: traceId);
         }
 
-        public void Report(JObject obj, string serialNumber = "")
+        public void Report(JObject obj, string traceId = "")
         {
         }
     }

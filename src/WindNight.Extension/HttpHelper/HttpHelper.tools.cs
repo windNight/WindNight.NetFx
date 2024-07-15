@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using RestSharp;
 using WindNight.Core;
-using WindNight.Extension.Internals;
+using WindNight.Extension.@internal;
 
 namespace WindNight.Extension
 {

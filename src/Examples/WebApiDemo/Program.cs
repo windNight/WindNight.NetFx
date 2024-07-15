@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting.WnExtensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using WindNight.AspNetCore.Hosting;
+using WindNight.Config.Abstractions;
 using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DcLog;
@@ -28,7 +29,7 @@ namespace WebApiDemo
             Init(CreateHostBuilder, buildType, () =>
             {
 
-                
+
             }, args);
         }
 
@@ -36,11 +37,12 @@ namespace WebApiDemo
         {
             return CreateHostBuilderDefaults(buildType, args,
                          (hostingContext, configBuilder) =>
-                         { 
+                         {
                              configBuilder.SetBasePath(AppContext.BaseDirectory)
                                  .AddJsonFile("Config/AppSettings.json", false, true)
+                                 .AddJsonFile("Config/ConnectionStrings.json", false, true)
 
-                                 ; 
+                                 ;
                          },
                 webHostConfigure: webBuilder =>
                 {
@@ -48,7 +50,7 @@ namespace WebApiDemo
                 },
                 configureServicesDelegate: (context, services) =>
                 {
-                    //  ConfigItems.Init(configuration: context.Configuration);
+                    ConfigItems.Init(configuration: context.Configuration, sleepTimeInMs: 10000000);
                 })
 
                 ;
@@ -58,8 +60,18 @@ namespace WebApiDemo
 
 
     }
-   
-    
+
+    public class ConfigItems : ConfigItemsBase
+    {
+        public static void Init(int sleepTimeInMs = 5000,
+            ILogService? logService = null,
+            IConfiguration? configuration = null)
+        {
+            StartConfigCenter(sleepTimeInMs, logService, configuration);
+        }
+    }
+
+
     public class Program2
     {
 
@@ -313,4 +325,17 @@ namespace WebApiDemo
 
     }
 
+
+    public class ConfigCenterAuth : IConfigCenterAuth
+    {
+        public bool OpenConfigCenterAuth { get; set; } = true;
+
+        public bool ConfigCenterApiAuth()
+        {
+            return true;
+        }
+
+    }
+
 }
+

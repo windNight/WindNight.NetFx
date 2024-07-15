@@ -3,7 +3,7 @@ using System;
 #if NETSTANDARD2_1
 using System.Diagnostics.CodeAnalysis;
 #endif
-using WindNight.Core.Internals;
+using WindNight.Core.@internal;
 
 namespace Newtonsoft.Json.Extension
 {

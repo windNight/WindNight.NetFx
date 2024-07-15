@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Text.Extension;
 using Newtonsoft.Json.Extension;
-using WindNight.Extension.Internals; 
+using WindNight.Extension.@internal; 
 using WindNight.Core.Abstractions;
 
 

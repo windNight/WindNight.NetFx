@@ -25,13 +25,19 @@ namespace WindNight.ConfigCenter.Extension
 
 
         public static FileConfigInfo ReadConfigFileDirect(string fileName) => ConfigProvider.Instance.ReadConfigFileDirect(fileName);
+      
         public static FileConfigInfo ReadSelfConfigFileDirect(string fileDir, string fileName) => ConfigProvider.Instance.ReadSelfConfigFileDirect(fileDir, fileName);
 
         public static Dictionary<string, string> GetCurrentConfiguration() => ConfigCenterContext.CurrentConfiguration.ToDictionary(k => k.Key, v => v.Value);
 
         public static IEnumerable<string> FetchSelfConfigNames(string fileDir) => ConfigProvider.Instance.FetchSelfConfigNames(fileDir);
+      
         public static IEnumerable<string> FetchConfigNames() => ConfigProvider.Instance.FetchConfigNames();
 
+
+        public static IEnumerable<ConfigFileBaseInfo> FetchSelfConfigFileInfos(string fileDir) => ConfigProvider.Instance.FetchSelfConfigFileInfos(fileDir);
+
+        public static IEnumerable<ConfigFileBaseInfo> FetchConfigFileInfos() => ConfigProvider.Instance.FetchConfigFileInfos();
 
 
     }

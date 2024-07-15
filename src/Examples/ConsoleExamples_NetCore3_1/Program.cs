@@ -232,7 +232,7 @@ namespace ConsoleExamples_NetCore3_1
                        .Build();
 
             Ioc.Instance.InitServiceProvider(host.Services);
-            Console.WriteLine($"Check All Config {ConfigItemsBase.AllConfigs.ToJsonStr()}");
+            Console.WriteLine($"Check All Config {ConfigItemsBase.GetAllConfigs().ToJsonStr()}");
             host.Run();
         }
 

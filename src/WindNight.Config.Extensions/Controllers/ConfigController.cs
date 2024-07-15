@@ -146,6 +146,18 @@ namespace WindNight.Config.Extensions
         }
 
         /// <summary>
+        ///   获取后端项目下前端项目的配置文件名列表
+        /// </summary>
+        /// <param name="fileDir"></param>
+        /// <returns></returns>
+        [HttpGet("frontconfig/fileinfos")]
+        public List<ConfigFileBaseInfo> QueryFrontConfigInfosDirect(string fileDir)
+        {
+            fileDir = $"wwwroot/{fileDir.TrimStart('/').TrimStart(Path.DirectorySeparatorChar)}";
+            return ConfigItemsBase.FetchSelfConfigFileInfos(fileDir).ToList();
+        }
+
+        /// <summary>
         ///  获取自定义文件下的配置文件名列表
         /// </summary>
         /// <param name="fileDir"></param>
@@ -154,6 +166,17 @@ namespace WindNight.Config.Extensions
         public List<string> QuerySelfConfigNamesDirect(string fileDir)
         {
             return ConfigItemsBase.FetchSelfConfigNames(fileDir).ToList();
+        }
+
+        /// <summary>
+        ///  获取自定义文件下的配置文件信息列表
+        /// </summary>
+        /// <param name="fileDir"></param>
+        /// <returns></returns>
+        [HttpGet("selfconfig/fileinfos")]
+        public List<ConfigFileBaseInfo> QuerySelfConfigFileInfosDirect(string fileDir)
+        {
+            return ConfigItemsBase.FetchSelfConfigFileInfos(fileDir).ToList();
         }
 
 
@@ -166,6 +189,17 @@ namespace WindNight.Config.Extensions
         {
             return ConfigItemsBase.FetchConfigNames().ToList();
         }
+
+        /// <summary>
+        ///  获取后端项目的配置文件信息列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("config/fileinfos")]
+        public List<ConfigFileBaseInfo> FetchConfigFileInfosDirect()
+        {
+            return ConfigItemsBase.FetchConfigFileInfos().ToList();
+        }
+
 
         /// <summary>
         ///  获取内存中配置文件的更新标记 md5
