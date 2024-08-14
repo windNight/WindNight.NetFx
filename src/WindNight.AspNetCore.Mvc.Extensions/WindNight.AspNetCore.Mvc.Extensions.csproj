@@ -18,7 +18,7 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.24062401" />
+		<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.24072501" />
 	</ItemGroup>
 
 	<!--<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">

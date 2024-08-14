@@ -3,6 +3,7 @@ using System.Text.Extension;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.WnExtensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
+using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;
@@ -32,21 +33,43 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
         protected virtual void AppendActionArguments(ActionExecutingContext context)
         {
             if (context.ActionArguments != null)
+            {
                 foreach (var argument in context.ActionArguments)
-                    if (argument.Value == null || argument.Value.GetType().IsValueType || argument.Value is string)
-                    {
-                        CurrentItem.AddItem($"{argument.Key.ToLower()}", argument.Value?.ToString());
+                {
+                    try
+                    { 
+                        if (argument.Value == null || argument.Value.GetType().IsValueType || argument.Value is string)
+                        {
+                            CurrentItem.AddItem($"{argument.Key.ToLower()}", argument.Value?.ToString());
+                        }
+                        else if (argument.Value is System.Collections.IList)
+                        {
+                            //if (argument.Value.GetType().IsGenericType && argument.Value.GetType().GetGenericTypeDefinition() == typeof(List<>))
+                            //{
+
+                            //}
+                            CurrentItem.AddItem("list", argument.Value.ToJsonStr());
+
+                        }
+                        else
+                        {
+
+                            var input = JObject.FromObject(argument.Value);
+                            if (input == null) continue;
+                            foreach (var each in input)
+                                if (each.Key.ToLower().Contains(ACCESSTOKENKEY))
+                                    CurrentItem.AddItem(WebConst.ACCESSTOKEN, each.Value.ToString());
+                                else
+                                    CurrentItem.AddItem($"{each.Key.ToLower()}", each.Value.ToString());
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        var input = JObject.FromObject(argument.Value);
-                        if (input == null) continue;
-                        foreach (var each in input)
-                            if (each.Key.ToLower().Contains(ACCESSTOKENKEY))
-                                CurrentItem.AddItem(WebConst.ACCESSTOKEN, each.Value.ToString());
-                            else
-                                CurrentItem.AddItem($"{each.Key.ToLower()}", each.Value.ToString());
+
                     }
+                }
+            }
+
         }
 
 
