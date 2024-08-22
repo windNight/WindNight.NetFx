@@ -38,7 +38,7 @@ namespace WindNight.Extension.Logger.DcLog.Abstractions
         /// <summary> 上报时进行Gzip压缩 </summary>
         public bool OpenGZip { get; set; } = false;
 
-        public int ContentMaxLength { get; set; } = 2000;
+        public int ContentMaxLength { get; set; } = 75 * 1000;
 
     }
 }

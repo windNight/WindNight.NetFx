@@ -15,7 +15,7 @@ namespace WindNight.Extension.Logger.DcLog
     {
 
 
-        private const int OpenGZipLimit = 15_00;
+        private const int OpenGZipLimit = 150_000;
         private const string GZipFlagStr = "gzip@";
         private readonly Stopwatch _stopwatch = new Stopwatch();
         //private ISystemLogsProcess _repo => Ioc.GetService<ISystemLogsProcess>();
