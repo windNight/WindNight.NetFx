@@ -88,11 +88,12 @@ namespace WindNight.Extension
 
 
         public static IPagedList<T> PostPagedList<T>(string domain, string path, object bodyObjects,
-            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20) //where T : new()
+            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
+            int timeOut = 1000 * 60 * 20, bool isJsonBody = true) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
-                    var request = GenPostRequest(path, headerDict, bodyObjects);
+                    var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
                     //var request = new RestRequest(path, Method.POST);
 
                     //headerDict = GeneratorHeaderDict(headerDict);
@@ -109,11 +110,12 @@ namespace WindNight.Extension
 
 
         public static async Task<IPagedList<T>> PostPagedListAsync<T>(string domain, string path, object bodyObjects,
-            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, CancellationToken token = default(CancellationToken)) //where T : new()
+            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
+            int timeOut = 1000 * 60 * 20, CancellationToken token = default(CancellationToken), bool isJsonBody = true) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
                 {
-                    var request = GenPostRequest(path, headerDict, bodyObjects);
+                    var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
                     //var request = new RestRequest(path, Method.POST);
 
                     //headerDict = GeneratorHeaderDict(headerDict);

@@ -21,14 +21,15 @@ namespace WindNight.Extension
         /// <param name="warnMiSeconds"></param>
         /// <param name="timeOut">Timeout in milliseconds to be used for the request</param>
         /// <param name="convertFunc"></param>
+        /// <param name="isJsonBody"></param>
         /// <returns></returns>
         public static T Post<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
-            int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null) //where T : new()
+            int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null, bool isJsonBody = true) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
             {
-                var request = GenPostRequest(path, headerDict, bodyObjects);
+                var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
                 //var request = new RestRequest(path, Method.POST);
 
                 //headerDict = GeneratorHeaderDict(headerDict);
@@ -54,15 +55,16 @@ namespace WindNight.Extension
         /// <param name="timeOut">Timeout in milliseconds to be used for the request</param>
         /// <param name="convertFunc"></param>
         /// <param name="token"></param>
+        /// <param name="isJsonBody"></param>
         /// <returns></returns>
         public static async Task<T> PostAsync<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null,
-            CancellationToken token = default(CancellationToken)) //where T : new()
+            CancellationToken token = default(CancellationToken), bool isJsonBody = true) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
             {
-                var request = GenPostRequest(path, headerDict, bodyObjects);
+                var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
 
                 //var request = new RestRequest(path, Method.POST);
 

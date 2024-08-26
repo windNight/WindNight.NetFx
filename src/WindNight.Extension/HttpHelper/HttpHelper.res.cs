@@ -102,14 +102,15 @@ namespace WindNight.Extension
         /// <param name="headerDict"></param>
         /// <param name="warnMiSeconds"></param>
         /// <param name="timeOut">Timeout in milliseconds to be used for the request</param>
+        /// <param name="isJsonBody"></param>
         /// <returns></returns>
         public static T PostResponse<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
-            int timeOut = 1000 * 60 * 20) //where T : new()
+            int timeOut = 1000 * 60 * 20, bool isJsonBody = true) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
             {
-                var request = GenPostRequest(path, headerDict, bodyObjects);
+                var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
 
                 return ExecuteHttpClient3<T>(domain, request, timeOut);
             }, $"HttpPost({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
@@ -127,15 +128,16 @@ namespace WindNight.Extension
         /// <param name="warnMiSeconds"></param>
         /// <param name="timeOut">Timeout in milliseconds to be used for the request</param>
         /// <param name="token"></param>
+        /// <param name="isJsonBody"></param>
         /// <returns></returns>
         public static async Task<T> PostResponseAsync<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20,
-            CancellationToken token = default(CancellationToken)) //where T : new()
+            CancellationToken token = default(CancellationToken), bool isJsonBody = true) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
             {
-                var request = GenPostRequest(path, headerDict, bodyObjects);
+                var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
 
                 return await ExecuteHttpClientAsync3<T>(domain, request, timeOut: timeOut, token: token);
             },

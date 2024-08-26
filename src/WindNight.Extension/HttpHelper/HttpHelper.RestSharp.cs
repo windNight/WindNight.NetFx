@@ -43,8 +43,8 @@ namespace WindNight.Extension
 
         static RestRequest GenPostRequest(string url,
             Dictionary<string, string> headerDict = null,
-            object bodyObjects = null
-        )
+            object bodyObjects = null, bool isJsonBody = true)
+
         {
             var request = new RestRequest(url, Method.POST);
             headerDict = GeneratorHeaderDict(headerDict);
@@ -53,7 +53,14 @@ namespace WindNight.Extension
 
             if (bodyObjects != null)
             {
-                request.AddJsonBody(bodyObjects);
+                if (isJsonBody)
+                {
+                    request.AddJsonBody(bodyObjects);
+                }
+                else
+                {
+                    request.AddObject(bodyObjects);
+                }
             }
 
             return request;

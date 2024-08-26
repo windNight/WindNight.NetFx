@@ -32,6 +32,8 @@ namespace WindNight.Extension
             var queryDict = new Dictionary<string, object>();
             try
             {
+                if (queries == null)
+                    return queryDict;
                 //queryDict = queries
                 //  .GetType()
                 //  .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty)
