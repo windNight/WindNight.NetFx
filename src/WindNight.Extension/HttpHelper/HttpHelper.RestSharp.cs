@@ -3,22 +3,79 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using RestSharp;
+using WindNight.Core.Extension;
 
 namespace WindNight.Extension
 {
     public static partial class HttpHelper
     {
 
-        static RestClient GenRestClient(string domain, int timeOut)
+        static RestClient GenRestClient(string domain, int timeOut, Dictionary<string, string> headerDict = null)
         {
+            var userAgent = headerDict.SafeGetValue(UserAgentKey) ?? null;
             var client = new RestClient(domain)
             {
                 Proxy = null,
                 Timeout = timeOut,
+                UserAgent = userAgent,
             };
+
 
             return client;
         }
+
+        private const string UserAgentKey = "User-Agent";
+
+        public static void AppendHttpHeader(this RestRequest request, Dictionary<string, string> headerDict = null)
+        {
+            headerDict = GeneratorHeaderDict(headerDict);
+
+            foreach (var header in headerDict)
+            {
+                if (header.Key.Equals(UserAgentKey, StringComparison.OrdinalIgnoreCase))
+                {
+
+                    request.AddOrUpdateHeader(UserAgentKey, header.Value);
+
+                }
+                else
+                {
+                    request.AddHeader(header.Key, header.Value);
+                }
+            }
+
+        }
+
+#if !NET45
+
+        static IRestRequest AddOrUpdateHeader(this IRestRequest request, string key, string value)
+        {
+            request.AddOrUpdateHeader(key, value);
+
+            return request;
+        }
+#endif
+
+
+#if NET45
+
+        static IRestRequest AddOrUpdateHeader(this IRestRequest request, string key, string value)
+        {
+            try
+            {
+                request.AddHeader(key, value);
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return request;
+
+        }
+#endif
+
+
+
 
 
         static RestRequest GenGetRequest(string url,
@@ -26,9 +83,10 @@ namespace WindNight.Extension
             Dictionary<string, object> queries = null)
         {
             var request = new RestRequest(url, Method.GET);
-            headerDict = GeneratorHeaderDict(headerDict);
 
-            foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
+            request.AppendHttpHeader(headerDict);
+
+
             if (queries != null)
             {
                 foreach (var query in queries)
@@ -47,9 +105,7 @@ namespace WindNight.Extension
 
         {
             var request = new RestRequest(url, Method.POST);
-            headerDict = GeneratorHeaderDict(headerDict);
-
-            foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
+            request.AppendHttpHeader(headerDict);
 
             if (bodyObjects != null)
             {
@@ -72,9 +128,9 @@ namespace WindNight.Extension
         {
             var request = new RestRequest(url, Method.HEAD);
             request.AddHeader("Accept", "*/*");
-            headerDict = GeneratorHeaderDict(headerDict);
 
-            foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
+
+            request.AppendHttpHeader(headerDict);
 
             return request;
         }
@@ -85,88 +141,48 @@ namespace WindNight.Extension
         {
             var request = new RestRequest(url, Method.GET);
             request.AddHeader("Accept", "*/*");
-            headerDict = GeneratorHeaderDict(headerDict);
+            request.AppendHttpHeader(headerDict);
 
-            foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
             request.AlwaysMultipartFormData = true;
             return request;
         }
 
 
-        private static IRestResponse ExecuteHttpClient(string domain, IRestRequest request, int timeOut = 1000 * 60 * 20)
+        private static IRestResponse ExecuteHttpClient(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, int timeOut = 1000 * 60 * 20)
         {
-            var client = GenRestClient(domain, timeOut);
-            //var client = new RestClient(domain)
-            //{
-            //    Proxy = null,
-            //    Timeout = timeOut,
-            //};
+            var client = GenRestClient(domain, timeOut, headerDict);
 
-            //var response = client.Execute(request);
             var response = DoExecute(client, request);
             return response;
 
         }
 
-        private static T ExecuteHttpClient<T>(string domain, IRestRequest request, int timeOut = 1000 * 60 * 20
+        private static T ExecuteHttpClient<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, int timeOut = 1000 * 60 * 20
             , Func<string, T> convertFunc = null)
         {
-            //var client = GenRestClient(domain, timeOut);
-            //var client = new RestClient(domain)
-            //{
-            //    Proxy = null,
-            //    Timeout = timeOut,
-            //};
 
-            //var response = client.Execute(request);
-            //var response = DoExecute(client, request);
-            var response = ExecuteHttpClient(domain, request, timeOut);
-            return DeserializeResponse<T>(response, convertFunc);
+            var response = ExecuteHttpClient(domain, request, headerDict, timeOut);
+            return DeserializeResponse<T>(response, convertFunc, domain);
         }
 
-        private static async Task<IRestResponse> ExecuteHttpClientAsync(string domain, IRestRequest request, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
+        private static async Task<IRestResponse> ExecuteHttpClientAsync(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
         {
-            var client = GenRestClient(domain, timeOut);
-            //var client = new RestClient(domain)
-            //{
-            //    Proxy = null,
-            //    Timeout = timeOut,// 1000 * 60 * 20
-            //};
+            var client = GenRestClient(domain, timeOut, headerDict);
 
-            //#if  NET45
-            //            var response = await client.ExecuteTaskAsync(request, token);
-            //#else
-            //            var response = await client.ExecuteAsync(request, token);
-            //#endif
             var response = await DoExecuteAsync(client, request, token);
 
             return response;
-            // return DeserializeResponse<T>(response);
         }
 
 
-        private static async Task<T> ExecuteHttpClientAsync<T>(string domain, IRestRequest request, Func<string, T> convertFunc = null,
+        private static async Task<T> ExecuteHttpClientAsync<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, Func<string, T> convertFunc = null,
             CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
         {
-            //            var client = GenRestClient(domain, timeOut);
-            //            //var client = new RestClient(domain)
-            //            //{
-            //            //    Proxy = null,
-            //            //    Timeout = timeOut,// 1000 * 60 * 20
-            //            //};
 
-            //#if  NET45
-            //            var response = await client.ExecuteTaskAsync(request, token);
-            //#else
-            //            var response = await client.ExecuteAsync(request, token);
-            //#endif
+            var response = await ExecuteHttpClientAsync(domain, request, headerDict, token);
 
-            var response = await ExecuteHttpClientAsync(domain, request, token);
+            return DeserializeResponse<T>(response, convertFunc, domain);
 
-            return DeserializeResponse<T>(response, convertFunc);
-
-
-            // return DeserializeResponse<T>(response);
         }
 
 
@@ -204,76 +220,54 @@ namespace WindNight.Extension
 #endif
 
 
-        private static IPagedList<T> ExecuteHttpClient2<T>(string domain, IRestRequest request, int timeOut = 1000 * 60 * 20)
+        private static IPagedList<T> ExecuteHttpClient2<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, int timeOut = 1000 * 60 * 20)
         {
-            //var client = GenRestClient(domain, timeOut);
-            ////var client = new RestClient(domain)
-            ////{
-            ////    Proxy = null,
-            ////    Timeout = timeOut,
-            ////};
-            ////var response = client.Execute(request);
-            //var response = DoExecute(client, request);
 
+            var response = ExecuteHttpClient(domain, request, headerDict, timeOut);
 
-            var response = ExecuteHttpClient(domain, request, timeOut);
-
-            return DeserializePageListResponse<T>(response);
+            return DeserializePageListResponse<T>(response, domain);
         }
 
-        private static async Task<IPagedList<T>> ExecuteHttpClientAsync2<T>(string domain, IRestRequest request, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
+        private static async Task<IPagedList<T>> ExecuteHttpClientAsync2<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
         {
-            //var client = GenRestClient(domain, timeOut);
-            ////var client = new RestClient(domain)
-            ////{
-            ////    Proxy = null,
-            ////    Timeout = timeOut,// 1000 * 60 * 20
-            ////};
 
-            ////#if  NET45
-            ////            var response = await client.ExecuteTaskAsync(request);
-            ////#else
-            ////            var response = await client.ExecuteAsync(request, token);
-            ////#endif
-            //var response = await DoExecuteAsync(client, request, token);
+            var response = await ExecuteHttpClientAsync(domain, request, headerDict, token);
 
-            var response = await ExecuteHttpClientAsync(domain, request, token);
-
-            return response.DeserializePageListResponse<T>();
+            return response.DeserializePageListResponse<T>(domain);
 
 
         }
 
 
-        private static T ExecuteHttpClient3<T>(string domain, IRestRequest request, int timeOut = 1000 * 60 * 20)
+        private static T ExecuteHttpClient3<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, int timeOut = 1000 * 60 * 20)
         {
-            var response = ExecuteHttpClient(domain, request, timeOut);
+            var response = ExecuteHttpClient(domain, request, headerDict, timeOut);
 
-            return response.DeserializeResResponse<T>();
+            return response.DeserializeResResponse<T>(domain);
         }
 
-        private static async Task<T> ExecuteHttpClientAsync3<T>(string domain, IRestRequest request, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
+        private static async Task<T> ExecuteHttpClientAsync3<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
         {
 
-            var response = await ExecuteHttpClientAsync(domain, request, token);
+            var response = await ExecuteHttpClientAsync(domain, request, headerDict, token);
 
-            return response.DeserializeResResponse<T>();
+            return response.DeserializeResResponse<T>(domain);
 
         }
 
-        private static IEnumerable<T> ExecuteHttpClient4<T>(string domain, IRestRequest request, int timeOut = 1000 * 60 * 20)
+        private static IEnumerable<T> ExecuteHttpClient4<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, int timeOut = 1000 * 60 * 20)
         {
-            var response = ExecuteHttpClient(domain, request, timeOut);
+            var response = ExecuteHttpClient(domain, request, headerDict, timeOut);
 
-            return response.DeserializeListResponse<T>();
+            return response.DeserializeListResponse<T>(domain);
         }
 
-        private static async Task<IEnumerable<T>> ExecuteHttpClientAsync4<T>(string domain, IRestRequest request, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
+        private static async Task<IEnumerable<T>> ExecuteHttpClientAsync4<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, CancellationToken token = default(CancellationToken), int timeOut = 1000 * 60 * 20)
         {
 
-            var response = await ExecuteHttpClientAsync(domain, request, token);
+            var response = await ExecuteHttpClientAsync(domain, request, headerDict, token);
 
-            return response.DeserializeListResponse<T>();
+            return response.DeserializeListResponse<T>(domain);
 
         }
 

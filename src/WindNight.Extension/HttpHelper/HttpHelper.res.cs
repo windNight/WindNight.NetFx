@@ -31,7 +31,7 @@ namespace WindNight.Extension
 
                 var request = GenGetRequest(path, headerDict, queries);
 
-                return ExecuteHttpClient3<T>(domain, request, timeOut);
+                return ExecuteHttpClient3<T>(domain, request, headerDict, timeOut);
             }, $"HttpGet({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 
@@ -73,7 +73,7 @@ namespace WindNight.Extension
 
                 var request = GenGetRequest(path, headerDict, queries);
 
-                return await ExecuteHttpClientAsync3<T>(domain, request, token);
+                return await ExecuteHttpClientAsync3<T>(domain, request, headerDict, token);
             }, $"HttpGetAsync({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 
@@ -112,7 +112,7 @@ namespace WindNight.Extension
             {
                 var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
 
-                return ExecuteHttpClient3<T>(domain, request, timeOut);
+                return ExecuteHttpClient3<T>(domain, request, headerDict, timeOut);
             }, $"HttpPost({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
@@ -139,7 +139,7 @@ namespace WindNight.Extension
             {
                 var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
 
-                return await ExecuteHttpClientAsync3<T>(domain, request, timeOut: timeOut, token: token);
+                return await ExecuteHttpClientAsync3<T>(domain, request, headerDict, token, timeOut);
             },
                 $"HttpPostAsync({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);

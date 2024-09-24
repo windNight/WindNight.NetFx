@@ -17,14 +17,8 @@ namespace WindNight.Extension
                 {
                     var request = GenHeadRequest(url, headerDict);
 
-                    var client = GenRestClient(url, timeOut);
-                    //var client = new RestClient(url)
-                    //{
-                    //    Proxy = null,
-                    //    Timeout = timeOut,// 1000 * 60 * 20
-                    //};
-
-                    //var response = client.Execute(request);
+                    var client = GenRestClient(url, timeOut, headerDict);
+             
                     var response = DoExecute(client, request);
                     var isOk = response.StatusCode == HttpStatusCode.OK;
                     return isOk;
@@ -41,18 +35,8 @@ namespace WindNight.Extension
                 {
                     var request = GenHeadRequest(url, headerDict);
 
-                    var client = GenRestClient(url, timeOut);
-                    //var client = new RestClient(url)
-                    //{
-                    //    Proxy = null,
-                    //    Timeout = timeOut,// 1000 * 60 * 20
-                    //};
-
-                    //#if NET45
-                    //            var response = await client.ExecuteTaskAsync(request);
-                    //#else
-                    //                    var response = await client.ExecuteAsync(request, default(CancellationToken));
-                    //#endif
+                    var client = GenRestClient(url, timeOut, headerDict);
+                  
                     var response = await DoExecuteAsync(client, request, token);
 
                     var isOk = response.StatusCode == HttpStatusCode.OK;
@@ -78,13 +62,8 @@ namespace WindNight.Extension
 
                     var request = GenDownloadRequest(url, headerDict);
 
-                    var client = GenRestClient(url, timeOut);
-                    //var client = new RestClient(url)
-                    //{
-                    //    Proxy = null,
-                    //    Timeout = timeOut,// 1000 * 60 * 20
-
-                    //};
+                    var client = GenRestClient(url, timeOut, headerDict);
+                   
                     var bytes = client.DownloadData(request);
                     return bytes;
                 },

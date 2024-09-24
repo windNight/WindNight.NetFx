@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Extension;
 using WindNight.Core.Tools;
 
 namespace WindNight.Extension
@@ -19,14 +20,8 @@ namespace WindNight.Extension
                 {
                     var request = GenHeadRequest(url, headerDict);
 
-                    var client = GenRestClient(url, timeOut);
+                    var client = GenRestClient(url, timeOut, headerDict);
 
-                    //var client = new RestClient(url)
-                    //{
-                    //    Proxy = null,
-                    //    Timeout = timeOut,// 1000 * 60 * 20
-
-                    //};
                     var fileName = Path.GetFileName(url);
                     var remoteInfo = new RemoteFileInfo
                     {
@@ -65,24 +60,15 @@ namespace WindNight.Extension
                 {
                     var request = GenHeadRequest(url, headerDict);
 
-                    var client = GenRestClient(url, timeOut);
-                    //var client = new RestClient(url)
-                    //{
-                    //    Proxy = null,
-                    //    Timeout = timeOut,// 1000 * 60 * 20
-                    //};
+                    var client = GenRestClient(url, timeOut, headerDict);
+
                     var fileName = Path.GetFileName(url);
                     var remoteInfo = new RemoteFileInfo
                     {
                         FileName = fileName,
                     };
 
-                    //#if NET45
-                    //            var response = await client.ExecuteTaskAsync(request);
-                    //#else
-                    //                    var response = await client.ExecuteAsync(request, default(CancellationToken));
-                    //#endif
-
+             
                     var response = await DoExecuteAsync(client, request, token);
 
                     var isOk = response.StatusCode == HttpStatusCode.OK;

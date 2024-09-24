@@ -24,10 +24,8 @@ namespace WindNight.Extension
             return TimeWatcherHelper.TimeWatcher(() =>
             {
                 var request = GenGetRequest(url, headerDict);
-                //var request = new RestRequest(Method.GET);
-                //headerDict = GeneratorHeaderDict(headerDict);
-                //foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-                return ExecuteHttpClient<T>(url, request, timeOut, convertFunc);
+
+                return ExecuteHttpClient<T>(url, request, headerDict, timeOut, convertFunc);
             }, $"HttpGet({url})", warnMiSeconds: warnMiSeconds);
         }
 
@@ -51,18 +49,9 @@ namespace WindNight.Extension
         {
             return TimeWatcherHelper.TimeWatcher(() =>
             {
-                //var request = new RestRequest(path, Method.GET);
-
-                //headerDict = GeneratorHeaderDict(headerDict);
-
-                //foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-                //if (queries != null)
-                //    foreach (var query in queries)
-                //        request.AddParameter(query.Key, query.Value);
-
                 var request = GenGetRequest(path, headerDict, queries);
 
-                return ExecuteHttpClient<T>(domain, request, timeOut, convertFunc);
+                return ExecuteHttpClient<T>(domain, request, headerDict, timeOut, convertFunc);
             }, $"HttpGet({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 
@@ -103,17 +92,10 @@ namespace WindNight.Extension
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
             {
-                //var request = new RestRequest(path, Method.GET);
 
-                //headerDict = GeneratorHeaderDict(headerDict);
-
-                //foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-                //if (queries != null)
-                //    foreach (var query in queries)
-                //        request.AddParameter(query.Key, query.Value);
                 var request = GenGetRequest(path, headerDict, queries);
 
-                return await ExecuteHttpClientAsync<T>(domain, request, convertFunc, token);
+                return await ExecuteHttpClientAsync<T>(domain, request, headerDict, convertFunc, token);
             }, $"HttpGetAsync({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 

@@ -30,15 +30,8 @@ namespace WindNight.Extension
             return TimeWatcherHelper.TimeWatcher(() =>
             {
                 var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
-                //var request = new RestRequest(path, Method.POST);
-
-                //headerDict = GeneratorHeaderDict(headerDict);
-
-                //foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-
-                //request.AddJsonBody(bodyObjects);
-
-                return ExecuteHttpClient<T>(domain, request, timeOut, convertFunc);
+             
+                return ExecuteHttpClient<T>(domain, request, headerDict, timeOut, convertFunc);
             }, $"HttpPost({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
@@ -66,13 +59,6 @@ namespace WindNight.Extension
             {
                 var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
 
-                //var request = new RestRequest(path, Method.POST);
-
-                //headerDict = GeneratorHeaderDict(headerDict);
-
-                //foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-
-                //request.AddJsonBody(bodyObjects);
 
                 return await ExecuteHttpClientAsync<T>(domain, request, timeOut: timeOut, token: token, convertFunc: convertFunc);
             },

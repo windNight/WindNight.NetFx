@@ -20,8 +20,12 @@ namespace WindNight.Extension.Tests
         public void HttpCheckFileTest()
         {
             var url = "https://r.bing.com/rp/TrZ6uPwHDjuq464yPHzr6MbATo4.br.js";
+            var head = new Dictionary<string, string>
+            {
 
-            var res = HttpHelper.HttpHead(url);
+                {"User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"}
+            };
+            var res = HttpHelper.HttpHead(url, head);
             var exist = HttpHelper.CheckRemoteFile(url);
             Output(res.ToJsonStr());
             Output($"exist is {exist}");

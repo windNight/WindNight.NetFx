@@ -14,11 +14,8 @@ namespace WindNight.Extension
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
                     var request = GenGetRequest(url, headerDict);
-                    //var request = new RestRequest(Method.GET);
-                    //headerDict = GeneratorHeaderDict(headerDict);
 
-                    //foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-                    return ExecuteHttpClient2<T>(url, request, timeOut);
+                    return ExecuteHttpClient2<T>(url, request, headerDict, timeOut);
                 }, $"HttpGet({url})", warnMiSeconds: warnMiSeconds);
         }
 
@@ -30,16 +27,8 @@ namespace WindNight.Extension
             return await TimeWatcherHelper.TimeWatcher(async () =>
                 {
                     var request = GenGetRequest(path, headerDict, queries);
-                    //var request = new RestRequest(path, Method.GET);
 
-                    //headerDict = GeneratorHeaderDict(headerDict);
-
-                    //foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-                    //if (queries != null)
-                    //    foreach (var query in queries)
-                    //        request.AddParameter(query.Key, query.Value);
-
-                    return await ExecuteHttpClientAsync2<T>(domain, request, timeOut: timeOut, token: token);
+                    return await ExecuteHttpClientAsync2<T>(domain, request, headerDict, token, timeOut);
                 },
                 $"GetListAsync({domain}{path}) with params {queries.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
@@ -64,16 +53,8 @@ namespace WindNight.Extension
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
                     var request = GenGetRequest(path, headerDict, queries);
-                    //var request = new RestRequest(path, Method.GET);
 
-                    //headerDict = GeneratorHeaderDict(headerDict);
-
-                    //foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-                    //if (queries != null)
-                    //    foreach (var query in queries)
-                    //        request.AddParameter(query.Key, query.Value);
-
-                    return ExecuteHttpClient2<T>(domain, request);
+                    return ExecuteHttpClient2<T>(domain, request, headerDict);
                 }, $"GetList({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 
@@ -94,15 +75,8 @@ namespace WindNight.Extension
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
                     var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
-                    //var request = new RestRequest(path, Method.POST);
 
-                    //headerDict = GeneratorHeaderDict(headerDict);
-
-                    //foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-
-                    //request.AddJsonBody(bodyObjects);
-
-                    return ExecuteHttpClient2<T>(domain, request, timeOut: timeOut);
+                    return ExecuteHttpClient2<T>(domain, request, headerDict, timeOut);
                 },
                 $"PostPageList({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
@@ -116,15 +90,9 @@ namespace WindNight.Extension
             return await TimeWatcherHelper.TimeWatcher(async () =>
                 {
                     var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
-                    //var request = new RestRequest(path, Method.POST);
 
-                    //headerDict = GeneratorHeaderDict(headerDict);
 
-                    //foreach (var header in headerDict) request.AddHeader(header.Key, header.Value);
-
-                    //request.AddJsonBody(bodyObjects);
-
-                    return await ExecuteHttpClientAsync2<T>(domain, request, timeOut: timeOut, token: token);
+                    return await ExecuteHttpClientAsync2<T>(domain, request, headerDict, token, timeOut);
                 },
                 $"PostPageListAsync({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
