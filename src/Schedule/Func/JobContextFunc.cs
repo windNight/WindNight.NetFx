@@ -220,7 +220,7 @@ namespace Schedule.Func
         public static long GetJobBeginDateTimeTicks(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("jobbeginticks")
-                ? context.JobDetail.JobDataMap["jobbeginticks"].ToString().ToLong()
+                ? context.JobDetail.JobDataMap["jobbeginticks"].ToLong()
                 : 0L;
         }
 

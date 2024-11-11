@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Filters.Extensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions
 {
@@ -44,16 +45,16 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         )
         {
             Type[] defaultFilters = {
+                typeof (LogProcessAttribute),
                 typeof (ApiResultFilterAttribute),
                 typeof (ApiExceptionFilterAttribute),
                 typeof (ValidateInputAttribute),
-                typeof (LogProcessAttribute)
             };
 
             return services.AddMvcBuilder(options =>
                 {
 
-                    if (actionFilters != null && actionFilters.Any())
+                    if (!actionFilters.IsNullOrEmpty())
                     {
                         foreach (var actionFilter in actionFilters.Distinct())
                         {
@@ -79,7 +80,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                     }
 
 
- 
+
 
                 }
 
@@ -91,7 +92,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
             );
         }
-         
+
 
         /// <summary>
         /// </summary>
@@ -160,10 +161,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         {
             return services.AddMvcBuilder(options =>
                  {
+                     options.Filters.Add(new LogProcessAttribute());
                      options.Filters.Add(new ApiResultFilterAttribute());
                      options.Filters.Add(new ApiExceptionFilterAttribute());
                      options.Filters.Add(new ValidateInputAttribute());
-                     options.Filters.Add(new LogProcessAttribute());
                  }
 #if !CORE31LATER
                 , mvcJsonOption

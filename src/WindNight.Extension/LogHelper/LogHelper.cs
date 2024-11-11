@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Extension;
 using System;
+using System.IO;
+using System.Reflection;
 using WindNight.Core.Abstractions;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
@@ -7,6 +9,10 @@ namespace WindNight.LogExtension
 {
     public static partial class LogHelper
     {
+
+        private static Version Version => new AssemblyName(typeof(LogHelper).Assembly.FullName).Version;
+        private static DateTime CompileTime => File.GetLastWriteTime(typeof(LogHelper).Assembly.Location);
+
 
         public delegate void PublishLogInfoEvent(LogInfo logInfo);
 
@@ -163,8 +169,9 @@ namespace WindNight.LogExtension
                 SysAppId = ConfigItems.SystemAppId,
                 SysAppCode = ConfigItems.SystemAppCode,
                 SysAppName = ConfigItems.SystemAppName,
+                RegistTs = HardInfo.NowString,
                 HardInfo = HardInfo.ToString(),
-                BuildType = buildType
+                BuildType = buildType,
             };
             return sysInfo;
 

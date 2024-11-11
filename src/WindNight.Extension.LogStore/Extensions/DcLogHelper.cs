@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json.Extension;
+﻿using System.Reflection;
+using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
-using WindNight.Extension.Logger.DcLog.Internal;
 using IpHelper = WindNight.Extension.Logger.DcLog.Internal.HttpContextExtension;
 
 namespace WindNight.Extension.Logger.DcLog.Extensions
@@ -9,6 +9,12 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
     /// <summary> </summary>
     public static class DcLogHelper
     {
+        private static Version _version => new AssemblyName(typeof(DcLogHelper).Assembly.FullName).Version;
+        private static DateTime _compileTime => File.GetLastWriteTime(typeof(DcLogHelper).Assembly.Location);
+
+        public static string CurrentVersion => _version.ToString();
+        public static DateTime CurrentCompileTime => _compileTime;
+
         private static IDcLoggerProcessor DcLoggerProcessor => DcLoggerExtensions.LoggerProcessor;
         private static DcLogOptions DcLogOptions => DcLoggerExtensions.DcLogOptions;
 
@@ -214,6 +220,8 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                     RequestUrl = url,
                     SerialNumber = serialNumber,
                     NodeCode = HardInfo.NodeCode ?? "",
+                    LogPluginVersion = $"{nameof(DcLogHelper)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
+
                 };
                 if (exception != null)
                 {

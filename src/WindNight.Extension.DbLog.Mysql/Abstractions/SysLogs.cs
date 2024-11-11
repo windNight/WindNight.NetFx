@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using WindNight.Core.Abstractions;
 using WindNight.Core.SQL;
 
@@ -32,14 +33,16 @@ namespace WindNight.Extension.Logger.DbLog.Abstractions
 
         public string LogAppName { get; set; } = "";
         public string NodeCode { get; set; } = "";
-        public string DbLogVersion { get; set; } = "1.0.0";
+        //public string DbLogVersion { get; set; } = "1.0.0";
+        [JsonProperty("DbLogVersion")]
+        public string LogPluginVersion { get; set; } = "1.0.0";
 
     }
 
     public class ExceptionData
     {
-        public string Message { get; set; }
-        public string StackTraceString { get; set; }
+        public string Message { get; set; } = "";
+        public string StackTraceString { get; set; } = "";
     }
 
 

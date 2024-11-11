@@ -25,6 +25,7 @@ namespace WindNight.Extension
         }
 
         private const string UserAgentKey = "User-Agent";
+        private const string PluginInfoKey = "Plugin-HttpHelper";
 
         public static void AppendHttpHeader(this RestRequest request, Dictionary<string, string> headerDict = null)
         {
@@ -43,6 +44,9 @@ namespace WindNight.Extension
                     request.AddHeader(header.Key, header.Value);
                 }
             }
+
+            request.AddOrUpdateHeader(PluginInfoKey, $"HttpHelper/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}");
+
 
         }
 
@@ -127,7 +131,8 @@ namespace WindNight.Extension
         static RestRequest GenHeadRequest(string url, Dictionary<string, string> headerDict = null)
         {
             var request = new RestRequest(url, Method.HEAD);
-            request.AddHeader("Accept", "*/*");
+           
+            request.AddOrUpdateHeader("Accept", "*/*");
 
 
             request.AppendHttpHeader(headerDict);
@@ -140,7 +145,7 @@ namespace WindNight.Extension
         static RestRequest GenDownloadRequest(string url, Dictionary<string, string> headerDict = null)
         {
             var request = new RestRequest(url, Method.GET);
-            request.AddHeader("Accept", "*/*");
+            request.AddOrUpdateHeader("Accept", "*/*");
             request.AppendHttpHeader(headerDict);
 
             request.AlwaysMultipartFormData = true;

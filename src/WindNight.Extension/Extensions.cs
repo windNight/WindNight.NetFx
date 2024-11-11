@@ -1,6 +1,5 @@
 ﻿#if NET45LATER
-
-
+ 
 using System;
 using System.Collections.Generic;
 using System.Text;

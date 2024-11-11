@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
 using WindNight.Extension.Logger.DbLog.Abstractions;
@@ -9,6 +10,11 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
     internal class DbLogger : ILogger
     {
         private readonly IDbLoggerProcessor _messageQueue;
+        private static Version _version => new AssemblyName(typeof(DbLogger).Assembly.FullName).Version;
+        private static DateTime _compileTime => File.GetLastWriteTime(typeof(DbLogger).Assembly.Location);
+
+        public static string CurrentVersion => _version.ToString();
+        public static DateTime CurrentCompileTime => _compileTime;
 
         private readonly string _name;
         internal DbLogOptions _options;
@@ -60,7 +66,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
                         Level = stateEntry.Level.ToString(),
                         LevelType = (int)stateEntry.Level,
                         NodeCode = HardInfo.NodeCode ?? "",
-
+                        LogPluginVersion = $"{nameof(DbLogger)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
 
                     };
                     if (exception != null)
@@ -103,6 +109,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
                 LevelType = (int)logLevel,
                 LogTs = logTimestamps,
                 NodeCode = HardInfo.NodeCode ?? "",
+                LogPluginVersion = $"{nameof(DbLogger)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
 
             };
 

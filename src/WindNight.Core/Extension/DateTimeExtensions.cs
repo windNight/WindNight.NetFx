@@ -91,6 +91,12 @@ namespace System
 #endif
         }
 
+
+        public static string ConvertToTimeFormatUseUnix(this long unixTime, bool milliseconds = true, string format = "yyyy-MM-dd HH:mm:ss")
+        {
+            return unixTime.ConvertToTimeUseUnix(milliseconds).FormatDateTime(format);
+        }
+
         /// <summary>
         /// 时间戳转DateInt
         /// </summary>
@@ -240,6 +246,61 @@ namespace System
         }
 
 
+        public static
+#if NET45LATER
+
+            (int FirstYearWeek, int EndYearWeek)
+#else
+                Tuple<int, int>
+#endif
+            CalcCurrentYearWeekRange(this DateTime date, int year = 0)
+        {
+            if (year == 0)
+                year = date.Year;
+            var beginDate = new DateTime(year, 1, 1);
+            var endDate = new DateTime(year + 1, 1, 1).AddDays(-1);
+
+            var beginWeek = beginDate.WeekOfYear();
+            var endWeek = endDate.WeekOfYear();
+#if NET45LATER
+            return (beginWeek, endWeek);
+#else
+            return new Tuple<int, int>(beginWeek, endWeek);
+#endif
+
+        }
+
+
+        public static
+#if NET45LATER
+            (DateTime beginDate, DateTime endDate)
+#else
+                Tuple<DateTime, DateTime>
+#endif
+            CalcDateRangeByWeek(this DateTime date, int week, int year = 0)
+        {
+            if (year == 0)
+                year = date.Year;
+            var firstDayOfYear = new DateTime(year, 1, 1);
+
+            var dt = firstDayOfYear.AddDays((week - 1) * 7);
+            var beginDate = dt.FirstDayOfWeek();
+            var endDate = dt.LastDayOfWeek();
+#if NET45LATER
+            return (beginDate, endDate);
+#else
+            return new Tuple<DateTime, DateTime>(beginDate, endDate);
+#endif
+        }
+
+
+
+    }
+
+
+    public static partial class DateTimeExtensions
+    {
+
         public static DateTime FirstDayOfMonth(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, 1);
@@ -323,52 +384,12 @@ namespace System
         }
 
 
-        public static
-#if NET45LATER
 
-            (int FirstYearWeek, int EndYearWeek)
-#else
-                Tuple<int, int>
-#endif
-            CalcCurrentYearWeekRange(this DateTime date, int year = 0)
-        {
-            if (year == 0)
-                year = date.Year;
-            var beginDate = new DateTime(year, 1, 1);
-            var endDate = new DateTime(year + 1, 1, 1).AddDays(-1);
-
-            var beginWeek = beginDate.WeekOfYear();
-            var endWeek = endDate.WeekOfYear();
-#if NET45LATER
-            return (beginWeek, endWeek);
-#else
-            return new Tuple<int, int>(beginWeek, endWeek);
-#endif
-
-        }
+    }
+    public static partial class DateTimeExtensions
+    {
 
 
-        public static
-#if NET45LATER
-            (DateTime beginDate, DateTime endDate)
-#else
-                Tuple<DateTime, DateTime>
-#endif
-            CalcDateRangeByWeek(this DateTime date, int week, int year = 0)
-        {
-            if (year == 0)
-                year = date.Year;
-            var firstDayOfYear = new DateTime(year, 1, 1);
-
-            var dt = firstDayOfYear.AddDays((week - 1) * 7);
-            var beginDate = dt.FirstDayOfWeek();
-            var endDate = dt.LastDayOfWeek();
-#if NET45LATER
-            return (beginDate, endDate);
-#else
-            return new Tuple<DateTime, DateTime>(beginDate, endDate);
-#endif
-        }
 
 
         public static List<int> GeneratorDateIntList(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false)
@@ -470,11 +491,7 @@ namespace System
         }
 
 
-    }
 
-
-    public static partial class DateTimeExtensions
-    {
         public static List<int> GeneratorDateMonthList(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false)
         {
             var list = beginDate.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.ToDateMonth());

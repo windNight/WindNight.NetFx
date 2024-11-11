@@ -12,7 +12,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
     {
         public ValidateInputAttribute()
         {
-            Order = ExecOrder;
+            Order = -10;
         }
 
         public virtual int ExecOrder { get; set; } = 0;

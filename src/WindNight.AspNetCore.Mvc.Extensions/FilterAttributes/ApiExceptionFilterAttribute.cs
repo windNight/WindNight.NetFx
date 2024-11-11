@@ -12,7 +12,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
     {
         public ApiExceptionFilterAttribute()
         {
-            Order = ExecOrder;
+            Order = 0;
         }
 
         public virtual int ExecOrder { get; set; } = 0;

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Extension;
+﻿using System.Reflection;
+using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DbLog.Abstractions;
@@ -12,6 +13,12 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
     {
         private static IDbLoggerProcessor DbLoggerProcessor => DbLoggerExtensions.LoggerProcessor;
         private static DbLogOptions DbLogOptions => DbLoggerExtensions.DbLogOptions;
+        private static Version _version => new AssemblyName(typeof(DbLogHelper).Assembly.FullName).Version;
+        private static DateTime _compileTime => File.GetLastWriteTime(typeof(DbLogHelper).Assembly.Location);
+
+        public static string CurrentVersion => _version.ToString();
+        public static DateTime CurrentCompileTime => _compileTime;
+
 
 
         /// <summary>
@@ -23,7 +30,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
         public static void ApiUrlCall(string url, string msg, long millisecond, string serialNumber = "",
-            string serverIp = "",  string clientIp = "")
+            string serverIp = "", string clientIp = "")
         {
             Add(msg, LogLevels.ApiUrl, serialNumber: serialNumber, millisecond: millisecond, url: url,
                 serverIp: serverIp, clientIp: clientIp
@@ -213,6 +220,8 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     RequestUrl = url,
                     SerialNumber = serialNumber,
                     NodeCode = HardInfo.NodeCode ?? "",
+                    LogPluginVersion = $"{nameof(DbLogHelper)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
+
                 };
                 if (exception != null)
                 {

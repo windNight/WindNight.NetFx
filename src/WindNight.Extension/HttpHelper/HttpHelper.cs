@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Extension;
@@ -9,6 +12,11 @@ namespace WindNight.Extension
 {
     public static partial class HttpHelper
     {
+        private static Version _version => new AssemblyName(typeof(HttpHelper).Assembly.FullName).Version;
+        private static DateTime _compileTime => File.GetLastWriteTime(typeof(HttpHelper).Assembly.Location);
+       
+        public static string CurrentVersion=> _version.ToString();
+        public static DateTime CurrentCompileTime => _compileTime;
 
 
         public static bool CheckRemoteFile(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
@@ -18,7 +26,7 @@ namespace WindNight.Extension
                     var request = GenHeadRequest(url, headerDict);
 
                     var client = GenRestClient(url, timeOut, headerDict);
-             
+
                     var response = DoExecute(client, request);
                     var isOk = response.StatusCode == HttpStatusCode.OK;
                     return isOk;
@@ -36,7 +44,7 @@ namespace WindNight.Extension
                     var request = GenHeadRequest(url, headerDict);
 
                     var client = GenRestClient(url, timeOut, headerDict);
-                  
+
                     var response = await DoExecuteAsync(client, request, token);
 
                     var isOk = response.StatusCode == HttpStatusCode.OK;
@@ -63,7 +71,7 @@ namespace WindNight.Extension
                     var request = GenDownloadRequest(url, headerDict);
 
                     var client = GenRestClient(url, timeOut, headerDict);
-                   
+
                     var bytes = client.DownloadData(request);
                     return bytes;
                 },

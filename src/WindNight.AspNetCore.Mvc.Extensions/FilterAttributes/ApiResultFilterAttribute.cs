@@ -14,7 +14,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
     {
         public ApiResultFilterAttribute()
         {
-            Order = ExecOrder;
+            Order = 10;
         }
 
         public virtual int ExecOrder { get; set; } = 0;

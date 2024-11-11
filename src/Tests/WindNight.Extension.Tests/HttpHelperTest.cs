@@ -16,6 +16,7 @@ namespace WindNight.Extension.Tests
         {
         }
 
+
         [Fact]
         public void HttpCheckFileTest()
         {
@@ -41,7 +42,8 @@ namespace WindNight.Extension.Tests
         [Fact]
         public void HttpHelperTest1()
         {
-
+            Output($"Version is {HttpHelper.CurrentVersion}");
+            Output($"CompileTime is {HttpHelper.CurrentCompileTime}");
 
         }
 

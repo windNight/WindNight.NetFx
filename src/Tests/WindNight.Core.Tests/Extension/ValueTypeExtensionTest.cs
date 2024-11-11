@@ -277,6 +277,7 @@ namespace WindNight.Core.Tests.Extension
             {
                 return 0;
             }
+
             if (roomNumberCode > 0) // 避免房间序号为负数
             {
                 //   var roomNo = floor.ToString() + (roomNumberCode - 1).ToString("D2");

@@ -86,6 +86,10 @@ namespace WindNight.Extension
             return s =>
             {
                 var res = s.To<ResponseResult<T>>();
+                if (res == null)
+                {
+                    return default;
+                }
                 if (res.Code == 0)
                 {
                     return res.Data;
@@ -100,6 +104,10 @@ namespace WindNight.Extension
             return s =>
             {
                 var res = s.To<ResponseResult<IEnumerable<T>>>();//?.Data ?? Array.Empty<T>();
+                if (res == null)
+                {
+                    return EmptyArray<T>();
+                }
                 if (res.Code == 0)
                 {
                     return res.Data;
@@ -116,6 +124,10 @@ namespace WindNight.Extension
             return s =>
             {
                 var res = s.To<ResponseResult<PagedList<T>>>();//?.Data ?? Array.Empty<T>();
+                if (res == null)
+                {
+                    return PagedList.Empty<T>();
+                }
                 if (res.Code == 0)
                 {
                     return res.Data;
@@ -137,6 +149,10 @@ namespace WindNight.Extension
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
+                    if (!response?.ResponseUri?.ToString()?.IsNullOrEmpty() ?? false)
+                    {
+                        url = response.ResponseUri.ToString();
+                    }
                     if (ConfigItems.DebugIsOpen)
                     {
                         LogHelper.Debug($"url[{url}]-> response.Content is {response.Content} ", appendMessage: false);
@@ -162,25 +178,35 @@ namespace WindNight.Extension
         public static T DeserializeResponse<T>(this IRestResponse response, string url)
         {
             return response.DeserializeResponse<T>(DefaultConvertFunc<T>(), url);
-
-
-
         }
 
 
 
         public static IPagedList<T> DeserializeResponse2PageList<T>(this IRestResponse response, string url)
         {
-            if (response.StatusCode == HttpStatusCode.OK)
+            try
             {
-                if (ConfigItems.DebugIsOpen)
-                    LogHelper.Debug($"url[{url}]-> response.Content is {response.Content} ", appendMessage: false);
-                var res = response.Content.To<ResponseResult<PagedList<T>>>();
-                return res.Data;
-            }
 
-            LogHelper.Warn($" url[{url}]-> ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}", appendMessage: false);
-            return default;
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    if (!response?.ResponseUri?.ToString()?.IsNullOrEmpty() ?? false)
+                    {
+                        url = response.ResponseUri.ToString();
+                    }
+                    if (ConfigItems.DebugIsOpen)
+                        LogHelper.Debug($"url[{url}]-> response.Content is {response.Content} ", appendMessage: false);
+                    var res = response.Content.To<ResponseResult<PagedList<T>>>();
+                    return res.Data;
+                }
+
+                LogHelper.Warn($" url[{url}]-> ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}", appendMessage: false);
+                return default;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"url[{url}]->  DeserializeResponse Handler Error {ex.Message}", ex);
+                return default;
+            }
         }
 
 
@@ -196,6 +222,10 @@ namespace WindNight.Extension
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
+                    if (!response?.ResponseUri?.ToString()?.IsNullOrEmpty() ?? false)
+                    {
+                        url = response.ResponseUri.ToString();
+                    }
                     if (ConfigItems.DebugIsOpen)
                     {
                         LogHelper.Debug($"url[ {url} ]-> response.Content is {response.Content} ", appendMessage: false);
@@ -236,10 +266,17 @@ namespace WindNight.Extension
         {
             try
             {
+
+
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
+                    if (!response?.ResponseUri?.ToString()?.IsNullOrEmpty() ?? false)
+                    {
+                        url = response.ResponseUri.ToString();
+                    }
                     if (ConfigItems.DebugIsOpen)
                     {
+
                         LogHelper.Debug($"url[{url}]-> response.Content is {response.Content} ", appendMessage: false);
                     }
 
@@ -272,6 +309,11 @@ namespace WindNight.Extension
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
+                    if (!response?.ResponseUri?.ToString()?.IsNullOrEmpty() ?? false)
+                    {
+                        url = response.ResponseUri.ToString();
+                    }
+
                     if (ConfigItems.DebugIsOpen)
                     {
                         LogHelper.Debug($"url[{url}]->  response.Content is {response.Content} ", appendMessage: false);

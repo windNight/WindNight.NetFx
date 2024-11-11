@@ -16,7 +16,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 
         public LogProcessAttribute()
         {
-            Order = -99999;
+            Order = -9999;
         }
 
         // public int ExecOrder { get; set; } = -99999;

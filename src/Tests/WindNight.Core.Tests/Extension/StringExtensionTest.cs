@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Extension;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,6 +21,7 @@ namespace WindNight.Core.Tests.Extension
             Assert.Equal("begin1234", result);
             Output($"After Concat Is {result}");
         }
+     
 
     }
 }

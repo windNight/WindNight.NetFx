@@ -63,6 +63,7 @@ namespace System
         public static long NowUnixTime => Now.ConvertToUnixTime();
 
         public static int NowYearInt => Now.Year;
+        public static string NowString => $"{Now:yyyy-MM-dd HH:mm:ss}";
 
         public static int NowMonthInt => Now.TryToDateInt("yyyyMM");
         public static int LastMonthInt => Now.FirstDayOfMonth().AddMonths(-1).TryToDateInt("yyyyMM");
@@ -363,7 +364,8 @@ namespace System
             {
                 NodeCode = NodeCode,
                 NodeIpAddress = NodeIpAddress,
-                OperatorSys = OperatorSys,
+                OperatorSys = OperatorSys.ToString(),
+
             }.ToJsonStr();
 
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
 using WindNight.Extension.Logger.DcLog.Abstractions;
@@ -9,6 +10,11 @@ namespace WindNight.Extension.Logger.DcLog
     internal class DcLogger : ILogger
     {
         private readonly IDcLoggerProcessor _messageQueue;
+        private static Version _version => new AssemblyName(typeof(DcLogger).Assembly.FullName).Version;
+        private static DateTime _compileTime => File.GetLastWriteTime(typeof(DcLogger).Assembly.Location);
+
+        public static string CurrentVersion => _version.ToString();
+        public static DateTime CurrentCompileTime => _compileTime;
 
         private readonly string _name;
         internal DcLogOptions _options;
@@ -60,7 +66,7 @@ namespace WindNight.Extension.Logger.DcLog
                         Level = stateEntry.Level.ToString(),
                         LevelType = (int)stateEntry.Level,
                         NodeCode = HardInfo.NodeCode ?? "",
-
+                        LogPluginVersion = $"{nameof(DcLogger)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
 
                     };
                     if (exception != null)
@@ -103,7 +109,7 @@ namespace WindNight.Extension.Logger.DcLog
                 LevelType = (int)logLevel,
                 LogTs = logTimestamps,
                 NodeCode = HardInfo.NodeCode ?? "",
-
+                LogPluginVersion = $"{nameof(DcLogger)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
             };
 
             if (TryGetJObject(state, out var jo))

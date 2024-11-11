@@ -9,9 +9,15 @@ namespace System
         /// </summary>
         /// <param name="sourceString"></param>
         /// <returns></returns>
-        public static bool IsNullOrEmpty(this string sourceString)
+        public static bool IsNullOrEmpty(this string sourceString, bool ignoreWhiteSpace = false)
         {
+            if (ignoreWhiteSpace)
+            {
+                return string.IsNullOrEmpty(sourceString) || sourceString.IsNullOrWhiteSpace();
+            }
+
             return string.IsNullOrEmpty(sourceString);
+
         }
 
         /// <summary>
@@ -37,10 +43,24 @@ namespace System
         }
 
     }
-     
+
     /// <summary> </summary>
     public static partial class StringExtension
     {
+        /// <summary>
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static int ToInt(this object obj, int defaultValue = 0)
+        {
+            var sourceString = obj?.ToString() ?? "";
+            if (sourceString.IsNullOrEmpty())
+                return defaultValue;
+            return int.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
+        }
+
+
         /// <summary>
         /// </summary>
         /// <param name="sourceString"></param>
@@ -66,6 +86,16 @@ namespace System
             return long.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
+
+        public static long ToLong(this object obj, long defaultValue = 0)
+        {
+            var sourceString = obj?.ToString() ?? "";
+            if (sourceString.IsNullOrEmpty())
+                return defaultValue;
+            return long.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
+        }
+
+
         /// <summary>
         /// </summary>
         /// <param name="sourceString"></param>
@@ -78,6 +108,14 @@ namespace System
             return decimal.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
+        public static decimal ToDecimal(this object obj, decimal defaultValue = 0M)
+        {
+            var sourceString = obj?.ToString() ?? "";
+            if (sourceString.IsNullOrEmpty())
+                return defaultValue;
+            return decimal.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
+        }
+
         /// <summary>
         /// </summary>
         /// <param name="sourceString"></param>
@@ -85,6 +123,13 @@ namespace System
         /// <returns></returns>
         public static double ToDouble(this string sourceString, double defaultValue = 0)
         {
+            if (sourceString.IsNullOrEmpty())
+                return defaultValue;
+            return double.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
+        }
+        public static double ToDouble(this object obj, double defaultValue = 0)
+        {
+            var sourceString = obj?.ToString() ?? "";
             if (sourceString.IsNullOrEmpty())
                 return defaultValue;
             return double.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
@@ -112,7 +157,7 @@ namespace System
             return WebUtility.UrlEncode(sourceString) ?? string.Empty;
         }
 
-        public static string UrlDecode(this string sourceString)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+        public static string UrlDecode(this string sourceString)
         {
             if (sourceString.IsNullOrEmpty()) return sourceString;
             return WebUtility.UrlDecode(sourceString);

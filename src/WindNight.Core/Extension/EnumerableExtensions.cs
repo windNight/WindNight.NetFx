@@ -10,13 +10,21 @@ namespace WindNight.Linq.Extensions.Expressions
 {
     /// <summary>
     /// </summary>
-    public static class EnumerableExtensions
-    { 
+    public static partial class EnumerableExtensions
+    {
         public static bool IsNullOrEmpty<T>(this IEnumerable<T>? items)
         {
             return items == null || !items.Any();
         }
+        public static IEnumerable<T> EmptyArray<T>()
+        {
+#if NET45
+            return new List<T>();
+#else
+            return Array.Empty<T>();
+#endif
 
+        }
         /// <summary>
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
@@ -126,6 +134,48 @@ namespace WindNight.Linq.Extensions.Expressions
             }
             return rootNodes;
         }
+
+
+        public static IEnumerable<int> ToIntList(this string s, char separator = ',', bool needDistinct = true)
+        {
+            if (s.IsNullOrEmpty()) return EmptyArray<int>();
+
+            var list = s.Split(separator).Select(m => m.ToInt());
+
+            // list 去重
+            if (needDistinct)
+            {
+                list = list.DistinctByItem(m => m);
+            }
+            return list;
+        }
+        public static IEnumerable<long> ToLongList(this string s, char separator = ',', bool needDistinct = true)
+        {
+            if (s.IsNullOrEmpty()) return EmptyArray<long>();
+
+
+            var list = s.Split(separator).Select(m => m.ToLong());
+            // list 去重
+            if (needDistinct)
+            {
+                list = list.DistinctByItem(m => m);
+            }
+            return list;
+        }
+
+        public static IEnumerable<string> StringToList(this string s, char separator = ',', bool needDistinct = true)
+        {
+            if (s.IsNullOrEmpty()) return EmptyArray<string>();
+
+            var list = s.Split(separator);
+            // list 去重
+            if (needDistinct)
+            {
+                list = list.DistinctByItem(m => m).ToArray();
+            }
+            return list;
+        }
+
 
     }
 
