@@ -10,7 +10,7 @@
 		<GenerateProgramFile>false</GenerateProgramFile>
 		<TargetFrameworks>
 			<!--netcoreapp3.0;-->
-			netcoreapp3.1;
+			<!--netcoreapp3.1;-->
 			net5.0;
 			net6.0;
 		</TargetFrameworks>
@@ -24,8 +24,9 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Include="..\..\CodeSnippets\Shared\ServiceDescriptorHelpers.cs" Link="Internal\Shared\ServiceDescriptorHelpers.cs" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<!--<FrameworkReference Include="Microsoft.AspNetCore.App" />-->
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\WindNight.AspNetCore.GRpc.HttpApi\WindNight.AspNetCore.GRpc.HttpApi.csproj" />

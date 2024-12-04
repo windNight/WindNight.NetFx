@@ -8,6 +8,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+ 
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
 		<ProjectReference Include="..\..\WindNight.Config\WindNight.Config.csproj" />
 		<ProjectReference Include="..\..\WindNight.Extension\WindNight.Extension.csproj" />

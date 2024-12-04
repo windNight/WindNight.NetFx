@@ -47,5 +47,19 @@ namespace WindNight.Extension.Tests
 
         }
 
+        [Fact]
+        public void HttpHelperPostUrl1()
+        {
+            var url = "https://www.grphtk.cc:8179/ygCtrl/api/enopt/rtdata/batchsync";
+
+            var domain = "https://www.grphtk.cc:8179/ygCtrl";
+            var api = "/api/enopt/rtdata/batchsync";
+            var res = HttpHelper.Post<int>(domain, api, null, timeOut: 200);
+
+            Output($"res is {res}"); 
+
+        }
+
+
     }
 }

@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="..\..\..\build\common.props" />
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1;</TargetFrameworks>
+		<TargetFrameworks>
+			netstandard2.0;
+			netstandard2.1;
+		</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<Description>
@@ -14,7 +17,8 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Dapper" Version="2.1.35" />
-		<PackageReference Include="MySql.Data" Version="8.3.0" />
+		<PackageReference Include="MySql.Data" Version="9.1.0" />
+ 
 		<!--<PackageReference Include="MySql.Data" Version="8.0.31" />-->
 	</ItemGroup>
 	<ItemGroup>

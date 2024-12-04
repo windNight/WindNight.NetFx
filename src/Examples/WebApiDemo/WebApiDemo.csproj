@@ -1,22 +1,30 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>true</InvariantGlobalization>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<!--<TargetFramework>net8.0</TargetFramework>-->
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<InvariantGlobalization>true</InvariantGlobalization>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
+	<PropertyGroup>
+		<!--<RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>-->
+		<!--<SatelliteResourceLanguages>zh</SatelliteResourceLanguages>-->
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
-    <ProjectReference Include="..\..\WindNight.AspNetCore.Mvc.Extensions\WindNight.AspNetCore.Mvc.Extensions.csproj" />
-    <ProjectReference Include="..\..\WindNight.Config.Extensions\WindNight.Config.Extensions.csproj" />
-    <ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
-    <ProjectReference Include="..\..\WindNight.Extension.LogStore\WindNight.Extension.DcLog.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
+
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
+		<ProjectReference Include="..\..\WindNight.AspNetCore.Mvc.Extensions\WindNight.AspNetCore.Mvc.Extensions.csproj" />
+		<ProjectReference Include="..\..\WindNight.Config.Extensions\WindNight.Config.Extensions.csproj" />
+		<ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
+		<ProjectReference Include="..\..\WindNight.Extension.LogStore\WindNight.Extension.DcLog.csproj" />
+	</ItemGroup>
 
 </Project>

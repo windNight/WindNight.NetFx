@@ -25,6 +25,12 @@
 
 	</ItemGroup>
 
+
+
+	<ItemGroup>
+ 
+	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
 	</ItemGroup>

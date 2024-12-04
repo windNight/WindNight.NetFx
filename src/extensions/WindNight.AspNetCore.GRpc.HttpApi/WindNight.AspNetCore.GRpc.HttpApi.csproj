@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>
 			<!--netcoreapp3.0;-->
-			netcoreapp3.1;
+			<!--netcoreapp3.1;-->
 			net5.0;
 			net6.0;
 		</TargetFrameworks>
@@ -47,7 +47,6 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="System.IO.Pipelines" Version="6.0.0" />
 	</ItemGroup>
 
 </Project>

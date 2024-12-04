@@ -14,6 +14,9 @@
 		<PackageReleaseNotes> </PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
+	<ItemGroup>
+ 
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\WindNight.AspNetCore.Mvc.Extensions\WindNight.AspNetCore.Mvc.Extensions.csproj" />
