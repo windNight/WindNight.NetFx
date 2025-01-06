@@ -17,6 +17,8 @@ namespace WindNight.Core.SQL
         public int PageSize { get; set; }
 
         /// <summary> 从第几页开始 默认 1 大部分都是1   </summary>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public int IndexFrom { get; set; } = 1;
 
     }
@@ -65,15 +67,17 @@ namespace WindNight.Core.SQL
             where TEntity : class, ICreateEntityBase, IEntity, new()
 
         {
-            return new QueryPageInfo(pageInfo)
-            {
-                TableName = pageInfo.GenDefaultTableName<TEntity>(),
-                Fields = "*",
-                OrderField = "CreateUnixTime DESC"
-            };
+            return pageInfo.GenQueryPageInfoForCreateEntity<TEntity>();
+            //return new QueryPageInfo(pageInfo)
+            //{
+            //    TableName = pageInfo.GenDefaultTableName<TEntity>(),
+            //    Fields = "*",
+            //    OrderField = "CreateUnixTime DESC"
+            //};
 
 
         }
+
         /// <summary>
         ///     分页信息实例
         /// </summary> 
@@ -82,12 +86,13 @@ namespace WindNight.Core.SQL
             where TEntity : class, ICanPageEntity, IEntity, new()
 
         {
-            return new QueryPageInfo(pageInfo)
-            {
-                TableName = pageInfo.GenDefaultTableName<TEntity>(),
-                Fields = "*",
-                OrderField = "Id DESC"
-            };
+            return pageInfo.GenQueryPageInfo<TEntity>();
+            //return new QueryPageInfo(pageInfo)
+            //{
+            //    TableName = pageInfo.GenDefaultTableName<TEntity>(),
+            //    Fields = "*",
+            //    OrderField = "Id DESC"
+            //};
         }
 
 
