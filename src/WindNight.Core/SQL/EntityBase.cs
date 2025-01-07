@@ -59,16 +59,19 @@ namespace WindNight.Core.SQL
 
     public static class SqlEx
     {
-        public static string GenDefaultTableName<TEntity>(this object t, bool toLower = true, bool appendPlural = false)
-        where TEntity : class, IEntity, new()
-        {
-            var tableName = typeof(TEntity).Name;
-            if (toLower) tableName = tableName.ToLower();
-            if (appendPlural && !tableName.EndsWith("s"))
-            {
-                tableName = $"{tableName}s";
-            }
-            return tableName;
-        }
+
+        //public static string GenDefaultTableName<TEntity>(this object t, bool toLower = true, bool appendPlural = false)
+        //where TEntity : class, IEntity, new()
+        //{
+        //    var tableName = typeof(TEntity).Name;
+        //    if (toLower) tableName = tableName.ToLower();
+        //    if (appendPlural && !tableName.EndsWith("s"))
+        //    {
+        //        tableName = $"{tableName}s";
+        //    }
+        //    return tableName;
+        //}
+
+
     }
 }

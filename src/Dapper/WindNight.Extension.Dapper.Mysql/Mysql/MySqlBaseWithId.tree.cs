@@ -139,11 +139,7 @@ namespace WindNight.Extension.Dapper.Mysql
             }
 
             var sql = GeneratorRealSqlForQueryChildren(tableName, parentId, rootCondition);
-            // var sql = string.Format(QueryChildrenByParentIdSql, tableName, rootCondition);
-            //if (ConfigItems.OpenDapperLog)
-            //{
-            //    LogHelper.Debug($"QueryChildrenByParentId({tableName}) sql is :{sql}");
-            //}
+    
             param ??= new Dictionary<string, object>();
             if (IdIsValid(parentId))
             {
@@ -185,11 +181,7 @@ namespace WindNight.Extension.Dapper.Mysql
             {
                 tableName = BaseTableName;
             }
-            //var sql = string.Format(QueryChildrenByParentIdSql, tableName, rootCondition);
-            //if (ConfigItems.OpenDapperLog)
-            //{
-            //    LogHelper.Debug($"{nameof(QueryChildrenByParentIdAsync)}({tableName}) sql is :{sql}");
-            //}
+          
             var sql = GeneratorRealSqlForQueryChildren(tableName, parentId, rootCondition);
 
 
