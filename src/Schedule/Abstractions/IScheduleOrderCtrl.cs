@@ -35,7 +35,8 @@ namespace Schedule.Abstractions
         /// </summary>
         /// <param name="jobId"></param>
         /// <param name="jobRunState"></param>
+        /// <param name="bizContent"></param>
         /// <returns></returns>
-        Task<bool> CompleteJobSafety(string jobId, JobRunStateEnum jobRunState);
+        Task<bool> CompleteJobSafety(string jobId, JobRunStateEnum jobRunState, string bizContent = "");
     }
 }

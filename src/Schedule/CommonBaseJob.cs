@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Extension;
 using System.Threading.Tasks;
+using Quartz;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;
 
@@ -20,19 +21,24 @@ namespace Schedule
 
     public abstract class CommonBaseJob : BaseJob, IJobBase
     {
-
-        public abstract Task<bool> DoJobAsync();
-
-
-        protected abstract int CurrentUserId { get; }
-
-        protected abstract Func<bool, bool> PreTodo { get; }
-
         public CommonBaseJob()
         {
         }
 
+        public abstract Task<bool> DoJobAsync();
 
+       
+        protected abstract int CurrentUserId { get; }
+
+        protected abstract Func<bool, bool> PreTodo { get; }
+
+     
+
+        public override async Task Execute(IJobExecutionContext context)
+        {
+            await base.Execute(context);
+
+        }
 
         #region RunTest
 

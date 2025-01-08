@@ -20,19 +20,36 @@ namespace Schedule
 
         protected JobMeta CurrentJobMeta => ConfigItems.JobsConfig?.FetchJobConfig(CurrentJobCode) ?? null;
 
+        protected virtual IJobExecutionContext CurrentJobContext { get; private set; }
+
+        protected virtual void SetCurrentJobContext(IJobExecutionContext context)
+        {
+            CurrentJobContext = context;
+        }
+
         public virtual async Task Execute(IJobExecutionContext context)
         {
+
+            CurrentJobContext = context;
             JobId = context.GetJobDbId();
             JobCode = context.GetJobCode();
             JobName = context.GetJobName();
+
             JobContext.SetCurrentJobBaseInfo(JobId, JobCode, JobName);
 
             var job = context.JobDetail;
             var state = JobBusinessStateEnum.Processing;
             job.SetJobBusinessState(state);
-            var rlt = ExecuteWithResult(context);
 
-            state = await rlt ? JobBusinessStateEnum.Success : JobBusinessStateEnum.Fail;
+            var rlt = await ExecuteWithResult(context);
+
+            state = rlt ? JobBusinessStateEnum.Success : JobBusinessStateEnum.Fail;
+            var bizContent = context.GetBizContent();
+            if (!rlt && bizContent.IsNullOrEmpty())
+            {
+                job.SetBizContent($"[BaseJob] 未知原因 ExecuteWithResult 返回({rlt}) ，无业务异常信息!");
+            }
+
             job.SetJobBusinessState(state);
         }
 

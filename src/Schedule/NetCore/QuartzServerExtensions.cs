@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Schedule.Abstractions;
+using Schedule.Ctrl;
 using static Schedule.ConfigItems;
 
 namespace Schedule.NetCore
@@ -29,6 +30,7 @@ namespace Schedule.NetCore
             jobConfigs = ConfigItems.JobsConfig;
             //services.Add(jobs.Select(jobType => new ServiceDescriptor(typeof(IJob), jobType, ServiceLifetime.Singleton)));
             services.AddSingleton<IScheduleNotice, DefaultScheduleNotice>();
+            services.AddSingleton<ICommandCtrl, ScheduleCtrl>();
             services.AddHostedService<ScheduleModBackgroundService>();
             Ioc.Instance.InitServiceProvider(services.BuildServiceProvider());
         }

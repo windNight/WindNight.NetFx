@@ -154,7 +154,9 @@ namespace Schedule
             {
                 bizStatsStr = $"<font color=#FF0000>{bizState}</font>";
             }
-            await DoNoticeAsync($"耗时 {milliseconds} ms. 任务状态为 {bizStatsStr}", context.GetTempConfig("BizContent").ToString());
+
+            var bizContent = context.GetBizContent();
+            await DoNoticeAsync($"耗时 {milliseconds} ms. 任务状态为 {bizStatsStr}", bizContent);
 
             await Task.CompletedTask;
         }
@@ -337,12 +339,13 @@ namespace Schedule
                 var jobId = JobId;
 
                 var jobRunState = JobRunStateEnum.Ok;
-
+                var bizContent = string.Empty;
                 if (jobException != null)
                 {
                     jobRunState = JobRunStateEnum.Exception;
-                    JobLogHelper.Error($"{JobInfo} 发生异常",
-                        jobException, nameof(JobWasExecuted));
+                    bizContent = $"{JobInfo} 发生异常 {jobException.Message}";
+                    JobLogHelper.Error(bizContent, jobException, nameof(JobWasExecuted));
+
                 }
                 else
                 {
@@ -350,18 +353,26 @@ namespace Schedule
                     switch (jobBusinessState)
                     {
                         case JobBusinessStateEnum.Unknown: //基本上是没有继承BaseJob的
-                            JobLogHelper.Info($"{JobInfo} 获取到Job的业务状态为 {JobBusinessStateEnum.Unknown},可能是该Job 未继承BaseJob ", nameof(JobWasExecuted));
+                            bizContent = $"{JobInfo} 获取到Job的业务状态为 {JobBusinessStateEnum.Unknown},可能是该Job 未继承BaseJob ";
+                            JobLogHelper.Info(bizContent, nameof(JobWasExecuted));
                             break;
                         case JobBusinessStateEnum.Success:
                             break;
                         case JobBusinessStateEnum.Fail:
+                            bizContent = context.GetBizContent();
                             jobRunState = JobRunStateEnum.BusinessError;
                             break;
                         default:
+                            bizContent = context.GetBizContent();
                             jobRunState = JobRunStateEnum.Error;
-                            JobLogHelper.Error(
-                                $"{JobInfo} 发生异常，无法获取到Job的业务状态", null, nameof(JobWasExecuted));
+                            JobLogHelper.Error($"{JobInfo} 发生异常，无法获取到Job的业务状态", null, nameof(JobWasExecuted));
                             break;
+                    }
+
+                    if (bizContent.IsNullOrEmpty())
+                    {
+                        bizContent = context.GetBizContent();
+
                     }
                 }
 
@@ -375,11 +386,13 @@ namespace Schedule
                 // DoJobLog 
                 var ctrl = Ioc.GetService<IScheduleOrderCtrl>();
                 if (ctrl != null)
-                    await ctrl.CompleteJobSafety(JobId, jobRunState);
+                {
+                    await ctrl.CompleteJobSafety(JobId, jobRunState, bizContent ?? string.Empty);
+                }
             }
             catch (Exception ex)
             {
-                JobLogHelper.Info($"{JobInfo}: JobWasExecuted Error {ex}", nameof(JobWasExecuted));
+                JobLogHelper.Warn($"{JobInfo}: JobWasExecuted Error {ex}", ex, nameof(JobWasExecuted));
                 retCode = 1;
             }
             finally
@@ -391,7 +404,7 @@ namespace Schedule
             }
 
             await Task.CompletedTask;
-            //  return TaskUtil.CompletedTask;
+
         }
 
         #endregion //end IJobListener

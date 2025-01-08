@@ -13,7 +13,7 @@ using Schedule.Model.Enums;
 namespace Schedule.Ctrl
 {
     [CommandArea("schedule")]
-    public class ScheduleCtrl : ICommandCtrl
+    internal class ScheduleCtrl : ICommandCtrl
     {
         private readonly IJobEnvManager __JobEnvManager;
 

@@ -1,12 +1,15 @@
 ﻿using System;
 using Quartz;
 using Schedule.Model.Enums;
+using WindNight.Core.Extension;
 
 namespace Schedule.Func
 {
     /// <summary>  </summary>
     public static class JobContextFunc
     {
+        public const string BizContentKey = "bizContent";
+
         static JobDataMap DataMap(this IJobDetail jobDetail) => jobDetail.JobDataMap;
 
         /// <summary>
@@ -299,5 +302,29 @@ namespace Schedule.Func
                 return context.JobDetail.JobDataMap[key];
             return string.Empty;
         }
+       
+        /// <summary>
+        ///      
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static string GetBizContent(this IJobExecutionContext context)
+        {
+            return context.GetTempConfig(BizContentKey).ToString();
+        }
+
+
+        /// <summary>
+        ///     设置当前用于标识的job name
+        /// </summary>
+        /// <param name="jobDetail"></param>
+        /// <param name="bizContent"></param>
+        public static void SetBizContent(this IJobDetail jobDetail, string bizContent)
+        {
+            if (!bizContent.IsNullOrEmpty())
+                jobDetail.JobDataMap[BizContentKey] = bizContent;
+        }
+
+
     }
 }
