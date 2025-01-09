@@ -7,6 +7,27 @@ namespace WindNight.Core.Extension
         #region Decimal
 
         /// <summary>
+        ///     Rounds a <see cref="T:System.Decimal" /> value to a specified number of decimal places.</summary>
+        /// <param name="data">A decimal number to round.</param>
+        /// <param name="decimals">A value from 0 to 28 that specifies the number of decimal places to round to.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="decimals" /> is not a value from 0 to 28.</exception>
+        /// <returns>The decimal number equivalent to <paramref name="d" /> rounded to <paramref name="decimals" /> decimal places.</returns>
+
+        public static decimal Ceiling(this decimal data, int decimals)
+        {
+            try
+            {
+                return decimal.Round(data, decimals);
+            }
+            catch (Exception e)
+            {
+                return data;
+            }
+        }
+
+
+        /// <summary>
         /// 向上取整
         /// Returns the smallest integral value that is greater than or equal to the specified decimal number.</summary>
         /// <param name="data">A decimal number.</param>
