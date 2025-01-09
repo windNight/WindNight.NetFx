@@ -63,6 +63,7 @@ namespace WindNight.Extension.Logger.DcLog
                         SerialNumber = stateEntry.SerialNumber,
                         RunMs = stateEntry.Timestamps,
                         LogTs = stateEntry.LogTs,
+                        IsForce = stateEntry.IsForce,
                         Level = stateEntry.Level.ToString(),
                         LevelType = (int)stateEntry.Level,
                         NodeCode = HardInfo.NodeCode ?? "",
@@ -83,7 +84,8 @@ namespace WindNight.Extension.Logger.DcLog
                         messageEntity.Exceptions = "{}";
                     }
 
-                    messageEntity.Content = _options.ContentMaxLength > 0 && message.Length > _options.ContentMaxLength ? message.Substring(0, _options.ContentMaxLength) : message;
+                    messageEntity.Content = FixContent(message);
+                    // _options.ContentMaxLength > 0 && message.Length > _options.ContentMaxLength ? message.Substring(0, _options.ContentMaxLength) : message;
                     _messageQueue.EnqueueMessage(messageEntity);
                 }
                 else
@@ -134,9 +136,24 @@ namespace WindNight.Extension.Logger.DcLog
                 //};
                 // logMsg = log.ToJsonStr();
             }
-            logMsg.Content = _options.ContentMaxLength > 0 && message.Length > _options.ContentMaxLength ? message.Substring(0, _options.ContentMaxLength) : message;
+
+            logMsg.Content = FixContent(message);
+
+            //;_options.ContentMaxLength > 0 && message.Length > _options.ContentMaxLength ? message.Substring(0, _options.ContentMaxLength) : message;
 
             return logMsg;
+        }
+
+        string FixContent(string message)
+        {
+            var configMaxLen = _options.ContentMaxLength;
+            var msg = configMaxLen > 0 && message.Length > configMaxLen ?
+                message.Substring(0, configMaxLen)
+                :
+                message;
+
+            return msg;
+
         }
 
         private bool TryGetJObject(object obj, out JObject jo)

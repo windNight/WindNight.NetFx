@@ -16,6 +16,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         public static DateTime CurrentCompileTime => _compileTime;
 
         private static IDcLoggerProcessor DcLoggerProcessor => DcLoggerExtensions.LoggerProcessor;
+
         private static DcLogOptions DcLogOptions => DcLoggerExtensions.DcLogOptions;
 
 
@@ -235,10 +236,13 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                 }
 
                 var logMsg = FixLogMessage(msg);
-                messageEntity.Content = DcLogOptions.ContentMaxLength > 0 && logMsg.Length > DcLogOptions.ContentMaxLength ?
-                    logMsg.Substring(0, DcLogOptions.ContentMaxLength)
-                    :
-                    logMsg;
+                messageEntity.Content = FixContent(msg);
+
+
+                //DcLogOptions.ContentMaxLength > 0 && logMsg.Length > DcLogOptions.ContentMaxLength ?
+                //logMsg.Substring(0, DcLogOptions.ContentMaxLength)
+                //:
+                //logMsg;
 
                 DcLoggerProcessor.EnqueueMessage(messageEntity);
             }
@@ -247,6 +251,16 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                 Console.WriteLine("日志异常:{0}", ex.ToJsonStr());
 
             }
+        }
+
+        static string FixContent(string logMsg)
+        {
+            var configMaxLen = DcLogOptions.ContentMaxLength;
+            var msg = configMaxLen > 0 && logMsg.Length > configMaxLen ?
+                   logMsg.Substring(0, configMaxLen)
+                   :
+                   logMsg;
+            return msg;
         }
 
         static string FixLogMessage(string msg) => msg;

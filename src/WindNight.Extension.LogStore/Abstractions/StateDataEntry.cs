@@ -26,6 +26,7 @@ namespace WindNight.Extension.Logger.DcLog.Abstractions
         public long LogTs { get; set; }
         public string SerialNumber { get; set; } = "";
         public string Msg { get; set; } = "";
+        public bool IsForce { get; set; } = false;
 
         public override string ToString()
         {

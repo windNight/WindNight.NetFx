@@ -42,12 +42,28 @@ namespace WindNight.Extension.Logger.DcLog
 
         }
 
+        bool CheckLogLevel(SysLogs message)
+        {
+            var dcLogOption = Ioc.GetService<IOptionsMonitor<DcLogOptions>>().CurrentValue;
+
+            if (message.LevelType >= (int)dcLogOption.MinLogLevel || message.IsForce)
+            {
+                return true;
+            }
+
+            return false;
+
+        }
 
         protected bool IsStop { get; set; }
 
         /// <summary> </summary>
         public virtual void EnqueueMessage(SysLogs message)
         {
+            if (!CheckLogLevel(message))
+            {
+                return;
+            }
             // if (message.ToLower().Contains($"{nameof(SysLogs)}".ToLower())) return;
             if (DcLogOptions.IsOpenDebug)
                 Console.WriteLine($"EnqueueMessage({message.ToJsonStr()})");
@@ -74,7 +90,13 @@ namespace WindNight.Extension.Logger.DcLog
                 try
                 {
                     if (MessageQueue.TryDequeue(out var message))
+                    {
+                        if (!CheckLogLevel(message))
+                        {
+                            continue;
+                        }
                         ProcessLog(message);
+                    }
                     else
                         Thread.Sleep(100);
                 }
@@ -108,8 +130,7 @@ namespace WindNight.Extension.Logger.DcLog
 
                 try
                 {
-                    if (_stopwatch.ElapsedMilliseconds >= 1000 * 60 * 5 &&
-                        MessageQueue.Count >= DcLogOptions.QueuedMaxMessageCount)
+                    if (_stopwatch.ElapsedMilliseconds >= 1000 * 60 * 5 && MessageQueue.Count >= DcLogOptions.QueuedMaxMessageCount)
                     {
                         if (DcLogOptions.IsConsoleLog)
                             Console.WriteLine("start backupThread to sender batch");
@@ -150,12 +171,6 @@ namespace WindNight.Extension.Logger.DcLog
             {
                 try
                 {
-                    //var obj = new
-                    //{
-                    //    AppCode = message.LogAppCode,
-                    //    Items = message,
-                    //};
-                    //var data = obj.ToJsonStr().ToBytes();// Encoding.UTF8.GetBytes();
 
                     if (message.LogAppCode.IsNullOrEmpty())
                     {
@@ -168,13 +183,6 @@ namespace WindNight.Extension.Logger.DcLog
 
                         if (message.LogAppCode.IsNullOrEmpty())
                         {
-                            //var s = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
-                            //var config1 = s.BuildServiceProvider().GetService<IConfiguration>();
-
-                            //var d1 = config1?.GetAppConfigValue("AppId", 0, false) ?? 0;
-                            //var d2 = config1?.GetAppConfigValue("AppCode", "", false) ?? "";
-                            //var d3 = config1?.GetAppConfigValue("AppName", "", false) ?? "";
-
                             return;
                         }
 
