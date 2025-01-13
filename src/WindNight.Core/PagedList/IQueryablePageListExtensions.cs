@@ -46,8 +46,7 @@ namespace System.Collections.Generic
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
+        /// <param name="pagedInfo"></param>
         /// <param name="indexFrom"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>

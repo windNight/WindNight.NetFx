@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 
-namespace WindNight.Core.NetCore.Internal
+namespace WindNight.Core.NetCore.@internal
 {
     /// <summary>
     ///Represents a JSON file as an <see cref="IConfigurationSource"/>.

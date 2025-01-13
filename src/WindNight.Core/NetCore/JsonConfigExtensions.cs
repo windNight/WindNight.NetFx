@@ -2,7 +2,7 @@
 
 #if !NET45 
 using System; 
-using WindNight.Core.NetCore.Internal;
+using WindNight.Core.NetCore.@internal;
 
 namespace Microsoft.Extensions.Configuration.Json
 {
