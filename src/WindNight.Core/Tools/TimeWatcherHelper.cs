@@ -24,6 +24,26 @@ namespace WindNight.Core.Tools
                 return configValue;
             }
         }
+
+        private static int TimeWatcherWarnMiSeconds
+        {
+            get
+            {
+                try
+                {
+                    var configService = Ioc.Instance.CurrentConfigService;
+                    if (configService == null) return DefaultWarnMiSeconds;
+                    var configValue = configService.GetAppSetting("TimeWatcherWarnMiSeconds", DefaultWarnMiSeconds, false);
+                    return configValue;
+                }
+                catch  
+                {
+                    return DefaultWarnMiSeconds;
+                }
+             
+            }
+        }
+
         private static bool DebugIsOpen
         {
             get
@@ -37,7 +57,7 @@ namespace WindNight.Core.Tools
 
         private static int FixWarnMiSeconds(int warnMiSeconds)
         {
-            return warnMiSeconds > 0 ? warnMiSeconds : DefaultWarnMiSeconds;
+            return warnMiSeconds > 0 ? warnMiSeconds : TimeWatcherWarnMiSeconds;
         }
 
         /// <summary>
