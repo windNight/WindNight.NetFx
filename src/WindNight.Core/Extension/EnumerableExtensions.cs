@@ -16,8 +16,10 @@ namespace WindNight.Linq.Extensions.Expressions
         {
             return items == null || !items.Any();
         }
+
         public static IEnumerable<T> EmptyArray<T>()
         {
+
 #if NET45
             return new List<T>();
 #else
@@ -25,6 +27,8 @@ namespace WindNight.Linq.Extensions.Expressions
 #endif
 
         }
+
+
         /// <summary>
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
@@ -64,10 +68,21 @@ namespace WindNight.Linq.Extensions.Expressions
         /// <param name="bag"></param>
         public static void Clear<T>(this ConcurrentBag<T> bag)
         {
-            if (!bag.IsEmpty)
+            while (!bag.IsEmpty)
             {
-                bag.TryTake(out _);
+                try
+                {
+                    bag.TryTake(out _);
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
+            //if (!bag.IsEmpty)
+            //{
+            //    bag.TryTake(out _);
+            //}
         }
 
         /// <summary>
