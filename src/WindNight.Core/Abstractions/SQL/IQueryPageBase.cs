@@ -5,7 +5,13 @@
     {
         int PageIndex { get; set; }
         int PageSize { get; set; }
+
+
+        /// <summary>  </summary>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         int IndexFrom { get; set; }
+
     }
 
     public interface IQueryPageInfo : IQueryPageBase

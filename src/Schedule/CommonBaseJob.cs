@@ -25,7 +25,7 @@ namespace Schedule
         {
         }
 
-        public abstract Task<bool> DoJobAsync();
+        public abstract Task<bool> DoJobAsync(IJobExecutionContext context);
 
        
         protected abstract int CurrentUserId { get; }

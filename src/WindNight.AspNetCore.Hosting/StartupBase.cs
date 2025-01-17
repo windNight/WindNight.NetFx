@@ -14,6 +14,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using WindNight.ConfigCenter.Extension;
+using System.Configuration;
 
 namespace Microsoft.AspNetCore.Hosting.WnExtensions
 {
@@ -75,12 +76,16 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         {
             var env = Ioc.GetService<IWebHostEnvironment>();
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+
             SelfSwaggerUIOptionsAction ??= (opt => opt.DefaultModelsExpandDepth(-1));
+
+
             app.UseSwaggerConfig(NamespaceName,
                 swaggerOptionsAction: SelfSwaggerOptionsAction,
                 swaggerUIOptionsAction: SelfSwaggerUIOptionsAction);
 
             app.UseRouting();
+
             UseStaticFiles(app);
 
 
@@ -94,7 +99,11 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
         protected virtual IApplicationBuilder UseStaticFiles(IApplicationBuilder app)
         {
-            app.UseStaticFiles();
+            var flag = Configuration.GetAppConfigValue("DefaultStaticFileEnable", true, false);
+            if (flag)
+            {
+                app.UseStaticFiles();
+            }
 
             if (SelfFileOptions != null)
             {
