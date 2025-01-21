@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Text.Extension;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Quartz;
+using Schedule.Abstractions;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;
+using static Quartz.Logging.OperationName;
 
 namespace Schedule
 {
@@ -27,25 +30,19 @@ namespace Schedule
 
         public abstract Task<bool> DoJobAsync(IJobExecutionContext context);
 
-       
         protected abstract int CurrentUserId { get; }
 
         protected abstract Func<bool, bool> PreTodo { get; }
 
-     
-
-        public override async Task Execute(IJobExecutionContext context)
-        {
-            await base.Execute(context);
-
-        }
-
+        
         #region RunTest
 
 
         public virtual bool CanRunTest => CurrentJobMeta?.CanRunTest ?? false;
 
-        public override async Task<bool> RunTestAtStartAsync()
+
+
+        public override bool RunTestAtStart()
         {
             if (!CanRunTest)
             {
@@ -65,8 +62,12 @@ namespace Schedule
             }
 
 
+            var sc = Ioc.GetService<ICommandCtrl>();
 
-            return await DoJobAsync();
+            var res = sc?.StartJob(CurrentJobCode, HardInfo.Now.AddSeconds(3), "oncejob", false);
+            return true;
+
+            //  return await DoJobAsync(null);
         }
 
         #endregion

@@ -1,12 +1,20 @@
-﻿//using System.Threading.Tasks;
-//using WindNight.Core.Abstractions;
+﻿using System.Threading.Tasks;
+using Quartz;
 
-//namespace Schedule.Abstractions
-//{
-//    public interface IJobBase11 : IJobBase
-//    {
+namespace WindNight.Core.Abstractions
+{
+    public interface IJobBase
+    {
+        bool CanRunTest { get; }
 
-//        // Task<bool> RunTestAtStartAsync();
+        string CurrentJobCode { get; }
 
-//    }
-//}
+        Task<bool> DoJobAsync(IJobExecutionContext context);
+
+
+        //Task<bool> RunTestAtStartAsync();
+
+        bool RunTestAtStart();
+
+    }
+}

@@ -41,7 +41,7 @@ namespace Schedule
             var state = JobBusinessStateEnum.Processing;
             job.SetJobBusinessState(state);
 
-            var rlt = await ExecuteWithResult(context);
+            var rlt = await ExecuteWithResultAsync(context);
 
             state = rlt ? JobBusinessStateEnum.Success : JobBusinessStateEnum.Fail;
             var bizContent = context.GetBizContent();
@@ -58,13 +58,19 @@ namespace Schedule
             return await Task.FromResult(true);
         }
 
+        public virtual bool RunTestAtStart()
+        {
+            return true;
+        }
+
 
         /// <summary>
         ///     重写后必须返回正确的值 业务代码执行结果 true|false
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected abstract Task<bool> ExecuteWithResult(IJobExecutionContext context);
+        protected abstract Task<bool> ExecuteWithResultAsync(IJobExecutionContext context);
+
 
         protected virtual void ConsoleWriteLine(string format, params object[] args)
         {
