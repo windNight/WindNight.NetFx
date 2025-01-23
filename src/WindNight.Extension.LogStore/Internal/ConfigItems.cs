@@ -1,7 +1,9 @@
 ﻿
 #if !NET45
+using System.Reflection.Emit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
+using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 
 namespace WindNight.Extension.Logger.DcLog.Internal
@@ -15,7 +17,45 @@ namespace WindNight.Extension.Logger.DcLog.Internal
         internal static string SystemAppCode => configuration.GetAppConfigValue("AppCode", "", false);
         internal static string SystemAppName => configuration.GetAppConfigValue("AppName", "", false);
 
-    
+
+
+        public static LogLevels GlobalMinLogLevel
+        {
+            get
+            {
+                try
+                {
+
+                    var configValue = GlobalMinLogLevelStr;
+
+                    if (configValue.ToLower().StartsWith("info"))
+                    {
+                        return LogLevels.Information;
+                    }
+
+                    if (configValue.ToLower().StartsWith("warn"))
+                    {
+                        return LogLevels.Warning;
+                    }
+
+                    var flag = Enum.TryParse<LogLevels>(configValue, true, out var logLevel);
+
+                    if (flag)
+                    {
+                        return logLevel;
+                    }
+
+                    return LogLevels.Information;
+                }
+                catch (Exception ex)
+                {
+                    return LogLevels.Information;
+                }
+            }
+        }
+
+        public static string GlobalMinLogLevelStr => configuration.GetAppConfigValue("GlobalMinLogLevel", "Info", false);
+
 
         public static DcLogOptions DcLogOptions => configuration.GetSectionValue<DcLogOptions>();
 

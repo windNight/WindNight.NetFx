@@ -40,12 +40,20 @@ namespace WindNight.Extension
 
                 foreach (var property in properties)
                 {
-                    var key = property.Name;
-                    var value = property.GetValue(queries);
-                    if (value != null && !queryDict.ContainsKey(key))
+                    try
                     {
-                        queryDict.Add(key, value);
+                        var key = property.Name;
+                        var value = property.GetValue(queries);
+                        if (value != null && !queryDict.ContainsKey(key))
+                        {
+                            queryDict.Add(key, value);
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        LogHelper.Error($"GenQueryDict({property.Name},{property.ToJsonStr()}) Handler Error {ex.Message}", ex);
+                    }
+
                 }
 
 

@@ -8,13 +8,12 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
+using WindNight.Extension.Logger.DcLog.Internal;
 
 namespace WindNight.Extension.Logger.DcLog
 {
     public class DcLoggerProcessor : IDcLoggerProcessor
     {
-
-
         private const int OpenGZipLimit = 150_000;
         private const string GZipFlagStr = "gzip@";
         private readonly Stopwatch _stopwatch = new Stopwatch();
@@ -44,14 +43,32 @@ namespace WindNight.Extension.Logger.DcLog
 
         bool CheckLogLevel(SysLogs message)
         {
-            var dcLogOption = Ioc.GetService<IOptionsMonitor<DcLogOptions>>().CurrentValue;
-
-            if (message.LevelType >= (int)dcLogOption.MinLogLevel || message.IsForce)
+            try
             {
+                var dcLogOption = Ioc.GetService<IOptionsMonitor<DcLogOptions>>().CurrentValue;
+                if (message.LevelType == (int)LogLevels.None)
+                {
+                    return false;
+                }
+
+                if (message.LevelType >= (int)dcLogOption.MinLogLevel || message.IsForce)
+                {
+                    return true;
+                }
+
+                if (message.LevelType >= (int)ConfigItems.GlobalMinLogLevel)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+
                 return true;
             }
 
-            return false;
 
         }
 
@@ -66,7 +83,9 @@ namespace WindNight.Extension.Logger.DcLog
             }
             // if (message.ToLower().Contains($"{nameof(SysLogs)}".ToLower())) return;
             if (DcLogOptions.IsOpenDebug)
+            {
                 Console.WriteLine($"EnqueueMessage({message.ToJsonStr()})");
+            }
             MessageQueue.Enqueue(message);
         }
 
@@ -82,7 +101,9 @@ namespace WindNight.Extension.Logger.DcLog
         protected virtual void ProcessLogQueueThread()
         {
             if (DcLogOptions.IsConsoleLog)
+            {
                 Console.WriteLine("start processlog to sender");
+            }
             Thread.CurrentThread.Name = "DbLoggerProcessor-sender";
             while (true)
             {
@@ -98,12 +119,14 @@ namespace WindNight.Extension.Logger.DcLog
                         ProcessLog(message);
                     }
                     else
+                    {
                         Thread.Sleep(100);
+                    }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    Thread.Sleep(100);
+                    Thread.Sleep(200);
                 }
             }
         }
@@ -112,7 +135,9 @@ namespace WindNight.Extension.Logger.DcLog
         protected virtual void BackupThread()
         {
             if (DcLogOptions.IsConsoleLog)
+            {
                 Console.WriteLine("start backupThread to sender batch");
+            }
             Thread.CurrentThread.Name = "DbLoggerProcessor-backup-sender";
             while (true)
             {
@@ -121,7 +146,9 @@ namespace WindNight.Extension.Logger.DcLog
                     if (MessageQueue.Count > 0)
                     {
                         if (DcLogOptions.IsConsoleLog)
+                        {
                             Console.WriteLine("start backupThread Before Stop to sender batch");
+                        }
                         ProcessBackupLogs();
                     }
 
@@ -165,13 +192,14 @@ namespace WindNight.Extension.Logger.DcLog
         private void ProcessLog(SysLogs message)
         {
             if (DcLogOptions.IsOpenDebug)
+            {
                 Console.WriteLine($"ProcessLog({message})");
+            }
 
             using (var udpClient = new UdpClient())
             {
                 try
                 {
-
                     if (message.LogAppCode.IsNullOrEmpty())
                     {
                         var config = Ioc.GetService<IConfigService>();
@@ -212,7 +240,9 @@ namespace WindNight.Extension.Logger.DcLog
         {
             var list = messages.ToList();
             if (DcLogOptions.IsOpenDebug)
+            {
                 Console.WriteLine($"ProcessLog({list.ToJsonStr()})");
+            }
 
             using (var udpClient = new UdpClient())
             {

@@ -13,6 +13,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         private static DateTime _compileTime => File.GetLastWriteTime(typeof(DcLogHelper).Assembly.Location);
 
         public static string CurrentVersion => _version.ToString();
+
         public static DateTime CurrentCompileTime => _compileTime;
 
         private static IDcLoggerProcessor DcLoggerProcessor => DcLoggerExtensions.LoggerProcessor;
