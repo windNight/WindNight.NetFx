@@ -250,8 +250,10 @@ namespace Schedule
                 // var jobParam = GetJobMeta(JobContextFunc.GetOrigJobName(context));
 
                 var ctrl = Ioc.GetService<IScheduleOrderCtrl>();
-                if (ctrl != null)
+                if (ctrl != null && isLogJobLC)
+                {
                     await ctrl.StartJobSafety(JobId, jobName, jobCode, runParams, isOnceJob);
+                }
 
                 /*
 
@@ -385,7 +387,7 @@ namespace Schedule
 
                 // DoJobLog 
                 var ctrl = Ioc.GetService<IScheduleOrderCtrl>();
-                if (ctrl != null)
+                if (ctrl != null && isLogJobLC)
                 {
                     await ctrl.CompleteJobSafety(JobId, jobRunState, bizContent ?? string.Empty);
                 }

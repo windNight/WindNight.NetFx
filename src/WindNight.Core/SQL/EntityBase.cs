@@ -7,7 +7,7 @@ namespace WindNight.Core.SQL
     /// <inheritdoc cref="IEntity" />
     public class EntityBase<TPrimaryKey> : IEntity<TPrimaryKey>, ICanPageEntity //暂时选定所有带Id的单表都可分页
     {
-        public TPrimaryKey Id { get; set; }
+        public virtual TPrimaryKey Id { get; set; }
     }
 
     /// <inheritdoc cref="ICreateEntityBase" />
@@ -20,22 +20,29 @@ namespace WindNight.Core.SQL
             CreateUnixTime = now.ConvertToUnixTime();
         }
 
-        public int CreateUserId { get; set; }
-        public long CreateUnixTime { get; set; }
+        public virtual void InitData()
+        {
+            var now = HardInfo.Now;
+            CreateDate = now.ToString("yyyyMMdd").ToInt();
+            CreateUnixTime = now.ConvertToUnixTime();
+        }
 
-        public int CreateDate { get; set; }
+        public virtual int CreateUserId { get; set; }
+        public virtual long CreateUnixTime { get; set; }
 
-        public int IsDeleted { get; set; } = 0;
+        public virtual int CreateDate { get; set; }
+
+        public virtual int IsDeleted { get; set; } = 0;
     }
 
 
     /// <inheritdoc cref="IUpdateEntityBase" />
     public class CreateAndUpdateBase<TPrimaryKey> : CreateBase<TPrimaryKey>, IUpdateEntityBase
     {
-        public int UpdateUserId { get; set; }
-        public long UpdateUnixTime { get; set; }
+        public virtual int UpdateUserId { get; set; }
+        public virtual long UpdateUnixTime { get; set; }
 
-        public int UpdateDate { get; set; }
+        public virtual int UpdateDate { get; set; }
     }
 
 
@@ -46,7 +53,7 @@ namespace WindNight.Core.SQL
         {
             Status = (int)DataStatusEnums.Enable;
         }
-        public int Status { get; set; }
+        public virtual int Status { get; set; }
     }
 
 
@@ -54,7 +61,7 @@ namespace WindNight.Core.SQL
     public class CommonTreeEntityBase<TPrimaryKey> : CreateAndUpdateWithStatusBase<TPrimaryKey>,
         ITreeEntity<TPrimaryKey>
     {
-        public TPrimaryKey ParentId { get; set; }
+        public virtual TPrimaryKey ParentId { get; set; }
     }
 
     public static class SqlEx

@@ -12,7 +12,7 @@ namespace WindNight.Core.Abstractions
         Task<bool> DoJobAsync(IJobExecutionContext context);
 
 
-        //Task<bool> RunTestAtStartAsync();
+        Task<bool> RunTestAtStartAsync();
 
         bool RunTestAtStart();
 
