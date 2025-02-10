@@ -1,4 +1,6 @@
-﻿namespace WindNight.Core.SQL.Abstractions
+using System;
+
+namespace WindNight.Core.SQL.Abstractions
 {
 
     public interface IEntity : ICanPageEntity
@@ -6,9 +8,12 @@
     }
 
     public interface IEntity<TPrimaryKey> : IEntity
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
         /// <summary> 主键 </summary>
-        public TPrimaryKey Id { get; set; }
+        TPrimaryKey Id { get; set; }
+
+        bool IdIsValid();
     }
 
     public interface IDeletedEntity

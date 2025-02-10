@@ -1,4 +1,4 @@
-﻿using System.Net.Sockets;
+using System.Net.Sockets;
 using Newtonsoft.Json.Extension;
 using WindNight.Core;
 using WindNight.Core.SQL;
@@ -14,9 +14,26 @@ namespace WindNight.Extension.Dapper.Mysql
     /// </summary>
     public abstract partial class NoIdMysqlBase<TEntity>
     {
+        protected abstract string BusinessColumns { get; }
+
+        protected abstract string BusinessColumnValues { get; }
+
+
         protected abstract string InsertTableColumns { get; }
         protected abstract string InsertTableColumnValues { get; }
+
         protected abstract string EqualEntityCondition { get; }
+
+        protected virtual string QueryAllSqlCondition => $" ";
+
+        /// <summary>
+        ///  有些表 是没有 delete 字段的  暂不处理 delete 字段
+        /// </summary>
+        protected virtual string QueryAllSqlStr => $"SELECT * FROM {BaseTableName} {(QueryAllSqlCondition.IsNullOrEmpty() ? "" : $" WHERE {QueryAllSqlCondition}")} ";
+
+
+        protected virtual string BaseTreeColumns => $"ParentId,{BaseStatusColumns}";
+        protected virtual string BaseTreeColumnValues => $"@ParentId,{BaseStatusColumnValues}";
 
         protected virtual string BaseStatusColumns => $"Status,{BaseCUColumns}";
         protected virtual string BaseStatusColumnValues => $"@Status,{BaseCUColumnValues}";
@@ -28,7 +45,13 @@ namespace WindNight.Extension.Dapper.Mysql
         protected virtual string BaseCUColumnValues => $"{BaseCColumnValues},@UpdateUserId,@UpdateDate,@UpdateUnixTime";
 
         protected string DefaultUpdateInfoFiled = "UpdateUserId=@UpdateUserId,UpdateUnixTime=@UpdateUnixTime,UpdateDate=@UpdateDate";
+
         protected virtual string QueryByUniqueKeySql => EqualEntityCondition.IsNullOrEmpty() ? "" : $"SELECT * FROM {BaseTableName} WHERE {EqualEntityCondition} ";
+
+        protected virtual string UpdateByUniqueKeySql => EqualEntityCondition.IsNullOrEmpty()
+            ? ""
+            : $"UPDATE {BaseTableName} SET {ToBeUpdateFiled} WHERE {EqualEntityCondition} ";
+
 
         protected virtual string ToBeUpdateFiled { get; }
 

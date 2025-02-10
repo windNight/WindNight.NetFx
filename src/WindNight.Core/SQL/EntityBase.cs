@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WindNight.Core.SQL.Abstractions;
 
 namespace WindNight.Core.SQL
@@ -6,12 +6,19 @@ namespace WindNight.Core.SQL
 
     /// <inheritdoc cref="IEntity" />
     public class EntityBase<TPrimaryKey> : IEntity<TPrimaryKey>, ICanPageEntity //暂时选定所有带Id的单表都可分页
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
         public virtual TPrimaryKey Id { get; set; }
+        public bool IdIsValid()
+        {
+            return Id.CompareTo(default) > 0;
+        }
+
     }
 
     /// <inheritdoc cref="ICreateEntityBase" />
     public class CreateBase<TPrimaryKey> : EntityBase<TPrimaryKey>, IDeletedEntity, ICreateEntityBase
+    where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
         public CreateBase()
         {
@@ -27,39 +34,44 @@ namespace WindNight.Core.SQL
             CreateUnixTime = now.ConvertToUnixTime();
         }
 
-        public virtual int CreateUserId { get; set; }
-        public virtual long CreateUnixTime { get; set; }
+        public int CreateUserId { get; set; }
+        public long CreateUnixTime { get; set; }
 
-        public virtual int CreateDate { get; set; }
+        public int CreateDate { get; set; }
 
         public virtual int IsDeleted { get; set; } = 0;
+
     }
 
 
     /// <inheritdoc cref="IUpdateEntityBase" />
     public class CreateAndUpdateBase<TPrimaryKey> : CreateBase<TPrimaryKey>, IUpdateEntityBase
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
-        public virtual int UpdateUserId { get; set; }
-        public virtual long UpdateUnixTime { get; set; }
+        public int UpdateUserId { get; set; }
+        public long UpdateUnixTime { get; set; }
 
-        public virtual int UpdateDate { get; set; }
+        public int UpdateDate { get; set; }
     }
 
 
     /// <inheritdoc cref="IUpdateEntityBase" />
     public class CreateAndUpdateWithStatusBase<TPrimaryKey> : CreateAndUpdateBase<TPrimaryKey>, IStatusEntity
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
         public CreateAndUpdateWithStatusBase() : base()
         {
-            Status = (int)DataStatusEnums.Enable;
+
         }
-        public virtual int Status { get; set; }
+
+        public virtual int Status { get; set; } = (int)DataStatusEnums.Enable;
     }
 
 
     /// <inheritdoc cref="ITreeEntity{TPrimaryKey}" />
     public class CommonTreeEntityBase<TPrimaryKey> : CreateAndUpdateWithStatusBase<TPrimaryKey>,
         ITreeEntity<TPrimaryKey>
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
         public virtual TPrimaryKey ParentId { get; set; }
     }

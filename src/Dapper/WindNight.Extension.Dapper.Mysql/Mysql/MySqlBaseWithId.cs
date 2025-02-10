@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Extension;
+using Newtonsoft.Json.Extension;
 using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Db.Abstractions;
 using WindNight.Extension.Dapper.Mysql.@internal;
@@ -8,9 +8,13 @@ namespace WindNight.Extension.Dapper.Mysql
     ///<inheritdoc />
     public abstract partial class MySqlBase<TEntity, TId> : NoIdMysqlBase<TEntity>,
           IBaseRepositoryServiceWithId<TEntity, TId>
-        where TEntity : class, IEntity<TId> , new()
+        where TEntity : class, IEntity<TId>, new()
         where TId : IEquatable<TId>, IComparable<TId>
     {
+        protected virtual string InsertWithIdSql =>
+            $"INSERT INTO {BaseTableName} (Id,{InsertTableColumns})  VALUES ( @Id,{InsertTableColumnValues}); ";
+
+
         protected virtual string QueryDataByIdSql => $"SELECT * FROM {BaseTableName} WHERE Id=@Id; ";
 
         protected virtual string QueryListByStatusSql => $"SELECT * FROM {BaseTableName} WHERE Status=@QueryStatus ";
@@ -19,10 +23,8 @@ namespace WindNight.Extension.Dapper.Mysql
         protected virtual string DeleteByIdSql =>
             $@"UPDATE {BaseTableName} SET IsDeleted=1 WHERE Id=@Id; ";
 
-        /// <summary>
-        ///  有些表 是没有 delete 字段的  暂不处理 delete 字段
-        /// </summary>
-        protected virtual string QueryAllSqlStr => $"SELECT * FROM {BaseTableName} ";
+        protected override string QueryAllSqlCondition => $" IsDeleted=0 ";
+
 
         /// <summary>
         ///  获取整表数据 慎用
@@ -61,7 +63,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
 
             var id = DbExecuteScalar<TId>(InsertSql, entity, warnMs: warnMs);
-            if (id.CompareTo(default) < 0)
+            if (id.CompareTo(default) <= 0)
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {entity.ToJsonStr()} . ",
                     appendMessage: false);
             entity.Id = id;
@@ -73,7 +75,7 @@ namespace WindNight.Extension.Dapper.Mysql
             if (entity == null) return default;
 
             var id = await DbExecuteScalarAsync<TId>(InsertSql, entity, warnMs: warnMs);
-            if (id.CompareTo(default) < 0)
+            if (id.CompareTo(default) <= 0)
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {entity.ToJsonStr()} . ",
                     appendMessage: false);
             entity.Id = id;

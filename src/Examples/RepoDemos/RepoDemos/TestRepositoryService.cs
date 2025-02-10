@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using WindNight.Core.SQL;
@@ -22,10 +22,10 @@ namespace RepoDemos
 
     public class TestRepositoryService : DbBase<TestStatusE>, ITestRepositoryService
     {
-        private readonly string BusinessColumns =
+        protected override string BusinessColumns =>
             "F1,F2,F3 ";
 
-        private readonly string BusinessColumnValues =
+        protected override string BusinessColumnValues =>
             "@F1,@F2,@F3 ";
         protected override string InsertTableColumns => $"{BusinessColumns},{BaseStatusColumns}";
         protected override string InsertTableColumnValues => $"{BusinessColumnValues},{BaseStatusColumnValues}";
@@ -52,10 +52,10 @@ namespace RepoDemos
 
     public class TestTreeERepositoryService : DbTreeBase<TestTreeE>, ITestTreeERepositoryService
     {
-        private readonly string BusinessColumns =
+        protected override string BusinessColumns =>
             "F1,F2,F3 ";
 
-        private readonly string BusinessColumnValues =
+        protected override string BusinessColumnValues =>
             "@F1,@F2,@F3 ";
         protected override string InsertTableColumns => $"{BusinessColumns},{BaseStatusColumns}";
         protected override string InsertTableColumnValues => $"{BusinessColumnValues},{BaseStatusColumnValues}";

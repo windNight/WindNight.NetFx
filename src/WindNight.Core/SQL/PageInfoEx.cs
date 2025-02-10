@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using WindNight.Core.SQL;
@@ -13,13 +13,15 @@ namespace WindNight.Core
         ///     分页信息实例
         /// </summary> 
         /// <param name="pageInfo"> <see cref="IQueryPageBase"/> </param>
-        public static QueryPageInfo GenQueryPageInfoForCreateEntity<TEntity>(this IQueryPageBase pageInfo)
+        /// <param name="tableNameToLower">   </param>
+        /// <param name="tableNameAppendPlural">   </param>
+        public static QueryPageInfo GenQueryPageInfoForCreateEntity<TEntity>(this IQueryPageBase pageInfo, bool tableNameToLower = true, bool tableNameAppendPlural = false)
             where TEntity : class, ICreateEntityBase, IEntity, new()
 
         {
             return new QueryPageInfo(pageInfo)
             {
-                TableName = pageInfo.GenDefaultTableName<TEntity>(),
+                TableName = pageInfo.GenDefaultTableName<TEntity>(tableNameToLower, tableNameAppendPlural),
                 Fields = "*",
                 OrderField = "CreateUnixTime DESC"
             };
@@ -30,13 +32,15 @@ namespace WindNight.Core
         ///     分页信息实例
         /// </summary> 
         /// <param name="pageInfo"> <see cref="IQueryPageBase"/> </param>
-        public static QueryPageInfo GenQueryPageInfo<TEntity>(this IQueryPageBase pageInfo)
+        /// <param name="tableNameToLower">   </param>
+        /// <param name="tableNameAppendPlural">   </param>
+        public static QueryPageInfo GenQueryPageInfo<TEntity>(this IQueryPageBase pageInfo, bool tableNameToLower = true, bool tableNameAppendPlural = false)
             where TEntity : class, ICanPageEntity, IEntity, new()
 
         {
             return new QueryPageInfo(pageInfo)
             {
-                TableName = pageInfo.GenDefaultTableName<TEntity>(),
+                TableName = pageInfo.GenDefaultTableName<TEntity>(tableNameToLower, tableNameAppendPlural),
                 Fields = "*",
                 OrderField = "Id DESC"
             };

@@ -1,4 +1,4 @@
-﻿using WindNight.Core.SQL;
+using WindNight.Core.SQL;
 using WindNight.Core.SQL.Abstractions;
 
 namespace WindNight.Extension.Dapper.Mysql
@@ -212,6 +212,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <typeparam name="T"></typeparam>
         /// <param name="sql"></param>
         /// <param name="param"></param>
+        /// <param name="warnMs"></param>
         /// <returns></returns>
         protected virtual async Task<IEnumerable<T>> DbQueryEListAsync<T>(string sql, object param = null, long warnMs = -1)
         {
@@ -268,6 +269,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="param"></param>
+        /// <param name="warnMs"></param>
         /// <returns></returns>
         protected virtual async Task<int> DbExecuteAsync(string sql, object param = null, long warnMs = -1)
         {

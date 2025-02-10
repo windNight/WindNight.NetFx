@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Extension;
+using Newtonsoft.Json.Extension;
 using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Dapper.Mssql.@internal;
 
@@ -62,7 +62,7 @@ namespace WindNight.Extension.Dapper.Mssql
 
 
             var id = DbExecuteScalar<TId>(InsertSql, entity);
-            if (id.CompareTo(default) < 0)
+            if (id.CompareTo(default) <= 0)
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {entity.ToJsonStr()} . ",
                     appendMessage: false);
             entity.Id = id;
@@ -74,7 +74,7 @@ namespace WindNight.Extension.Dapper.Mssql
             if (entity == null) return default;
 
             var id = await DbExecuteScalarAsync<TId>(InsertSql, entity);
-            if (id.CompareTo(default) < 0)
+            if (id.CompareTo(default) <= 0)
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {entity.ToJsonStr()} . ",
                     appendMessage: false);
             entity.Id = id;

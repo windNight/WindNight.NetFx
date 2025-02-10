@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Options;
 using WindNight.Core.SQL;
@@ -11,10 +11,10 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
 {
     internal class MysqlLogsProcess : MysqlDbBase<SysLogs>, ISystemLogsProcess
     {
-        private readonly string BusinessColumns =
+        protected override string BusinessColumns =>
             "LevelType,`Level`,SerialNumber,RequestUrl,ServerIp,ClientIp,RunMs,LogTs,Content,NodeCode,LogAppCode,LogAppName,Exceptions";
 
-        private readonly string BusinessColumnValues =
+        protected override string BusinessColumnValues =>
             "@LevelType,@Level,@SerialNumber,@RequestUrl,@ServerIp,@ClientIp,@RunMs,@LogTs,@Content,@NodeCode,@LogAppCode,@LogAppName,@Exceptions";
 
 

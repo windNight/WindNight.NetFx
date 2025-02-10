@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Extension;
+using Newtonsoft.Json.Extension;
 using WindNight.Extension.Dapper.Mysql.@internal;
 
 namespace WindNight.Extension.Dapper.Mysql
@@ -19,6 +19,7 @@ namespace WindNight.Extension.Dapper.Mysql
         ///  使用<see cref="BatchInsertSql"/> 语句批量插入
         /// </summary>
         /// <param name="insertList"></param>
+        /// <param name="warnMs"></param>
         /// <returns></returns>
         public virtual bool BatchInsertUseValues(IList<TEntity> insertList, long warnMs = -1)
         {
@@ -35,6 +36,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// 使用<see cref="BatchInsertSql"/> 语句批量插入 异步
         /// </summary>
         /// <param name="insertList"></param>
+        /// <param name="warnMs"></param>
         /// <returns></returns>
         public virtual async Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList, long warnMs = -1)
         {
@@ -66,6 +68,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// 按条一条一条插入
         /// </summary>
         /// <param name="insertList"></param>
+        /// <param name="warnMs"></param>
         public virtual void ListInsertOneByOne(IList<TEntity> insertList, long warnMs = -1)
         {
             var insertSql =
@@ -88,6 +91,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="updateSql"></param>
         /// <param name="updateList"></param>
+        /// <param name="warnMs"></param>
         /// <returns></returns>
         public virtual bool BatchUpdate(string updateSql, IList<TEntity> updateList, long warnMs = -1)
         {
@@ -107,10 +111,125 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="action"></param>
         /// <param name="retryCount"></param>
+        /// <param name="warnMs"></param>
         public virtual void BatchInsertWithRetry(Action action, int retryCount = 3)
         {
             DoRetryWhenHandlerSocketException(action, $"BatchInsert_{BaseTableName}", retryCount);
         }
+
+
+        public virtual int BatchInsertOrUpdateData(IEnumerable<TEntity> entities, long warnMs = -1)
+        {
+            var count = 0;
+            var error = new List<TEntity>();
+            foreach (var entity in entities)
+            {
+
+                try
+                {
+                    var flag = InsertOrUpdateData(entity, warnMs);
+                    if (flag)
+                    {
+                        count++;
+                    }
+                    else
+                    {
+                        error.Add(entity);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error($"BatchInsertOrUpdateData({entity.ToJsonStr()}) Handler Error {ex.Message}", ex);
+                }
+            }
+
+            if (entities.Count() != count)
+            {
+                LogHelper.Warn($" 批量插入部分失败，预期【{entities.Count()}】条 实际成功【{count}】条 ，失败记录：{error.ToJsonStr()}");
+            }
+            return count;
+
+        }
+
+        public virtual async Task<int> BatchInsertOrUpdateDataAsync(IEnumerable<TEntity> entities, long warnMs = -1)
+        {
+            var count = 0;
+            var error = new List<TEntity>();
+            foreach (var entity in entities)
+            {
+
+                try
+                {
+                    var flag = await InsertOrUpdateDataAsync(entity, warnMs);
+                    if (flag)
+                    {
+                        count++;
+                    }
+                    else
+                    {
+                        error.Add(entity);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error($"InsertOrUpdateDataAsync({entity.ToJsonStr()}) Handler Error {ex.Message}", ex);
+                }
+            }
+
+            if (entities.Count() != count)
+            {
+                LogHelper.Warn($" 异步批量插入部分失败，预期【{entities.Count()}】条 实际成功【{count}】条 ，失败记录：{error.ToJsonStr()}");
+            }
+            return count;
+
+        }
+
+
+        /// <summary>
+        ///   AppendCreateInfo 和 AppendUpdateInfo 需要业务方自行执行
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="warnMs"></param>
+        /// <returns></returns>
+        public virtual bool InsertOrUpdateData(TEntity entity, long warnMs = -1)
+        {
+            var dbData = DbQuery(QueryByUniqueKeySql, entity);
+
+            if (dbData is { Id: > 0 })
+            {
+                var exec = DbExecute(UpdateByUniqueKeySql, entity, warnMs);
+                return exec > 0;
+            }
+            else
+            {
+                var id = InsertOne(entity);
+                return id.CompareTo(default) > 0;
+            }
+
+        }
+
+        /// <summary>
+        ///   AppendCreateInfo 和 AppendUpdateInfo 需要业务方自行执行
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="warnMs"></param>
+        /// <returns></returns>
+        public virtual async Task<bool> InsertOrUpdateDataAsync(TEntity entity, long warnMs = -1)
+        {
+            var dbData = await DbQueryAsync(QueryByUniqueKeySql, entity);
+            if (dbData is { Id: > 0 })
+            {
+                var exec = await DbExecuteAsync(UpdateByUniqueKeySql, entity, warnMs);
+                return exec > 0;
+            }
+            else
+            {
+                var id = await InsertOneAsync(entity);
+                return id.CompareTo(default) > 0;
+            }
+
+        }
+
 
     }
 }
