@@ -1,37 +1,38 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-	<Import Project="..\..\build\common.props" />
-	<PropertyGroup>
-		<TargetFrameworks>
-			netstandard2.0;
-			netstandard2.1;
-			net5.0;
+    <Import Project="..\..\build\common.props" />
+    <PropertyGroup>
+        <TargetFrameworks>
+            netstandard2.0;
+            netstandard2.1;
+            <!--net5.0;
 			net6.0;
-			net7.0;
-			net8.0;
+			net7.0;-->
+            net8.0;
+            net9.0;
 
-		</TargetFrameworks>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<Description>
-		</Description>
-		<PackageReleaseNotes>
-		</PackageReleaseNotes>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<OutputPath>..\..\Output\$(Configuration)</OutputPath>
-		<RootNamespace>WindNight.Extension.Logger.DcLog</RootNamespace>
+        </TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Description>
+        </Description>
+        <PackageReleaseNotes>
+        </PackageReleaseNotes>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <OutputPath>..\..\Output\$(Configuration)</OutputPath>
+        <RootNamespace>WindNight.Extension.Logger.DcLog</RootNamespace>
 
-	</PropertyGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />
-		<ProjectReference Include="..\WindNight.Extension\WindNight.Extension.csproj" />
-	</ItemGroup>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />
+        <ProjectReference Include="..\WindNight.Extension\WindNight.Extension.csproj" />
+    </ItemGroup>
 
-	<ItemGroup>
+    <ItemGroup>
 
-		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="9.0.0" />
 
-	</ItemGroup>
+    </ItemGroup>
 
 
 

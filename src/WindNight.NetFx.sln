@@ -25,6 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcDemo_NetCore3_1", "Examp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resource", "resource", "{F13DE86C-E85B-4369-832B-A19E659B01E3}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		..\build\common.props = ..\build\common.props
 		..\ReadMe.md = ..\ReadMe.md
 		..\build\version.props = ..\build\version.props

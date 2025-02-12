@@ -17,6 +17,8 @@
 
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
 
+		<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25020802" />
+
 	</ItemGroup>
 
 	<ItemGroup>

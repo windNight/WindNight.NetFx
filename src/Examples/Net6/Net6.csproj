@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<!--<ImplicitUsings>disable</ImplicitUsings>-->
 		<Nullable>enable</Nullable>
@@ -28,7 +28,7 @@
 
 
 	<ItemGroup>
- 
+	  <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25020802" />
 	</ItemGroup>
 
 	<ItemGroup>

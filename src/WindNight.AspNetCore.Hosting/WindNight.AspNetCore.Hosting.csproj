@@ -1,27 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 
-	<Import Project="..\..\build\common.props" />
-	<PropertyGroup>
-		<TargetFrameworks>
-			<!--netcoreapp3.1;-->
-			net5.0;
-			net6.0;
-			net7.0;
-			net8.0;
-		</TargetFrameworks>
-		<Description> </Description>
-		<PackageReleaseNotes> </PackageReleaseNotes>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	</PropertyGroup>
-	<ItemGroup>
- 
-	</ItemGroup>
+    <Import Project="..\..\build\common.props" />
+    <PropertyGroup>
+        <TargetFrameworks>
+            <!--netcoreapp3.1;-->
+            <!--net5.0;
+			net6.0;-->
+            <!--net7.0;-->
+            net8.0;
+            net9.0;
+        </TargetFrameworks>
+        <Description> </Description>
+        <PackageReleaseNotes> </PackageReleaseNotes>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25020802" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\WindNight.AspNetCore.Mvc.Extensions\WindNight.AspNetCore.Mvc.Extensions.csproj" />
-		<ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\WindNight.AspNetCore.Mvc.Extensions\WindNight.AspNetCore.Mvc.Extensions.csproj" />
+        <ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />
+    </ItemGroup>
 
 
 </Project>

@@ -40,6 +40,8 @@
 
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
 
+		<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25020802" />
+
 	 
 		<PackageReference Include="xunit" Version="2.9.2" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">

@@ -25,5 +25,8 @@
 		<ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
 		<ProjectReference Include="..\WindNight.Extension.Db.Abstractions\WindNight.Extension.Db.Abstractions.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Extensions\" />
+	</ItemGroup>
 
 </Project>
