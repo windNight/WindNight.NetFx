@@ -1,4 +1,4 @@
-﻿using Quartz;
+using Quartz;
 using Schedule;
 using System;
 using System.Threading.Tasks;
@@ -10,11 +10,13 @@ namespace JobDemos.Jobs.Demo3
     public class Demo3Job : BaseJob
     {
 
-        protected override Task<bool> ExecuteWithResult(IJobExecutionContext context)
+        protected override Task<bool> ExecuteWithResultAsync(IJobExecutionContext context)
         {
             Console.WriteLine($"{HardInfo.Now:yyyy-MM-dd HH:mm:sss} I'm {JobContext.CurrentJobBaseInfo}");
             return Task.FromResult(true);
         }
+
+     
 
         public override string CurrentJobCode => nameof(Demo3Job);
     }
