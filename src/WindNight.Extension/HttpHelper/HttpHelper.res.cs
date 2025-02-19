@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Extension;
+using RestSharp;
 using WindNight.Core.Tools;
 
 namespace WindNight.Extension
@@ -24,29 +25,26 @@ namespace WindNight.Extension
         public static T GetResponse<T>(string domain, string path,
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20) //where T : new()
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
+            Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
-            {
+                {
+                    var request = GenGetRequest(path, headerDict, queries);
 
-                var request = GenGetRequest(path, headerDict, queries);
-
-                return ExecuteHttpClient3<T>(domain, request, headerDict, timeOut);
-            }, $"HttpGet({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
+                    return ExecuteHttpClient3<T>(domain, request, headerDict, timeOut, errStatusFunc);
+                }, $"HttpGet({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 
 
         public static T GetResponse<T>(string domain, string path,
             object queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<IRestResponse, bool> errStatusFunc = null)
         {
-
             var queryDict = queries.GenQueryDict();
-            return GetResponse<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut);
-
+            return GetResponse<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, errStatusFunc);
         }
-
 
 
         /// <summary>
@@ -66,15 +64,15 @@ namespace WindNight.Extension
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
-            CancellationToken token = default(CancellationToken)) //where T : new()
+            CancellationToken token = default, Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
-            {
+                {
+                    var request = GenGetRequest(path, headerDict, queries);
 
-                var request = GenGetRequest(path, headerDict, queries);
-
-                return await ExecuteHttpClientAsync3<T>(domain, request, headerDict, token);
-            }, $"HttpGetAsync({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
+                    return await ExecuteHttpClientAsync3<T>(domain, request, headerDict, token,
+                        errStatusFunc: errStatusFunc);
+                }, $"HttpGetAsync({domain}{path}) with params {queries.ToJsonStr()}", warnMiSeconds: warnMiSeconds);
         }
 
 
@@ -82,14 +80,12 @@ namespace WindNight.Extension
             object queries,
             Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
-            CancellationToken token = default(CancellationToken))
+            CancellationToken token = default, Func<IRestResponse, bool> errStatusFunc = null)
         {
-
             var queryDict = queries.GenQueryDict();
-            return await GetResponseAsync<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, token);
-
+            return await GetResponseAsync<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, token,
+                errStatusFunc);
         }
-
 
 
         /// <summary>
@@ -106,14 +102,15 @@ namespace WindNight.Extension
         /// <returns></returns>
         public static T PostResponse<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
-            int timeOut = 1000 * 60 * 20, bool isJsonBody = true) //where T : new()
+            int timeOut = 1000 * 60 * 20, bool isJsonBody = true,
+            Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
-            {
-                var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
+                {
+                    var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
 
-                return ExecuteHttpClient3<T>(domain, request, headerDict, timeOut);
-            }, $"HttpPost({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
+                    return ExecuteHttpClient3<T>(domain, request, headerDict, timeOut, errStatusFunc);
+                }, $"HttpPost({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
 
@@ -133,21 +130,17 @@ namespace WindNight.Extension
         public static async Task<T> PostResponseAsync<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20,
-            CancellationToken token = default(CancellationToken), bool isJsonBody = true) //where T : new()
+            CancellationToken token = default,
+            bool isJsonBody = true, Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
-            {
-                var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
+                {
+                    var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
 
-                return await ExecuteHttpClientAsync3<T>(domain, request, headerDict, token, timeOut);
-            },
+                    return await ExecuteHttpClientAsync3<T>(domain, request, headerDict, token, timeOut, errStatusFunc);
+                },
                 $"HttpPostAsync({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
-
-
-
-
     }
-
 }

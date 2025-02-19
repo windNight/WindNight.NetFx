@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
@@ -12,21 +12,6 @@ namespace WindNight.Extension
 {
     public static partial class HttpHelper
     {
-        class ConfigItems// : ConfigItemsBase
-        {
-            public static bool DebugIsOpen
-            {
-                get
-                {
-                    var config = Ioc.Instance.CurrentConfigService;// Ioc.GetService<IConfigService>();
-                    if (config == null) return false;
-                    return config.GetAppSetting("OpenDebug", false, false);
-                }
-            }
-
-        }
-
-
         public static Dictionary<string, object> GenQueryDict(this object queries)
         {
             var queryDict = new Dictionary<string, object>();
@@ -51,14 +36,10 @@ namespace WindNight.Extension
                     }
                     catch (Exception ex)
                     {
-                        LogHelper.Error($"GenQueryDict({property.Name},{property.ToJsonStr()}) Handler Error {ex.Message}", ex);
+                        LogHelper.Error(
+                            $"GenQueryDict({property.Name},{property.ToJsonStr()}) Handler Error {ex.Message}", ex);
                     }
-
                 }
-
-
-
-
             }
             catch (Exception ex)
             {
@@ -76,7 +57,7 @@ namespace WindNight.Extension
                 if (CurrentItem.Items != null)
                     headerDict = new Dictionary<string, string>
                     {
-                        {Consts.SERIZLNUMBER, CurrentItem.GetSerialNumber}
+                        { Consts.SERIZLNUMBER, CurrentItem.GetSerialNumber },
                     };
             }
             else if (!headerDict.ContainsKey(Consts.SERIZLNUMBER))
@@ -87,9 +68,9 @@ namespace WindNight.Extension
             return headerDict ?? new Dictionary<string, string>();
         }
 
-        static Func<string, T> DefaultConvertFunc<T>() => _ => _.To<T>();
+        private static Func<string, T> DefaultConvertFunc<T>() => _ => _.To<T>();
 
-        static Func<string, T> DefaultResConvertFunc<T>()
+        private static Func<string, T> DefaultResConvertFunc<T>()
         {
             return s =>
             {
@@ -98,28 +79,34 @@ namespace WindNight.Extension
                 {
                     return default;
                 }
+
                 if (res.Code == 0)
                 {
                     return res.Data;
                 }
+
                 LogHelper.Warn($"Code({res.Code}) res is {res.ToJsonStr()}");
                 return default;
             };
         }
 
-        static Func<string, IEnumerable<T>> DefaultEnumerableResConvertFunc<T>()// => _ => _.To<ResponseResult<IEnumerable<T>>>()?.Data ?? Array.Empty<T>();
+        private static Func<string, IEnumerable<T>>
+            DefaultEnumerableResConvertFunc<
+                T>() // => _ => _.To<ResponseResult<IEnumerable<T>>>()?.Data ?? Array.Empty<T>();
         {
             return s =>
             {
-                var res = s.To<ResponseResult<IEnumerable<T>>>();//?.Data ?? Array.Empty<T>();
+                var res = s.To<ResponseResult<IEnumerable<T>>>(); //?.Data ?? Array.Empty<T>();
                 if (res == null)
                 {
                     return EmptyArray<T>();
                 }
+
                 if (res.Code == 0)
                 {
                     return res.Data;
                 }
+
                 LogHelper.Warn($"Code({res.Code}) res is {res.ToJsonStr()}");
 
                 return EmptyArray<T>();
@@ -127,22 +114,24 @@ namespace WindNight.Extension
         }
 
 
-        static Func<string, IPagedList<T>> DefaultPagedConvertFunc<T>() //=> _ => _.To<ResponseResult<PagedList<T>>>()?.Data ?? PagedList.Empty<T>();
+        private static Func<string, IPagedList<T>>
+            DefaultPagedConvertFunc<T>() //=> _ => _.To<ResponseResult<PagedList<T>>>()?.Data ?? PagedList.Empty<T>();
         {
             return s =>
             {
-                var res = s.To<ResponseResult<PagedList<T>>>();//?.Data ?? Array.Empty<T>();
+                var res = s.To<ResponseResult<PagedList<T>>>(); //?.Data ?? Array.Empty<T>();
                 if (res == null)
                 {
                     return PagedList.Empty<T>();
                 }
+
                 if (res.Code == 0)
                 {
                     return res.Data;
                 }
+
                 LogHelper.Warn($"Code({res.Code}) res is {res.ToJsonStr()}");
                 return PagedList.Empty<T>();
-
             };
         }
 
@@ -151,7 +140,8 @@ namespace WindNight.Extension
         //}
 
 
-        public static T DeserializeResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string url, T defaultValue = default)
+        public static T DeserializeResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string url,
+            T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
         {
             try
             {
@@ -161,6 +151,7 @@ namespace WindNight.Extension
                     {
                         url = response.ResponseUri.ToString();
                     }
+
                     if (ConfigItems.DebugIsOpen)
                     {
                         LogHelper.Debug($"url[{url}]-> response.Content is {response.Content} ", appendMessage: false);
@@ -168,10 +159,17 @@ namespace WindNight.Extension
 
                     convertFunc ??= DefaultConvertFunc<T>();
                     return convertFunc.Invoke(response.Content);
-
                 }
 
-                LogHelper.Warn($"url[{url}]->  ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}", appendMessage: false);
+                if (errStatusFunc != null)
+                {
+                    errStatusFunc.Invoke(response);
+                    return defaultValue;
+                }
+
+                LogHelper.Warn(
+                    $"url[{url}]->  ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}",
+                    appendMessage: false);
                 return defaultValue;
             }
             catch (Exception ex)
@@ -179,53 +177,65 @@ namespace WindNight.Extension
                 LogHelper.Error($"url[{url}]->  DeserializeResponse Handler Error {ex.Message}", ex);
                 return defaultValue;
             }
-
         }
 
 
-        public static T DeserializeResponse<T>(this IRestResponse response, string url)
+        public static T DeserializeResponse<T>(this IRestResponse response, string url,
+            Func<IRestResponse, bool> errStatusFunc = null)
         {
-            return response.DeserializeResponse<T>(DefaultConvertFunc<T>(), url);
+            return response.DeserializeResponse<T>(DefaultConvertFunc<T>(), url, errStatusFunc: errStatusFunc);
         }
 
 
-
-        public static IPagedList<T> DeserializeResponse2PageList<T>(this IRestResponse response, string url)
+        public static IPagedList<T> DeserializeResponse2PageList<T>(this IRestResponse response, string url,
+            Func<IRestResponse, bool> errStatusFunc = null)
         {
+            var defaultValue = PagedList.Empty<T>();
             try
             {
-
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     if (!response?.ResponseUri?.ToString()?.IsNullOrEmpty() ?? false)
                     {
                         url = response.ResponseUri.ToString();
                     }
+
                     if (ConfigItems.DebugIsOpen)
                         LogHelper.Debug($"url[{url}]-> response.Content is {response.Content} ", appendMessage: false);
                     var res = response.Content.To<ResponseResult<PagedList<T>>>();
                     return res.Data;
                 }
 
-                LogHelper.Warn($" url[{url}]-> ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}", appendMessage: false);
-                return default;
+                if (errStatusFunc != null)
+                {
+                    errStatusFunc.Invoke(response);
+                    return defaultValue;
+                }
+
+                LogHelper.Warn(
+                    $" url[{url}]-> ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}",
+                    appendMessage: false);
             }
             catch (Exception ex)
             {
                 LogHelper.Error($"url[{url}]->  DeserializeResponse Handler Error {ex.Message}", ex);
-                return default;
             }
+
+            return defaultValue;
         }
 
 
-        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response, string url)
+        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response, string url,
+            Func<IRestResponse, bool> errStatusFunc = null)
         {
-            return response.DeserializePageListResponse<T>(DefaultPagedConvertFunc<T>(), url);
+            return response.DeserializePageListResponse(DefaultPagedConvertFunc<T>(), url, errStatusFunc);
         }
 
 
-        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response, Func<string, IPagedList<T>> convertFunc, string url)
+        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response,
+            Func<string, IPagedList<T>> convertFunc, string url, Func<IRestResponse, bool> errStatusFunc = null)
         {
+            var defaultValue = PagedList.Empty<T>();
             try
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -234,84 +244,98 @@ namespace WindNight.Extension
                     {
                         url = response.ResponseUri.ToString();
                     }
+
                     if (ConfigItems.DebugIsOpen)
                     {
-                        LogHelper.Debug($"url[ {url} ]-> response.Content is {response.Content} ", appendMessage: false);
+                        LogHelper.Debug($"url[ {url} ]-> response.Content is {response.Content} ",
+                            appendMessage: false);
                     }
 
                     convertFunc ??= DefaultPagedConvertFunc<T>();
                     return convertFunc.Invoke(response.Content);
-
                 }
 
-                LogHelper.Warn($" url[{url}]->  ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}", appendMessage: false);
+                if (errStatusFunc != null)
+                {
+                    errStatusFunc.Invoke(response);
+                    return defaultValue;
+                }
 
+                LogHelper.Warn(
+                    $" url[{url}]->  ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}",
+                    appendMessage: false);
             }
             catch (Exception ex)
             {
                 LogHelper.Error($"url[{url}]-> DeserializeResponse Handler Error {ex.Message}", ex);
             }
 
-            return PagedList.Empty<T>();
-
+            return defaultValue;
         }
 
-        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response, string url)
+        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response, string url,
+            Func<IRestResponse, bool> errStatusFunc = null)
         {
-            return response.DeserializeListResponse<T>(DefaultEnumerableResConvertFunc<T>(), url);
-
+            return response.DeserializeListResponse(DefaultEnumerableResConvertFunc<T>(), url, errStatusFunc);
         }
-        static IEnumerable<T> EmptyArray<T>()
+
+        private static IEnumerable<T> EmptyArray<T>()
         {
 #if NET45
             return new List<T>();
 #else
             return Array.Empty<T>();
 #endif
-
         }
-        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response, Func<string, IEnumerable<T>> convertFunc, string url)
+
+        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response,
+            Func<string, IEnumerable<T>> convertFunc, string url, Func<IRestResponse, bool> errStatusFunc = null)
         {
+            var defaultValue = EmptyArray<T>();
             try
             {
-
-
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     if (!response?.ResponseUri?.ToString()?.IsNullOrEmpty() ?? false)
                     {
                         url = response.ResponseUri.ToString();
                     }
+
                     if (ConfigItems.DebugIsOpen)
                     {
-
                         LogHelper.Debug($"url[{url}]-> response.Content is {response.Content} ", appendMessage: false);
                     }
 
                     convertFunc ??= DefaultEnumerableResConvertFunc<T>();
                     return convertFunc.Invoke(response.Content);
-
                 }
 
-                LogHelper.Warn($" url[{url}]-> ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}", appendMessage: false);
+                if (errStatusFunc != null)
+                {
+                    errStatusFunc.Invoke(response);
+                    return defaultValue;
+                }
 
+                LogHelper.Warn(
+                    $" url[{url}]-> ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}",
+                    appendMessage: false);
             }
             catch (Exception ex)
             {
                 LogHelper.Error($"url[{url}]-> DeserializeResponse Handler Error {ex.Message}", ex);
             }
 
-            return EmptyArray<T>();
-
+            return defaultValue;
         }
 
-        public static T DeserializeResResponse<T>(this IRestResponse response, string url, T defaultValue = default)
+        public static T DeserializeResResponse<T>(this IRestResponse response, string url, T defaultValue = default,
+            Func<IRestResponse, bool> errStatusFunc = null)
         {
-            return response.DeserializeResResponse<T>(DefaultResConvertFunc<T>(), url, defaultValue);
-
+            return response.DeserializeResResponse(DefaultResConvertFunc<T>(), url, defaultValue, errStatusFunc);
         }
 
-        public static T DeserializeResResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string url, T defaultValue = default)
+        public static T DeserializeResResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string url,
+            T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
         {
             try
             {
@@ -329,12 +353,17 @@ namespace WindNight.Extension
 
                     convertFunc ??= DefaultResConvertFunc<T>();
                     return convertFunc.Invoke(response.Content);
-
                 }
 
-                LogHelper.Warn($"url[{url}]-> ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}", appendMessage: false);
+                if (errStatusFunc != null)
+                {
+                    errStatusFunc.Invoke(response);
+                    return defaultValue;
+                }
 
-
+                LogHelper.Warn(
+                    $"url[{url}]-> ResponseStatus is {response.ResponseStatus} {response.ErrorMessage} {response.StatusDescription}",
+                    appendMessage: false);
             }
             catch (Exception ex)
             {
@@ -342,9 +371,19 @@ namespace WindNight.Extension
             }
 
             return defaultValue;
-
         }
 
+        private class ConfigItems // : ConfigItemsBase
+        {
+            public static bool DebugIsOpen
+            {
+                get
+                {
+                    var config = Ioc.Instance.CurrentConfigService; // Ioc.GetService<IConfigService>();
+                    if (config == null) return false;
+                    return config.GetAppSetting("OpenDebug", false, false);
+                }
+            }
+        }
     }
-
 }

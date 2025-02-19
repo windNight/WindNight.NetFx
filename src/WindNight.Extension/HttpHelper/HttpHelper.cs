@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Extension;
+using RestSharp;
 using WindNight.Core.Tools;
 
 namespace WindNight.Extension
@@ -14,12 +15,16 @@ namespace WindNight.Extension
     {
         private static Version _version => new AssemblyName(typeof(HttpHelper).Assembly.FullName).Version;
         private static DateTime _compileTime => File.GetLastWriteTime(typeof(HttpHelper).Assembly.Location);
-       
-        public static string CurrentVersion=> _version.ToString();
+
+        public static string CurrentVersion => _version.ToString();
         public static DateTime CurrentCompileTime => _compileTime;
 
 
-        public static bool CheckRemoteFile(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20)
+        public static bool CheckRemoteFile(string url,
+            Dictionary<string, string> headerDict = null,
+            int warnMiSeconds = 200,
+            int timeOut = 1000 * 60 * 20,
+            Func<IRestResponse, bool> errStatusFunc = null)
         {
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
@@ -29,6 +34,12 @@ namespace WindNight.Extension
 
                     var response = DoExecute(client, request);
                     var isOk = response.StatusCode == HttpStatusCode.OK;
+
+                    if (!isOk && errStatusFunc != null)
+                    {
+                        return errStatusFunc.Invoke(response);
+                    }
+
                     return isOk;
                 },
                 $"HttpHead({url})   , header={headerDict?.ToJsonStr()}",
@@ -36,8 +47,12 @@ namespace WindNight.Extension
         }
 
 
-        public static async Task<bool> CheckRemoteFileAsync(string url, Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, CancellationToken token = default)
+        public static async Task<bool> CheckRemoteFileAsync(string url,
+            Dictionary<string, string> headerDict = null,
+            int warnMiSeconds = 200,
+            int timeOut = 1000 * 60 * 20,
+            CancellationToken token = default,
+            Func<IRestResponse, bool> errStatusFunc = null)
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
                 {
@@ -48,15 +63,21 @@ namespace WindNight.Extension
                     var response = await DoExecuteAsync(client, request, token);
 
                     var isOk = response.StatusCode == HttpStatusCode.OK;
+
+                    if (!isOk && errStatusFunc != null)
+                    {
+                        return errStatusFunc.Invoke(response);
+                    }
+
                     return isOk;
                 },
                 $"HttpHead({url})   , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
 
-        public static byte[] Download(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, bool checkExist = true)
+        public static byte[] Download(string url, Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
+            int timeOut = 1000 * 60 * 20, bool checkExist = true)
         {
-
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
                     if (checkExist)
@@ -77,12 +98,6 @@ namespace WindNight.Extension
                 },
                 $"Download({url})   , header={headerDict?.ToJsonStr()}, checkExist={checkExist} ",
                 warnMiSeconds: warnMiSeconds);
-
         }
-
-
-
-
     }
-
 }

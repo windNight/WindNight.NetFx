@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Extension;
+using RestSharp;
 using WindNight.Core.Tools;
 
 namespace WindNight.Extension
 {
     public static partial class HttpHelper
     {
-
         /// <summary>
         ///     HttpPost 同步请求
         /// </summary>
@@ -25,14 +25,16 @@ namespace WindNight.Extension
         /// <returns></returns>
         public static T Post<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
-            int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null, bool isJsonBody = true) //where T : new()
+            int timeOut = 1000 * 60 * 20,
+            Func<string, T> convertFunc = null, bool isJsonBody = true,
+            Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
-            {
-                var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
-             
-                return ExecuteHttpClient<T>(domain, request, headerDict, timeOut, convertFunc);
-            }, $"HttpPost({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
+                {
+                    var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
+
+                    return ExecuteHttpClient(domain, request, headerDict, timeOut, convertFunc, errStatusFunc);
+                }, $"HttpPost({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
 
@@ -53,23 +55,19 @@ namespace WindNight.Extension
         public static async Task<T> PostAsync<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null,
-            CancellationToken token = default(CancellationToken), bool isJsonBody = true) //where T : new()
+            CancellationToken token = default,
+            bool isJsonBody = true, Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
-            {
-                var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
+                {
+                    var request = GenPostRequest(path, headerDict, bodyObjects, isJsonBody);
 
 
-                return await ExecuteHttpClientAsync<T>(domain, request, timeOut: timeOut, token: token, convertFunc: convertFunc);
-            },
+                    return await ExecuteHttpClientAsync(domain, request, timeOut: timeOut, token: token,
+                        convertFunc: convertFunc, errStatusFunc: errStatusFunc);
+                },
                 $"HttpPostAsync({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
-
-
-
-
-
     }
-
 }
