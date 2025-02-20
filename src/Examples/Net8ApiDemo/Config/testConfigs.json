@@ -1,0 +1,19 @@
+﻿{
+  "TestSettings": {
+    "AppId": 0,
+    "AppCode": "WebApiDemos",
+    "AppName": "WebApiDemos",
+    "ShowHiddenApi": 1,
+    "LogProcessOpened ": 1,
+    "ApiUrlOpened": 1,
+    "OpenAuth": true,
+    "LogOnConsole": 1,
+    "Log4netOpen": 1,
+    "OpenDebug": false,
+    "IsValidateInput": 1,
+    "EnvName": "dev",
+    "LogStoreType": 1
+  }
+
+
+}

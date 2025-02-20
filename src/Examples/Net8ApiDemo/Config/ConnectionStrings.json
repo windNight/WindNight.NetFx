@@ -1,0 +1,9 @@
+﻿{
+  "ConnectionStrings": {
+
+    "redis1": "xxxx:16379,password=,defaultDataBase=10,connectRetry=10,poolsize=10,preheat=50,connectTimeout=1000,IgnorePrefix=xxxxx,Prefix=xxx:xx",
+
+    "xxxDb": "Data Source=xx;Port=13306;Database=xxx;User ID=xx;Password=x@23324;Charset=utf8mb4;SslMode=None;AllowPublicKeyRetrieval=true;"
+
+  }
+}
