@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.WnExtensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions;
@@ -14,7 +14,6 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using WindNight.ConfigCenter.Extension;
-using System.Configuration;
 
 namespace Microsoft.AspNetCore.Hosting.WnExtensions
 {
@@ -26,9 +25,11 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         //protected virtual StaticFileOptions SelfFileOptions { get; } = null;
         protected virtual Func<IEnumerable<StaticFileOptions>> SelfFileOptions { get; } = null;
         protected virtual Action<IEndpointRouteBuilder> SelfRouter { get; } = null;
+        protected virtual Action<IApplicationBuilder> SelfMiddlewareAction { get; } = null;
         protected virtual Action<SwaggerOptions> SelfSwaggerOptionsAction { get; } = null;
         protected virtual Action<SwaggerUIOptions> SelfSwaggerUIOptionsAction { get; private set; } = null;
         protected virtual Action<SwaggerGenOptions> SelfSwaggerGenOptionsAction { get; private set; } = null;
+        protected virtual Func<Dictionary<string, string>> SelfSwaggerAuthDictFunc { get; } = null;
 
         protected virtual Func<IEnumerable<Type>> ActionFiltersFunc { get; } = null;
 
@@ -41,13 +42,12 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
         protected IConfiguration Configuration { get; }
 
-        public IServiceProvider BuildServices(IServiceCollection services)
+        public virtual IServiceProvider BuildServices(IServiceCollection services)
         {
             var serviceProvider = CreateServiceProvider(services);
             Ioc.Instance.InitServiceProvider(serviceProvider);
             return serviceProvider;
         }
-
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
@@ -71,7 +71,6 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             return serviceProvider;
         }
 
-
         protected virtual void UseSysConfigure(IApplicationBuilder app)
         {
             var env = Ioc.GetService<IWebHostEnvironment>();
@@ -79,21 +78,22 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
             SelfSwaggerUIOptionsAction ??= (opt => opt.DefaultModelsExpandDepth(-1));
 
+            app.UseRouting();
 
             app.UseSwaggerConfig(NamespaceName,
                 swaggerOptionsAction: SelfSwaggerOptionsAction,
                 swaggerUIOptionsAction: SelfSwaggerUIOptionsAction);
 
-            app.UseRouting();
-
             UseStaticFiles(app);
-
 
             app.UseAuthorization();
 
             app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 
+            SelfMiddlewareAction?.Invoke(app);
+
             UseEndpoints(app);
+
 
         }
 
@@ -121,8 +121,15 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         {
             app.UseEndpoints(endpoints =>
             {
-                SelfRouter?.Invoke(endpoints);
                 endpoints.MapControllers();
+                try
+                {
+                    SelfRouter?.Invoke(endpoints);
+                }
+                catch
+                {
+
+                }
 
             });
 
@@ -146,9 +153,14 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             var appCode = configuration.GetAppConfigValue("AppCode", "");
             var prefix = $"{appName}[{appCode}] ";
             var title = $"{prefix}{NamespaceName}";
-            services.AddSwaggerConfig(title, configuration, swaggerGenOptionsAction: SelfSwaggerGenOptionsAction);
+            var signKeyDict = SelfSwaggerAuthDictFunc?.Invoke() ?? new Dictionary<string, string>();
+            services.AddSwaggerConfig(title, configuration, swaggerGenOptionsAction: SelfSwaggerGenOptionsAction, signKeyDict: signKeyDict);
+
             return services;
 
         }
+
+
+
     }
 }

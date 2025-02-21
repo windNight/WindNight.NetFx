@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Text.Extension;
 using Newtonsoft.Json.Extension;
-using WindNight.Extension.@internal; 
+using WindNight.Extension.@internal;
 using WindNight.Core.Abstractions;
 
 
@@ -90,7 +90,7 @@ namespace WindNight.Extension
         private bool UseAsyncLocal = false;
         private static readonly AsyncLocal<ConcurrentDictionary<object, object>> ItemsAsyncLocal = new AsyncLocal<ConcurrentDictionary<object, object>>();
 
-        public static ConcurrentDictionary<object, object> CurrentItemsAsyncLocal => ItemsAsyncLocal.Value;
+        public static ConcurrentDictionary<object, object> CurrentItemsAsyncLocal => ItemsAsyncLocal.Value ?? new ConcurrentDictionary<object, object>();
 
         public static object GetItemsFromAsyncLocal(object key, object defaultValue = null)
         {
@@ -109,6 +109,10 @@ namespace WindNight.Extension
         {
             try
             {
+                if (ItemsAsyncLocal.Value == null)
+                {
+                    return null;
+                }
                 if (!ItemsAsyncLocal.Value.ContainsKey(key))
                 {
                     ItemsAsyncLocal.Value.TryAdd(key, setValue);
@@ -135,7 +139,7 @@ namespace WindNight.Extension
         {
             try
             {
-                ItemsAsyncLocal.Value.Clear();
+                ItemsAsyncLocal.Value?.Clear();
                 return true;
             }
             catch (Exception ex)
