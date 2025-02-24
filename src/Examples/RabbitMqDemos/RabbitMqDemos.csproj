@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
-	  <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25020802" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25021902" />
 	</ItemGroup>
 
 	<ItemGroup>
