@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -33,14 +33,13 @@ namespace System
         public static
 #if NET45LATER
             (DateTime beginDate, DateTime endDate)
-#else      
+#else
             Tuple<DateTime, DateTime>
 #endif
             CurrentWeekDateRange
         {
             get
             {
-
                 var beginDate = FirstDayOfThisWeek;
                 var endDate = LastDayOfThisWeek;
 #if NET45LATER
@@ -68,170 +67,12 @@ namespace System
         public static int NowMonthInt => Now.TryToDateInt("yyyyMM");
         public static int LastMonthInt => Now.FirstDayOfMonth().AddMonths(-1).TryToDateInt("yyyyMM");
         public static int NextMonthInt => Now.FirstDayOfMonth().AddMonths(1).TryToDateInt("yyyyMM");
-
     }
 
     /// <summary>硬件信息</summary>
     public partial class HardInfo
     {
-        public static string? NodeCode { get; private set; }
-
-        public static string NodeIpAddress { get; private set; } = "";
-
-        public static bool IsUnix => OperatorSys == OperatorSys.Unix;
-        public static bool IsWindows => OperatorSys == OperatorSys.Windows;
-        public static bool IsMac => OperatorSys == OperatorSys.MacOSX;
-        public static bool IsXBox => OperatorSys == OperatorSys.XBox;
-
-        public static OperatorSys OperatorSys
-        {
-            get
-            {
-                OperatorSys operatorSys;
-                switch (CurrentPlatformId)
-                {
-                    case PlatformID.MacOSX:
-                        operatorSys = OperatorSys.MacOSX;
-                        break;
-                    case PlatformID.Unix:
-                        operatorSys = OperatorSys.Unix;
-                        break;
-                    case PlatformID.Xbox:
-                        operatorSys = OperatorSys.XBox;
-                        break;
-                    case PlatformID.Win32NT:
-                    case PlatformID.Win32S:
-                    case PlatformID.Win32Windows:
-                    case PlatformID.WinCE:
-                        operatorSys = OperatorSys.Windows;
-                        break;
-                    default:
-                        operatorSys = OperatorSys.Windows;
-                        break;
-                }
-
-                return operatorSys;
-            }
-        }
-
-        public static void InitHardInfo(string nodeCode = "", string ip = "")
-        {
-            if (nodeCode.IsNullOrEmpty() && NodeCode.IsNullOrEmpty())
-                nodeCode = GuidHelper.GenerateOrderNumber();
-            if (ip.IsNullOrEmpty())
-            {
-                ip = string.Join(",", GetLocalIps());
-            }
-            if (NodeCode.IsNullOrEmpty())
-                NodeCode = nodeCode;
-            // if (string.IsNullOrEmpty(NodeIpAddress) || NodeIpAddress == DefaultIp)
-            NodeIpAddress = ip;
-        }
-
         private const string DefaultIp = "0.0.0.0";
-
-        public static string GetLocalIp()
-        {
-            return GetLocalIps().FirstOrDefault() ?? string.Empty;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public static IEnumerable<string> GetLocalIps()
-        {
-            var validAddressFamilies = new List<AddressFamily>
-                {
-                    AddressFamily.InterNetwork,
-                    AddressFamily.InterNetworkV6,
-                };
-
-            try
-            {
-                if (!NodeIpAddress.IsNullOrEmpty()) return NodeIpAddress.Split(',');
-
-                var ipList = NetworkInterface.GetAllNetworkInterfaces()?
-                    .Where(m => m.OperationalStatus == OperationalStatus.Up)?
-                    .SelectMany(m => m.GetIPProperties().UnicastAddresses)
-                    ?.Where(m => validAddressFamilies.Contains(m.Address.AddressFamily) && IPAddress.IsLoopback(m.Address) && IsUnix ? true : m.IsDnsEligible)
-                    ?.Select(m => m.Address.ToString())
-                    ?.ToList() ?? new List<string>();
-
-                if (!ipList.Any())
-                {
-                    ipList.Add(DefaultIp);
-                }
-
-                return ipList;
-
-            }
-            catch (PlatformNotSupportedException ex)
-            {
-                // UnixUnicastIPAddressInformation 未实现 IsDnsEligible.get
-                LogHelper.Warn($"OperatorSys is {OperatorSys} handler error {nameof(PlatformNotSupportedException)} : {ex.Message}", ex, appendMessage: false);
-
-                return NetworkInterface.GetAllNetworkInterfaces()
-                    ?.Select(m => m.GetIPProperties())
-                    ?.SelectMany(m => m.UnicastAddresses)
-                    ?.Where(m =>
-                        validAddressFamilies.Contains(m.Address.AddressFamily) && IPAddress.IsLoopback(m.Address))
-                    ?.Select(m => m.Address.ToString())
-                    ?.ToList() ?? new List<string> { DefaultIp };
-
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error($"NetworkInterface handler error {ex.Message}", ex, appendMessage: false);
-                return new List<string> { DefaultIp };
-            }
-        }
-
-
-        static PlatformID CurrentPlatformId => Environment.OSVersion.Platform;
-
-        /// <summary>
-        /// Converts an Olson time zone ID to a Windows time zone ID.
-        /// </summary>
-        /// <param name="olsonTimeZoneId">An Olson time zone ID. See http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/zone_tzid.html. </param>
-        /// <returns>
-        /// The TimeZoneInfo corresponding to the Olson time zone ID, 
-        /// or null if you passed in an invalid Olson time zone ID.
-        /// </returns>
-        /// <remarks>
-        /// See http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/zone_tzid.html
-        /// </remarks>
-        public static TimeZoneInfo? OlsonTimeZoneToTimeZoneInfo(string olsonTimeZoneId)
-        {
-            try
-            {
-                if (OperatorSys != OperatorSys.Windows)
-                    return TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZoneId);
-                var windowsTimeZoneId = olsonWindowsTimes.SafeGetValue(olsonTimeZoneId);
-                if (windowsTimeZoneId.IsNullOrEmpty())
-                {
-                    return TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZoneId);
-
-                }
-                else
-                {
-                    return TimeZoneInfo.FindSystemTimeZoneById(windowsTimeZoneId);
-                }
-
-                //if (olsonWindowsTimes.TryGetValue(olsonTimeZoneId, out var windowsTimeZoneId))
-                //{
-                //    return TimeZoneInfo.FindSystemTimeZoneById(windowsTimeZoneId);
-                //}
-                //else
-                //{
-                //    return TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZoneId);
-                //}
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
 
         private static readonly Dictionary<string, string> olsonWindowsTimes = new()
         {
@@ -356,18 +197,170 @@ namespace System
             { "Pacific/Honolulu", "Hawaiian Standard Time" },
             { "Pacific/Pago_Pago", "UTC-11" },
             { "Pacific/Port_Moresby", "West Pacific Standard Time" },
-            { "Pacific/Tongatapu", "Tonga Standard Time" }
+            { "Pacific/Tongatapu", "Tonga Standard Time" },
         };
 
-        public new static string ToString() =>
-            new
+        public static string? NodeCode { get; private set; }
+
+        public static string NodeIpAddress { get; private set; } = "";
+
+        public static bool IsUnix => OperatorSys == OperatorSysEnum.Unix;
+        public static bool IsWindows => OperatorSys == OperatorSysEnum.Windows;
+        public static bool IsMac => OperatorSys == OperatorSysEnum.MacOSX;
+        public static bool IsXBox => OperatorSys == OperatorSysEnum.XBox;
+
+        public static OperatorSysEnum OperatorSys
+        {
+            get
             {
-                NodeCode = NodeCode,
-                NodeIpAddress = NodeIpAddress,
-                OperatorSys = OperatorSys.ToString(),
+                OperatorSysEnum operatorSysEnum;
+                switch (CurrentPlatformId)
+                {
+                    case PlatformID.MacOSX:
+                        operatorSysEnum = OperatorSysEnum.MacOSX;
+                        break;
+                    case PlatformID.Unix:
+                        operatorSysEnum = OperatorSysEnum.Unix;
+                        break;
+                    case PlatformID.Xbox:
+                        operatorSysEnum = OperatorSysEnum.XBox;
+                        break;
+                    case PlatformID.Win32NT:
+                    case PlatformID.Win32S:
+                    case PlatformID.Win32Windows:
+                    case PlatformID.WinCE:
+                        operatorSysEnum = OperatorSysEnum.Windows;
+                        break;
+                    default:
+                        operatorSysEnum = OperatorSysEnum.Windows;
+                        break;
+                }
 
-            }.ToJsonStr();
+                return operatorSysEnum;
+            }
+        }
 
+
+        private static PlatformID CurrentPlatformId => Environment.OSVersion.Platform;
+
+        public static void InitHardInfo(string nodeCode = "", string ip = "")
+        {
+            if (nodeCode.IsNullOrEmpty() && NodeCode.IsNullOrEmpty())
+                nodeCode = GuidHelper.GenerateOrderNumber();
+            if (ip.IsNullOrEmpty())
+            {
+                ip = string.Join(",", GetLocalIps());
+            }
+
+            if (NodeCode.IsNullOrEmpty())
+                NodeCode = nodeCode;
+            // if (string.IsNullOrEmpty(NodeIpAddress) || NodeIpAddress == DefaultIp)
+            NodeIpAddress = ip;
+        }
+
+        public static string GetLocalIp()
+        {
+            return GetLocalIps().FirstOrDefault() ?? string.Empty;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<string> GetLocalIps()
+        {
+            var validAddressFamilies = new List<AddressFamily>
+            {
+                AddressFamily.InterNetwork, AddressFamily.InterNetworkV6,
+            };
+
+            try
+            {
+                if (!NodeIpAddress.IsNullOrEmpty()) return NodeIpAddress.Split(',');
+
+                var ipList = NetworkInterface.GetAllNetworkInterfaces()?
+                    .Where(m => m.OperationalStatus == OperationalStatus.Up)?
+                    .SelectMany(m => m.GetIPProperties().UnicastAddresses)
+                    ?.Where(m =>
+                        validAddressFamilies.Contains(m.Address.AddressFamily) && IPAddress.IsLoopback(m.Address) &&
+                        IsUnix
+                            ? true
+                            : m.IsDnsEligible)
+                    ?.Select(m => m.Address.ToString())
+                    ?.ToList() ?? new List<string>();
+
+                if (!ipList.Any())
+                {
+                    ipList.Add(DefaultIp);
+                }
+
+                return ipList;
+            }
+            catch (PlatformNotSupportedException ex)
+            {
+                // UnixUnicastIPAddressInformation 未实现 IsDnsEligible.get
+                LogHelper.Warn(
+                    $"OperatorSysEnum is {OperatorSys} handler error {nameof(PlatformNotSupportedException)} : {ex.Message}",
+                    ex, appendMessage: false);
+
+                return NetworkInterface.GetAllNetworkInterfaces()
+                    ?.Select(m => m.GetIPProperties())
+                    ?.SelectMany(m => m.UnicastAddresses)
+                    ?.Where(m =>
+                        validAddressFamilies.Contains(m.Address.AddressFamily) && IPAddress.IsLoopback(m.Address))
+                    ?.Select(m => m.Address.ToString())
+                    ?.ToList() ?? new List<string> { DefaultIp };
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"NetworkInterface handler error {ex.Message}", ex, appendMessage: false);
+                return new List<string> { DefaultIp };
+            }
+        }
+
+        /// <summary>
+        ///     Converts an Olson time zone ID to a Windows time zone ID.
+        /// </summary>
+        /// <param name="olsonTimeZoneId">
+        ///     An Olson time zone ID. See
+        ///     http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/zone_tzid.html.
+        /// </param>
+        /// <returns>
+        ///     The TimeZoneInfo corresponding to the Olson time zone ID,
+        ///     or null if you passed in an invalid Olson time zone ID.
+        /// </returns>
+        /// <remarks>
+        ///     See http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/zone_tzid.html
+        /// </remarks>
+        public static TimeZoneInfo? OlsonTimeZoneToTimeZoneInfo(string olsonTimeZoneId)
+        {
+            try
+            {
+                if (OperatorSys != OperatorSysEnum.Windows)
+                    return TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZoneId);
+                var windowsTimeZoneId = olsonWindowsTimes.SafeGetValue(olsonTimeZoneId);
+                if (windowsTimeZoneId.IsNullOrEmpty())
+                {
+                    return TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZoneId);
+                }
+
+                return TimeZoneInfo.FindSystemTimeZoneById(windowsTimeZoneId);
+
+                //if (olsonWindowsTimes.TryGetValue(olsonTimeZoneId, out var windowsTimeZoneId))
+                //{
+                //    return TimeZoneInfo.FindSystemTimeZoneById(windowsTimeZoneId);
+                //}
+                //else
+                //{
+                //    return TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZoneId);
+                //}
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public new static string ToString() =>
+            new { NodeCode, NodeIpAddress, OperatorSys = OperatorSys.ToString() }.ToJsonStr();
     }
-
 }

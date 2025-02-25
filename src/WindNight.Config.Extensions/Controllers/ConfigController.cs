@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Attributes;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +18,7 @@ namespace WindNight.Config.Extensions
     ///   配置中心默认接口
     /// </summary>
     [Route("api/configcenter")]
-    [HiddenApi]
+    [HiddenApi(testApi: false, sysApi: true)]
     [CenterApiAuth]
     [NonAuth]
     public class ConfigController : ControllerBase

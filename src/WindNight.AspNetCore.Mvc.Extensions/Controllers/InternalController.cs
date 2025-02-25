@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Attributes;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +16,8 @@ using IpHelper = WindNight.Extension.HttpContextExtension;
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 {
     [Route("api/internal")]
-    [HiddenApi]
+    [HiddenApi(testApi: false, sysApi: true)]
+    [NonAuth]
     public class InternalController : ControllerBase // Controller
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -28,7 +29,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
 
         [HttpGet("config")]
-        [NonAuth]
         public object GetConfigs()
         {
             if (!ConfigItems.OpenInternalApi)
@@ -40,8 +40,8 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 Configuration = GetConfiguration()
             };
         }
+
         [HttpGet("config2")]
-        [NonAuth]
         public object GetConfigs2()
         {
             if (!ConfigItems.OpenInternalApi)
@@ -64,7 +64,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         }
 
         [HttpGet("info")]
-        [NonAuth]
         public object GetProjectVersion()
         {
             if (!ConfigItems.OpenInternalApi)
@@ -85,7 +84,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         }
 
         [HttpGet("version")]
-        [NonAuth]
         public object GetVersion()
         {
             if (!ConfigItems.OpenInternalApi)
@@ -100,7 +98,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         }
 
         [HttpGet("versions")]
-        [NonAuth]
         public object GetVersions()
         {
             if (!ConfigItems.OpenInternalApi)
@@ -139,5 +136,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
             return null;
         }
+
+
     }
 }
