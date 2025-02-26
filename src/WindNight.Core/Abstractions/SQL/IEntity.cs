@@ -2,7 +2,6 @@ using System;
 
 namespace WindNight.Core.SQL.Abstractions
 {
-
     public interface IEntity : ICanPageEntity
     {
     }
@@ -31,14 +30,13 @@ namespace WindNight.Core.SQL.Abstractions
 
     public interface ICanPageEntity
     {
-
     }
 
     /// <summary>
     ///     树状
     /// </summary>
     /// <typeparam name="TPrimaryKey"></typeparam>
-    public interface ITreeEntity<TPrimaryKey>
+    public interface ITreeEntity<TPrimaryKey> : ICanPageEntity
     {
         /// <summary>
         ///     父级 Id
@@ -62,7 +60,6 @@ namespace WindNight.Core.SQL.Abstractions
     }
 
 
-
     /// <summary>
     ///     运行数据或者非配置数据
     /// </summary>
@@ -77,5 +74,4 @@ namespace WindNight.Core.SQL.Abstractions
         /// <summary> 更新日期, 格式 yyyyMMdd, 举例: 20171231 </summary>
         int UpdateDate { get; set; }
     }
-
 }

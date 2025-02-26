@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Linq.Expressions;
+using System.IO;
 using System.Text;
 
 namespace System.Security.Cryptography.Extensions
@@ -7,14 +6,13 @@ namespace System.Security.Cryptography.Extensions
     /// <summary>  </summary>
     public static class EncryptHelper
     {
-
         /// <summary>
         ///     Base64加密
         /// </summary>
         /// <param name="str">待加密字符串</param>
         /// <param name="encoding">字符编码，默认UTD-8</param>
         /// <returns>Base64后的字符串</returns>
-        public static string Base64Encrypt(this string str, Encoding? encoding = null)
+        public static string Base64Encrypt(this string str, Encoding encoding = null)
         {
             if (str.IsNullOrEmpty()) return str;
             try
@@ -25,7 +23,6 @@ namespace System.Security.Cryptography.Extensions
             {
                 return str;
             }
-
         }
 
 
@@ -35,7 +32,7 @@ namespace System.Security.Cryptography.Extensions
         /// <param name="str">待解密字符串</param>
         /// <param name="encoding">字符编码，默认UTD-8</param>
         /// <returns>Base64解密后的字符串</returns>
-        public static string Base64Decrypt(this string str, Encoding? encoding = null)
+        public static string Base64Decrypt(this string str, Encoding encoding = null)
         {
             if (str.IsNullOrEmpty()) return str;
             try
@@ -49,7 +46,6 @@ namespace System.Security.Cryptography.Extensions
         }
 
 
-
         /// <summary>
         ///     Base64加密
         /// </summary>
@@ -57,7 +53,7 @@ namespace System.Security.Cryptography.Extensions
         /// <param name="encoding">字符编码，默认UTD-8</param>
         /// <returns>Base64后的字符串</returns>
         [Obsolete("Please Use Base64Encrypt", true)]
-        public static string ToBase64String(this string str, Encoding? encoding = null)
+        public static string ToBase64String(this string str, Encoding encoding = null)
         {
             if (str.IsNullOrEmpty()) return str;
             try
@@ -68,7 +64,6 @@ namespace System.Security.Cryptography.Extensions
             {
                 return str;
             }
-
         }
 
 
@@ -79,7 +74,7 @@ namespace System.Security.Cryptography.Extensions
         /// <param name="encoding">字符编码，默认UTD-8</param>
         /// <returns>Base64解密后的字符串</returns>
         [Obsolete("Please Use Base64Decrypt", true)]
-        public static string FromBase64String(this string str, Encoding? encoding = null)
+        public static string FromBase64String(this string str, Encoding encoding = null)
         {
             if (str.IsNullOrEmpty()) return str;
             try
@@ -98,7 +93,7 @@ namespace System.Security.Cryptography.Extensions
         /// <param name="text"></param>
         /// <param name="encoding"> default is  Encoding.UTF8</param>
         /// <returns></returns>
-        public static string Md5Encrypt(this string text, Encoding? encoding = null)
+        public static string Md5Encrypt(this string text, Encoding encoding = null)
         {
             if (encoding == null) encoding = Encoding.UTF8;
             var bs = encoding.GetBytes(text);
@@ -113,10 +108,10 @@ namespace System.Security.Cryptography.Extensions
         {
             string result;
 
-            using (var md5 = new MD5CryptoServiceProvider())
+            using (MD5CryptoServiceProvider md5 = new())
             {
                 bs = md5.ComputeHash(bs);
-                var s = new StringBuilder();
+                StringBuilder s = new();
 
                 foreach (var b in bs) s.Append(b.ToString("X2"));
 
@@ -126,18 +121,18 @@ namespace System.Security.Cryptography.Extensions
             return result.ToLower();
         }
 
-        public static string DoHmacSha1Sign(this string text, string signKey, Encoding? encoding = null)
+        public static string DoHmacSha1Sign(this string text, string signKey, Encoding encoding = null)
         {
             if (encoding == null)
                 encoding = Encoding.UTF8;
-            var hmacsha1 = new HMACSHA1(encoding.GetBytes(signKey));
+            HMACSHA1 hmacsha1 = new(encoding.GetBytes(signKey));
             var dataBuffer = encoding.GetBytes(text);
             var hashBytes = hmacsha1.ComputeHash(dataBuffer);
             return Convert.ToBase64String(hashBytes);
         }
 
         /// <summary>
-        /// AES加密
+        ///     AES加密
         /// </summary>
         /// <param name="encryptString">待加密字符串</param>
         /// <param name="key">16位密钥</param>
@@ -150,20 +145,20 @@ namespace System.Security.Cryptography.Extensions
         /// <returns></returns>
         public static string AesEncrypt(this string encryptString, string key, string iv,
             PaddingMode paddingMode = PaddingMode.Zeros, CipherMode cipherMode = CipherMode.CBC,
-            int keyLength = 16, int ivLength = 16, Encoding? encoding = null
-            )
+            int keyLength = 16, int ivLength = 16, Encoding encoding = null
+        )
         {
             try
             {
-                var inputByteArray = encryptString.ToBytes(encoding);// Encoding.UTF8.GetBytes(encryptString);
+                var inputByteArray = encryptString.ToBytes(encoding); // Encoding.UTF8.GetBytes(encryptString);
                 SymmetricAlgorithm des = Rijndael.Create();
                 des.Key = Encoding.ASCII.GetBytes(keyLength > 0 ? key.Substring(0, keyLength) : key);
                 des.IV = Encoding.ASCII.GetBytes(ivLength > 0 ? iv.Substring(0, ivLength) : iv);
-                des.Mode = cipherMode;//CipherMode.CBC;
-                des.Padding = paddingMode;// PaddingMode.Zeros;
+                des.Mode = cipherMode; //CipherMode.CBC;
+                des.Padding = paddingMode; // PaddingMode.Zeros;
 
-                var mStream = new MemoryStream();
-                var cStream = new CryptoStream(mStream, des.CreateEncryptor(), CryptoStreamMode.Write);
+                MemoryStream mStream = new();
+                CryptoStream cStream = new(mStream, des.CreateEncryptor(), CryptoStreamMode.Write);
                 cStream.Write(inputByteArray, 0, inputByteArray.Length);
                 cStream.FlushFinalBlock();
 
@@ -171,11 +166,12 @@ namespace System.Security.Cryptography.Extensions
                 // if (handler != null) return handler.Invoke(desBytes);
                 // if (encoding == null) encoding = Encoding.UTF8;
                 // return encoding.GetString(desBytes);
-                var sb = new StringBuilder();
+                StringBuilder sb = new();
                 foreach (var t in desBytes)
                 {
                     sb.Append(t.ToString("x2"));
                 }
+
                 mStream.Close();
                 cStream.Close();
                 return sb.ToString();
@@ -184,12 +180,11 @@ namespace System.Security.Cryptography.Extensions
             {
                 return encryptString;
             }
-
         }
 
 
         /// <summary>
-        /// AES解密 
+        ///     AES解密
         /// </summary>
         /// <param name="decryptString">解密字符串</param>
         /// <param name="key">密钥</param>
@@ -202,7 +197,7 @@ namespace System.Security.Cryptography.Extensions
         /// <returns></returns>
         public static string AesDecrypt(this string decryptString, string key, string iv,
             PaddingMode paddingMode = PaddingMode.Zeros, CipherMode cipherMode = CipherMode.CBC,
-            int keyLength = -1, int ivLength = -1, Encoding? encoding = null)
+            int keyLength = -1, int ivLength = -1, Encoding encoding = null)
         {
             try
             {
@@ -211,9 +206,9 @@ namespace System.Security.Cryptography.Extensions
                 des.Key = Encoding.ASCII.GetBytes(keyLength > 0 ? key.Substring(0, keyLength) : key);
                 des.IV = Encoding.ASCII.GetBytes(ivLength > 0 ? iv.Substring(0, ivLength) : iv);
                 des.Padding = paddingMode; // PaddingMode.Zeros
-                des.Mode = cipherMode;     // CipherMode.CBC;
-                var mStream = new MemoryStream();
-                var cStream = new CryptoStream(mStream, des.CreateDecryptor(), CryptoStreamMode.Write);
+                des.Mode = cipherMode; // CipherMode.CBC;
+                MemoryStream mStream = new();
+                CryptoStream cStream = new(mStream, des.CreateDecryptor(), CryptoStreamMode.Write);
                 cStream.Write(inputByteArray, 0, inputByteArray.Length);
                 cStream.FlushFinalBlock();
                 var desDecryBytes = mStream.ToArray();
@@ -227,7 +222,7 @@ namespace System.Security.Cryptography.Extensions
         }
 
         /// <summary>
-        /// 转16进制字符串
+        ///     转16进制字符串
         /// </summary>
         /// <param name="hexString">待转换字符串</param>
         /// <returns></returns>
@@ -236,7 +231,7 @@ namespace System.Security.Cryptography.Extensions
             try
             {
                 hexString = hexString.Replace(" ", "");
-                if ((hexString.Length % 2) != 0)
+                if (hexString.Length % 2 != 0)
                     hexString += " ";
                 var returnBytes = new byte[hexString.Length / 2];
                 for (var i = 0; i < returnBytes.Length; i++)
@@ -252,11 +247,10 @@ namespace System.Security.Cryptography.Extensions
 
         public static string RSAEncrypt(this string content, string publicKey)
         {
-            var rsa = new RSACryptoServiceProvider();
+            RSACryptoServiceProvider rsa = new();
             rsa.ImportCspBlob(BytesExtension.FromBase64String(publicKey));
             var cipherbytes = rsa.Encrypt(content.ToBytes(), false);
             return cipherbytes.ToBase64String();
         }
-
     }
 }

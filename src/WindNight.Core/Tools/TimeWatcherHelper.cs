@@ -1,8 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
-using WindNight.Core;
-using WindNight.Core.Abstractions;
 using WindNight.Core.@internal;
 
 namespace WindNight.Core.Tools
@@ -33,14 +31,14 @@ namespace WindNight.Core.Tools
                 {
                     var configService = Ioc.Instance.CurrentConfigService;
                     if (configService == null) return DefaultWarnMiSeconds;
-                    var configValue = configService.GetAppSetting("TimeWatcherWarnMiSeconds", DefaultWarnMiSeconds, false);
+                    var configValue =
+                        configService.GetAppSetting("TimeWatcherWarnMiSeconds", DefaultWarnMiSeconds, false);
                     return configValue;
                 }
-                catch  
+                catch
                 {
                     return DefaultWarnMiSeconds;
                 }
-             
             }
         }
 
@@ -70,7 +68,8 @@ namespace WindNight.Core.Tools
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
         /// <returns></returns>
-        public static T TimeWatcher<T>(Func<T> func, out long realTs, string watcherName = "", bool appendMessage = false,
+        public static T TimeWatcher<T>(Func<T> func, out long realTs, string watcherName = "",
+            bool appendMessage = false,
             int warnMiSeconds = 200)
         {
             return DoWatcherFunc(func, watcherName, appendMessage, warnMiSeconds, false, out realTs);
@@ -101,7 +100,8 @@ namespace WindNight.Core.Tools
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
         /// <returns></returns>
-        public static T TimeWatcherUnsafe<T>(Func<T> func, out long realTs, string watcherName = "", bool appendMessage = false,
+        public static T TimeWatcherUnsafe<T>(Func<T> func, out long realTs, string watcherName = "",
+            bool appendMessage = false,
             int warnMiSeconds = 200)
         {
             return DoWatcherFunc(func, watcherName, appendMessage, warnMiSeconds, true, out realTs);
@@ -144,7 +144,8 @@ namespace WindNight.Core.Tools
         /// <param name="watcherName"></param>
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
-        public static void TimeWatcher(Action action, out long realTs, string watcherName = "", bool appendMessage = false,
+        public static void TimeWatcher(Action action, out long realTs, string watcherName = "",
+            bool appendMessage = false,
             int warnMiSeconds = 200)
         {
             DoWatcherAction(action, watcherName, appendMessage, warnMiSeconds, false, out realTs);
@@ -158,7 +159,8 @@ namespace WindNight.Core.Tools
         /// <param name="watcherName"></param>
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
-        public static void TimeWatcherUnsafe(Action action, out long realTs, string watcherName = "", bool appendMessage = false,
+        public static void TimeWatcherUnsafe(Action action, out long realTs, string watcherName = "",
+            bool appendMessage = false,
             int warnMiSeconds = 200)
         {
             DoWatcherAction(action, watcherName, appendMessage, warnMiSeconds, true, out realTs);
@@ -204,7 +206,7 @@ namespace WindNight.Core.Tools
                 if (realTs > fwarnMiS)
                     LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage, millisecond: realTs);
                 else if (realTs > 1 && TimeWatcherIsOpen)
-                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ", millisecond: realTs);
+                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ", realTs);
             }
         }
 
@@ -238,15 +240,15 @@ namespace WindNight.Core.Tools
                 if (realTs > fwarnMiS)
                     LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage, millisecond: realTs);
                 else if (realTs > 1 && TimeWatcherIsOpen)
-                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ", millisecond: realTs);
+                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ", realTs);
             }
 
             return rlt;
         }
 
 
-
-        private static async Task<T> DoWatcherFuncAsync<T>(Func<Task<T>> func, string watcherName, bool appendMessage, int warnMiSeconds,
+        private static async Task<T> DoWatcherFuncAsync<T>(Func<Task<T>> func, string watcherName, bool appendMessage,
+            int warnMiSeconds,
             bool isThrow)
         {
             T rlt;
@@ -276,11 +278,10 @@ namespace WindNight.Core.Tools
                 if (realTs > fwarnMiS)
                     LogHelper.Warn($"{watcherName} 耗时{realTs} ms ", appendMessage: appendMessage, millisecond: realTs);
                 else if (realTs > 1 && TimeWatcherIsOpen)
-                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ", millisecond: realTs);
+                    LogHelper.Info($"{watcherName} 耗时{realTs} ms ", realTs);
             }
 
             return rlt;
         }
-
     }
 }

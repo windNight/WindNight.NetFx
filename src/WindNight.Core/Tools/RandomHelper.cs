@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 
 namespace System
 {
@@ -6,7 +6,8 @@ namespace System
     public static class RandomHelper
     {
         //随机数对象
-        private static readonly Random _random = new Random();
+        private static Random _random => new Random();
+
 
         #region 生成一个0.0到1.0的随机小数
 
@@ -48,7 +49,7 @@ namespace System
             var rand = new Random();
             for (var i = 0; i < CodeCount; i++)
             {
-                if (temp != -1) rand = new Random(temp * i * (int) HardInfo.Now.Ticks);
+                if (temp != -1) rand = new Random(temp * i * (int)HardInfo.Now.Ticks);
 
                 var t = rand.Next(allCharArray.Length - 1);
 
@@ -75,7 +76,7 @@ namespace System
                 throw new ArgumentOutOfRangeException("max", "max must be > min!");
 
             //Working with ulong so that modulo works correctly with values > long.MaxValue
-            var uRange = (ulong) (max - min);
+            var uRange = (ulong)(max - min);
 
             //Prevent a modulo bias; see https://stackoverflow.com/a/10984975/238419
             //for more information.
@@ -86,10 +87,10 @@ namespace System
             {
                 var buf = new byte[8];
                 random.NextBytes(buf);
-                ulongRand = (ulong) BitConverter.ToInt64(buf, 0);
+                ulongRand = (ulong)BitConverter.ToInt64(buf, 0);
             } while (ulongRand > ulong.MaxValue - (ulong.MaxValue % uRange + 1) % uRange);
 
-            return (long) (ulongRand % uRange) + min;
+            return (long)(ulongRand % uRange) + min;
         }
 
         #region 生成一个指定范围的随机整数
@@ -118,8 +119,8 @@ namespace System
             var rng = new RNGCryptoServiceProvider();
             rng.GetBytes(randomNumber);
             uint randomResult = 0x0;
-            for (var i = 0; i < length; i++) randomResult |= (uint) randomNumber[i] << ((length - 1 - i) * 8);
-            return (int) (randomResult % numSeeds) + 1;
+            for (var i = 0; i < length; i++) randomResult |= (uint)randomNumber[i] << ((length - 1 - i) * 8);
+            return (int)(randomResult % numSeeds) + 1;
         }
 
         #endregion
@@ -133,11 +134,11 @@ namespace System
             var str = string.Empty;
             var num2 = HardInfo.Now.Ticks + rep;
             rep++;
-            var random = new Random((int) ((ulong) num2 & 0xffffffffL) | (int) (num2 >> rep));
+            var random = new Random((int)((ulong)num2 & 0xffffffffL) | (int)(num2 >> rep));
             for (var i = 0; i < codeCount; i++)
             {
                 var num = random.Next();
-                str = str + (char) (0x30 + (ushort) (num % 10));
+                str = str + (char)(0x30 + (ushort)(num % 10));
             }
 
             return str;
@@ -149,15 +150,15 @@ namespace System
             var str = string.Empty;
             var num2 = HardInfo.Now.Ticks + rep;
             rep++;
-            var random = new Random((int) ((ulong) num2 & 0xffffffffL) | (int) (num2 >> rep));
+            var random = new Random((int)((ulong)num2 & 0xffffffffL) | (int)(num2 >> rep));
             for (var i = 0; i < codeCount; i++)
             {
                 char ch;
                 var num = random.Next();
                 if (num % 2 == 0)
-                    ch = (char) (0x30 + (ushort) (num % 10));
+                    ch = (char)(0x30 + (ushort)(num % 10));
                 else
-                    ch = (char) (0x41 + (ushort) (num % 0x1a));
+                    ch = (char)(0x41 + (ushort)(num % 0x1a));
                 str = str + ch;
             }
 

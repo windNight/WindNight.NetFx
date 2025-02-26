@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace WindNight.Core
 {
     public class ConfigBaseInfo : ConfigBaseInfo<string>
     {
-
     }
 
     public class ConfigBaseInfo2 : ConfigBaseInfo<object>
     {
-
     }
 
 

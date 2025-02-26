@@ -1,22 +1,18 @@
-﻿namespace WindNight.Core.Abstractions
+namespace WindNight.Core.Abstractions
 {
-
     public interface IKV<T>
     {
         T Key { get; set; }
         string Value { get; set; }
     }
+
     public interface IKV : IKV<int>
     {
-
     }
 
     public interface IKVs : IKV<string>
     {
-
-
     }
-
 
 
     public class KV<T> : IKV<T>
@@ -27,12 +23,9 @@
 
     public class KV : KV<int>, IKV
     {
-
-
     }
 
     public class KVs : KV<string>, IKVs
     {
-
     }
 }

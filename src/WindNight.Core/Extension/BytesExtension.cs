@@ -2,7 +2,6 @@
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Linq.Expressions;
 using WindNight.Linq.Extensions.Expressions;
 
 namespace System.Text
@@ -51,14 +50,19 @@ namespace System.Text
         }
 
         /// <summary>
-        ///     Converts the specified string, which encodes binary data as base-64 digits, to an equivalent 8-bit unsigned integer array.
+        ///     Converts the specified string, which encodes binary data as base-64 digits, to an equivalent 8-bit unsigned integer
+        ///     array.
         /// </summary>
         /// <param name="base64Str">The string to convert. </param>
         /// <exception cref="T:System.ArgumentNullException">
-        /// <paramref name="base64Str" /> is <see langword="null" />.</exception>
-        /// <exception cref="T:System.FormatException">The length of <paramref name="base64Str" />, ignoring white-space characters, is not zero or a multiple of 4.
-        /// -or-
-        /// The format of <paramref name="base64Str" /> is invalid. <paramref name="base64Str" /> contains a non-base-64 character, more than two padding characters, or a non-white space-character among the padding characters.</exception>
+        ///     <paramref name="base64Str" /> is <see langword="null" />.
+        /// </exception>
+        /// <exception cref="T:System.FormatException">
+        ///     The length of <paramref name="base64Str" />, ignoring white-space characters, is not zero or a multiple of 4.
+        ///     -or-
+        ///     The format of <paramref name="base64Str" /> is invalid. <paramref name="base64Str" /> contains a non-base-64
+        ///     character, more than two padding characters, or a non-white space-character among the padding characters.
+        /// </exception>
         /// <returns>
         ///     An array of 8-bit unsigned integers that is equivalent to <paramref name="base64Str" />.
         /// </returns>
@@ -66,6 +70,7 @@ namespace System.Text
         {
             return Convert.FromBase64String(base64Str);
         }
+
         /// <summary>
         ///     Base64加密
         /// </summary>
@@ -82,9 +87,7 @@ namespace System.Text
             {
                 return string.Empty;
             }
-
         }
-
 
 
         /// <summary>
@@ -142,12 +145,13 @@ namespace System.Text
         public static byte[] Combine(params byte[][] arrays)
         {
             var ret = new byte[arrays.Sum(x => x.Length)];
-            int offset = 0;
+            var offset = 0;
             foreach (var data in arrays)
             {
                 Buffer.BlockCopy(data, 0, ret, offset, data.Length);
                 offset += data.Length;
             }
+
             return ret;
         }
 
@@ -165,11 +169,12 @@ namespace System.Text
                 var sh = bytes[i].ToString("X").PadLeft(2, '0');
                 sb.Append($"{sh}{splitStr}");
             }
+
             return sb.ToString();
         }
 
         /// <summary>
-        ///  带空格等分隔符的Hex字符串
+        ///     带空格等分隔符的Hex字符串
         /// </summary>
         /// <param name="hexStr"></param>
         /// <returns></returns>
@@ -179,12 +184,13 @@ namespace System.Text
             {
                 hexStr = hexStr.Trim();
                 var arr = hexStr.Split(new[] { ' ', ',', ';', '\r', '\n' },
-                     StringSplitOptions.RemoveEmptyEntries);
+                    StringSplitOptions.RemoveEmptyEntries);
                 var bytes = new byte[arr.Length];
                 for (var i = 0; i < arr.Length; i++)
                 {
                     bytes[i] = byte.Parse(arr[i], NumberStyles.HexNumber);
                 }
+
                 return bytes;
             }
             catch
@@ -194,7 +200,7 @@ namespace System.Text
         }
 
         /// <summary>
-        /// 将没有分隔符的字符串转成16进制，如果字符串格式是奇数，则最高位补0
+        ///     将没有分隔符的字符串转成16进制，如果字符串格式是奇数，则最高位补0
         /// </summary>
         /// <param name="hexStr"></param>
         /// <returns></returns>
@@ -223,8 +229,5 @@ namespace System.Text
                 return null;
             }
         }
-
-
-
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace WindNight.Core.Abstractions
 {
@@ -11,9 +9,8 @@ namespace WindNight.Core.Abstractions
     }
 
     public interface ITreeObject<T> : ITreeObject
-    where T : ITreeObject, ITreeObject<T>, new()
+        where T : ITreeObject, ITreeObject<T>, new()
     {
         List<T> Children { get; set; }
-
     }
 }

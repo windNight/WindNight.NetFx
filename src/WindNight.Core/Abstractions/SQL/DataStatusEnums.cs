@@ -1,6 +1,5 @@
-﻿namespace WindNight.Core.SQL.Abstractions
+namespace WindNight.Core.SQL.Abstractions
 {
-
     public enum DataStatusEnums
     {
         Unknown = 0,

@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
+using Newtonsoft.Json.Linq;
+using WindNight.Core.@internal;
 #if NETSTANDARD2_1
 using System.Diagnostics.CodeAnalysis;
 #endif
-using WindNight.Core.@internal;
 
 namespace Newtonsoft.Json.Extension
 {
@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Extension
                 return null;
             }
         }
-         
+
         /// <summary>
         ///     DeserializeObject Use Newtonsoft.Json
         /// </summary>
@@ -69,7 +69,7 @@ namespace Newtonsoft.Json.Extension
                     settings = new JsonSerializerSettings
                     {
                         // JSON反序列化错误处理
-                        Error = (se, ev) => { ev.ErrorContext.Handled = true; }
+                        Error = (se, ev) => { ev.ErrorContext.Handled = true; },
                     };
                 // settings.Converters.Add(new IPAddressConverter());
                 // settings.Converters.Add(new IPEndPointConverter());
@@ -97,16 +97,11 @@ namespace Newtonsoft.Json.Extension
             JsonSerializerSettings? settings = null)
         {
             if (settings == null)
-                settings = new JsonSerializerSettings
-                {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                };
+                settings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             //settings.Converters.Add(new IPAddressConverter());
             //settings.Converters.Add(new IPEndPointConverter());
 
             return JsonConvert.SerializeObject(obj, formatting, settings);
         }
-
     }
-     
 }

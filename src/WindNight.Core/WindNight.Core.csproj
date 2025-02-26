@@ -1,36 +1,38 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="..\..\build\common.props" />
-	<PropertyGroup>
-		<TargetFrameworks>
-			netstandard2.1;
-			netstandard2.0;
-			<!--net45;
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\..\build\common.props" />
+    <PropertyGroup>
+        <TargetFrameworks>
+            netstandard2.1;
+            netstandard2.0;
+            <!--net45;
 			net461;-->
-		</TargetFrameworks>
-		<Description>
+        </TargetFrameworks>
+        <Description>
 
-		</Description>
-		<PackageReleaseNotes>
+        </Description>
+        <PackageReleaseNotes>
 
-		</PackageReleaseNotes>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	</PropertyGroup>
-	<ItemGroup>
-		<None Include="..\.editorconfig" Link=".editorconfig" />
-	</ItemGroup>
+        </PackageReleaseNotes>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="..\.editorconfig" Link=".editorconfig" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
-		<PackageReference Include="System.Text.Json" Version="9.0.0" />
-		<PackageReference Include="System.IO.Pipelines" Version="9.0.0" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
+        <PackageReference Include="System.Text.Json" Version="9.0.0" />
+        <PackageReference Include="System.IO.Pipelines" Version="9.0.0" />
+    </ItemGroup>
 
-	<!--<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'  or '$(TargetFramework)' == 'netstandard2.1'  or '$(TargetFramework)' == 'net461'">
+
+
+    <!--<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'  or '$(TargetFramework)' == 'netstandard2.1'  or '$(TargetFramework)' == 'net461'">
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />

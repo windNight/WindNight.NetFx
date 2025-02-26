@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Linq;
 
 namespace WindNight.Core.Abstractions
@@ -102,9 +102,5 @@ namespace WindNight.Core.Abstractions
         void Offline(string buildType, Exception? exception = null, bool appendMessage = false, string traceId = "");
 
         void Report(JObject obj, string traceId = "");
-
-
-
     }
-
 }

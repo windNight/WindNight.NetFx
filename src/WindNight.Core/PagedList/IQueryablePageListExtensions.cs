@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading;
 using WindNight.Core.SQL.Abstractions;
 
@@ -35,7 +35,7 @@ namespace System.Collections.Generic
                 IndexFrom = indexFrom,
                 RecordCount = count,
                 List = items,
-                PageCount = (int)Math.Ceiling(count / (double)pageSize)
+                PageCount = (int)Math.Ceiling(count / (double)pageSize),
             };
 
             return pagedList;
@@ -53,7 +53,6 @@ namespace System.Collections.Generic
         public static IPagedList<T> ToPagedList<T>(this IQueryable<T> source, IQueryPageBase pagedInfo,
             int indexFrom = 0, CancellationToken cancellationToken = default)
         {
-
             var pageIndex = pagedInfo.PageIndex;
             var pageSize = pagedInfo.PageSize;
 
@@ -72,14 +71,10 @@ namespace System.Collections.Generic
                 IndexFrom = indexFrom,
                 RecordCount = count,
                 List = items,
-                PageCount = (int)Math.Ceiling(count / (double)pageSize)
+                PageCount = (int)Math.Ceiling(count / (double)pageSize),
             };
 
             return pagedList;
         }
-
-
-
-
     }
 }

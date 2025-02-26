@@ -10,7 +10,7 @@ namespace System.Collections.Generic
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
-        /// <param name="pagedInfo"></param> 
+        /// <param name="pagedInfo"></param>
         /// <returns></returns>
         public static IPagedList<T> ToPagedList<T>(this IEnumerable<T> source, IQueryPageBase pagedInfo)
         {

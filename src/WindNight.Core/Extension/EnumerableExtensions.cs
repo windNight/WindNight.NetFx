@@ -1,16 +1,15 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using WindNight.Core.Abstractions;
 
-
 namespace WindNight.Linq.Extensions.Expressions
 {
     /// <summary>
     /// </summary>
-    public static partial class EnumerableExtensions
+    public static class EnumerableExtensions
     {
         public static bool IsNullOrEmpty<T>(this IEnumerable<T>? items)
         {
@@ -19,13 +18,11 @@ namespace WindNight.Linq.Extensions.Expressions
 
         public static IEnumerable<T> EmptyArray<T>()
         {
-
 #if NET45
             return new List<T>();
 #else
             return Array.Empty<T>();
 #endif
-
         }
 
 
@@ -62,7 +59,6 @@ namespace WindNight.Linq.Extensions.Expressions
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="bag"></param>
@@ -76,7 +72,6 @@ namespace WindNight.Linq.Extensions.Expressions
                 }
                 catch (Exception ex)
                 {
-
                 }
             }
             //if (!bag.IsEmpty)
@@ -86,7 +81,6 @@ namespace WindNight.Linq.Extensions.Expressions
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="bag"></param>
@@ -100,7 +94,6 @@ namespace WindNight.Linq.Extensions.Expressions
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="bag"></param>
@@ -113,19 +106,18 @@ namespace WindNight.Linq.Extensions.Expressions
                 try
                 {
                     bag.Add(data);
-
                 }
                 catch (Exception ex)
                 {
                     return false;
                 }
             }
-            return false;
 
+            return false;
         }
 
         public static List<T> ListToTree<T>(this List<T> list)
-        where T : ITreeObject<T>, new()
+            where T : ITreeObject<T>, new()
         {
             if (list.IsNullOrEmpty()) return new List<T>();
 
@@ -136,10 +128,12 @@ namespace WindNight.Linq.Extensions.Expressions
 
             foreach (var node in list)
             {
-                if (node.ParentId > 0 && lookup.ContainsKey(node.ParentId))
+                // if (node.ParentId > 0 && lookup.ContainsKey(node.ParentId))
+                if (node.ParentId > 0 && lookup.TryGetValue(node.ParentId, out var parent))
                 {
                     //add node to its parent
-                    var parent = lookup[node.ParentId];
+                    //T? parent = lookup[node.ParentId];
+
                     parent.Children.Add(node);
                 }
                 else
@@ -147,6 +141,7 @@ namespace WindNight.Linq.Extensions.Expressions
                     rootNodes.Add(node);
                 }
             }
+
             return rootNodes;
         }
 
@@ -162,8 +157,10 @@ namespace WindNight.Linq.Extensions.Expressions
             {
                 list = list.DistinctByItem(m => m);
             }
+
             return list;
         }
+
         public static IEnumerable<long> ToLongList(this string s, char separator = ',', bool needDistinct = true)
         {
             if (s.IsNullOrEmpty()) return EmptyArray<long>();
@@ -175,6 +172,7 @@ namespace WindNight.Linq.Extensions.Expressions
             {
                 list = list.DistinctByItem(m => m);
             }
+
             return list;
         }
 
@@ -188,10 +186,9 @@ namespace WindNight.Linq.Extensions.Expressions
             {
                 list = list.DistinctByItem(m => m).ToArray();
             }
+
             return list;
         }
-
-
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿namespace WindNight.Core.Abstractions
+namespace WindNight.Core.Abstractions
 {
     /// <summary> </summary>
     public enum SortByEnum
@@ -10,6 +10,6 @@
         Asc = 1,
 
         /// <summary> 倒序 </summary>
-        Desc = 2
+        Desc = 2,
     }
 }

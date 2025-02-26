@@ -1,4 +1,4 @@
-﻿namespace Mongodb.Driver.Extensions.Abstractions
+namespace Mongodb.Driver.Extensions.Abstractions
 {
     /// <summary>
     ///     This class represents a document that can be inserted in a collection that can be partitioned.

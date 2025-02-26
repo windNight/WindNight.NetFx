@@ -1,23 +1,13 @@
-﻿#if !NET45
+#if !NET45
 using Microsoft.Extensions.Configuration;
 #endif
+
 namespace WindNight.Core.Abstractions
 {
     /// <summary>
     /// </summary>
     public interface IConfigService
     {
-
-#if !NET45
-        IConfiguration Configuration { get; }
-        /// <summary> 服务编号 </summary>
-        int SystemAppId { get; }
-        /// <summary> 服务代号 </summary>
-        string SystemAppCode { get; }
-        /// <summary> 服务名称 </summary>
-        string SystemAppName { get; }
-#endif
-
         /// <summary>
         /// </summary>
         /// <param name="connKey"></param>
@@ -74,13 +64,22 @@ namespace WindNight.Core.Abstractions
         /// <returns></returns>
         T GetFileConfig<T>(string fileName, bool isThrow = true) where T : new();
 
-    }
+#if !NET45
+        IConfiguration Configuration { get; }
 
+        /// <summary> 服务编号 </summary>
+        int SystemAppId { get; }
+
+        /// <summary> 服务代号 </summary>
+        string SystemAppCode { get; }
+
+        /// <summary> 服务名称 </summary>
+        string SystemAppName { get; }
+#endif
+    }
 
 
     public interface IConfigItems
     {
-        
     }
-
 }

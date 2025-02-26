@@ -17,7 +17,6 @@ namespace System
             }
 
             return string.IsNullOrEmpty(sourceString);
-
         }
 
         /// <summary>
@@ -41,7 +40,6 @@ namespace System
             sL.Insert(0, sourceString);
             return string.Concat(sL);
         }
-
     }
 
     /// <summary> </summary>
@@ -68,7 +66,6 @@ namespace System
         /// <returns></returns>
         public static int ToInt(this string sourceString, int defaultValue = 0)
         {
-
             if (sourceString.IsNullOrEmpty())
                 return defaultValue;
             return int.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
@@ -127,6 +124,7 @@ namespace System
                 return defaultValue;
             return double.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
+
         public static double ToDouble(this object obj, double defaultValue = 0)
         {
             var sourceString = obj?.ToString() ?? "";
@@ -162,8 +160,5 @@ namespace System
             if (sourceString.IsNullOrEmpty()) return sourceString;
             return WebUtility.UrlDecode(sourceString);
         }
-
     }
-
-
 }

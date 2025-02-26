@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -9,7 +9,7 @@ namespace WindNight.Core.IO
 {
     public static class FileHelper
     {
-        static Encoding FixEncoding(Encoding encoding = null)
+        private static Encoding FixEncoding(Encoding encoding = null)
         {
             if (encoding == null)
             {
@@ -20,7 +20,7 @@ namespace WindNight.Core.IO
         }
 
         /// <summary>
-        /// 检测文件的编码
+        ///     检测文件的编码
         /// </summary>
         /// <param name="filePath">文件路径</param>
         /// <returns>文件编码</returns>
@@ -38,7 +38,6 @@ namespace WindNight.Core.IO
         {
             try
             {
-
                 encoding = FixEncoding(encoding);
                 return File.ReadAllText(filePath, encoding);
             }
@@ -47,7 +46,6 @@ namespace WindNight.Core.IO
                 LogHelper.Error($"ReadAllText({filePath}) Handler Error {ex.Message}", ex);
                 return null;
             }
-
         }
 
         // 写入文本到文件，如果文件存在则覆盖
@@ -82,7 +80,6 @@ namespace WindNight.Core.IO
             catch (Exception ex)
             {
                 LogHelper.Error($"AppendAllText({filePath}) Handler Error {ex.Message}", ex);
-
             }
         }
 
@@ -109,10 +106,8 @@ namespace WindNight.Core.IO
         {
             try
             {
-
                 encoding = FixEncoding(encoding);
                 File.WriteAllLines(filePath, content, encoding);
-
             }
             catch (Exception ex)
             {
@@ -144,7 +139,7 @@ namespace WindNight.Core.IO
 
 
         /// <summary>
-        /// 移动文件
+        ///     移动文件
         /// </summary>
         /// <param name="sourceFilePath">源文件路径</param>
         /// <param name="destinationFilePath">目标文件路径</param>
@@ -167,24 +162,18 @@ namespace WindNight.Core.IO
             }
             catch (Exception ex)
             {
-
-                LogHelper.Error($"MoveFile(source:{sourceFilePath},dest:{destinationFilePath}) Handler Error {ex.Message}", ex);
-
+                LogHelper.Error(
+                    $"MoveFile(source:{sourceFilePath},dest:{destinationFilePath}) Handler Error {ex.Message}", ex);
             }
-
-
         }
 
 
-
 #if NETSTANDARD2_1_OR_GREATER
-
         // 读取文本文件的所有内容
         public static async Task<string> ReadAllTextAsync(string filePath, Encoding encoding = null)
         {
             try
             {
-
                 encoding = FixEncoding(encoding);
                 return await File.ReadAllTextAsync(filePath, encoding);
             }
@@ -193,7 +182,6 @@ namespace WindNight.Core.IO
                 LogHelper.Error($"ReadAllText({filePath}) Handler Error {ex.Message}", ex);
                 return null;
             }
-
         }
 
         // 写入文本到文件，如果文件存在则覆盖
@@ -228,7 +216,6 @@ namespace WindNight.Core.IO
             catch (Exception ex)
             {
                 LogHelper.Error($"AppendAllText({filePath}) Handler Error {ex.Message}", ex);
-
             }
         }
 
@@ -255,10 +242,8 @@ namespace WindNight.Core.IO
         {
             try
             {
-
                 encoding = FixEncoding(encoding);
                 await File.WriteAllLinesAsync(filePath, content, encoding);
-
             }
             catch (Exception ex)
             {
@@ -267,10 +252,6 @@ namespace WindNight.Core.IO
         }
 
 
-
-
 #endif
-
-
     }
 }

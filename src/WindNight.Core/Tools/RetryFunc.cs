@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
+using WindNight.Core.@internal;
 
 namespace WindNight.Core.Tools
 {
@@ -25,9 +26,8 @@ namespace WindNight.Core.Tools
         /// <returns></returns>
         public static T RetrySnippetFunc<T>(
             Func<T> func, int tryCount = 1, int delayMs = 1000, T errorResult = default,
-            Action rollBackAction = null, Action<Exception> warnAction = null, T defaultValue = default(T)
-        )
-        where T : IEquatable<T>
+            Action rollBackAction = null, Action<Exception> warnAction = null, T defaultValue = default
+        ) where T : IEquatable<T>
         {
             tryCount = tryCount < 1 ? 1 : tryCount;
             var execCount = 0;
@@ -58,6 +58,7 @@ namespace WindNight.Core.Tools
                     if (delayMs > 0) Task.Delay(delayMs).Wait();
 
                     #endregion //end do catch
+
                     rlt = defaultValue;
                 }
 
@@ -77,8 +78,8 @@ namespace WindNight.Core.Tools
         )
         {
             tryCount = tryCount < 1 ? 1 : tryCount;
-            int num = 0;
-            T obj = default(T);
+            var num = 0;
+            T obj = default;
             while (tryCount > num - 1)
             {
                 try
@@ -94,6 +95,7 @@ namespace WindNight.Core.Tools
                         warnAction.KeepSafeAction(ex);
                         break;
                     }
+
                     if (delayMs > 0)
                         Task.Delay(delayMs).Wait();
                 }
@@ -163,9 +165,10 @@ namespace WindNight.Core.Tools
             {
                 action.Invoke();
             }
-            catch
+            catch (Exception ex)
             {
                 // ignored
+                LogHelper.Error($"KeepSafeAction Handler Error {ex.Message}", ex);
             }
         }
 
@@ -176,11 +179,11 @@ namespace WindNight.Core.Tools
             {
                 action.Invoke(ex);
             }
-            catch
+            catch (Exception ex2)
             {
                 // ignored
+                LogHelper.Error($"KeepSafeAction Handler Error {ex2.Message}", ex2);
             }
         }
-
     }
 }

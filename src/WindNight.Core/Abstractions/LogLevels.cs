@@ -1,8 +1,8 @@
-﻿namespace WindNight.Core.Abstractions
+namespace WindNight.Core.Abstractions
 {
     /// <summary>
     ///     Defines logging severity levels.
-    ///     copy from <see cref="T:Microsoft.Extensions.Logging.LogLevel"/> for internal use
+    ///     copy from <see cref="T:Microsoft.Extensions.Logging.LogLevel" /> for internal use
     /// </summary>
     public enum LogLevels
     {
@@ -63,8 +63,6 @@
         SysRegister = 40,
 
         /// <summary>  </summary>
-        SysOffline = 41
+        SysOffline = 41,
     }
-
-
 }

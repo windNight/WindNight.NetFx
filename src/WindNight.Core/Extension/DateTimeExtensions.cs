@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
-using WindNight.Core.Extension;
 
 namespace System
 {
     /// <summary>
-    /// private DefaultDateTime is <see cref="DefaultDateTime"/> (1970-01-01)
+    ///     private DefaultDateTime is <see cref="DefaultDateTime" /> (1970-01-01)
     /// </summary>
     public static partial class DateTimeExtensions
     {
-        private static readonly DateTime DefaultDateTime = new DateTime(1970, 1, 1);
-
         private const int DefaultDateInt = 19700101;
         private const int DefaultDateMonth = 197001;
+        private static readonly DateTime DefaultDateTime = new(1970, 1, 1);
 
         /// <summary>
         ///     DateTime 转 时间戳
@@ -32,15 +31,13 @@ namespace System
         public static long ConvertToUnixTime(this DateTime dateTime, bool milliseconds = true)
         {
 #if NETSTANDARD
-            var dateTimeOffset = new DateTimeOffset(dateTime);
+            DateTimeOffset dateTimeOffset = new(dateTime);
             if (milliseconds)
             {
                 return dateTimeOffset.ToUnixTimeMilliseconds();
             }
-            else
-            {
-                return dateTimeOffset.ToUnixTimeSeconds();
-            }
+
+            return dateTimeOffset.ToUnixTimeSeconds();
 #else
             long timestamps = 0;
             var startTime = TimeZoneInfo.ConvertTimeFromUtc(DefaultDateTime, TimeZoneInfo.Local);
@@ -52,7 +49,6 @@ namespace System
 
             return timestamps;
 #endif
-
         }
 
         /// <summary>
@@ -78,10 +74,8 @@ namespace System
             {
                 return DateTimeOffset.FromUnixTimeMilliseconds(unixTime).LocalDateTime;
             }
-            else
-            {
-                return DateTimeOffset.FromUnixTimeSeconds(unixTime).LocalDateTime;
-            }
+
+            return DateTimeOffset.FromUnixTimeSeconds(unixTime).LocalDateTime;
 #else
             var startTime = TimeZoneInfo.ConvertTimeFromUtc(DefaultDateTime, TimeZoneInfo.Local);
 
@@ -92,18 +86,20 @@ namespace System
         }
 
 
-        public static string ConvertToTimeFormatUseUnix(this long unixTime, bool milliseconds = true, string format = "yyyy-MM-dd HH:mm:ss")
+        public static string ConvertToTimeFormatUseUnix(this long unixTime, bool milliseconds = true,
+            string format = "yyyy-MM-dd HH:mm:ss")
         {
             return unixTime.ConvertToTimeUseUnix(milliseconds).FormatDateTime(format);
         }
 
         /// <summary>
-        /// 时间戳转DateInt
+        ///     时间戳转DateInt
         /// </summary>
         /// <param name="unixTime"></param>
         /// <param name="milliseconds"></param>
         /// <returns></returns>
-        public static int ConvertToTimeIntUseUnix(this long unixTime, bool milliseconds = true) => unixTime.ConvertToTimeUseUnix(milliseconds).ToDateInt();
+        public static int ConvertToTimeIntUseUnix(this long unixTime, bool milliseconds = true) =>
+            unixTime.ConvertToTimeUseUnix(milliseconds).ToDateInt();
 
         /// <summary>
         ///     格式为 20150115的数字转成时间为 2015-01-15
@@ -111,11 +107,16 @@ namespace System
         /// </summary>
         /// <param name="dateInt"></param>
         /// <param name="linkCode"></param>
-        /// <param name="defaultValue"> <see cref="DefaultDateTime"/></param>
+        /// <param name="defaultValue">
+        ///     <see cref="DefaultDateTime" />
+        /// </param>
         /// <returns></returns>
-        public static DateTime? TryToDateTimeSafe(this int dateInt, string linkCode = "-", DateTime? defaultValue = null)
+        public static DateTime? TryToDateTimeSafe(this int dateInt, string linkCode = "-",
+            DateTime? defaultValue = null)
         {
-            return dateInt <= 1970101 ? defaultValue ?? DefaultDateTime : dateInt.ToString().TryToDateTimeSafe(linkCode);
+            return dateInt <= 1970101
+                ? defaultValue ?? DefaultDateTime
+                : dateInt.ToString().TryToDateTimeSafe(linkCode);
         }
 
         /// <summary>
@@ -132,6 +133,7 @@ namespace System
                 if (DateTime.TryParse(dateStr, out var dateTime)) return dateTime;
                 return null;
             }
+
             var newstr = dateStr.Insert(4, linkCode).Insert(7, linkCode);
             DateTime date;
             if (DateTime.TryParse(newstr, out date)) return date;
@@ -143,7 +145,9 @@ namespace System
         /// </summary>
         /// <param name="dateInt"></param>
         /// <param name="linkCode"></param>
-        /// <param name="defaultValue"> <see cref="DefaultDateTime"/></param>
+        /// <param name="defaultValue">
+        ///     <see cref="DefaultDateTime" />
+        /// </param>
         /// <returns></returns>
         public static DateTime TryToDateTime(this int dateInt, string linkCode = "-", DateTime? defaultValue = null)
         {
@@ -155,7 +159,9 @@ namespace System
         /// </summary>
         /// <param name="dateStr"></param>
         /// <param name="linkCode"></param>
-        /// <param name="defaultValue"> <see cref="DefaultDateTime"/></param>
+        /// <param name="defaultValue">
+        ///     <see cref="DefaultDateTime" />
+        /// </param>
         /// <returns></returns>
         public static DateTime TryToDateTime(this string dateStr, string linkCode = "-", DateTime? defaultValue = null)
         {
@@ -164,6 +170,7 @@ namespace System
                 if (DateTime.TryParse(dateStr, out var dateTime)) return dateTime;
                 return DefaultDateTime;
             }
+
             var newsStr = TryToDateString(dateStr, linkCode);
             if (DateTime.TryParse(newsStr, out var date)) return date;
             return defaultValue ?? DefaultDateTime;
@@ -190,7 +197,8 @@ namespace System
         /// <param name="dateInt"></param>
         /// <param name="linkCode"></param>
         /// <returns></returns>
-        public static string TryToDateString(this int dateInt, string linkCode = "-") => dateInt.ToString().TryToDateString(linkCode);
+        public static string TryToDateString(this int dateInt, string linkCode = "-") =>
+            dateInt.ToString().TryToDateString(linkCode);
 
         /// <summary>
         ///     格式化DateTime 默认为 yyyy-MM-dd
@@ -208,15 +216,18 @@ namespace System
         /// </summary>
         /// <param name="dateTime"></param>
         /// <param name="format"></param>
-        /// <param name="defaultValue"><see cref="DefaultDateInt"/> </param>
+        /// <param name="defaultValue">
+        ///     <see cref="DefaultDateInt" />
+        /// </param>
         /// <returns></returns>
-        public static int TryToDateInt(this DateTime dateTime, string format = "yyyyMMdd", int defaultValue = DefaultDateInt)
+        public static int TryToDateInt(this DateTime dateTime, string format = "yyyyMMdd",
+            int defaultValue = DefaultDateInt)
         {
             try
             {
                 return dateTime.ToDateInt(format, defaultValue);
             }
-            catch// (Exception ex)
+            catch // (Exception ex)
             {
                 return defaultValue;
             }
@@ -227,18 +238,23 @@ namespace System
         /// </summary>
         /// <param name="dateTime"></param>
         /// <param name="format"></param>
-        /// <param name="defaultValue"><see cref="DefaultDateInt"/> </param>
+        /// <param name="defaultValue">
+        ///     <see cref="DefaultDateInt" />
+        /// </param>
         /// <returns></returns>
-        public static int ToDateInt(this DateTime dateTime, string format = "yyyyMMdd", int defaultValue = DefaultDateInt)
+        public static int ToDateInt(this DateTime dateTime, string format = "yyyyMMdd",
+            int defaultValue = DefaultDateInt)
         {
             return dateTime.ToString(format).ToInt(defaultValue);
         }
 
         /// <summary>
-        ///     格式为 2015-01-15 的时间转成为 201501  
+        ///     格式为 2015-01-15 的时间转成为 201501
         /// </summary>
         /// <param name="dateTime"></param>
-        /// <param name="defaultValue"><see cref="DefaultDateMonth"/> </param>
+        /// <param name="defaultValue">
+        ///     <see cref="DefaultDateMonth" />
+        /// </param>
         /// <returns></returns>
         public static int ToDateMonth(this DateTime dateTime, int defaultValue = DefaultDateMonth)
         {
@@ -248,7 +264,6 @@ namespace System
 
         public static
 #if NET45LATER
-
             (int FirstYearWeek, int EndYearWeek)
 #else
                 Tuple<int, int>
@@ -257,7 +272,7 @@ namespace System
         {
             if (year == 0)
                 year = date.Year;
-            var beginDate = new DateTime(year, 1, 1);
+            DateTime beginDate = new(year, 1, 1);
             var endDate = new DateTime(year + 1, 1, 1).AddDays(-1);
 
             var beginWeek = beginDate.WeekOfYear();
@@ -267,7 +282,6 @@ namespace System
 #else
             return new Tuple<int, int>(beginWeek, endWeek);
 #endif
-
         }
 
 
@@ -281,7 +295,7 @@ namespace System
         {
             if (year == 0)
                 year = date.Year;
-            var firstDayOfYear = new DateTime(year, 1, 1);
+            DateTime firstDayOfYear = new(year, 1, 1);
 
             var dt = firstDayOfYear.AddDays((week - 1) * 7);
             var beginDate = dt.FirstDayOfWeek();
@@ -292,15 +306,11 @@ namespace System
             return new Tuple<DateTime, DateTime>(beginDate, endDate);
 #endif
         }
-
-
-
     }
 
 
     public static partial class DateTimeExtensions
     {
-
         public static DateTime FirstDayOfMonth(this DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, 1);
@@ -322,7 +332,7 @@ namespace System
         }
 
         /// <summary>
-        ///  周一为第一天
+        ///     周一为第一天
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
@@ -332,16 +342,18 @@ namespace System
             {
                 return date.Date;
             }
+
             var dayOfWeekInt = (int)date.DayOfWeek;
             if (date.DayOfWeek == DayOfWeek.Sunday)
             {
                 dayOfWeekInt = 7;
             }
+
             return date.Date.AddDays(1 - dayOfWeekInt);
         }
 
         /// <summary>
-        /// 周日为最后一天
+        ///     周日为最后一天
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
@@ -354,23 +366,22 @@ namespace System
 
 
         /// <summary>
-        /// TODO Reverse
+        ///     TODO Reverse
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
         public static int WeekOfYear(this DateTime date)
         {
-            var gregorianCalendar = new Globalization.GregorianCalendar();
+            GregorianCalendar gregorianCalendar = new();
 
             //获取指定日期是周数 CalendarWeekRule指定 第一周开始于该年的第一天，DayOfWeek指定每周第一天是星期几　
-            int weekOfYear = gregorianCalendar.GetWeekOfYear(date, Globalization.CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+            var weekOfYear = gregorianCalendar.GetWeekOfYear(date, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
 
             return weekOfYear;
 
             //var dateTime = date.FirstDayOfYear();
             //var d = ((date.Date - dateTime.Date).Days + (int)dateTime.DayOfWeek) / 7.0;
             //return d.Ceiling();
-
         }
 
         public static int FirstWeekOfYear(this DateTime date)
@@ -382,33 +393,30 @@ namespace System
         {
             return date.LastDayOfYear().WeekOfYear();
         }
-
-
-
     }
+
     public static partial class DateTimeExtensions
     {
-
-
-
-
-        public static List<int> GeneratorDateIntList(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false)
+        public static List<int> GeneratorDateIntList(this DateTime beginDate, DateTime? endDateParam = null,
+            bool withLastDay = false)
         {
-            return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.ToDateInt());
+            return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, time => time.ToDateInt());
         }
 
-        public static List<string> GeneratorDateStringList(this DateTime beginDate, DateTime? endDateParam = null, string format = "yyyyMMdd", bool withLastDay = false)
+        public static List<string> GeneratorDateStringList(this DateTime beginDate, DateTime? endDateParam = null,
+            string format = "yyyyMMdd", bool withLastDay = false)
         {
-            return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.FormatDateTime(format));
-
+            return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, time => time.FormatDateTime(format));
         }
 
-        public static List<DateTime> GeneratorDateTimeList(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false)
+        public static List<DateTime> GeneratorDateTimeList(this DateTime beginDate, DateTime? endDateParam = null,
+            bool withLastDay = false)
         {
-            return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time);
+            return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, time => time);
         }
 
-        public static List<T> GeneratorDateSelfList<T>(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false, Func<DateTime, T> func = null)
+        public static List<T> GeneratorDateSelfList<T>(this DateTime beginDate, DateTime? endDateParam = null,
+            bool withLastDay = false, Func<DateTime, T> func = null)
         {
             var endDate = endDateParam ?? HardInfo.Now.Date;
 
@@ -416,7 +424,8 @@ namespace System
             {
                 endDate = endDate.AddDays(1);
             }
-            var list = new List<T>();
+
+            List<T> list = new();
             if (beginDate > endDate) return list;
             if (func == null) return list;
             for (var i = beginDate; i < endDate; i = i.AddDays(1))
@@ -431,7 +440,6 @@ namespace System
         public static List<T> GeneratorMonthSelfList<T>(this DateTime beginDate,
             DateTime? endDateParam = null, bool withLastDay = false, Func<DateTime, T> func = null)
         {
-
             beginDate = beginDate.FirstDayOfMonth();
             var endDate = endDateParam ?? HardInfo.Now.Date;
             if (withLastDay)
@@ -440,7 +448,7 @@ namespace System
             }
 
             endDate = endDate.FirstDayOfMonth();
-            var list = new List<T>();
+            List<T> list = new();
             if (beginDate > endDate) return list;
             if (func == null) return list;
             for (var i = beginDate; i < endDate; i = i.AddMonths(1))
@@ -452,31 +460,35 @@ namespace System
             return list;
         }
 
-        public static List<int> GeneratorDateIntList(this int beginDateInt, DateTime? endDateParam = null, bool withLastDay = false)
+        public static List<int> GeneratorDateIntList(this int beginDateInt, DateTime? endDateParam = null,
+            bool withLastDay = false)
         {
-            return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.ToDateInt());
+            return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, time => time.ToDateInt());
         }
 
-        public static List<string> GeneratorDateStringList(this int beginDateInt, DateTime? endDateParam = null, string format = "yyyyMMdd", bool withLastDay = false)
+        public static List<string> GeneratorDateStringList(this int beginDateInt, DateTime? endDateParam = null,
+            string format = "yyyyMMdd", bool withLastDay = false)
         {
-            return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.FormatDateTime(format));
-
+            return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, time => time.FormatDateTime(format));
         }
 
-        public static List<DateTime> GeneratorDateTimeList(this int beginDateInt, DateTime? endDateParam = null, bool withLastDay = false)
+        public static List<DateTime> GeneratorDateTimeList(this int beginDateInt, DateTime? endDateParam = null,
+            bool withLastDay = false)
         {
-            return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time);
+            return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, time => time);
         }
 
 
-        public static List<T> GeneratorDateSelfList<T>(this int beginDateInt, DateTime? endDateParam = null, bool withLastDay = false, Func<DateTime, T> func = null)
+        public static List<T> GeneratorDateSelfList<T>(this int beginDateInt, DateTime? endDateParam = null,
+            bool withLastDay = false, Func<DateTime, T> func = null)
         {
             var beginDate = beginDateInt.TryToDateTime();
             if (beginDate == DefaultDateTime) return new List<T>();
             return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, func);
         }
 
-        public static List<T> GeneratorDateSelfList<T>(this int beginDateInt, int endDateInt = 0, bool withLastDay = false, Func<DateTime, T> func = null)
+        public static List<T> GeneratorDateSelfList<T>(this int beginDateInt, int endDateInt = 0,
+            bool withLastDay = false, Func<DateTime, T> func = null)
         {
             var beginDate = beginDateInt.TryToDateTime();
             if (beginDate == DefaultDateTime) return new List<T>();
@@ -486,19 +498,18 @@ namespace System
             {
                 endDate = HardInfo.Now.Date;
             }
-            return beginDate.GeneratorDateSelfList(endDate, withLastDay, func);
 
+            return beginDate.GeneratorDateSelfList(endDate, withLastDay, func);
         }
 
 
-
-        public static List<int> GeneratorDateMonthList(this DateTime beginDate, DateTime? endDateParam = null, bool withLastDay = false)
+        public static List<int> GeneratorDateMonthList(this DateTime beginDate, DateTime? endDateParam = null,
+            bool withLastDay = false)
         {
-            var list = beginDate.GeneratorDateSelfList(endDateParam, withLastDay, (time) => time.ToDateMonth());
+            var list = beginDate.GeneratorDateSelfList(endDateParam, withLastDay, time => time.ToDateMonth());
 
             return list.Distinct().ToList();
         }
-
 
 
         public static List<int> GeneratorDateWeekList(this DateTime beginDate, DateTime? endDateParam = null)
@@ -514,7 +525,7 @@ namespace System
             var endYear = endDate.Year;
             var beginWeek = beginDate.WeekOfYear();
             var endWeek = endDate.WeekOfYear();
-            var list = new List<int>();
+            List<int> list = new();
             if (beginYear == endYear)
             {
                 for (var yeakWeek = beginWeek; yeakWeek <= endWeek; yeakWeek++)
@@ -533,7 +544,7 @@ namespace System
 
             for (var year = beginYear + 1; year < endYear; year++)
             {
-                var day1 = new DateTime(year, 1, 1);
+                DateTime day1 = new(year, 1, 1);
                 var yearWeekItem = day1.CalcCurrentYearWeekRange();
 #if NET45LATER
                 var _1YearWeek = yearWeekItem.FirstYearWeek;
@@ -551,7 +562,8 @@ namespace System
 
 
             var firstWeekOfYear = endDate.FirstWeekOfYear();
-            Trace.Write($"endDate is {endDate} endWeek is {endWeek} endYear is {endWeek} endYear FirstYearWeek is {firstWeekOfYear} ");
+            Trace.Write(
+                $"endDate is {endDate} endWeek is {endWeek} endYear is {endWeek} endYear FirstYearWeek is {firstWeekOfYear} ");
             for (var yeakWeek = firstWeekOfYear; yeakWeek <= endWeek; yeakWeek++)
             {
                 list.Add($"{endYear}{yeakWeek:00}".ToInt());
@@ -559,10 +571,5 @@ namespace System
 
             return list;
         }
-
-
-
-
-
     }
 }

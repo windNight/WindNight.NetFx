@@ -1,6 +1,5 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
 #if NET45
 using System.Collections;
 
@@ -11,7 +10,6 @@ namespace WindNight.Core.Abstractions
 {
     public interface ICurrentContext
     {
-
         string SerialNumber { get; }
 
 #if NET45
@@ -20,8 +18,7 @@ namespace WindNight.Core.Abstractions
 
         IDictionary<object, object>
 #endif
-        CurrentItems
-        { get; }
+            CurrentItems { get; }
 
 
         T GetItem<T>(string key);
@@ -32,13 +29,10 @@ namespace WindNight.Core.Abstractions
 
 #if !NET45
         T GetItemsFromAsyncLocal<T>(string key, T defaultValue = default);
-       
+
         T SetItems2AsyncLocal<T>(string key, T setValue = default, bool isForce = false);
 
 
 #endif
-
-
-
     }
 }

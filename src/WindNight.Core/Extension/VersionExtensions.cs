@@ -19,7 +19,7 @@ namespace WindNight.Core.Extension
             {
                 return new VersionStruct { Version = version };
             }
-            catch// (Exception ex)
+            catch // (Exception ex)
             {
                 return VersionStruct.NullVersionStruct;
             }
@@ -122,8 +122,8 @@ namespace WindNight.Core.Extension
             if (obj is VersionStruct objVersionStruct)
             {
                 return this == objVersionStruct;
-
             }
+
             return false;
         }
 
@@ -137,7 +137,5 @@ namespace WindNight.Core.Extension
             // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
             return base.GetHashCode();
         }
-        
-
     }
 }

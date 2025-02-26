@@ -14,7 +14,7 @@ namespace System.Collections.Generic
                 IndexFrom = pagedInfo.IndexFrom,
                 RecordCount = list.Count,
                 PageCount = pageCount,
-                List = list
+                List = list,
             };
         }
 
@@ -27,7 +27,7 @@ namespace System.Collections.Generic
                 IndexFrom = 1,
                 RecordCount = list.Count,
                 PageCount = pageCount,
-                List = list
+                List = list,
             };
         }
 
@@ -41,12 +41,13 @@ namespace System.Collections.Generic
                 IndexFrom = indexFrom,
                 RecordCount = recordCount,
                 PageCount = pageCount,
-                List = list
+                List = list,
             };
         }
 
 
-        public static IPagedList<T> GeneratorPagedList<T>(IQueryPageBase pagedInfo, int recordCount, int pageCount, IList<T> list)
+        public static IPagedList<T> GeneratorPagedList<T>(IQueryPageBase pagedInfo, int recordCount, int pageCount,
+            IList<T> list)
         {
             return new PagedList<T>
             {
@@ -55,7 +56,7 @@ namespace System.Collections.Generic
                 IndexFrom = pagedInfo.IndexFrom,
                 RecordCount = recordCount,
                 PageCount = pageCount,
-                List = list
+                List = list,
             };
         }
 
@@ -70,20 +71,17 @@ namespace System.Collections.Generic
                 IndexFrom = source.IndexFrom,
                 RecordCount = source.RecordCount,
                 PageCount = source.PageCount,
-                List = new List<TResult>(converter(source.List))
+                List = new List<TResult>(converter(source.List)),
             };
         }
-
     }
 
 
     public class PagedList<T> : IPagedList<T>
     {
-
         internal PagedList(IEnumerable<T> source, IQueryPageBase pagedInfo)
             : this(source, pagedInfo?.PageIndex ?? 1, pagedInfo?.PageSize ?? 20, pagedInfo?.IndexFrom ?? 1)
         {
-
         }
 
         internal PagedList(IEnumerable<T> source, int pageIndex, int pageSize, int indexFrom)
@@ -116,7 +114,7 @@ namespace System.Collections.Generic
 
         internal PagedList()
         {
-            List = new List<T>();// Array.Empty<T>();
+            List = new List<T>(); // Array.Empty<T>();
         }
 
         public int PageIndex { get; set; }
@@ -138,12 +136,10 @@ namespace System.Collections.Generic
 
     internal class PagedList<TSource, TResult> : IPagedList<TResult>
     {
-
-
-        public PagedList(IEnumerable<TSource> source, Func<IEnumerable<TSource>, IEnumerable<TResult>> converter, IQueryPageBase pagedInfo)
-        : this(source, converter, pagedInfo?.PageIndex ?? 1, pagedInfo?.PageSize ?? 20, pagedInfo?.IndexFrom ?? 1)
+        public PagedList(IEnumerable<TSource> source, Func<IEnumerable<TSource>, IEnumerable<TResult>> converter,
+            IQueryPageBase pagedInfo)
+            : this(source, converter, pagedInfo?.PageIndex ?? 1, pagedInfo?.PageSize ?? 20, pagedInfo?.IndexFrom ?? 1)
         {
-
         }
 
         public PagedList(IEnumerable<TSource> source, Func<IEnumerable<TSource>, IEnumerable<TResult>> converter,
@@ -210,14 +206,11 @@ namespace System.Collections.Generic
 
     public static partial class PagedList
     {
-
-
         public static IPagedList<TResult> From<TResult, TSource>(this IPagedList<TSource> source,
             Func<IEnumerable<TSource>, IEnumerable<TResult>> converter)
         {
             return new PagedList<TSource, TResult>(source, converter);
         }
-
     }
 
 
@@ -229,7 +222,6 @@ namespace System.Collections.Generic
         }
 
 
-
         public static IPagedList<T> GeneratorPagedList<T>(this IQueryPageBase pagedInfo, int pageCount, IList<T> list)
         {
             return new PagedList<T>
@@ -239,7 +231,7 @@ namespace System.Collections.Generic
                 IndexFrom = pagedInfo.IndexFrom,
                 RecordCount = list.Count,
                 PageCount = pageCount,
-                List = list
+                List = list,
             };
         }
 
@@ -252,7 +244,7 @@ namespace System.Collections.Generic
                 IndexFrom = 1,
                 RecordCount = list.Count,
                 PageCount = pageCount,
-                List = list
+                List = list,
             };
         }
 
@@ -266,12 +258,13 @@ namespace System.Collections.Generic
                 IndexFrom = indexFrom,
                 RecordCount = recordCount,
                 PageCount = pageCount,
-                List = list
+                List = list,
             };
         }
 
 
-        public static IPagedList<T> GeneratorPagedList<T>(this IQueryPageBase pagedInfo, int recordCount, int pageCount, IList<T> list)
+        public static IPagedList<T> GeneratorPagedList<T>(this IQueryPageBase pagedInfo, int recordCount, int pageCount,
+            IList<T> list)
         {
             return new PagedList<T>
             {
@@ -280,7 +273,7 @@ namespace System.Collections.Generic
                 IndexFrom = pagedInfo.IndexFrom,
                 RecordCount = recordCount,
                 PageCount = pageCount,
-                List = list
+                List = list,
             };
         }
 
@@ -295,12 +288,8 @@ namespace System.Collections.Generic
                 IndexFrom = source.IndexFrom,
                 RecordCount = source.RecordCount,
                 PageCount = source.PageCount,
-                List = new List<TResult>(converter(source.List))
+                List = new List<TResult>(converter(source.List)),
             };
         }
-
-
-
     }
-
 }

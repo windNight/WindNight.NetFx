@@ -1,46 +1,38 @@
-﻿#if !NET45
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Extension;
+#if !NET45
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Extension;
 
 namespace WindNight.Core.NetCore.@internal
 {
     /// <summary>
-    ///Represents a JSON file as an <see cref="IConfigurationSource"/>.
+    ///     Represents a JSON file as an <see cref="IConfigurationSource" />.
     /// </summary>
-    public class JsonObjectConfigurationSource : ObjectConfigurationSource
+    internal class JsonObjectConfigurationSource : ObjectConfigurationSource
     {
-        public JsonObjectConfigurationSource() { }
-
         /// <summary>
-        /// Builds the <see cref="JsonObjectConfigurationProvider"/> for this source.
+        ///     Builds the <see cref="JsonObjectConfigurationProvider" /> for this source.
         /// </summary>
-        /// <param name="builder">The <see cref="IConfigurationBuilder"/>.</param>
-        /// <returns>An <see cref="JsonObjectConfigurationProvider"/></returns>
+        /// <param name="builder">The <see cref="IConfigurationBuilder" />.</param>
+        /// <returns>An <see cref="JsonObjectConfigurationProvider" /></returns>
         public override IConfigurationProvider Build(IConfigurationBuilder builder)
             => new JsonObjectConfigurationProvider(this);
-
     }
 
     /// <summary>
-    /// Json Object based configuration provider
+    ///     Json Object based configuration provider
     /// </summary>
-    public abstract class ObjectConfigurationProvider : ConfigurationProvider
+    internal abstract class ObjectConfigurationProvider : ConfigurationProvider
     {
-        /// <summary>
-        /// The source settings for this provider.
-        /// </summary>
-        public ObjectConfigurationSource Source { get; }
-
         private bool _loaded;
 
         /// <summary>
-        /// Constructor.
+        ///     Constructor.
         /// </summary>
         /// <param name="source">The source.</param>
         public ObjectConfigurationProvider(ObjectConfigurationSource source)
@@ -49,13 +41,18 @@ namespace WindNight.Core.NetCore.@internal
         }
 
         /// <summary>
-        /// Load the configuration data from the json object.
+        ///     The source settings for this provider.
+        /// </summary>
+        public ObjectConfigurationSource Source { get; }
+
+        /// <summary>
+        ///     Load the configuration data from the json object.
         /// </summary>
         /// <param name="obj">The json data object.</param>
         public abstract void Load(object obj);
 
         /// <summary>
-        /// Load the configuration data from the json object. Will throw after the first call.
+        ///     Load the configuration data from the json object. Will throw after the first call.
         /// </summary>
         public override void Load()
         {
@@ -63,26 +60,29 @@ namespace WindNight.Core.NetCore.@internal
             {
                 throw new InvalidOperationException("ObjectConfigurationProvider cannot be loaded more than once.");
             }
+
             Load(Source.Object);
             _loaded = true;
         }
     }
 
     /// <summary>
-    /// Loads configuration key/values from a json object into a provider.
+    ///     Loads configuration key/values from a json object into a provider.
     /// </summary>
-    public class JsonObjectConfigurationProvider : ObjectConfigurationProvider
+    internal class JsonObjectConfigurationProvider : ObjectConfigurationProvider
     {
         /// <summary>
-        /// Constructor.
+        ///     Constructor.
         /// </summary>
-        /// <param name="source">The <see cref="JsonObjectConfigurationSource"/>.</param>
-        public JsonObjectConfigurationProvider(JsonObjectConfigurationSource source) : base(source) { }
+        /// <param name="source">The <see cref="JsonObjectConfigurationSource" />.</param>
+        public JsonObjectConfigurationProvider(JsonObjectConfigurationSource source) : base(source)
+        {
+        }
 
         /// <summary>
-        /// Loads json configuration key/values from a json object into a provider.
+        ///     Loads json configuration key/values from a json object into a provider.
         /// </summary>
-        /// <param name="stream">The json <see cref="object"/> to load configuration data from.</param>
+        /// <param name="stream">The json <see cref="object" /> to load configuration data from.</param>
         public override void Load(object stream)
         {
             Data = JsonConfigurationFileParser.Parse(stream);
@@ -90,31 +90,34 @@ namespace WindNight.Core.NetCore.@internal
     }
 
     /// <summary>
-    /// Json Object based <see cref="IConfigurationSource" />.
+    ///     Json Object based <see cref="IConfigurationSource" />.
     /// </summary>
-    public abstract class ObjectConfigurationSource : IConfigurationSource
+    internal abstract class ObjectConfigurationSource : IConfigurationSource
     {
         /// <summary>
-        /// The json object containing the configuration data.
+        ///     The json object containing the configuration data.
         /// </summary>
         public object Object { get; set; }
 
         /// <summary>
-        ///  Json Object based<see cref= "IConfigurationSource" />.
-        /// </summary> 
+        ///     Json Object based<see cref="IConfigurationSource" />.
+        /// </summary>
         public abstract IConfigurationProvider Build(IConfigurationBuilder builder);
-
     }
-
 
 
     internal class JsonConfigurationFileParser
     {
-        private JsonConfigurationFileParser() { }
+        private readonly Stack<string> _context = new();
 
-        private readonly IDictionary<string, string> _data = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        private readonly Stack<string> _context = new Stack<string>();
+        private readonly IDictionary<string, string> _data =
+            new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
         private string _currentPath;
+
+        private JsonConfigurationFileParser()
+        {
+        }
 
         public static IDictionary<string, string> Parse(Stream input)
             => new JsonConfigurationFileParser().ParseStream(input);
@@ -135,17 +138,17 @@ namespace WindNight.Core.NetCore.@internal
 
             var jsonDocumentOptions = new JsonDocumentOptions
             {
-                CommentHandling = JsonCommentHandling.Skip,
-                AllowTrailingCommas = true,
+                CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true,
             };
 
             using (var reader = new StreamReader(input))
-            using (JsonDocument doc = JsonDocument.Parse(reader.ReadToEnd(), jsonDocumentOptions))
+            using (var doc = JsonDocument.Parse(reader.ReadToEnd(), jsonDocumentOptions))
             {
                 if (doc.RootElement.ValueKind != JsonValueKind.Object)
                 {
                     throw new FormatException($"{doc.RootElement.ValueKind} UnsupportedJSONToken");
                 }
+
                 VisitElement(doc.RootElement);
             }
 
@@ -179,6 +182,7 @@ namespace WindNight.Core.NetCore.@internal
                         ExitContext();
                         index++;
                     }
+
                     break;
 
                 case JsonValueKind.Number:
@@ -191,6 +195,7 @@ namespace WindNight.Core.NetCore.@internal
                     {
                         throw new FormatException($"key({key}) KeyIsDuplicated");
                     }
+
                     _data[key] = value.ToString();
                     break;
 
@@ -211,8 +216,5 @@ namespace WindNight.Core.NetCore.@internal
             _currentPath = ConfigurationPath.Combine(_context.Reverse());
         }
     }
-
-
-
 }
 #endif

@@ -9,27 +9,25 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
     /// <summary> </summary>
     public partial class Ioc
     {
-        private IConfigService? _currentConfigService { get; set; } = null;
+        private IConfigService? _currentConfigService { get; set; }
+
+        public IConfigService? CurrentConfigService => _currentConfigService ?? GetService<IConfigService>();
+
+
+        private ILogService? _currentLogService { get; set; }
+
+        public ILogService? CurrentLogService => _currentLogService ?? GetService<ILogService>();
 
         public void SetCurrentConfigService(IConfigService configService)
         {
             _currentConfigService = configService;
         }
 
-        public IConfigService? CurrentConfigService => _currentConfigService ?? GetService<IConfigService>();
-
-
-        private ILogService? _currentLogService { get; set; } = null;
-
         public void SetCurrentLogService(ILogService logService)
         {
             _currentLogService = logService;
         }
-
-        public ILogService? CurrentLogService => _currentLogService ?? GetService<ILogService>();
-
     }
-
 
 
     public partial class Ioc
@@ -41,7 +39,6 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
 
         private Ioc()
         {
-
         }
 
         /// <summary>
@@ -51,8 +48,6 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         /// <summary>
         /// </summary>
         public IServiceProvider? ServiceProvider { get; internal set; }
-
-
 
 
         /// <summary>
@@ -94,8 +89,6 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
             return Instance.ServiceProvider.GetServices<T>();
         }
 #endif
-
-
     }
 
     /// <summary> </summary>
@@ -107,12 +100,10 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         //public string SystemAppCode => CurrentConfigService?.SystemAppCode ?? "";
         ///// <summary> 服务名称 </summary>
         //public string SystemAppName => CurrentConfigService?.SystemAppCode ?? "";
-
     }
 
     public static class IocExtension
     {
-
         /// <summary>
         ///     Get service of type T from the System.IServiceProvider.
         /// </summary>
@@ -138,16 +129,14 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
                         return impl;
                     }
                 }
+
                 return impls.FirstOrDefault();
             }
+
             return serviceProvider.GetService<T>();
 #else
             return (T)serviceProvider.GetService(typeof(T));
 #endif
-
         }
-
-
     }
-
 }

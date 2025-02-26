@@ -1,7 +1,5 @@
-﻿
-
-#if !NET45 
-using System; 
+#if !NET45
+using System;
 using WindNight.Core.NetCore.@internal;
 
 namespace Microsoft.Extensions.Configuration.Json
@@ -9,7 +7,7 @@ namespace Microsoft.Extensions.Configuration.Json
     public static class JsonConfigExtensions
     {
         /// <summary>
-        /// Adds a JSON configuration source to <paramref name="builder" />.
+        ///     Adds a JSON configuration source to <paramref name="builder" />.
         /// </summary>
         /// <param name="builder">The <see cref="T:Microsoft.Extensions.Configuration.IConfigurationBuilder" /> to add to.</param>
         /// <param name="obj">The <see cref="T:System.Object" /> to read the json configuration data from.</param>
@@ -24,7 +22,6 @@ namespace Microsoft.Extensions.Configuration.Json
                 throw new ArgumentNullException(nameof(obj));
 
             return builder.Add<JsonObjectConfigurationSource>(s => s.Object = obj);
-
         }
     }
 }

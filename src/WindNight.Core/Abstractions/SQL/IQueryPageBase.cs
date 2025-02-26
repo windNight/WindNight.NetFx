@@ -1,15 +1,15 @@
-﻿namespace WindNight.Core.SQL.Abstractions
-{
+using MJsonIgnore = System.Text.Json.Serialization.JsonIgnoreAttribute;
+using NJsonIgnore = Newtonsoft.Json.JsonIgnoreAttribute;
 
+namespace WindNight.Core.SQL.Abstractions
+{
     public interface IQueryPageBase
     {
         int PageIndex { get; set; }
         int PageSize { get; set; }
 
-
         /// <summary>  </summary>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
+        [MJsonIgnore,NJsonIgnore]
         int IndexFrom { get; set; }
 
     }
@@ -35,8 +35,5 @@
         ///     排序字段(必须需要!支持多字段，不用加order by)
         /// </summary>
         string OrderField { get; set; }
-
-
     }
-
 }

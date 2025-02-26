@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
@@ -13,8 +13,7 @@ namespace WindNight.Core.SQL.Abstractions
 
 
         IPagedList<T> PagedList<T>(string connStr, IQueryPageInfo sqlPageInfo,
-          IDictionary<string, object> parameters, long warnMs = -1) where T : class, new();
-
+            IDictionary<string, object> parameters, long warnMs = -1) where T : class, new();
 
         #endregion
     }
