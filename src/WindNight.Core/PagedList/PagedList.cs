@@ -1,5 +1,6 @@
-﻿using System.Linq;
+using System.Linq;
 using WindNight.Core.SQL.Abstractions;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace System.Collections.Generic
 {
@@ -132,6 +133,11 @@ namespace System.Collections.Generic
         public bool HasPreviousPage => PageIndex - IndexFrom > 0;
 
         public bool HasNextPage => PageIndex - IndexFrom + 1 < PageCount;
+        public bool IsEmpty()
+        {
+            return this.IsNullOrEmpty();
+        }
+
     }
 
     internal class PagedList<TSource, TResult> : IPagedList<TResult>
@@ -201,6 +207,12 @@ namespace System.Collections.Generic
         public bool HasPreviousPage => PageIndex - IndexFrom > 0;
 
         public bool HasNextPage => PageIndex - IndexFrom + 1 < PageCount;
+
+        public bool IsEmpty()
+        {
+            return RecordCount > 0 && !List.IsNullOrEmpty();
+        }
+
     }
 
 
