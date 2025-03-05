@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 
 namespace WindNight.RabbitMq.@internal
 {
-
     internal static class LogHelper
     {
         internal static void Debug(string msg, long millisecond = 0, string url = "", string serverIp = "",
@@ -22,14 +21,16 @@ namespace WindNight.RabbitMq.@internal
                 appendMessage: appendMessage, traceId: traceId);
         }
 
-        internal static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "", string serverIp = "",
+        internal static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "",
+            string serverIp = "",
             string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             Add(msg, LogLevels.Warning, exception, millisecond: millisecond, url: url, serverIp: serverIp,
                 clientIp: clientIp, appendMessage: appendMessage, traceId: traceId);
         }
 
-        internal static void Error(string msg, Exception exception, long millisecond = 0, string url = "", string serverIp = "",
+        internal static void Error(string msg, Exception exception, long millisecond = 0, string url = "",
+            string serverIp = "",
             string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             Add(msg, LogLevels.Error, exception, millisecond: millisecond, url: url, serverIp: serverIp,
@@ -63,7 +64,8 @@ namespace WindNight.RabbitMq.@internal
                 var logService = Ioc.Instance.CurrentLogService;
                 if (logService != null)
                 {
-                    logService?.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
+                    logService?.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage,
+                        traceId);
                 }
                 else
                 {
@@ -86,5 +88,4 @@ namespace WindNight.RabbitMq.@internal
             Console.ResetColor();
         }
     }
-
 }

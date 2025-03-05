@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.IO;
 using WindNight.Core.Abstractions;
 
 namespace WindNight.RabbitMq.@internal
 {
-
     internal static class RecordLog
     {
         public static void Debug(string msg)
@@ -65,6 +64,4 @@ namespace WindNight.RabbitMq.@internal
             }
         }
     }
-
-
 }

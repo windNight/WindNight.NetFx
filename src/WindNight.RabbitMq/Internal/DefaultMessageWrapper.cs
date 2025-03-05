@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Security.Cryptography.Extensions;
 using System.Threading;
@@ -8,8 +8,6 @@ using WindNight.RabbitMq.Abstractions;
 
 namespace WindNight.RabbitMq.@internal
 {
-
-
     internal class DefaultMessageWrapper : IMessageWrapper
     {
         #region private varibles
@@ -251,5 +249,4 @@ namespace WindNight.RabbitMq.@internal
 
         #endregion
     }
-
 }

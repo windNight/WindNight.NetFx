@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace WindNight.RabbitMq.Abstractions
 {
@@ -6,7 +6,6 @@ namespace WindNight.RabbitMq.Abstractions
     {
         public bool CanLogDebug { get; set; } = false;
         public List<RabbitMqConfigInfo> Items { get; set; } = new();
-
     }
 
     public class RabbitMqConfig

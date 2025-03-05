@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
+using System;
 using System.Text;
 using RabbitMQ.Client;
 using WindNight.Linq.Extensions.Expressions;
@@ -7,8 +6,6 @@ using WindNight.RabbitMq.Abstractions;
 
 namespace WindNight.RabbitMq.@internal
 {
-
-
     internal class CommonLibrary
     {
         /// <summary>
@@ -70,5 +67,4 @@ namespace WindNight.RabbitMq.@internal
             return bytes.ToGetString();
         }
     }
-
 }

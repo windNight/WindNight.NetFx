@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,13 +9,8 @@ using WindNight.RabbitMq.@internal;
 
 namespace WindNight.RabbitMq
 {
-
-
     public abstract class BaseProducerService
     {
-
-        public IRabbitMqProducerSettings CurrentProducerSettings => DefaultRabbitMqProducerSettings;
-
         protected readonly IRabbitMqProducer Producer;
 
         public BaseProducerService(IRabbitMqProducerFactory producerFactory, IRabbitMqProducerSettings producerSettings)
@@ -25,6 +20,8 @@ namespace WindNight.RabbitMq
             LogHelper.Info($" IRabbitMqProducerSettings is {producerSettings.ToJsonStr()}");
             Producer = producerFactory.GetRabbitMqProducer(producerSettings);
         }
+
+        public IRabbitMqProducerSettings CurrentProducerSettings => DefaultRabbitMqProducerSettings;
 
         protected abstract string ProducerName { get; }
 
@@ -41,7 +38,7 @@ namespace WindNight.RabbitMq
                     ExchangeName = config.ExchangeName,
                     ExchangeTypeCode = config.ExchangeTypeCode,
                     ExchangeDurable = config.ExchangeDurable,
-                    ProducerName = config.ProducerName
+                    ProducerName = config.ProducerName,
                 };
             }
         }
@@ -91,7 +88,7 @@ namespace WindNight.RabbitMq
                     ExchangeName = config.ExchangeName,
                     ExchangeTypeCode = config.ExchangeTypeCode,
                     ExchangeDurable = config.ExchangeDurable,
-                    ProducerName = config.ProducerName
+                    ProducerName = config.ProducerName,
                 };
             }
         }
@@ -121,5 +118,4 @@ namespace WindNight.RabbitMq
             return Task.CompletedTask;
         }
     }
-
 }

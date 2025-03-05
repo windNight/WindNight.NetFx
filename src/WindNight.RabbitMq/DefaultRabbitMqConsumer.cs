@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Cryptography.Extensions;
 using System.Text;
 using System.Threading;
@@ -10,17 +10,16 @@ using WindNight.RabbitMq.@internal;
 
 namespace WindNight.RabbitMq
 {
-
-
     public class DefaultRabbitMqConsumer : Consumer, IRabbitMqConsumer
     {
         public DefaultRabbitMqConsumer(IRabbitMqConsumerSettings settings) :
-            base(settings.RabbitMqUrl, new ConsumerConfigInfo
-            {
-                QueueName = settings.QueueName,
-                PrefetchCount = settings.PrefetchCount,
-                QueueDurable = settings.QueueDurable
-            })
+            base(settings.RabbitMqUrl,
+                new ConsumerConfigInfo
+                {
+                    QueueName = settings.QueueName,
+                    PrefetchCount = settings.PrefetchCount,
+                    QueueDurable = settings.QueueDurable,
+                })
         {
             Settings = settings;
         }
@@ -173,7 +172,7 @@ namespace WindNight.RabbitMq
                     received.Exchange,
                     received.ConsumerTag,
                     received.Redelivered,
-                    received.RoutingKey
+                    received.RoutingKey,
                 };
                 if (Settings.LogSwitch)
                     LogHelper.Debug(
@@ -224,5 +223,4 @@ namespace WindNight.RabbitMq
 
         #endregion //end Private
     }
-
 }

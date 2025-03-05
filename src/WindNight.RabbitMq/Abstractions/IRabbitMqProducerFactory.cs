@@ -1,6 +1,7 @@
-﻿namespace WindNight.RabbitMq.Abstractions;
-
-public interface IRabbitMqProducerFactory
+namespace WindNight.RabbitMq.Abstractions
 {
-    IRabbitMqProducer GetRabbitMqProducer(IRabbitMqProducerSettings settings);
+    public interface IRabbitMqProducerFactory
+    {
+        IRabbitMqProducer GetRabbitMqProducer(IRabbitMqProducerSettings settings);
+    }
 }

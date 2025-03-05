@@ -1,11 +1,9 @@
-﻿using System;
+using System;
 using RabbitMQ.Client;
 using WindNight.RabbitMq.Abstractions;
 
 namespace WindNight.RabbitMq.@internal
 {
-
-
     internal class BasicLibrary : IDisposable
     {
         /// <summary>
@@ -126,12 +124,12 @@ namespace WindNight.RabbitMq.@internal
         public IModel CreateProducerChannelByConfig(ProducerConfigInfo producerConfigInfo)
         {
             var model = CreateModel();
-            model.ExchangeDeclare(producerConfigInfo.ExchangeName, producerConfigInfo.ExchangeTypeCode.ToString().ToLower(),
+            model.ExchangeDeclare(producerConfigInfo.ExchangeName,
+                producerConfigInfo.ExchangeTypeCode.ToString().ToLower(),
                 producerConfigInfo.ExchangeDurable);
             return model;
         }
 
         #endregion
     }
-
 }

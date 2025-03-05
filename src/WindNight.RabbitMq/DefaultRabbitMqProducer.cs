@@ -1,19 +1,21 @@
-﻿using WindNight.RabbitMq.Abstractions;
+using WindNight.RabbitMq.Abstractions;
 
-namespace WindNight.RabbitMq;
-
-public class DefaultRabbitMqProducer : Producer, IRabbitMqProducer
+namespace WindNight.RabbitMq
 {
-    public DefaultRabbitMqProducer(IRabbitMqProducerSettings settings) :
-        base(settings.RabbitMqUrl, new ProducerConfigInfo
-        {
-            ExchangeName = settings.ExchangeName,
-            ExchangeDurable = settings.ExchangeDurable,
-            ExchangeTypeCode = settings.ExchangeTypeCode
-        })
+    public class DefaultRabbitMqProducer : Producer, IRabbitMqProducer
     {
-        _settings = settings;
-    }
+        public DefaultRabbitMqProducer(IRabbitMqProducerSettings settings) :
+            base(settings.RabbitMqUrl,
+                new ProducerConfigInfo
+                {
+                    ExchangeName = settings.ExchangeName,
+                    ExchangeDurable = settings.ExchangeDurable,
+                    ExchangeTypeCode = settings.ExchangeTypeCode,
+                })
+        {
+            _settings = settings;
+        }
 
-    private IRabbitMqProducerSettings _settings { get; }
+        private IRabbitMqProducerSettings _settings { get; }
+    }
 }

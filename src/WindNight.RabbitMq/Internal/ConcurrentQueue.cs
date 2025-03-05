@@ -1,11 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace WindNight.RabbitMq.@internal
 {
-
-
     internal class ConcurrentQueue<T>
     {
         private readonly Queue<T> m_Queue;
@@ -76,5 +74,4 @@ namespace WindNight.RabbitMq.@internal
             }
         }
     }
-
 }

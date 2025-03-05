@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core.Abstractions;
@@ -6,8 +6,6 @@ using WindNight.RabbitMq.Abstractions;
 
 namespace WindNight.RabbitMq.@internal
 {
-
-
     internal static class ConfigItems
     {
         public static bool IsCanLogDebug
@@ -18,8 +16,8 @@ namespace WindNight.RabbitMq.@internal
                 {
                     return RabbitMqOptions.CanLogDebug;
                 }
-                return GetAppSetting(ConstKey.IsCanLogDebugKey, "1", false) == "1";
 
+                return GetAppSetting(ConstKey.IsCanLogDebugKey, "1", false) == "1";
             }
         }
 
@@ -33,7 +31,7 @@ namespace WindNight.RabbitMq.@internal
             CurrentConfig.GetAppSetting("AppName", "");
 
         public static bool IsStopConsumer =>
-            CurrentConfig.GetAppSetting($"IsStopConsumer", false, false);
+            CurrentConfig.GetAppSetting("IsStopConsumer", false, false);
 
         private static IConfiguration Configuration => Ioc.GetService<IConfiguration>();
         private static IConfigService CurrentConfig => Ioc.GetService<IConfigService>();
@@ -44,11 +42,9 @@ namespace WindNight.RabbitMq.@internal
             {
                 if (RabbitMqOptions != null)
                 {
-                    return new RabbitMqConfig
-                    {
-                        Items = RabbitMqOptions.Items,
-                    };
+                    return new RabbitMqConfig { Items = RabbitMqOptions.Items };
                 }
+
                 return GetFileConfig<RabbitMqConfig>(ConstKey.RabbitMqConfigFileNameKey);
             }
         }
@@ -63,15 +59,15 @@ namespace WindNight.RabbitMq.@internal
             }
         }
 
-        static T GetSectionConfigValue<T>(
+        private static T GetSectionConfigValue<T>(
             this IConfiguration configuration,
             string sectionKey,
-            T defaultValue = default(T),
+            T defaultValue = default,
             bool isThrow = false)
         {
-            if ((object)defaultValue == null)
-                defaultValue = default(T);
-            T obj = defaultValue;
+            if (defaultValue == null)
+                defaultValue = default;
+            var obj = defaultValue;
             try
             {
                 if (configuration == null)
@@ -84,13 +80,16 @@ namespace WindNight.RabbitMq.@internal
                 if (isThrow)
                 {
                     LogHelper.Error(
-                        $"GetSection({(object)sectionKey}) configValue({(object)obj}) defaultValue({(object)defaultValue}) isThrow({(object)isThrow}) handler error {(object)ex.Message}", ex);
+                        $"GetSection({(object)sectionKey}) configValue({(object)obj}) defaultValue({(object)defaultValue}) isThrow({(object)isThrow}) handler error {(object)ex.Message}",
+                        ex);
                     throw;
                 }
-                else
-                    LogHelper.Warn(
-                        $"GetSection({(object)sectionKey})  configValue({(object)obj}) defaultValue({(object)defaultValue}) isThrow({(object)isThrow})  handler error {(object)ex.Message}", ex);
+
+                LogHelper.Warn(
+                    $"GetSection({(object)sectionKey})  configValue({(object)obj}) defaultValue({(object)defaultValue}) isThrow({(object)isThrow})  handler error {(object)ex.Message}",
+                    ex);
             }
+
             return defaultValue;
         }
 
@@ -151,5 +150,4 @@ namespace WindNight.RabbitMq.@internal
             public static string RabbitMqConfigFileNameKey = "rabbitMqConfig.json";
         }
     }
-
 }

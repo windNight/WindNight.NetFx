@@ -1,6 +1,7 @@
-﻿namespace WindNight.RabbitMq.Abstractions;
-
-public interface IRabbitMqConsumerFactory
+namespace WindNight.RabbitMq.Abstractions
 {
-    IRabbitMqConsumer GetRabbitMqConsumer(string queueName, IRabbitMqConsumerSettings settings);
+    public interface IRabbitMqConsumerFactory
+    {
+        IRabbitMqConsumer GetRabbitMqConsumer(string queueName, IRabbitMqConsumerSettings settings);
+    }
 }

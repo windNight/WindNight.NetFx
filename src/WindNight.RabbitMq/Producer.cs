@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Cryptography.Extensions;
 using System.Threading;
 using Newtonsoft.Json.Extension;
@@ -8,20 +8,22 @@ using WindNight.RabbitMq.@internal;
 
 namespace WindNight.RabbitMq
 {
-
-
     /// <summary>
     ///     生产者类
     /// </summary>
     public class Producer // : IDisposable
     {
+        private readonly object lockObj;
+
+        private readonly ProducerConfigInfo producerConfigInfo;
+
+        private readonly Producer spareProduce;
+        private readonly string uri;
         private BasicLibrary basicLibrary;
 
         private bool breakRepairLoop;
 
         private string encrypturi;
-
-        private readonly object lockObj;
 
         /// <summary>
         ///     本地文件修复线程
@@ -29,11 +31,6 @@ namespace WindNight.RabbitMq
         private Thread loopRepairExceptionThread;
 
         private IModel model;
-
-        private readonly ProducerConfigInfo producerConfigInfo;
-
-        private readonly Producer spareProduce;
-        private readonly string uri;
 
         /// <summary>
         ///     临时消息本地存储器
@@ -139,7 +136,8 @@ namespace WindNight.RabbitMq
             return Send(message, routingKey, basicProperties, null);
         }
 
-        internal bool Send(string message, string routingKey, BasicProperties basicProperties, MessageLocal messageLocal)
+        internal bool Send(string message, string routingKey, BasicProperties basicProperties,
+            MessageLocal messageLocal)
         {
             try
             {
@@ -239,7 +237,8 @@ namespace WindNight.RabbitMq
         /// <param name="messageWrapper"> 消息包装器 </param>
         public Producer(string uri, ProducerConfigInfo producerConfigInfo, IMessageWrapper messageWrapper = null)
         {
-            if (producerConfigInfo.FileName.IsNullOrEmpty()) producerConfigInfo.FileName = producerConfigInfo.ExchangeName;
+            if (producerConfigInfo.FileName.IsNullOrEmpty())
+                producerConfigInfo.FileName = producerConfigInfo.ExchangeName;
             this.uri = uri;
             lockObj = new object();
 
@@ -259,7 +258,7 @@ namespace WindNight.RabbitMq
                     ExchangeDurable = true,
                     ExchangeName = producerConfigInfo.SpareExchangeName,
                     ExchangeTypeCode = ExchangeTypeCodeEnum.Topic,
-                    FileName = $"{producerConfigInfo.ExchangeName}_{producerConfigInfo.SpareExchangeName}"
+                    FileName = $"{producerConfigInfo.ExchangeName}_{producerConfigInfo.SpareExchangeName}",
                 });
             }
         }
@@ -370,10 +369,7 @@ namespace WindNight.RabbitMq
         {
             var msg = new
             {
-                Exchange = producerConfigInfo.ExchangeName,
-                RoutingKey = routingKey,
-                Msg = message,
-                Uri = EncryptUri
+                Exchange = producerConfigInfo.ExchangeName, RoutingKey = routingKey, Msg = message, Uri = EncryptUri,
             }.ToJsonStr();
             spareProduce.Send(msg, producerConfigInfo.SpareRoutingKey);
         }
@@ -397,7 +393,7 @@ namespace WindNight.RabbitMq
                     RoutingKey = routingKey,
                     IsEncrypt = true,
                     CreateTime = now.ConvertToUnixTime(),
-                    ProducerConfigInfo = producerConfigInfo
+                    ProducerConfigInfo = producerConfigInfo,
                 };
 
                 if (messageLocal != null)
@@ -421,5 +417,4 @@ namespace WindNight.RabbitMq
 
         #endregion
     }
-
 }

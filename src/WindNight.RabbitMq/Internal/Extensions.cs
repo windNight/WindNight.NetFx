@@ -1,10 +1,8 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace WindNight.RabbitMq.@internal
 {
-
-
     internal static class Extensions
     {
         //    /// <summary>
@@ -87,5 +85,4 @@ namespace WindNight.RabbitMq.@internal
             }
         }
     }
-
 }

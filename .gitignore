@@ -275,3 +275,5 @@ __pycache__/
 *.pyc
 
 .svn/
+/src/Examples/RabbitMqDemos/Config/rabbitMqConfigV2.json
+/src/Examples/Logger.Demo/appsettings.json
