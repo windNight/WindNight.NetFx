@@ -1,23 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>Exe</OutputType>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
-	</PropertyGroup>
+    <PropertyGroup> 
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<!--<ProjectReference Include="..\..\Schedule\Schedule.csproj" />-->
-		<!--<ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />-->
+    <ItemGroup>
+        <!--<ProjectReference Include="..\..\Schedule\Schedule.csproj" />-->
+        <!--<ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />-->
 
-		<!--<PackageReference Include="log4net" Version="3.0.3" />
+        <!--<PackageReference Include="log4net" Version="3.0.3" />
 
 		<PackageReference Include="Quartz" Version="3.13.1" />-->
 
-		<!--<PackageReference Include="System.IO.Pipelines" Version="9.0.0" />
+        <!--<PackageReference Include="System.IO.Pipelines" Version="9.0.0" />
 
 		<PackageReference Include="System.Text.Json" Version="9.0.0" />-->
 
-		<PackageReference Include="WindNight.Schedule" Version="1.1.0-beta.25021902" />
-	</ItemGroup>
+        <PackageReference Include="WindNight.Schedule" Version="1.1.0-beta.25021902" />
+    </ItemGroup>
 
 </Project>

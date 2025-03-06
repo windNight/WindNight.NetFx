@@ -1,42 +1,42 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>Exe</OutputType>
-		<TargetFramework>net8.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-	</PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-	<ItemGroup>
-	  <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
-	  <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25021902" />
-	</ItemGroup>
+    <ItemGroup>
+        <!--<PackageReference Include="RabbitMQ.Client" Version="6.8.1" />-->
+        <!--<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25030501" />-->
+    </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
-		<ProjectReference Include="..\..\WindNight.Config\WindNight.Config.csproj" />
-		<ProjectReference Include="..\..\WindNight.Extension\WindNight.Extension.csproj" />
-		<ProjectReference Include="..\..\WindNight.RabbitMq\WindNight.RabbitMq.csproj" />
-	</ItemGroup>
-
-
-	<ItemGroup>
-		<None Update="appsettings.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Config\*.config">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Config\*.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
+        <ProjectReference Include="..\..\WindNight.Config\WindNight.Config.csproj" />
+        <ProjectReference Include="..\..\WindNight.Extension\WindNight.Extension.csproj" />
+        <ProjectReference Include="..\..\WindNight.RabbitMq\WindNight.RabbitMq.csproj" />
+    </ItemGroup>
 
 
-	<ItemGroup>
-	  <None Update="Config\rabbitMqConfigV2.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Config\*.config">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Config\*.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <None Update="Config\rabbitMqConfigV2.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
 </Project>

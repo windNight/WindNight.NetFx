@@ -19,7 +19,7 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25021902" />
+		<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25030501" />
  
 	</ItemGroup>
 
@@ -46,7 +46,7 @@
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
-			<Version>6.0.31</Version>
+			<Version>6.0.36</Version>
 		</PackageReference>
 	</ItemGroup>
 
@@ -57,13 +57,13 @@
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
-			<Version>8.0.11</Version>
+			<Version>8.0.13</Version>
 		</PackageReference>
 	</ItemGroup>
 	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
-			<Version>9.0.0</Version>
+			<Version>9.0.2</Version>
 		</PackageReference>
 	</ItemGroup>
 

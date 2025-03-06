@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25021902" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25030501" />
 	</ItemGroup>
 
 </Project>
