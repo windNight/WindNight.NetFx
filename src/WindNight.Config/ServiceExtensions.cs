@@ -1,4 +1,4 @@
-﻿#if NET45LATER
+#if NET45LATER
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WindNight.Core.Abstractions;

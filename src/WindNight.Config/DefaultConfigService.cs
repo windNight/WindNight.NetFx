@@ -1,4 +1,4 @@
-﻿using WindNight.Core.Abstractions;
+using WindNight.Core.Abstractions;
 #if !NET45
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Configuration;
@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace WindNight.ConfigCenter.Extension
 {
-    public class DefaultConfigService : ConfigItemsBase, IConfigService
+    internal class DefaultConfigService : ConfigItemsBase, IConfigService
     {
 #if !NET45
         public IConfiguration Configuration => Ioc.GetService<IConfiguration>();

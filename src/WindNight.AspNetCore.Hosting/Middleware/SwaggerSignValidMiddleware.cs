@@ -11,8 +11,12 @@ using WindNight.Linq.Extensions.Expressions;
 
 namespace WindNight.AspNetCore.Hosting.Middleware
 {
-    public abstract class WindSwaggerSignValidMiddleware : SwaggerSignValidMiddleware
+    public abstract class WindSwaggerSignValidMiddleware : SwaggerSignValidMiddlewareBase
     {
+        protected WindSwaggerSignValidMiddleware(RequestDelegate next) : base(next)
+        {
+
+        }
 
         protected WindSwaggerSignValidMiddleware(RequestDelegate next, Dictionary<string, string> signKeyDict) : base(next, signKeyDict)
         {

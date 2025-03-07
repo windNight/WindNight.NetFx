@@ -8,6 +8,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using WindNight.AspNetCore.Hosting.@internal;
+using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;
 using WindNight.LogExtension;
@@ -444,6 +445,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                 var configuration = context.Configuration;
                 services.TryAddSingleton(configuration);
                 configureDelegate?.Invoke(context, services);
+              
                 services.AddSingleton<ICurrentContext, DefaultCurrentContext>();
                 Ioc.Instance.InitServiceProvider(services.BuildServiceProvider());
                 if (Ioc.Instance.CurrentConfigService == null)

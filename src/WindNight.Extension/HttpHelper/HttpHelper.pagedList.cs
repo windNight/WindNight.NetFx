@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Extension;
 using RestSharp;
 using WindNight.Core.Tools;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace WindNight.Extension
 {
@@ -132,5 +133,9 @@ namespace WindNight.Extension
         public bool HasPreviousPage => PageIndex - IndexFrom > 0;
 
         public bool HasNextPage => PageIndex - IndexFrom + 1 < PageCount;
+        public bool IsEmpty()
+        {
+            return this.IsNullOrEmpty();
+        }
     }
 }
