@@ -63,5 +63,24 @@ namespace WindNight.Core
 
             return tableName;
         }
+
+
+        public static string GenDefaultTableName(this IEntity t, bool toLower = true, bool appendPlural = false)
+        {
+            var tableName = t.GetType().Name;
+            if (toLower)
+            {
+                tableName = tableName.ToLower();
+            }
+
+            if (appendPlural && !tableName.EndsWith("s"))
+            {
+                tableName = $"{tableName}s";
+            }
+
+            return tableName;
+        }
+
+
     }
 }
