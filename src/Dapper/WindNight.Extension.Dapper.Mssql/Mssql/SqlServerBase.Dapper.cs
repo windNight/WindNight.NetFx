@@ -1,16 +1,15 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
+using System.Data;
 using Dapper;
 using FastMember;
 using Microsoft.Data.SqlClient;
-using System.Data;
-using WindNight.Core.SQL;
 using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Dapper.Mssql.@internal;
 
 namespace WindNight.Extension.Dapper.Mssql
 {
     /// <inheritdoc />
-    public class SqlServerBase : IBaseDbExecute
+    public partial class SqlServerBase : IBaseDbExecute
     {
         public IDbConnection GetConnection(string connStr)
         {
@@ -20,7 +19,7 @@ namespace WindNight.Extension.Dapper.Mssql
         }
 
 
-        public T ExecuteScalar<T>(string connStr, string sql, object param = null)
+        public T ExecuteScalar<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -29,7 +28,7 @@ namespace WindNight.Extension.Dapper.Mssql
         }
 
 
-        public async Task<T> ExecuteScalarAsync<T>(string connStr, string sql, object param = null)
+        public async Task<T> ExecuteScalarAsync<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -38,7 +37,7 @@ namespace WindNight.Extension.Dapper.Mssql
         }
 
 
-        public int Execute(string connStr, string sql, object param = null)
+        public int Execute(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -46,7 +45,7 @@ namespace WindNight.Extension.Dapper.Mssql
             }
         }
 
-        public async Task<int> ExecuteAsync(string connStr, string sql, object param = null)
+        public async Task<int> ExecuteAsync(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -55,7 +54,7 @@ namespace WindNight.Extension.Dapper.Mssql
         }
 
 
-        public IEnumerable<T> QueryList<T>(string connStr, string sql, object param = null)
+        public IEnumerable<T> QueryList<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -64,7 +63,7 @@ namespace WindNight.Extension.Dapper.Mssql
         }
 
 
-        public async Task<IEnumerable<T>> QueryListAsync<T>(string connStr, string sql, object param = null)
+        public async Task<IEnumerable<T>> QueryListAsync<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -73,7 +72,7 @@ namespace WindNight.Extension.Dapper.Mssql
         }
 
 
-        public T Query<T>(string connStr, string sql, object param = null)
+        public T Query<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -82,7 +81,7 @@ namespace WindNight.Extension.Dapper.Mssql
         }
 
 
-        public async Task<T> QueryAsync<T>(string connStr, string sql, object param = null)
+        public async Task<T> QueryAsync<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -149,7 +148,6 @@ namespace WindNight.Extension.Dapper.Mssql
                 catch (Exception ex)
                 {
                     LogHelper.Error($"BatchInsert<{typeof(T).Name}> count={list.Count} Handler Error {ex.Message}", ex);
-
                 }
             }
         }
@@ -192,10 +190,9 @@ namespace WindNight.Extension.Dapper.Mssql
             }
         }
 
-        (IEnumerable<T> list, int recordCount) GetEmpty<T>() => (null, 0)!;
+        private (IEnumerable<T> list, int recordCount) GetEmpty<T>() => (null, 0)!;
 
-        protected async Task<(IEnumerable<T> list, int recordCount)>
-            PagedListInternalAsync<T>(string connStr, IQueryPageInfo pageInfo, IDictionary<string, object> parameters)
+        protected async Task<(IEnumerable<T> list, int recordCount)> PagedListInternalAsync<T>(string connStr, IQueryPageInfo pageInfo, IDictionary<string, object> parameters)
             where T : class, new()
         {
             var recordCount = 0;
@@ -232,15 +229,14 @@ namespace WindNight.Extension.Dapper.Mssql
             }
         }
 
-        public async Task<IPagedList<T>> PagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters, long warnMs = -1)
+        public async Task<IPagedList<T>> PagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             var dbData = await PagedListInternalAsync<T>(connStr, sqlPageInfo, parameters);
             return GeneratorPagedList(dbData.list, m => m, sqlPageInfo, dbData.recordCount);
         }
 
-        public IPagedList<T> PagedList<T>(string connStr, IQueryPageInfo sqlPageInfo,
-            IDictionary<string, object> parameters, long warnMs = -1)
+        public IPagedList<T> PagedList<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             var list = PagedListInternal<T>(connStr, sqlPageInfo, out var recordCount, parameters);
@@ -252,8 +248,7 @@ namespace WindNight.Extension.Dapper.Mssql
             var pageIndex = pageInfo.PageIndex;
             var pageSize = pageInfo.PageSize;
             if (sList == null)
-                return PagedListExtension.GeneratorPagedList(pageIndex, pageSize, 1, recordCount, 0,
-                    new List<TResult>());
+                return PagedListExtension.GeneratorPagedList(pageIndex, pageSize, 1, recordCount, 0, new List<TResult>());
             var list = (IList<TResult>)new List<TResult>(converter(sList));
             var pageCount = (int)Math.Ceiling(recordCount / (double)pageSize);
             return PagedListExtension.GeneratorPagedList(pageIndex, pageSize, 1, recordCount, pageCount, list);
@@ -274,10 +269,14 @@ namespace WindNight.Extension.Dapper.Mssql
             return dynamicParameters;
         }
 
-   
         #endregion
+    }
 
 
-
+    public partial class SqlServerBase
+    {
+        public virtual void ExecErrorHandler(Action<Exception, string> execErrorHandler, Exception ex, string execSql)
+        {
+        }
     }
 }

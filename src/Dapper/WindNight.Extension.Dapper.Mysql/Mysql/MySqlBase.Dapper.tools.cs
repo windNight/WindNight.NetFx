@@ -1,8 +1,4 @@
-﻿using System.Data;
 using System.Net.Sockets;
-using System.Text;
-using Dapper;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Dapper.Mysql.@internal;
@@ -13,9 +9,8 @@ namespace WindNight.Extension.Dapper.Mysql
     /// <inheritdoc />
     public partial class MySqlBase
     {
-
         /// <summary>
-        /// 使用自定义连接
+        ///     使用自定义连接
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="sqlFunc"></param>
@@ -23,25 +18,32 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <param name="actionName"></param>
+        /// <param name="warnMs"></param>
+        /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual T SqlTimer<T>(Func<string, string, object, T> sqlFunc, string connectString, string sql, object param = null,
-            string actionName = "", long warnMs = -1)
+        protected virtual T SqlTimer<T>(
+            Func<string, string, object, Action<Exception, string>, T> sqlFunc,
+            string connectString, string sql, object param = null, string actionName = "",
+            long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
             var ticks = HardInfo.Now.Ticks;
             try
             {
-                return sqlFunc(connectString, sql, param);
+                return sqlFunc(connectString, sql, param, execErrorHandler);
             }
             catch (Exception ex)
             {
                 if (param is IEntity entity)
                 {
-                    LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}", ex);
-
+                    LogHelper.Error(
+                        $" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}",
+                        ex);
                 }
                 else
                 {
-                    LogHelper.Error($" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
+                    LogHelper.Error(
+                        $" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}",
+                        ex);
                 }
             }
             finally
@@ -52,17 +54,19 @@ namespace WindNight.Extension.Dapper.Mysql
                     warnMs = FixWarnMs(warnMs);
                     if (milliseconds > warnMs)
                     {
-                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
-
+                        LogHelper.Warn(
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}",
+                            millisecond: milliseconds);
                     }
                     else if (ConfigItems.OpenDapperLog)
                     {
-                        LogHelper.Info($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+                        LogHelper.Info(
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}",
+                            milliseconds);
                     }
                 }
                 catch
                 {
-
                 }
             }
 
@@ -70,24 +74,41 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        protected virtual async Task<T> SqlTimerAsync<T>(Func<string, string, object, Task<T>> sqlFunc, string connectString, string sql, object param = null,
-            string actionName = "", long warnMs = -1)
+        /// <summary>
+        ///     使用自定义连接
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sqlFunc"></param>
+        /// <param name="connectString"></param>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <param name="actionName"></param>
+        /// <param name="warnMs"></param>
+        /// <param name="execErrorHandler"></param>
+        /// <returns></returns>
+        protected virtual async Task<T> SqlTimerAsync<T>(
+            Func<string, string, object, Action<Exception, string>, Task<T>> sqlFunc,
+            string connectString, string sql, object param = null, string actionName = "",
+            long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
             var ticks = HardInfo.Now.Ticks;
             try
             {
-                return await sqlFunc(connectString, sql, param);
+                return await sqlFunc(connectString, sql, param, execErrorHandler);
             }
             catch (Exception ex)
             {
                 if (param is IEntity entity)
                 {
-                    LogHelper.Error($"sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}", ex);
+                    LogHelper.Error(
+                        $"sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}",
+                        ex);
                 }
                 else
                 {
-                    LogHelper.Error($"sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}", ex);
-
+                    LogHelper.Error(
+                        $"sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}",
+                        ex);
                 }
             }
             finally
@@ -98,18 +119,19 @@ namespace WindNight.Extension.Dapper.Mysql
                     warnMs = FixWarnMs(warnMs);
                     if (milliseconds > warnMs)
                     {
-                        LogHelper.Warn($"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
-
+                        LogHelper.Warn(
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}",
+                            millisecond: milliseconds);
                     }
                     else if (ConfigItems.OpenDapperLog)
                     {
                         LogHelper.Info(
-                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}", millisecond: milliseconds);
+                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}",
+                            milliseconds);
                     }
                 }
                 catch
                 {
-
                 }
             }
 
@@ -151,7 +173,6 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-
         public virtual long FixWarnMs(long warnMs = -1)
         {
             var configW = ConfigItems.DapperWarnMs;
@@ -164,11 +185,5 @@ namespace WindNight.Extension.Dapper.Mysql
 
             return configW;
         }
-
-
-
-
-
-
     }
 }

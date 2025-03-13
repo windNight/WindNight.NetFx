@@ -1,12 +1,8 @@
-﻿using System.Data;
-using System.Net.Sockets;
-using System.Text;
+using System.Data;
 using Dapper;
 using MySql.Data.MySqlClient;
-using Newtonsoft.Json.Extension;
 using WindNight.Core.SQL.Abstractions;
-using WindNight.Extension.Dapper.Mysql.@internal;
-using WindNight.Extension.Db.Extensions;
+using WindNight.Core.Tools;
 
 namespace WindNight.Extension.Dapper.Mysql
 {
@@ -22,7 +18,8 @@ namespace WindNight.Extension.Dapper.Mysql
 
         #region Sync
 
-        public virtual T ExecuteScalar<T>(string connStr, string sql, object param = null)
+        public virtual T ExecuteScalar<T>(string connStr, string sql, object param = null,
+            Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -30,6 +27,15 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     return connection.ExecuteScalar<T>(sql, param);
                 }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                    }
+
+                    return default;
+                }
                 finally
                 {
                     connection.Close();
@@ -37,7 +43,8 @@ namespace WindNight.Extension.Dapper.Mysql
             }
         }
 
-        public virtual int Execute(string connStr, string sql, object param = null)
+        public virtual int Execute(string connStr, string sql, object param = null,
+            Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -45,6 +52,15 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     return connection.Execute(sql, param);
                 }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                    }
+
+                    return default;
+                }
                 finally
                 {
                     connection.Close();
@@ -52,7 +68,8 @@ namespace WindNight.Extension.Dapper.Mysql
             }
         }
 
-        public virtual IEnumerable<T> QueryList<T>(string connStr, string sql, object param = null)
+        public virtual IEnumerable<T> QueryList<T>(string connStr, string sql, object param = null,
+            Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -60,6 +77,15 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     return connection.Query<T>(sql, param).ToList();
                 }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                    }
+
+                    return default;
+                }
                 finally
                 {
                     connection.Close();
@@ -68,13 +94,23 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public virtual T Query<T>(string connStr, string sql, object param = null)
+        public virtual T Query<T>(string connStr, string sql, object param = null,
+            Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
                 try
                 {
                     return connection.Query<T>(sql, param).FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                    }
+
+                    return default;
                 }
                 finally
                 {
@@ -85,11 +121,11 @@ namespace WindNight.Extension.Dapper.Mysql
 
         #endregion //end Sync
 
-          
 
         #region Async
 
-        public virtual async Task<T> ExecuteScalarAsync<T>(string connStr, string sql, object param = null)
+        public virtual async Task<T> ExecuteScalarAsync<T>(string connStr, string sql, object param = null,
+            Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -97,6 +133,15 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     return await connection.ExecuteScalarAsync<T>(sql, param);
                 }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                    }
+
+                    return default;
+                }
                 finally
                 {
                     connection.Close();
@@ -105,7 +150,8 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public virtual async Task<int> ExecuteAsync(string connStr, string sql, object param = null)
+        public virtual async Task<int> ExecuteAsync(string connStr, string sql, object param = null,
+            Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -113,6 +159,15 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     return await connection.ExecuteAsync(sql, param);
                 }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                    }
+
+                    return default;
+                }
                 finally
                 {
                     connection.Close();
@@ -121,7 +176,8 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public virtual async Task<IEnumerable<T>> QueryListAsync<T>(string connStr, string sql, object param = null)
+        public virtual async Task<IEnumerable<T>> QueryListAsync<T>(string connStr, string sql, object param = null,
+            Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -129,6 +185,15 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     return (await connection.QueryAsync<T>(sql, param)).ToList();
                 }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                    }
+
+                    return default;
+                }
                 finally
                 {
                     connection.Close();
@@ -137,13 +202,23 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public virtual async Task<T> QueryAsync<T>(string connStr, string sql, object param = null)
+        public virtual async Task<T> QueryAsync<T>(string connStr, string sql, object param = null,
+            Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
                 try
                 {
                     return (await connection.QueryAsync<T>(sql, param)).FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                    }
+
+                    return default;
                 }
                 finally
                 {
@@ -153,9 +228,14 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
         #endregion //end Async
+    }
 
 
-
-
+    public partial class MySqlBase
+    {
+        public virtual void ExecErrorHandler(Action<Exception, string> execErrorHandler, Exception ex, string execSql)
+        {
+            execErrorHandler.KeepSafeAction(ex, execSql);
+        }
     }
 }

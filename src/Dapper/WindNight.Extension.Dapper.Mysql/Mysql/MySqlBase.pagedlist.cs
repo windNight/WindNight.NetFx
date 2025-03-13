@@ -1,33 +1,28 @@
-﻿using System.Data;
-using System.Net.Sockets;
 using System.Text;
 using Dapper;
-using MySql.Data.MySqlClient;
-using Newtonsoft.Json.Extension;
 using WindNight.Core.SQL.Abstractions;
-using WindNight.Extension.Dapper.Mysql.@internal;
-using WindNight.Extension.Db.Extensions;
 
 namespace WindNight.Extension.Dapper.Mysql
 {
     /// <inheritdoc />
     public partial class MySqlBase : IQueryPagedList
     {
-
-
         #region PagedList
 
-        public virtual async Task<IPagedList<T>> PagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters, long warnMs = -1)
+        public virtual async Task<IPagedList<T>> PagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo,
+            IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
-            var dbData = await PagedListInternalAsync<T>(connStr, sqlPageInfo, parameters);
+            var dbData = await PagedListInternalAsync<T>(connStr, sqlPageInfo, parameters, warnMs, execErrorHandler);
             return GeneratorPagedList(dbData.list, m => m, sqlPageInfo, dbData.recordCount);
         }
 
-        public virtual IPagedList<T> PagedList<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters, long warnMs = -1)
+        public virtual IPagedList<T> PagedList<T>(string connStr, IQueryPageInfo sqlPageInfo,
+            IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
-            var list = PagedListInternal<T>(connStr, sqlPageInfo, out var recordCount, parameters);
+            var list = PagedListInternal<T>(connStr, sqlPageInfo, out var recordCount, parameters, warnMs,
+                execErrorHandler);
             return GeneratorPagedList(list, m => m, sqlPageInfo, recordCount);
         }
 
@@ -43,7 +38,8 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
         protected virtual IEnumerable<T> PagedListInternal<T>(string connStr, IQueryPageInfo sqlPageInfo,
-            out int recordCount, IDictionary<string, object> parameters, long warnMs = -1)
+            out int recordCount, IDictionary<string, object> parameters, long warnMs = -1,
+            Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             if (sqlPageInfo.PageIndex <= 0 || sqlPageInfo.PageSize <= 0 ||
@@ -57,8 +53,8 @@ namespace WindNight.Extension.Dapper.Mysql
             var param = GetDynamicParameters(parameters);
             //using (var connection = GetConnection(connStr))
             //{
-            recordCount = SqlTimer(ExecuteScalar<int>, connStr, countSql,
-                param, "QueryCount", warnMs);
+            recordCount = SqlTimer(ExecuteScalar<int>,
+                connStr, countSql, param, "QueryCount", warnMs, execErrorHandler);
             //  recordCount = connection.Query<int>(countSql, GetDynamicParameters(parameters)).SingleOrDefault();
             // }
 
@@ -69,19 +65,18 @@ namespace WindNight.Extension.Dapper.Mysql
 
             // using (var connection = GetConnection(connStr))
             // {
-            var dbList = SqlTimer(QueryList<T>, connStr, querySql,
-                param, "QueryList", warnMs);
+            var dbList = SqlTimer(QueryList<T>,
+                connStr, querySql, param, "QueryList", warnMs, execErrorHandler);
 
             // return connection.Query<T>(querySql, GetDynamicParameters(parameters));
             return dbList;
             // }
-
-
         }
 
 
-        protected virtual async Task<(IEnumerable<T> list, int recordCount)>
-            PagedListInternalAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters, long warnMs = -1)
+        protected virtual async Task<(IEnumerable<T> list, int recordCount)> PagedListInternalAsync<T>(string connStr,
+            IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters, long warnMs = -1,
+            Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             var recordCount = 0;
@@ -96,9 +91,8 @@ namespace WindNight.Extension.Dapper.Mysql
             //    recordCount = await connection.ExecuteScalarAsync<int>(countSql, queryParams);
             //}
 
-            recordCount = await SqlTimerAsync<int>(ExecuteScalarAsync<int>, connStr,
-                countSql, queryParams,
-                "QueryCountAsync", warnMs);
+            recordCount = await SqlTimerAsync(ExecuteScalarAsync<int>,
+                connStr, countSql, queryParams, "QueryCountAsync", warnMs, execErrorHandler);
 
             if (recordCount == 0)
                 return await Task.FromResult<(IEnumerable<T> list, int recordCount)>((null, 0));
@@ -112,12 +106,9 @@ namespace WindNight.Extension.Dapper.Mysql
             //}
 
             var list = await SqlTimerAsync(QueryListAsync<T>,
-                connStr, querySql,
-                queryParams, "QueryListAsync", warnMs);
+                connStr, querySql, queryParams, "QueryListAsync", warnMs, execErrorHandler);
 
             return (list, recordCount);
-
-
         }
 
         protected virtual IPagedList<TResult> GeneratorPagedList<TSource, TResult>(IEnumerable<TSource> sList,
@@ -162,11 +153,5 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
         #endregion //end PagedList
-
-
-
-
-
-
     }
 }

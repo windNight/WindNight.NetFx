@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Configuration;
@@ -9,11 +9,12 @@ namespace WindNight.Extension.Dapper.Mysql.@internal
     internal class ConfigItems //: ConfigItemsBase
     {
         public static bool OpenDapperLog => GetConfigBoolValue(ConfigItemsKey.OpenDapperLogKey);
-      
+
 
         public static bool IsLogConnectString => GetConfigBoolValue(ConfigItemsKey.IsLogConnectStringKey);
+
         public static long DapperWarnMs => GetConfigIntValue(ConfigItemsKey.DapperWarnMsKey, 100L);
- 
+
 
         static bool GetConfigBoolValue(string key)
         {
@@ -41,6 +42,34 @@ namespace WindNight.Extension.Dapper.Mysql.@internal
             }
 
         }
+        static string GetConfigIntValue(string key, string defaultValue = "")
+        {
+            try
+            {
+                var config = Ioc.Instance.CurrentConfigService;
+                if (config == null)
+                {
+                    return defaultValue;
+                }
+                var value1 = config.Configuration.GetSection(key).Get<string>();
+                if (!value1.IsNullOrEmpty())
+                {
+                    return value1;
+                }
+                var value2 = config.GetAppSetting(key, defaultValue, false);
+                if (!value2.IsNullOrEmpty())
+                {
+                    return value2;
+                }
+                return defaultValue;
+            }
+            catch (Exception ex)
+            {
+                return defaultValue;
+            }
+
+        }
+
 
         static long GetConfigIntValue(string key, long defaultValue = 0L)
         {
@@ -58,6 +87,8 @@ namespace WindNight.Extension.Dapper.Mysql.@internal
             }
 
         }
+
+
         static class ConfigItemsKey
         {
             internal static string DapperWarnMsKey = "DapperConfig:WarnMs";
