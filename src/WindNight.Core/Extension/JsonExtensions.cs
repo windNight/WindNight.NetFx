@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.@internal;
 #if NETSTANDARD2_1
@@ -25,11 +25,32 @@ namespace Newtonsoft.Json.Extension
         [return: MaybeNull]
 #endif
         public static T To<T>(this object? obj, Formatting formatting = Formatting.None,
-            JsonSerializerSettings? settings = null)
+            JsonSerializerSettings settings = null)
         {
             if (obj == null) return default;
             return obj.ToJsonStr(formatting).To<T>(settings);
         }
+
+#if STD21 
+        [return: MaybeNull]
+#endif
+        public static TResult To<TSource, TResult>(this TSource obj, Formatting formatting = Formatting.None,
+            JsonSerializerSettings settings = null, Action<TSource, TResult> converter = null)
+            where TSource : class, new()
+            where TResult : class, new()
+        {
+            if (obj == null) return default;
+
+            var model = obj.To<TResult>(formatting, settings);
+
+            if (converter != null)
+            {
+                converter.Invoke(obj, model);
+            }
+
+            return model;
+        }
+
 
         public static JObject? ToJObject(this object? obj, JsonSerializer? jsonSerializer = null)
         {

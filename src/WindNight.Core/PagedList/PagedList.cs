@@ -118,7 +118,7 @@ namespace System.Collections.Generic
             List = new List<T>(); // Array.Empty<T>();
         }
 
-        public int PageIndex { get; set; }
+        public int PageIndex { get; set; } = 1;
 
         public int PageSize { get; set; }
 
@@ -126,7 +126,7 @@ namespace System.Collections.Generic
 
         public int PageCount { get; set; }
 
-        public int IndexFrom { get; set; }
+        public int IndexFrom { get; set; } = 1;
 
         public IList<T> List { get; set; }
 

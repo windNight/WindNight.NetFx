@@ -185,5 +185,22 @@ namespace WindNight.Core.Tools
                 LogHelper.Error($"KeepSafeAction Handler Error {ex2.Message}", ex2);
             }
         }
+
+
+        public static void KeepSafeAction(this Action<Exception, string> action, Exception ex = null, string msg = null)
+        {
+            if (action == null) return;
+            try
+            {
+                action.Invoke(ex, msg);
+            }
+            catch (Exception ex2)
+            {
+                // ignored
+                LogHelper.Error($"KeepSafeAction Handler Error {ex2.Message}", ex2);
+            }
+        }
+
+
     }
 }
