@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using WindNight.Core.Abstractions;
 
 namespace Microsoft.Extensions.DependencyInjection.WnExtension
@@ -13,6 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
 
         public IConfigService? CurrentConfigService => _currentConfigService ?? GetService<IConfigService>();
 
+        public IConfiguration Configuration => GetService<IConfiguration>();
 
         private ILogService? _currentLogService { get; set; }
 
