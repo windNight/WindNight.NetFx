@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 
 namespace WindNight.ConfigCenter.Extension
@@ -9,7 +9,7 @@ namespace WindNight.ConfigCenter.Extension
         ///     Configuration
         /// </summary>
         public static ConcurrentDictionary<string, string> CurrentConfiguration { get; } =
-            new ConcurrentDictionary<string, string>();
+            new();
 
 
         public static object GetAllConfig()
@@ -22,7 +22,7 @@ namespace WindNight.ConfigCenter.Extension
                 XmlConfigList,
                 ConnectionStringList,
                 ConfigProvider.Instance.UpdateFlagDict,
-                ConfigProvider.Instance.ConfigUpdateTime
+                ConfigProvider.Instance.ConfigUpdateTime,
             };
             return obj;
         }
@@ -59,7 +59,6 @@ namespace WindNight.ConfigCenter.Extension
 
         private static string FixDictKey(ConfigType configType, string configKey)
         {
-
             return $"{FixConfigPathPrefix(configType)}:{configKey}";
         }
 
@@ -72,7 +71,5 @@ namespace WindNight.ConfigCenter.Extension
 
             return defaultValue;
         }
-
-
     }
 }

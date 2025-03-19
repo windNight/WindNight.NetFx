@@ -33,8 +33,8 @@
 
         <!--<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />-->
 
-        <PackageReference Include="WindNight.AspNetCore.Mvc.Extensions" Version="1.1.0-beta.25021902" />
-        <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25030501" />
+        <PackageReference Include="WindNight.AspNetCore.Mvc.Extensions" Version="1.1.0-beta.25031801" />
+        <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25031102" />
 
 
     </ItemGroup>

@@ -1,29 +1,30 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.RegularExpressions;
+using WindNight.Core;
 using WindNight.Core.SQL.Abstractions;
 
 namespace WindNight.Extension.Db.Extensions
 {
     /// <summary>
-    /// 用于非Dapper时使用自动根据sql语句生成对应的SqlParameter数组
-    /// 其中ParameterName 默认不区分大小写 统一转大写
+    ///     用于非Dapper时使用自动根据sql语句生成对应的SqlParameter数组
+    ///     其中ParameterName 默认不区分大小写 统一转大写
     /// </summary>
     public static class SqlParameterExtension
     {
         /// <summary>
-        /// 过滤参数的规则
+        ///     过滤参数的规则
         /// </summary>
         private static readonly Regex Reg = new(@"@\S{1,}?(,|\s|;|--|\)|$)");
 
         private static readonly char[] FilterChars = { ' ', ',', ';', '-', ')' };
 
         /// <summary>
-        /// 不区分大小写  自动转大写
+        ///     不区分大小写  自动转大写
         /// </summary>
         /// <param name="originSqlString"></param>
         /// <param name="isIgnoreCase">参数key 是否区分大小写 默认为 true.</param>
         /// <returns></returns>
-        static List<string> GetMatchedKeys(this string originSqlString, bool isIgnoreCase = true)
+        private static List<string> GetMatchedKeys(this string originSqlString, bool isIgnoreCase = true)
         {
             // TODO 可以优化
             var listStr = new List<string>();
@@ -35,6 +36,7 @@ namespace WindNight.Extension.Db.Extensions
                 {
                     key = key.ToUpper();
                 }
+
                 listStr.Add(key);
                 myMatch = myMatch.NextMatch();
             }
@@ -43,15 +45,14 @@ namespace WindNight.Extension.Db.Extensions
         }
 
 
-
-
         /// <summary>
-        ///  入参转 可执行的 sql 参数
+        ///     入参转 可执行的 sql 参数
         /// </summary>
         /// <param name="instance"></param>
         public static string ToParamString(this IEntity instance)
         {
-            var sb = new StringBuilder("SELECT ");
+            var sb = new StringBuilder($" -- {instance.GenDefaultTableName()} ");
+            sb.AppendLine(" SELECT ");
             if (instance != null)
             {
                 var properties = instance.GetType().GetProperties();
@@ -65,13 +66,11 @@ namespace WindNight.Extension.Db.Extensions
                     else
                     {
                         sb.Append($"@{property.Name}:={value},");
-
                     }
                 }
             }
 
             return sb.ToString().TrimEnd(',');
         }
-
     }
 }

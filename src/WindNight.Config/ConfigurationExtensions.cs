@@ -1,4 +1,4 @@
-﻿#if !NET45
+#if !NET45
 
 using System;
 using System.Collections.Generic;
@@ -111,6 +111,7 @@ namespace WindNight.ConfigCenter.Extension
         }
 
         public static T GetSectionConfigValue<T>(this IConfiguration configuration, string sectionKey, T defaultValue = default, bool isThrow = false)
+        //   where T : class, new()
         {
             if (defaultValue == null) defaultValue = default;
             T configValue = defaultValue;
@@ -144,6 +145,40 @@ namespace WindNight.ConfigCenter.Extension
 
         }
 
+
+        public static T GetConfigValue<T>(this IConfiguration configuration, string keyName,
+            T defaultValue = default, bool isThrow = false)
+        {
+            return GetConfigValue(keyName, defaultValue, isThrow,
+                configKey => configuration.GetValue(configKey, defaultValue));
+        }
+
+        private static T GetConfigValue<T>(string keyName, T defaultValue, bool isThrow, Func<string, T> func)
+        {
+            var configKey = keyName;// FixAppConfigKey(keyName);
+            var configValue = defaultValue;
+            try
+            {
+                configValue = func.Invoke(configKey);
+                return configValue;
+            }
+            catch (Exception ex)
+            {
+                if (isThrow)
+                {
+                    throw;
+                }
+
+                return defaultValue;
+            }
+        }
+
+        public static string GetConnStr(this IConfiguration configuration, string keyName,
+            string defaultValue = "", bool isThrow = false)
+        {
+            return GetConfigValue(keyName, defaultValue, isThrow,
+                configKey => configuration.GetConnectionString(configKey));
+        }
 
     }
 }

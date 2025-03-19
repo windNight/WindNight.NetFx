@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
 using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
+using WindNight.Config.Extensions;
 using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
 
@@ -10,6 +11,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
     {
         //   private readonly IConfiguration _configuration;
         public IConfiguration Configuration => Ioc.GetService<IConfiguration>();
+
         public int SystemAppId => Configuration?.GetAppConfigValue("AppId", 0, false) ?? 0;
         public string SystemAppCode => Configuration?.GetAppConfigValue("AppCode", "", false) ?? "";
         public string SystemAppName => Configuration?.GetAppConfigValue("AppName", "", false) ?? "";
@@ -19,10 +21,21 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
             // _configuration = configuration;
         }
 
+        public T GetSectionValue<T>(string sectionKey = "", T defaultValue = default, bool isThrow = false)
+            where T : class, new()
+        {
+            return Configuration.GetSectionValue(sectionKey, defaultValue, isThrow);
+        }
 
+        public T GetConfigValue<T>(string keyName, T defaultValue = default, bool isThrow = false)
+        {
+            var configValue = Configuration.GetConfigValue<T>(keyName, defaultValue, isThrow);
+            return configValue;
+        }
 
+        static string FixAppConfigKey(string keyName) => $"{nameof(ConfigType.AppSettings)}:{keyName}";
 
-        T GetConfig<T>(string configKey, T defaultValue = default(T), bool isThrow = true)
+        T GetAppConfigValue<T>(string keyName, T defaultValue = default(T), bool isThrow = true)
         {
             if (Configuration == null)
             {
@@ -35,7 +48,8 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
             }
             try
             {
-                var configValue = Configuration.GetSection(configKey).Get<T>();
+                var configKey = FixAppConfigKey(keyName);
+                var configValue = Configuration.GetConfigValue<T>(configKey, defaultValue, isThrow);
                 return configValue;
             }
             catch (Exception e)
@@ -79,16 +93,16 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         }
 
         public string GetAppSetting(string configKey, string defaultValue = "", bool isThrow = true)
-            => GetConfig<string>(configKey, defaultValue, isThrow);
+            => GetAppConfigValue<string>(configKey, defaultValue, isThrow);
 
         public int GetAppSetting(string configKey, int defaultValue = 0, bool isThrow = true)
-            => GetConfig<int>(configKey, defaultValue, isThrow);
+            => GetAppConfigValue<int>(configKey, defaultValue, isThrow);
 
         public long GetAppSetting(string configKey, long defaultValue = 0L, bool isThrow = true)
-            => GetConfig<long>(configKey, defaultValue, isThrow);
+            => GetAppConfigValue<long>(configKey, defaultValue, isThrow);
 
         public bool GetAppSetting(string configKey, bool defaultValue = false, bool isThrow = true)
-            => GetConfig<bool>(configKey, defaultValue, isThrow);
+            => GetAppConfigValue<bool>(configKey, defaultValue, isThrow);
 
         public string GetConnString(string connKey, string defaultValue = "", bool isThrow = true)
             => GetConnectionString(connKey, defaultValue, isThrow);

@@ -75,6 +75,12 @@ namespace WindNight.Core.Abstractions
 
         /// <summary> 服务名称 </summary>
         string SystemAppName { get; }
+
+        T GetSectionValue<T>(string sectionKey = "", T defaultValue = default, bool isThrow = false)
+            where T : class, new()
+            ;
+
+        T GetConfigValue<T>(string keyName, T defaultValue = default, bool isThrow = false);
 #endif
     }
 
