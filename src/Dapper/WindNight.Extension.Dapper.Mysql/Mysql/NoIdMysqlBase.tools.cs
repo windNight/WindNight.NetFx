@@ -49,7 +49,7 @@ namespace WindNight.Extension.Dapper.Mysql
             ? ""
             : $"SELECT * FROM {BaseTableName} WHERE {EqualEntityCondition} ";
 
-        protected virtual string UpdateByUniqueKeySql => EqualEntityCondition.IsNullOrEmpty()
+        protected virtual string UpdateByUniqueKeySql => EqualEntityCondition.IsNullOrEmpty() || ToBeUpdateFiled.IsNullOrEmpty()
             ? ""
             : $"UPDATE {BaseTableName} SET {ToBeUpdateFiled} WHERE {EqualEntityCondition} ";
 
