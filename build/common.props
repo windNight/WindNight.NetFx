@@ -3,9 +3,6 @@
 	<PropertyGroup>
 		<Authors> windnight</Authors>
 		<Product> </Product>
-		<!--<AssemblyVersion>1.0.2</AssemblyVersion>
-		<FileVersion>1.0.2</FileVersion>
-		<Version>1.0.2</Version>-->
 		<Title>$(AssemblyName)</Title>
 		<PackageProjectUrl>https://github.com/windNight/WindNight.NetFx.git</PackageProjectUrl>
 		<PackageLicenseUrl></PackageLicenseUrl>
@@ -19,8 +16,9 @@
 		<NoWarn>
 			$(NoWarn);CA2007;1701;1702;1705;1591;
 			CS1572;CS1573;CS1574;CS8767;CS8618;CS8601;CS8602;CS0168;CS8600;CS8603;CS8632;CS8604;CS8625;CS8622;CS8620;
+			CS8019;
 			NETSDK;NETSDK1138;
-			NU5048;NU5104;
+			NU5048;NU5104;NU1803;
 		</NoWarn>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>false</IncludeSymbols>
@@ -80,5 +78,13 @@ https://learn.microsoft.com/en-us/dotnet/standard/frameworks
 	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0'">
 		<DefineConstants>$(DefineConstants);__CORE__;COREAPP;NET90;CORE31LATER;NET45LATER;;_NETN_</DefineConstants>
 	</PropertyGroup>
+
+	<ItemGroup>
+
+		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
 </Project>

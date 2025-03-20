@@ -16,7 +16,7 @@
 
 		<PackageReference Include="System.Text.Json" Version="9.0.0" />-->
 
-        <PackageReference Include="WindNight.Schedule" Version="1.1.0-beta.25021902" />
+        <PackageReference Include="WindNight.Schedule" Version="1.1.0-beta.25031801" />
     </ItemGroup>
 
 </Project>

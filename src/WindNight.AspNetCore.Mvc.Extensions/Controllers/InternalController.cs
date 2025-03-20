@@ -16,7 +16,7 @@ using IpHelper = WindNight.Extension.HttpContextExtension;
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 {
     [Route("api/internal")]
-    [HiddenApi(testApi: false, sysApi: true)]
+    [HiddenApi(false, true)]
     [NonAuth]
     public class InternalController : ControllerBase // Controller
     {
@@ -35,30 +35,28 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             {
                 return false;
             }
-            return new
-            {
-                Configuration = GetConfiguration()
-            };
+
+            return new { Configuration = GetConfiguration() };
         }
 
-        [HttpGet("config2")]
-        public object GetConfigs2()
-        {
-            if (!ConfigItems.OpenInternalApi)
-            {
-                return false;
-            }
-            return new
-            {
-                Configuration = ConfigItems.GetAllConfigs(),
-            };
-        }
+        //[HttpGet("config2")]
+        //public object GetConfigs2()
+        //{
+        //    if (!ConfigItems.OpenInternalApi)
+        //    {
+        //        return false;
+        //    }
+
+        //    return new { Configuration = ConfigItems.GetAllConfigs() };
+        //}
+
         private object GetConfiguration(IEnumerable<IConfigurationSection> sections = null)
         {
             if (!ConfigItems.OpenInternalApi)
             {
                 return false;
             }
+
             var _config = Ioc.GetService<IConfiguration>();
             return _config.GetConfiguration(sections);
         }
@@ -70,6 +68,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             {
                 return false;
             }
+
             return new
             {
                 DateTime = HardInfo.Now,
@@ -78,8 +77,8 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 ConfigItems.SysAppName,
                 AssemblyVersions = GetAssemblyVersions(),
                 ServerIp = _httpContextAccessor.HttpContext.GetServerIp(),
-                LocalServerIp = IpHelper.LocalServerIp,
-                LocalServerIps = IpHelper.LocalServerIps,
+                IpHelper.LocalServerIp,
+                IpHelper.LocalServerIps,
             };
         }
 
@@ -90,10 +89,11 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             {
                 return false;
             }
+
             return new
             {
                 DateTime = HardInfo.Now,
-                AssemblyVersion = typeof(InternalController).Assembly?.GetName()?.Version?.ToString()
+                AssemblyVersion = typeof(InternalController).Assembly?.GetName()?.Version?.ToString(),
             };
         }
 
@@ -104,11 +104,8 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             {
                 return false;
             }
-            return new
-            {
-                DateTime = HardInfo.Now,
-                AssemblyVersions = GetAssemblyVersions()
-            };
+
+            return new { DateTime = HardInfo.Now, AssemblyVersions = GetAssemblyVersions() };
         }
 
         private object GetAssemblyVersions()
@@ -136,7 +133,5 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
             return null;
         }
-
-
     }
 }
