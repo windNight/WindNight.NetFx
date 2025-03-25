@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -199,6 +199,24 @@ namespace System
         /// <returns></returns>
         public static string TryToDateString(this int dateInt, string linkCode = "-") =>
             dateInt.ToString().TryToDateString(linkCode);
+
+
+        /// <summary>
+        ///   DateTime 格式的字符串 2015-01-15 HH:mm:ss 转成时间
+        /// </summary>
+        /// <param name="dateStr"></param>
+        /// <param name="linkCode"></param>
+        /// <returns></returns>
+        public static DateTime ToDateTime(this string dateStr, DateTime? defaultValue = null)
+        {
+            var flag = DateTime.TryParse(dateStr, out var dateTime);
+            if (flag)
+            {
+                return dateTime;
+            }
+
+            return defaultValue ?? DefaultDateTime;
+        }
 
         /// <summary>
         ///     格式化DateTime 默认为 yyyy-MM-dd
