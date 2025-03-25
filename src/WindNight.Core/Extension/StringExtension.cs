@@ -1,5 +1,9 @@
-﻿using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace System
 {
@@ -40,6 +44,61 @@ namespace System
             sL.Insert(0, sourceString);
             return string.Concat(sL);
         }
+
+
+        /// <summary>拆分字符串，过滤空格，无效时返回空数组</summary>
+        /// <param name="value">字符串</param>
+        /// <param name="separators">分组分隔符，默认逗号|分号</param>
+        /// <returns></returns>
+        public static string[] Split(this string value, params string[] separators)
+        {
+            if (value.IsNullOrEmpty()) return Array.Empty<string>();
+            if (separators.IsNullOrEmpty() || separators.Length < 1 ||
+                (separators.Length == 1 && separators[0].IsNullOrEmpty()))
+                separators = new[] { ",", ";" };// default separators
+
+            return value.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+
+        }
+
+
+        /// <summary>拆分字符串成为整型数组，默认逗号分号分隔，无效时返回空数组</summary>
+        /// <remarks>过滤空格、过滤无效、不过滤重复</remarks>
+        /// <param name="value">字符串</param>
+        /// <param name="separators">分组分隔符，默认逗号|分号</param>
+        /// <returns></returns>
+        public static IEnumerable<int> Split2Int(this string value, params string[] separators)
+        {
+            var ss = value.Split(separators);
+            var res = ss.Select(m => m.ToInt());
+            return res;
+
+        }
+
+        /// <summary>把一个列表组合成为一个字符串，默认逗号分隔</summary>
+        /// <param name="value"></param>
+        /// <param name="separator">组合分隔符，默认逗号</param>
+        /// <returns></returns>
+        public static string Join(this IEnumerable value, string separator = ",")
+        {
+            var sb = new StringBuilder();
+            if (value != null)
+            {
+                foreach (var item in value)
+                {
+                    if (sb.Length > 0)
+                    {
+                        sb.Append(separator);
+                    }
+                    sb.Append(item + "");
+                }
+            }
+            return sb.ToString();
+        }
+
+
+
+
     }
 
     /// <summary> </summary>
@@ -131,6 +190,30 @@ namespace System
             if (sourceString.IsNullOrEmpty())
                 return defaultValue;
             return double.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
+        }
+
+        static readonly string[] TrueStrings = { "1", bool.TrueString, "T", };
+        static readonly string[] FalseStrings = { "0", bool.FalseString, "F", };
+
+        public static bool ToBoolean(this object obj, bool defaultValue = false)
+        {
+
+            var sourceString = obj?.ToString() ?? "";
+            if (sourceString.IsNullOrEmpty())
+                return defaultValue;
+
+            var s = sourceString.ToUpper();
+            if (TrueStrings.Contains(s))
+            {
+                return true;
+            }
+
+            if (FalseStrings.Contains(s))
+            {
+                return false;
+            }
+            return defaultValue;
+
         }
 
         /// <summary>
