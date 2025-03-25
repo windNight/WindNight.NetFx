@@ -171,6 +171,7 @@ namespace WindNight.Extension.Dapper.Mssql
             };
 
             return PagedList<TEntity>(DbConnectString, pagedInfo, parameters, execErrorHandler: execErrorHandler);
+
         }
 
         #endregion //end Sync
