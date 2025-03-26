@@ -1,12 +1,12 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using WindNight.AspNetCore.Hosting.@internal;
 using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
@@ -390,7 +390,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                 var envName = hostingContext.HostingEnvironment.EnvironmentName;
                 if (!envName.IsNullOrEmpty() && !hostingContext.HostingEnvironment.IsProduction())
                 {
-                    configBuilder.AddJsonFile($"appsettings.{envName}.json", false, true);
+                    configBuilder.AddJsonFile($"appsettings.{envName}.json", true, true);
                 }
 
                 configureDelegate?.Invoke(hostingContext, configBuilder);
@@ -445,7 +445,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                 var configuration = context.Configuration;
                 services.TryAddSingleton(configuration);
                 configureDelegate?.Invoke(context, services);
-              
+
                 services.AddSingleton<ICurrentContext, DefaultCurrentContext>();
                 Ioc.Instance.InitServiceProvider(services.BuildServiceProvider());
                 if (Ioc.Instance.CurrentConfigService == null)
