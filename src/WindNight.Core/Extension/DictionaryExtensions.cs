@@ -8,6 +8,15 @@ namespace WindNight.Core.Extension
         /// <param name="dict"></param>
         /// <param name="key"></param>
         /// <returns></returns>
+        public static decimal SafeGetValue(this IReadOnlyDictionary<string, decimal> dict, string key)
+        {
+            return dict.SafeGetValue(key, 0m);
+        }
+
+        /// <summary> </summary>
+        /// <param name="dict"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static int SafeGetValue(this IReadOnlyDictionary<string, int> dict, string key)
         {
             return dict.SafeGetValue(key, 0);
