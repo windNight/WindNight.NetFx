@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.WnExtensions;
@@ -7,19 +10,118 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Extensions;
-using System;
-using System.Collections.Generic;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using WindNight.ConfigCenter.Extension;
+using WindNight.Core.ConfigCenter.Extensions;
 
 namespace Microsoft.AspNetCore.Hosting.WnExtensions
 {
     public abstract class WebStartupBase : IWnWebStartup//, IStartup
     {
-        protected abstract string NamespaceName { get; }
+        protected abstract string BuildType { get; }
+
+        //protected abstract string NamespaceName { get; }
+        protected virtual DateTime BuildDateTime
+        {
+            get
+            {
+                try
+                {
+                    var assembly = Assembly.GetEntryAssembly();
+                    return System.IO.File.GetLastWriteTime(assembly.Location);
+                }
+                catch (Exception ex)
+                {
+                    return HardInfo.MinDate;
+                }
+            }
+        }
+
+        protected virtual string ToAppendDescription => "";
+
+        /// <summary> 暂不支持 Markdown  需要使用Html语法 </summary>
+        protected virtual string ApiDescription
+        {
+            get
+            {
+                try
+                {
+                    var appName = Configuration.GetAppName();
+                    var appCode = Configuration.GetAppCode();
+                    var prefix = $"{appName}({appCode}) ";
+                    var apiDes =
+@$"<h3 style='color: #27ae60;'>Info</h3>
+`{prefix}`  
+<h3 style='color: #27ae60;'>Namespace</h3>
+`{NamespaceName}`  
+<h3 style='color: #27ae60;'>BuildType</h3>
+<span style='background:#f1c40f;padding:2px;color:red;'><strong>`{BuildType}`</strong></span>
+<h3 style='color: #27ae60;'>  BuildTs  </h3>
+`{BuildDateTime}`
+<h3 style='color: #27ae60;'>  ServerInfo  </h3>
+```
+{HardInfo.ToString(Formatting.Indented)}
+```
+";
+                    if (!ToAppendDescription.IsNullOrEmpty())
+                    {
+                        apiDes =
+@$"{apiDes}
+<h3 style='color: #27ae60;'> Other</h3>
+{ToAppendDescription}";
+
+                    }
+                    return apiDes;
+                }
+                catch (Exception ex)
+                {
+                    return "";
+                }
+            }
+        }
+        protected virtual string NamespaceName
+        {
+            get
+            {
+                try
+                {
+                    var t = Assembly.GetEntryAssembly()?.FullName ?? "";
+                    var name = t.Substring(0, t.IndexOf(", Culture", StringComparison.Ordinal));
+                    return name;
+                }
+                catch (Exception ex)
+                {
+                    return "";
+                }
+            }
+        }
+
+        protected virtual string ApiVersion
+        {
+            get
+            {
+                try
+                {
+                    var assembly = Assembly.GetEntryAssembly();
+                    var ver = assembly?.GetName()?.Version;
+                    if (ver == null)
+                    {
+                        return "v1";
+                    }
+
+                    var verS = $"v{ver.ToString()}";
+                    return verS;
+                }
+                catch (Exception ex)
+                {
+                    return "v1";
+                }
+            }
+        }
+
         protected abstract void UseBizConfigure(IApplicationBuilder app);
         protected abstract void ConfigBizServices(IServiceCollection services);
         //protected virtual StaticFileOptions SelfFileOptions { get; } = null;
@@ -80,7 +182,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
             app.UseRouting();
 
-            app.UseSwaggerConfig(NamespaceName,
+            app.UseSwaggerConfig(NamespaceName, apiVersion: ApiVersion,
                 swaggerOptionsAction: SelfSwaggerOptionsAction,
                 swaggerUIOptionsAction: SelfSwaggerUIOptionsAction);
 
@@ -99,7 +201,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
         protected virtual IApplicationBuilder UseStaticFiles(IApplicationBuilder app)
         {
-            var flag = Configuration.GetAppConfigValue("DefaultStaticFileEnable", true, false);
+            var flag = Configuration.GetAppSettingValue("DefaultStaticFileEnable", true, false);
             if (flag)
             {
                 app.UseStaticFiles();
@@ -143,18 +245,19 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
             if (ActionFiltersFunc != null)
             {
-                services.AddMvcBuilderWithSelfFilters(ActionFiltersFunc.Invoke());
+                services.AddMvcBuilderWithSelfFilters(configuration, ActionFiltersFunc.Invoke());
             }
             else
             {
-                services.AddMvcBuilderWithDefaultFilters();
+                services.AddMvcBuilderWithDefaultFilters(configuration);
             }
-            var appName = configuration.GetAppConfigValue("AppName", "");
-            var appCode = configuration.GetAppConfigValue("AppCode", "");
-            var prefix = $"{appName}[{appCode}] ";
-            var title = $"{prefix}{NamespaceName}";
+            // var appName = configuration.GetAppConfigValue("AppName", "");
+            // var appCode = configuration.GetAppConfigValue("AppCode", "");
+            // var prefix = $"{appName}({appCode}) ";
+            // var title = $"{prefix}{NamespaceName}";
             var signKeyDict = SelfSwaggerAuthDictFunc?.Invoke() ?? new Dictionary<string, string>();
-            services.AddSwaggerConfig(title, configuration, swaggerGenOptionsAction: SelfSwaggerGenOptionsAction, signKeyDict: signKeyDict);
+
+            services.AddSwaggerConfig(NamespaceName, configuration, swaggerGenOptionsAction: SelfSwaggerGenOptionsAction, apiVersion: ApiVersion, signKeyDict: signKeyDict, apiDes: ApiDescription);
 
             return services;
 

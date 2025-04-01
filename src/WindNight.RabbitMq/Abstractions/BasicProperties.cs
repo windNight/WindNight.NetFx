@@ -33,7 +33,7 @@ namespace WindNight.RabbitMq.Abstractions
             }
         }
 
-        /// <summary>   用于"请求"与"响应"之间的匹配. /summary>
+        /// <summary>   用于"请求"与"响应"之间的匹配.</summary>
         public string CorrelationID { get; set; } = string.Empty;
 
         /// <summary>  "响应"的目标队列. </summary>

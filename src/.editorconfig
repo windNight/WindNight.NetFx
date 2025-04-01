@@ -1,179 +1,132 @@
 # 核心格式化选项
-root = true
+# 这些设置定义了所有文件的通用格式化规则，适用于所有文件类型（通过 [*] 指定）
+root = true                          # 表示这是根配置文件，阻止上层目录中的其他 .editorconfig 文件生效
 
 [*]
-indent_style = space
-indent_size = 4
-tab_width = 4
-end_of_line = lf
-charset = utf-8
-insert_final_newline = true
-trim_trailing_whitespace = true
-dotnet_style_operator_placement_when_wrapping = beginning_of_line
-dotnet_style_qualification_for_field = false:silent
-dotnet_style_qualification_for_property = false:silent
-dotnet_style_qualification_for_method = false:silent
-dotnet_style_qualification_for_event = false:silent
-dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
+indent_style = space                 # 使用空格而非制表符进行缩进
+indent_size = 4                      # 缩进大小为 4 个空格
+tab_width = 4                        # 制表符宽度等同于 4 个空格
+end_of_line = lf# 使用 Unix 风格的换行符（LF）
+charset = utf-8                      # 文件编码为 UTF-8
+insert_final_newline = true          # 在文件末尾自动插入换行符
+trim_trailing_whitespace = true      # 自动移除行尾的空白字符
+dotnet_style_operator_placement_when_wrapping = beginning_of_line  # 换行时操作符置于行首
+dotnet_style_qualification_for_field = false:silent       # 不强制字段使用 this. 或 Me. 限定
+dotnet_style_qualification_for_property = false:silent    # 不强制属性使用 this. 或 Me. 限定
+dotnet_style_qualification_for_method = false:silent      # 不强制方法使用 this. 或 Me. 限定
+dotnet_style_qualification_for_event = false:silent       # 不强制事件使用 this. 或 Me. 限定
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent  # 非接口成员需显式指定访问修饰符
 
-# C#代码风格
+# C# 代码风格
+# 这些设置专门针对 C# 文件（*.cs），定义代码格式和风格规则
 [*.cs]
-csharp_indent_block_contents = true
-csharp_new_line_before_open_brace = all
-csharp_style_var_for_built_in_types = true:silent
-csharp_new_line_before_members_in_object_initializers = true
-csharp_new_line_before_members_in_anonymous_types = true
-csharp_new_line_before_members_in_object_initializer = true
-csharp_new_line_before_members_in_anonymous_type = true
-csharp_new_line_before_members_in_explicit_interface_implementations = true
-csharp_new_line_before_members_in_structs = true
-csharp_new_line_before_members_in_classes = true
-csharp_new_line_before_members_in_interfaces = true
-csharp_new_line_before_members_in_structs = true
-csharp_new_line_before_members_in_classes = true
-csharp_new_line_before_members_in_interfaces = true
-csharp_new_line_before_members_in_enums = true
-csharp_new_line_before_members_in_records = true
-csharp_new_line_before_members_in_delegates = true
-csharp_new_line_before_members_in_modules = true
-csharp_new_line_before_members_in_properties = true
-csharp_new_line_before_members_in_events = true
-csharp_new_line_before_members_in_methods = true
-csharp_new_line_before_members_in_constructors = true
-csharp_new_line_before_members_in_destructors = true
-csharp_new_line_before_members_in_operators = true
-csharp_new_line_before_members_in_indexers = true
-csharp_new_line_before_members_in_converters = true
-csharp_new_line_before_members_in_finalizers = true
-csharp_new_line_before_members_in_static_constructors = true
-csharp_new_line_before_members_in_type_constructors = true
-csharp_new_line_before_members_in_static_finalizers = true
-csharp_new_line_before_members_in_static_destructors = true
-csharp_new_line_before_members_in_static_operators = true
-csharp_new_line_before_members_in_static_indexers = true
-csharp_new_line_before_members_in_static_converters = true
-csharp_new_line_before_members_in_static_finalizers = true
-csharp_new_line_before_members_in_static_destructors = true
-csharp_new_line_before_members_in_static_operators = true
-csharp_new_line_before_members_in_static_indexers = true
-csharp_new_line_before_members_in_static_converters = true
-csharp_new_line_before_members_in_static_finalizers = true
-csharp_new_line_before_members_in_static_destructors = true
-csharp_new_line_before_members_in_static_operators = true
-csharp_new_line_before_members_in_static_indexers = true
-csharp_new_line_before_members_in_static_converters = true
-csharp_new_line_before_members_in_static_finalizers = true
-csharp_new_line_before_members_in_static_destructors = true
-csharp_new_line_before_members_in_static_operators = true
-csharp_new_line_before_members_in_static_indexers = true
-csharp_new_line_before_members_in_static_converters = true
-csharp_new_line_before_members_in_static_finalizers = true
-csharp_new_line_before_members_in_static_destructors = true
-csharp_new_line_before_members_in_static_operators = true
-csharp_new_line_before_members_in_static_indexers = true
-csharp_new_line_before_members_in_static_converters = true
-csharp_new_line_before_members_in_static_finalizers = true
-csharp_new_line_before_members_in_static_destructors = true
-csharp_new_line_before_members_in_static_operators = true
-csharp_new_line_before_members_in_static_indexers = true
-csharp_new_line_before_members_in_static_converters = true
-csharp_new_line_before_members_in_static_finalizers = true
-csharp_new_line_before_members_in_static_destructors = true
-csharp_new_line_before_members_in_static_operators = true
-csharp_new_line_before_members_in_static_indexers = true
-csharp_new_line_before_members_in_static_converters = true
-csharp_new_line_before_members_in_static_finalizers = true
-csharp_new_line_before_members_in_static_destructors = true
-csharp_new_line_before_members_in_static_operators = true
-csharp_new_line_before_members_in_static_indexers = true
-csharp_new_line_before_members_in_static_converters = true
-csharp_new_line_before_members_in_static_finalizers = true
-csharp_new_line_before_members_in_static_destructors = true
-csharp_new_line_before_members_in_static_operators = true
-csharp_new_line_before_members_in_static_indexers = true
-csharp_new_line_before_members_in_static_converters = true
-csharp_new_line_before_members_in_static_finalizers = true
+csharp_indent_block_contents = true       # 缩进代码块的内容
+csharp_new_line_before_open_brace = all    # 所有代码块（方法、类等）的大括号前换行
+csharp_style_var_for_built_in_types = true:silent  # 对内置类型（如 int、string）使用 var
+csharp_new_line_before_members_in_object_initializers = true  # 对象初始化器中每个成员前换行
+csharp_new_line_before_members_in_anonymous_types = true      # 匿名类型中每个成员前换行
+csharp_new_line_before_members_in_object_initializer = true   # 对象初始化器中成员前换行 
+csharp_new_line_before_members_in_anonymous_type = true       # 匿名类型中成员前换行 
+csharp_new_line_before_members_in_explicit_interface_implementations = true  # 显式接口实现中成员前换行
+csharp_new_line_before_members_in_structs = true              # 结构体成员前换行
+csharp_new_line_before_members_in_classes = true              # 类成员前换行
+csharp_new_line_before_members_in_interfaces = true           # 接口成员前换行
+csharp_new_line_before_members_in_enums = true                # 枚举成员前换行
+csharp_new_line_before_members_in_records = true              # 记录类型成员前换行
+csharp_new_line_before_members_in_delegates = true            # 委托成员前换行
+csharp_new_line_before_members_in_modules = true              # 模块成员前换行
+csharp_new_line_before_members_in_properties = true           # 属性成员前换行
+csharp_new_line_before_members_in_events = true               # 事件成员前换行
+csharp_new_line_before_members_in_methods = true              # 方法成员前换行
+csharp_new_line_before_members_in_constructors = true         # 构造函数成员前换行
+csharp_new_line_before_members_in_destructors = true          # 析构函数成员前换行
+csharp_new_line_before_members_in_operators = true            # 操作符成员前换行
+csharp_new_line_before_members_in_indexers = true             # 索引器成员前换行
+csharp_new_line_before_members_in_finalizers = true           # 终结器成员前换行
+csharp_new_line_before_members_in_static_constructors = true  # 静态构造函数成员前换行
+csharp_new_line_before_members_in_type_constructors = true    # 类型构造函数成员前换行
+csharp_new_line_before_members_in_static_finalizers = true    # 静态终结器成员前换行
+csharp_new_line_before_members_in_static_destructors = true   # 静态析构函数成员前换行
+csharp_space_around_binary_operators = before_and_after       # 二元操作符前后添加空格
+csharp_indent_labels = no_change                              # 标签缩进保持不变
+csharp_new_line_before_members_in_static_converters = true   
+
 csharp_space_around_binary_operators = before_and_after
 csharp_indent_labels = no_change
-# CS8603: 可能的 null 引用返回。
-dotnet_diagnostic.CS8603.severity = none
+# 鼓励在方法调用中使用命名参数以提高代码可读性
+dotnet_diagnostic.CA1507.severity= suggestion
 
-
-# JSON文件的格式化规则
+# JSON 文件的格式化规则
+# 这些设置针对 JSON 文件（*.json），定义其缩进和格式规则
 [*.json]
-indent_style = space
-indent_size = 2
-insert_final_newline = true
-trim_trailing_whitespace = true
+indent_style = space                 # 使用空格缩进
+indent_size = 2                      # 缩进大小为 2 个空格
+insert_final_newline = true          # 文件末尾插入换行符
+trim_trailing_whitespace = true      # 移除行尾空白
 
-
-
+# C# 命名样式
+# 定义 C# 文件中符号的命名规则
 [*.cs]
 #### 命名样式 ####
 
 # 命名规则
-
 dotnet_naming_rule.interface_should_be_begins_with_i.severity = suggestion
-dotnet_naming_rule.interface_should_be_begins_with_i.symbols = interface
+dotnet_naming_rule.interface_should_be_begins_with_i.symbols = interface    # 应用于接口
 dotnet_naming_rule.interface_should_be_begins_with_i.style = begins_with_i
 
 dotnet_naming_rule.types_should_be_pascal_case.severity = suggestion
-dotnet_naming_rule.types_should_be_pascal_case.symbols = types
+dotnet_naming_rule.types_should_be_pascal_case.symbols = types              # 应用于类型（类、结构体等）
 dotnet_naming_rule.types_should_be_pascal_case.style = pascal_case
 
 dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = suggestion
-dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
+dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members  # 应用于属性、事件、方法
 dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
 # 符号规范
+dotnet_naming_symbols.interface.applicable_kinds = interface                # 规则适用于接口
+dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected  # 适用于所有访问级别
+dotnet_naming_symbols.interface.required_modifiers =                        # 无特定修饰符要求
 
-dotnet_naming_symbols.interface.applicable_kinds = interface
-dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
-dotnet_naming_symbols.interface.required_modifiers = 
+dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum  # 规则适用于类、结构体、接口、枚举
+dotnet_naming_symbols.types.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected  # 适用于所有访问级别
+dotnet_naming_symbols.types.required_modifiers =                            # 无特定修饰符要求
 
-dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
-dotnet_naming_symbols.types.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
-dotnet_naming_symbols.types.required_modifiers = 
-
-dotnet_naming_symbols.non_field_members.applicable_kinds = property, event, method
-dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
-dotnet_naming_symbols.non_field_members.required_modifiers = 
+dotnet_naming_symbols.non_field_members.applicable_kinds = property, event, method  # 规则适用于属性、事件、方法
+dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected  # 适用于所有访问级别
+dotnet_naming_symbols.non_field_members.required_modifiers =                # 无特定修饰符要求
 
 # 命名样式
+dotnet_naming_style.begins_with_i.required_prefix = I                       # 接口名需以 I 开头
+dotnet_naming_style.begins_with_i.required_suffix =                         # 无后缀要求
+dotnet_naming_style.begins_with_i.word_separator =                          # 无单词分隔符
+dotnet_naming_style.begins_with_i.capitalization = pascal_case             # 使用帕斯卡拼写法
 
-dotnet_naming_style.begins_with_i.required_prefix = I
-dotnet_naming_style.begins_with_i.required_suffix = 
-dotnet_naming_style.begins_with_i.word_separator = 
-dotnet_naming_style.begins_with_i.capitalization = pascal_case
+dotnet_naming_style.pascal_case.required_prefix =                           # 无前缀要求
+dotnet_naming_style.pascal_case.required_suffix =                           # 无后缀要求
+dotnet_naming_style.pascal_case.word_separator =                            # 无单词分隔符
+dotnet_naming_style.pascal_case.capitalization = pascal_case               # 使用帕斯卡拼写法
 
-dotnet_naming_style.pascal_case.required_prefix = 
-dotnet_naming_style.pascal_case.required_suffix = 
-dotnet_naming_style.pascal_case.word_separator = 
-dotnet_naming_style.pascal_case.capitalization = pascal_case
+# 其他 C# 风格选项
+csharp_using_directive_placement = outside_namespace:silent                # using 指令置于命名空间外部
+csharp_style_expression_bodied_methods = false:silent                      # 不使用表达式主体方法
+csharp_style_expression_bodied_constructors = false:silent                 # 不使用表达式主体构造函数
+csharp_style_expression_bodied_operators = false:silent                    # 不使用表达式主体操作符
+csharp_style_expression_bodied_properties = true:silent                    # 属性使用表达式主体
+csharp_style_expression_bodied_indexers = true:silent                      # 索引器使用表达式主体
+csharp_style_expression_bodied_accessors = true:silent                     # 访问器使用表达式主体
+csharp_style_expression_bodied_lambdas = true:silent                       # Lambda 表达式使用表达式主体
+csharp_style_expression_bodied_local_functions = false:silent              # 局部函数不使用表达式主体
+csharp_style_conditional_delegate_call = true:suggestion                   # 推荐条件委托调用
+csharp_style_var_when_type_is_apparent = true:silent                       # 当类型显而易见时使用 var
+csharp_style_var_elsewhere = true:silent                                   # 其他情况下也使用 var
+csharp_prefer_simple_using_statement = true:suggestion                     # 推荐简化的 using 语句
+csharp_prefer_braces = true:silent                                         # 推荐为单行语句添加大括号
+csharp_style_namespace_declarations = block_scoped:silent                  # 命名空间使用块范围声明
+csharp_style_prefer_method_group_conversion = true:silent                  # 推荐方法组转换
+csharp_style_prefer_top_level_statements = false:silent                    # 不推荐顶级语句
+csharp_style_prefer_primary_constructors = true:suggestion                 # 推荐主构造函数
+csharp_prefer_system_threading_lock = true:suggestion                      # 推荐使用 System.Threading.Lock
 
-dotnet_naming_style.pascal_case.required_prefix = 
-dotnet_naming_style.pascal_case.required_suffix = 
-dotnet_naming_style.pascal_case.word_separator = 
-dotnet_naming_style.pascal_case.capitalization = pascal_case
-csharp_using_directive_placement = outside_namespace:silent
-csharp_style_expression_bodied_methods = false:silent
-csharp_style_expression_bodied_constructors = false:silent
-csharp_style_expression_bodied_operators = false:silent
-csharp_style_expression_bodied_properties = true:silent
-csharp_style_expression_bodied_indexers = true:silent
-csharp_style_expression_bodied_accessors = true:silent
-csharp_style_expression_bodied_lambdas = true:silent
-csharp_style_expression_bodied_local_functions = false:silent
-csharp_style_conditional_delegate_call = true:suggestion
-csharp_style_var_when_type_is_apparent = true:silent
-csharp_style_var_elsewhere = true:silent
-csharp_prefer_simple_using_statement = true:suggestion
-csharp_prefer_braces = true:silent
-csharp_style_namespace_declarations = block_scoped:silent
-csharp_style_prefer_method_group_conversion = true:silent
-csharp_style_prefer_top_level_statements = false:silent
-csharp_style_prefer_primary_constructors = false:silent
-csharp_prefer_system_threading_lock = true:suggestion
 
 [*.vb]
 #### 命名样式 ####

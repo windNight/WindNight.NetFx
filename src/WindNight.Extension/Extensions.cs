@@ -1,8 +1,3 @@
-﻿#if NET45LATER
- 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
@@ -21,14 +16,12 @@ namespace WindNight.Extension
         /// <param name="configure"></param>
         /// <param name="loggerProcessor"></param>
         /// <returns></returns>
-        public static IServiceCollection AddDefaultLogService(this IServiceCollection services)
+        public static IServiceCollection AddDefaultLogService(this IServiceCollection services, IConfiguration configuration)
         {
-            if (Ioc.Instance.ServiceProvider == null)
-                Ioc.Instance.InitServiceProvider(services.BuildServiceProvider());
-            LogHelper.Debug($"WindNight.LogExtension.LogHelper init");
+            Ioc.Instance.InitServiceProvider(services);
+            LogHelper.Debug("WindNight.LogExtension.LogHelper init");
             services.AddTransient<ILogService, DefaultLogService>();
             return services;
         }
     }
 }
-#endif

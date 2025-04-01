@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Extension;
@@ -28,7 +28,7 @@ namespace Schedule.Ctrl
         //}
 
         /// <summary>
-        ///     查询job信息
+        ///     查询job信息  TODO  统一写法
         /// </summary>
         /// <param name="search"></param>
         /// <returns></returns>
@@ -51,7 +51,7 @@ namespace Schedule.Ctrl
             {
                 DataList = allJobInfo,
                 PageCurrent = search.PageCurrent,
-                Total = totalJobsCount
+                Total = totalJobsCount,
             };
         }
 

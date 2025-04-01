@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.Extension;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Extension;
@@ -62,11 +63,15 @@ namespace System
         public static long NowUnixTime => Now.ConvertToUnixTime();
 
         public static int NowYearInt => Now.Year;
+
         public static string NowString => $"{Now:yyyy-MM-dd HH:mm:ss}";
 
         public static int NowMonthInt => Now.TryToDateInt("yyyyMM");
+
         public static int LastMonthInt => Now.FirstDayOfMonth().AddMonths(-1).TryToDateInt("yyyyMM");
+
         public static int NextMonthInt => Now.FirstDayOfMonth().AddMonths(1).TryToDateInt("yyyyMM");
+
     }
 
     /// <summary>硬件信息</summary>
@@ -246,14 +251,18 @@ namespace System
         public static void InitHardInfo(string nodeCode = "", string ip = "")
         {
             if (nodeCode.IsNullOrEmpty() && NodeCode.IsNullOrEmpty())
+            {
                 nodeCode = GuidHelper.GenerateOrderNumber();
+            }
             if (ip.IsNullOrEmpty())
             {
-                ip = string.Join(",", GetLocalIps());
+                ip = GetLocalIps().Join();
             }
 
             if (NodeCode.IsNullOrEmpty())
+            {
                 NodeCode = nodeCode;
+            }
             // if (string.IsNullOrEmpty(NodeIpAddress) || NodeIpAddress == DefaultIp)
             NodeIpAddress = ip;
         }
@@ -297,22 +306,34 @@ namespace System
             }
             catch (PlatformNotSupportedException ex)
             {
-                // UnixUnicastIPAddressInformation 未实现 IsDnsEligible.get
-                LogHelper.Warn(
-                    $"OperatorSysEnum is {OperatorSys} handler error {nameof(PlatformNotSupportedException)} : {ex.Message}",
-                    ex, appendMessage: false);
+                try
+                {
 
-                return NetworkInterface.GetAllNetworkInterfaces()
-                    ?.Select(m => m.GetIPProperties())
-                    ?.SelectMany(m => m.UnicastAddresses)
-                    ?.Where(m =>
-                        validAddressFamilies.Contains(m.Address.AddressFamily) && IPAddress.IsLoopback(m.Address))
-                    ?.Select(m => m.Address.ToString())
-                    ?.ToList() ?? new List<string> { DefaultIp };
+
+                    // UnixUnicastIPAddressInformation 未实现 IsDnsEligible.get
+                    $"OperatorSysEnum is {OperatorSys} handler error {nameof(PlatformNotSupportedException)} : {ex.Message}".Log2Console(ex);
+
+                    //LogHelper.Warn(
+                    //    $"OperatorSysEnum is {OperatorSys} handler error {nameof(PlatformNotSupportedException)} : {ex.Message}",
+                    //    ex, appendMessage: false);
+
+                    return NetworkInterface.GetAllNetworkInterfaces()
+                        ?.Select(m => m.GetIPProperties())
+                        ?.SelectMany(m => m.UnicastAddresses)
+                        ?.Where(m =>
+                            validAddressFamilies.Contains(m.Address.AddressFamily) && IPAddress.IsLoopback(m.Address))
+                        ?.Select(m => m.Address.ToString())
+                        ?.ToList() ?? new List<string> { DefaultIp };
+                }
+                catch
+                {
+                    return new List<string> { DefaultIp };
+                }
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"NetworkInterface handler error {ex.Message}", ex, appendMessage: false);
+                $"NetworkInterface handler error {ex.Message}".Log2Console(ex);
+                // LogHelper.Error($"NetworkInterface handler error {ex.Message}", ex, appendMessage: false);
                 return new List<string> { DefaultIp };
             }
         }
@@ -360,7 +381,24 @@ namespace System
             }
         }
 
+        public static object Obj()
+        {
+            return new
+            {
+                NodeCode,
+                NodeIpAddress,
+                OperatorSys = OperatorSys.ToString(),
+            };
+        }
+
         public new static string ToString() =>
-            new { NodeCode, NodeIpAddress, OperatorSys = OperatorSys.ToString() }.ToJsonStr();
+            Obj().ToJsonStr();
+
+        public static string ToString(Formatting formatting) =>
+            Obj().ToJsonStr(formatting);
+
+
     }
+
+
 }

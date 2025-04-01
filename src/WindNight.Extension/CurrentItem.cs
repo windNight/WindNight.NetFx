@@ -4,6 +4,8 @@ using System.Text.Extension;
 using Newtonsoft.Json.Extension;
 using WindNight.Extension.@internal;
 using WindNight.Core.Abstractions;
+using WindNight.LogExtension;
+
 
 
 #if NET45
@@ -41,13 +43,28 @@ namespace WindNight.Extension
             return CurrentItem.GetItem<T>(key);
         }
 
+        private const string SERIZLNUMBER = Consts.SERIZLNUMBER;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"> SERIZLNUMBER 新版本不支持 外部维护 统一使用 <see cref="SerialNumber"/></param>
+        /// <param name="value"></param>
         public void AddItem(string key, object value)
         {
+            if (key.Equals(SERIZLNUMBER, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
             CurrentItem.AddItem(key, value);
         }
 
         public void AddItemIfNotExits(string key, object value)
         {
+            if (key.Equals(SERIZLNUMBER, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
             CurrentItem.AddItemIfNotExits(key, value);
         }
 
@@ -202,25 +219,74 @@ namespace WindNight.Extension
 
 
         /// <summary>  </summary>
-        public static string GetSerialNumber
+        public static string GetSerialNumber => GetSerialNumberInternal();
+        //        {
+        //            get
+        //            {
+        //                string orderNumber = GetItem<string>(Consts.SERIZLNUMBER);
+        //                if (orderNumber.IsNullOrEmpty())
+        //                {
+        //                    lock (LockSerialNumber)
+        //                    {
+        //                        orderNumber = GetItem<string>(Consts.SERIZLNUMBER);
+        //                        if (orderNumber.IsNullOrEmpty())
+        //                        {
+        //                            orderNumber = GuidHelper.GenerateOrderNumber();
+        //                            // AddItem(Consts.SERIZLNUMBER, orderNumber);
+        //                            Items[Consts.SERIZLNUMBER] = orderNumber;
+        //                        }
+        //}
+        //                }
+        //                return orderNumber;
+        //            }
+        //        }
+
+        public static string AddSerialNumber(string traceId, bool isForce = false) => GetSerialNumberInternal(traceId, isForce);
+
+        static string GetSerialNumberInternal(string traceId = "", bool isForce = false)
         {
-            get
+            try
             {
-                string orderNumber = GetItem<string>(Consts.SERIZLNUMBER);
-                if (orderNumber.IsNullOrEmpty())
+                if (!traceId.IsNullOrEmpty() && isForce)
+                {
+                    isForce = true;
+                }
+                var orderNumber = GetItem<string>(Consts.SERIZLNUMBER);
+                if (isForce || orderNumber.IsNullOrEmpty())
                 {
                     lock (LockSerialNumber)
                     {
-                        orderNumber = GetItem<string>(Consts.SERIZLNUMBER);
-                        if (orderNumber.IsNullOrEmpty())
+                        if (isForce)
                         {
-                            orderNumber = GuidHelper.GenerateOrderNumber();
-                            AddItem(Consts.SERIZLNUMBER, orderNumber);
+                            Items[Consts.SERIZLNUMBER] = traceId;
+                        }
+                        else
+                        {
+                            orderNumber = GetTraceIdFromItems();
+                            if (orderNumber.IsNullOrEmpty())
+                            {
+                                if (traceId.IsNullOrEmpty())
+                                {
+                                    traceId = GuidHelper.GenerateOrderNumber();
+                                }
+                                Items[Consts.SERIZLNUMBER] = traceId;
+                            }
                         }
                     }
                 }
-                return orderNumber;
+
             }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"Gen TraceId Handler Error {ex.Message}", ex);
+            }
+
+            return GetTraceIdFromItems();
+        }
+
+        static string GetTraceIdFromItems()
+        {
+            return GetItem<string>(Consts.SERIZLNUMBER);
         }
 
         /// <summary>    </summary>
@@ -255,7 +321,7 @@ namespace WindNight.Extension
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                LogHelper.Error($"GetItem({key}) handler Error {ex.Message}", ex);
                 return obj;
             }
         }
@@ -283,13 +349,24 @@ namespace WindNight.Extension
         {
             try
             {
-                if (key.IsNullOrWhiteSpace() || value == null || Items == null)
+                if (key.Equals(Consts.SERIZLNUMBER, StringComparison.OrdinalIgnoreCase))
+                {
                     return;
-                if (!ContainKey(key))
+                }
 
+                if (key.IsNullOrEmpty(true) || value == null || Items == null)
+                {
+                    return;
+                }
+
+                if (!ContainKey(key))
+                {
                     Items.Add(key, value);
+                }
                 else
+                {
                     Items[key] = value;
+                }
 
 #if !NET45
                 SetItems2AsyncLocal(key, value, true);
@@ -308,10 +385,17 @@ namespace WindNight.Extension
         {
             try
             {
-                if (!ContainKey(key))
+                if (key.Equals(Consts.SERIZLNUMBER, StringComparison.OrdinalIgnoreCase))
+                {
                     return;
-                Items.Add(key, value);
+                }
 
+                if (!ContainKey(key))
+                {
+                    return;
+                }
+
+                Items.Add(key, value);
 #if !NET45
                 SetItems2AsyncLocal(key, value, false);
 #endif
@@ -323,12 +407,20 @@ namespace WindNight.Extension
 
         public new static string ToString()
         {
-            if (Items == null || Items.Count == 0) return "";
-            if (ContainKey("MS_HttpRequestMessage"))
+            try
             {
-                Items.Remove("MS_HttpRequestMessage");
+                if (Items == null || Items.Count == 0) return "";
+                if (ContainKey("MS_HttpRequestMessage"))
+                {
+                    Items.Remove("MS_HttpRequestMessage");
+                }
+                return Items?.ToJsonStr();
             }
-            return Items?.ToJsonStr();
+            catch
+            {
+                return "";
+            }
+
         }
     }
 }

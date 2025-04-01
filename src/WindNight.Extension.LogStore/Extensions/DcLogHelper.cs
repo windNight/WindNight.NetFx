@@ -1,8 +1,8 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
-using IpHelper = WindNight.Extension.Logger.DcLog.Internal.HttpContextExtension;
+using IpHelper = WindNight.Extension.Logger.DcLog.@internal.HttpContextExtension;
 
 namespace WindNight.Extension.Logger.DcLog.Extensions
 {

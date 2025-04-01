@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions.Attributes;
+using WindNight.Core.Attributes.Abstractions;
+using WindNight.LogExtension;
 
 namespace Net8ApiDemo.Controllers
 {
@@ -26,7 +27,7 @@ namespace Net8ApiDemo.Controllers
             {"Authorization","格式 Bearer xx"},  { "AppId", "AppId" }, { "AppCode", "AppCode" }, { "AppToken", "Sign" }, { "Ts", "当前时间戳" },
         };
 
-    
+
 
         private string GetHeaderData(HttpRequest httpRequest, string headerName)
         {
@@ -53,9 +54,40 @@ namespace Net8ApiDemo.Controllers
             return dict;
         }
 
+        [HttpGet("debugapi")]
+        [NonAuth, DebugApi]
+        public object DebugApi([FromQuery] TIn req = null)
+        {
+            LogHelper.Info($"DebugApi");
+            return Get(req);
+        }
+
+        [HttpPost("debugapi/post")]
+        [NonAuth, DebugApi]
+        public object DebugApiPost([FromBody] TIn req = null)
+        {
+            LogHelper.Info($"DebugApiPost");
+            return Get(req);
+        }
+
+
+        [HttpGet("sysapi/v0")]
+        [NonAuth, SysApi]
+        public object SysApi([FromQuery] TIn req = null)
+        {
+            return Get(req);
+        }
+
+        [HttpGet("sysapi/v10")]
+        [NonAuth, SysApi(10)]
+        public object SysApiV10([FromQuery] TIn req = null)
+        {
+            return Get(req);
+        }
+
         [HttpGet("tt")]
         [NonAuth]
-        public object Get()
+        public object Get([FromQuery] TIn req = null)
         {
             var signData = new Dictionary<string, string>();
 
@@ -113,4 +145,28 @@ namespace Net8ApiDemo.Controllers
             .ToArray();
         }
     }
+
+
+
+
+    /// <summary> </summary>
+    public class TIn
+    {
+        /// <summary>  KL1 </summary>
+        public string KL1 { get; set; }
+
+        /// <summary> kl1 </summary>
+        public int kl1 { get; set; }
+
+        /// <summary> Kl1 </summary>
+        public decimal Kl1 { get; set; }
+
+        /// <summary> kL1 </summary>
+        public string kL1 { get; set; }
+
+
+
+    }
+
+
 }

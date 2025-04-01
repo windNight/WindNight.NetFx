@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="..\..\..\build\common.props" />
+
+    <PropertyGroup>
+        <TargetFrameworks>
+            <!--netstandard2.0;-->
+            <!--net5.0;
+			net6.0;-->
+            <!--net7.0;-->
+            net8.0;
+            net9.0;
+        </TargetFrameworks>
+
+        <!--<LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>-->
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <OutputPath>..\..\..\Output\$(Configuration)</OutputPath>
+        <!--<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>-->
+        <Description>
+            add HiddenApiAttribute and HiddenSwaggerFilter support config to show hiddenapi or not .
+        </Description>
+        <PackageReleaseNotes>
+            add HiddenApiAttribute and HiddenSwaggerFilter support config to show hiddenapi or not .
+        </PackageReleaseNotes>
+
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <!--<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />-->
+        <!--<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="7.3.1" />-->
+        <!--<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="7.3.1" />-->
+        <!--<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.3.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.3.1" />-->
+        <!--<PackageReference Include="Swashbuckle.Core" Version="5.6.0" />-->
+        <!--<PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />-->
+
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.0.0" />
+
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
+    </ItemGroup>
+
+
+</Project>

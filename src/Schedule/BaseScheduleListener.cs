@@ -1,15 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection.WnExtension;
-using Quartz;
-using Schedule.Abstractions;
-using Schedule.Ctrl;
-using Schedule.Func;
-using Schedule.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Extension;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
+using Quartz;
+using Schedule.Abstractions;
+using Schedule.Ctrl;
+using Schedule.Func;
+using Schedule.Model.Enums;
 using WindNight.Extension;
 
 namespace Schedule
@@ -79,9 +79,10 @@ namespace Schedule
         public virtual async Task TriggerFired(ITrigger trigger, IJobExecutionContext context,
             CancellationToken cancellationToken = default)
         {
-            SetJobId(context);
+            var jobId = SetJobId(context);
             Debug(nameof(ITriggerListener), nameof(TriggerFired));
-            CurrentItem.AddItem("serialnumber", JobContext.JobId);
+            //CurrentItem.AddItem("serialnumber", JobContext.JobId);
+            CurrentItem.AddSerialNumber(jobId, true);
 
             await DoNoticeAsync($"begin with TriggerFired_ITriggerListener:NowTicks({HardInfo.Now.Ticks})");
 
@@ -445,7 +446,7 @@ namespace Schedule
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected void SetJobId(IJobExecutionContext context)
+        protected string SetJobId(IJobExecutionContext context)
         {
             var jobId = GuidHelper.GetGuid();
             context.JobDetail.SetJobDbId(jobId);
@@ -453,7 +454,23 @@ namespace Schedule
             JobId = jobId;
             JobName = context.GetJobName();
             IsDoNotice = context.GetIsDoNotice();
-            JobContext.SetCurrentJobBaseInfo(JobId, JobCode, JobName);
+
+            var jobInfo = context.GetJobBaseInfo();
+            if (jobInfo == null || jobInfo.JobExecTs < HardInfo.Now.AddMinutes(-2).ConvertToUnixTime())
+            {
+                jobInfo = new JobBaseInfo
+                {
+                    JobId = JobId,
+                    JobCode = JobCode,
+                    JobName = JobName,
+                    ExecTag = "Listener.TriggerFired",
+                    JobExecTs = HardInfo.NowUnixTime,
+                };
+                context.JobDetail.SetJobBaseInfo(jobInfo);
+                JobContext.SetCurrentJobBaseInfo(jobInfo);
+            }
+
+            return JobId;
         }
 
         protected async Task DoNoticeAsync(string message, string extendInfo = "")

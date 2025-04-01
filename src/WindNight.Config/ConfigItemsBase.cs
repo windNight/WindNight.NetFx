@@ -1,69 +1,29 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
-using WindNight.Core.Abstractions;
 using WindNight.ConfigCenter.Extension.@internal;
-#if !NET45
-using Microsoft.Extensions.Configuration;
-#endif
+using WindNight.Core;
+using WindNight.Core.Abstractions;
+using WindNight.Core.ConfigCenter.Extensions;
+
 
 namespace WindNight.ConfigCenter.Extension
 {
-
+    /// <summary>
+    ///  只给 执行 init 的实例使用 
+    /// </summary>
     public partial class ConfigItemsBase
     {
+        protected const string ZeroString = ConstantKeys.ZeroString;
+        protected const int ZeroInt = ConstantKeys.ZeroInt;
+        protected const long ZeroInt64 = ConstantKeys.ZeroInt64;
+        protected const decimal ZeroDecimal = ConstantKeys.ZeroDecimal;
 
-        /// <summary>
-        /// </summary>
-        /// <param name="sleepTimeInMs"> default is 5000 ms </param>
-        /// <param name="logService">   </param>
-        /// <param name="configuration"></param>
-        protected static void StartConfigCenter(int sleepTimeInMs = 5 * 1000, ILogService? logService = null
-#if !NET45
-            , IConfiguration? configuration = null
-#endif
-        )
-        {
-            if (logService != null) ConfigCenterLogExtension.InitLogProvider(logService);
-            else
-            {
-                ConfigCenterLogExtension.InitLogProvider(Ioc.Instance.CurrentLogService);
-            }
-#if !NET45
-            if (configuration != null)
-            {
-                ConfigProvider.Instance.SetConfiguration(configuration);
-            }
-            else
-            {
-                ConfigProvider.Instance.SetConfiguration();
-            }
-#endif
-
-            ConfigProvider.Instance.Start(sleepTimeInMs);
-
-        }
-
-        public static void StopConfigCenter()
-        {
-            ConfigProvider.Instance.Stop();
-        }
-
-        protected static void ReInitConfigCenter()
-        {
-            ConfigProvider.Instance.ReInit();
-        }
-
-        protected static string[] TrueStrings = new[] { "1", "true" }, FalseStrings = new[] { "0", "false" };
-
-        protected const string ZeroString = "0";
-        protected const int ZeroInt = 0;
-        protected const long ZeroInt64 = 0L;
-        protected const decimal ZeroDecimal = 0m;
-
-
+        protected static readonly string[] TrueStrings = ConstantKeys.TrueStrings,
+            FalseStrings = ConstantKeys.FalseStrings;
 
         /// <summary> 服务编号： </summary>
         public static int SystemAppId =>
@@ -84,6 +44,49 @@ namespace WindNight.ConfigCenter.Extension
         /// <summary> 系统项目编号: </summary>
         public static int SystemProjectId =>
             GetAppSetting(ConstKeys.ProjectIdKey, ZeroInt);
+
+        /// <summary>
+        /// </summary>
+        /// <param name="sleepTimeInMs"> default is 5000 ms </param>
+        /// <param name="logService">   </param>
+        /// <param name="configuration"></param>
+        protected static void StartConfigCenter(int sleepTimeInMs = 5 * 1000, ILogService? logService = null
+#if !NET45
+            , IConfiguration? configuration = null
+#endif
+        )
+        {
+            if (logService != null)
+            {
+                ConfigCenterLogExtension.InitLogProvider(logService);
+            }
+            else
+            {
+                ConfigCenterLogExtension.InitLogProvider(Ioc.Instance.CurrentLogService);
+            }
+#if !NET45
+            if (configuration != null)
+            {
+                ConfigProvider.Instance.SetConfiguration(configuration);
+            }
+            else
+            {
+                ConfigProvider.Instance.SetConfiguration();
+            }
+#endif
+
+            ConfigProvider.Instance.Start(sleepTimeInMs);
+        }
+
+        public static void StopConfigCenter()
+        {
+            ConfigProvider.Instance.Stop();
+        }
+
+        protected static void ReInitConfigCenter()
+        {
+            ConfigProvider.Instance.ReInit();
+        }
 
 
         #region ConnectionStrings
@@ -179,22 +182,24 @@ namespace WindNight.ConfigCenter.Extension
         {
             var configValue = GetAppSetting(configKey, "", isThrow);
             if (configValue.IsNullOrEmpty()) return defaultValue;
-            configValue = configValue.ToLower();
+            configValue = configValue.ToUpper();
 
-            if (TrueStrings.Contains(configValue))
+            if (TrueStrings.Contains(configValue, StringComparer.OrdinalIgnoreCase))
             {
                 return true;
             }
 
-            if (FalseStrings.Contains(configValue))
+            if (FalseStrings.Contains(configValue, StringComparer.OrdinalIgnoreCase))
             {
                 return false;
             }
 
             if (isThrow)
             {
-                throw new ArgumentOutOfRangeException($"configKey", $"configKey({configKey}) is not in TrueStrings({(string.Join(",", TrueStrings))}) or FalseStrings({string.Join(",", FalseStrings)}) ");
+                throw new ArgumentOutOfRangeException("configKey",
+                    $"configKey({configKey}) is not in TrueStrings({TrueStrings.Join()}) or FalseStrings({FalseStrings.Join()}) both IgnoreCase ");
             }
+
             return defaultValue;
         }
 
@@ -257,11 +262,9 @@ namespace WindNight.ConfigCenter.Extension
         protected static bool GetConfigValue(string configKey, bool defaultValue, bool isThrow)
             => GetAppSetting(configKey, defaultValue, isThrow);
 
-
-
         #endregion //end AppSetting
 
-        #region Json Config 
+        #region Json Config
 
         protected static string GetJsonConfig(string fileKey, string defaultValue = "", bool isThrow = false)
         {
@@ -304,7 +307,8 @@ namespace WindNight.ConfigCenter.Extension
 
 #if NET45LATER
 
-        public static T GetSectionValue<T>(string sectionKey = "", T defaultValue = default, bool isThrow = false) where T : class, new()
+        public static T GetSectionValue<T>(string sectionKey = "", T defaultValue = default, bool isThrow = false)
+            where T : class, new()
         {
             if (defaultValue == null) defaultValue = new T();
             try
@@ -313,7 +317,8 @@ namespace WindNight.ConfigCenter.Extension
                 {
                     sectionKey = typeof(T).Name;
                 }
-                return GetSectionConfigValue<T>(sectionKey, defaultValue, isThrow);
+
+                return GetSectionConfigValue(sectionKey, defaultValue, isThrow);
             }
             catch (Exception ex)
             {
@@ -323,7 +328,6 @@ namespace WindNight.ConfigCenter.Extension
             }
 
             return defaultValue;
-
         }
 
         public static T GetSectionConfigValue<T>(string sectionKey, T defaultValue = default, bool isThrow = false)
@@ -333,7 +337,6 @@ namespace WindNight.ConfigCenter.Extension
             {
                 var config = Ioc.GetService<IConfiguration>();
                 return config.GetSectionConfigValue<T>(sectionKey, defaultValue, isThrow);
-
             }
             catch (Exception ex)
             {
@@ -343,13 +346,9 @@ namespace WindNight.ConfigCenter.Extension
             }
 
             return defaultValue;
-
         }
 
 
-
 #endif
-
-
     }
 }

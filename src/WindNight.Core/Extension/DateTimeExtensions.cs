@@ -202,7 +202,7 @@ namespace System
 
 
         /// <summary>
-        ///   DateTime 格式的字符串 2015-01-15 HH:mm:ss 转成时间
+        ///     DateTime 格式的字符串 2015-01-15 HH:mm:ss 转成时间
         /// </summary>
         /// <param name="dateStr"></param>
         /// <param name="linkCode"></param>
@@ -415,113 +415,46 @@ namespace System
 
     public static partial class DateTimeExtensions
     {
-        public static List<int> GeneratorDateIntList(this DateTime beginDate, DateTime? endDateParam = null,
+        public static IEnumerable<DateTime> GeneratorDateTimeList(this DateTime beginDate,
+            DateTime? endDateParam = null, bool withLastDay = false)
+        {
+            return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, time => time);
+        }
+
+
+        public static IEnumerable<int> GeneratorDateIntList(this DateTime beginDate, DateTime? endDateParam = null,
             bool withLastDay = false)
         {
             return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, time => time.ToDateInt());
         }
 
-        public static List<string> GeneratorDateStringList(this DateTime beginDate, DateTime? endDateParam = null,
-            string format = "yyyyMMdd", bool withLastDay = false)
+        public static IEnumerable<string> GeneratorDateStringList(this DateTime beginDate,
+            DateTime? endDateParam = null, string format = "yyyyMMdd", bool withLastDay = false)
         {
             return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, time => time.FormatDateTime(format));
         }
 
-        public static List<DateTime> GeneratorDateTimeList(this DateTime beginDate, DateTime? endDateParam = null,
-            bool withLastDay = false)
-        {
-            return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, time => time);
-        }
 
-        public static List<T> GeneratorDateSelfList<T>(this DateTime beginDate, DateTime? endDateParam = null,
-            bool withLastDay = false, Func<DateTime, T> func = null)
-        {
-            var endDate = endDateParam ?? HardInfo.Now.Date;
-
-            if (withLastDay)
-            {
-                endDate = endDate.AddDays(1);
-            }
-
-            List<T> list = new();
-            if (beginDate > endDate) return list;
-            if (func == null) return list;
-            for (var i = beginDate; i < endDate; i = i.AddDays(1))
-            {
-                var m = func.Invoke(i);
-                list.Add(m);
-            }
-
-            return list;
-        }
-
-        public static List<T> GeneratorMonthSelfList<T>(this DateTime beginDate,
-            DateTime? endDateParam = null, bool withLastDay = false, Func<DateTime, T> func = null)
-        {
-            beginDate = beginDate.FirstDayOfMonth();
-            var endDate = endDateParam ?? HardInfo.Now.Date;
-            if (withLastDay)
-            {
-                endDate = endDate.AddDays(1);
-            }
-
-            endDate = endDate.FirstDayOfMonth();
-            List<T> list = new();
-            if (beginDate > endDate) return list;
-            if (func == null) return list;
-            for (var i = beginDate; i < endDate; i = i.AddMonths(1))
-            {
-                var m = func.Invoke(i);
-                list.Add(m);
-            }
-
-            return list;
-        }
-
-        public static List<int> GeneratorDateIntList(this int beginDateInt, DateTime? endDateParam = null,
+        public static IEnumerable<int> GeneratorDateIntList(this int beginDateInt, DateTime? endDateParam = null,
             bool withLastDay = false)
         {
             return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, time => time.ToDateInt());
         }
 
-        public static List<string> GeneratorDateStringList(this int beginDateInt, DateTime? endDateParam = null,
+        public static IEnumerable<string> GeneratorDateStringList(this int beginDateInt, DateTime? endDateParam = null,
             string format = "yyyyMMdd", bool withLastDay = false)
         {
             return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, time => time.FormatDateTime(format));
         }
 
-        public static List<DateTime> GeneratorDateTimeList(this int beginDateInt, DateTime? endDateParam = null,
+        public static IEnumerable<DateTime> GeneratorDateTimeList(this int beginDateInt, DateTime? endDateParam = null,
             bool withLastDay = false)
         {
             return beginDateInt.GeneratorDateSelfList(endDateParam, withLastDay, time => time);
         }
 
 
-        public static List<T> GeneratorDateSelfList<T>(this int beginDateInt, DateTime? endDateParam = null,
-            bool withLastDay = false, Func<DateTime, T> func = null)
-        {
-            var beginDate = beginDateInt.TryToDateTime();
-            if (beginDate == DefaultDateTime) return new List<T>();
-            return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, func);
-        }
-
-        public static List<T> GeneratorDateSelfList<T>(this int beginDateInt, int endDateInt = 0,
-            bool withLastDay = false, Func<DateTime, T> func = null)
-        {
-            var beginDate = beginDateInt.TryToDateTime();
-            if (beginDate == DefaultDateTime) return new List<T>();
-
-            var endDate = endDateInt == 0 ? HardInfo.Now.Date : endDateInt.TryToDateTime();
-            if (endDate == DefaultDateTime)
-            {
-                endDate = HardInfo.Now.Date;
-            }
-
-            return beginDate.GeneratorDateSelfList(endDate, withLastDay, func);
-        }
-
-
-        public static List<int> GeneratorDateMonthList(this DateTime beginDate, DateTime? endDateParam = null,
+        public static IEnumerable<int> GeneratorDateMonthList(this DateTime beginDate, DateTime? endDateParam = null,
             bool withLastDay = false)
         {
             var list = beginDate.GeneratorDateSelfList(endDateParam, withLastDay, time => time.ToDateMonth());
@@ -530,7 +463,7 @@ namespace System
         }
 
 
-        public static List<int> GeneratorDateWeekList(this DateTime beginDate, DateTime? endDateParam = null)
+        public static IEnumerable<int> GeneratorDateWeekList(this DateTime beginDate, DateTime? endDateParam = null)
         {
             var endDate = endDateParam ?? HardInfo.Now.Date;
 
@@ -588,6 +521,76 @@ namespace System
             }
 
             return list;
+        }
+
+
+        public static IEnumerable<T> GeneratorDateSelfList<T>(this DateTime beginDate, DateTime? endDateParam = null,
+            bool withLastDay = false, Func<DateTime, T> func = null)
+        {
+            var endDate = endDateParam ?? HardInfo.Now.Date;
+
+            if (withLastDay)
+            {
+                endDate = endDate.AddDays(1);
+            }
+
+            List<T> list = new();
+            if (beginDate > endDate) return list;
+            if (func == null) return list;
+            for (var i = beginDate; i < endDate; i = i.AddDays(1))
+            {
+                var m = func.Invoke(i);
+                list.Add(m);
+            }
+
+            return list;
+        }
+
+
+        public static IEnumerable<T> GeneratorMonthSelfList<T>(this DateTime beginDate, DateTime? endDateParam = null,
+            bool withLastDay = false, Func<DateTime, T> func = null)
+        {
+            beginDate = beginDate.FirstDayOfMonth();
+            var endDate = endDateParam ?? HardInfo.Now.Date;
+            if (withLastDay)
+            {
+                endDate = endDate.AddDays(1);
+            }
+
+            endDate = endDate.FirstDayOfMonth();
+            List<T> list = new();
+            if (beginDate > endDate) return list;
+            if (func == null) return list;
+            for (var i = beginDate; i < endDate; i = i.AddMonths(1))
+            {
+                var m = func.Invoke(i);
+                list.Add(m);
+            }
+
+            return list;
+        }
+
+        public static IEnumerable<T> GeneratorDateSelfList<T>(this int beginDateInt, DateTime? endDateParam = null,
+            bool withLastDay = false, Func<DateTime, T> func = null)
+        {
+            var beginDate = beginDateInt.TryToDateTime();
+            if (beginDate == DefaultDateTime) return new List<T>();
+            return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, func);
+        }
+
+        public static IEnumerable<T> GeneratorDateSelfList<T>(this int beginDateInt, int endDateInt = 0,
+            bool withLastDay = false, Func<DateTime, T> func = null)
+        {
+            var beginDate = beginDateInt.TryToDateTime();
+            if (beginDate == DefaultDateTime) return new List<T>();
+
+            var endDate = endDateInt == 0 ? HardInfo.Now.Date : endDateInt.TryToDateTime();
+            if (endDate == DefaultDateTime)
+            {
+                endDate = HardInfo.Now.Date;
+            }
+
+            return beginDate.GeneratorDateSelfList(endDate, withLastDay, func);
         }
     }
 }

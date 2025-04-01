@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Extension;
 using Schedule.Abstractions;
 
-namespace Schedule.Internal
+namespace Schedule.@internal
 {
     internal static class DingTalkNoticeHelper
     {
@@ -24,6 +24,7 @@ namespace Schedule.Internal
                     NoticeDingIsOpen = !ConfigItems.DingtalkToken.IsNullOrEmpty(),
                 };
             }
+
             var token = noticeDingConfig?.NoticeDingToken ?? ConfigItems.DingtalkToken;
             if (token.IsNullOrEmpty()) return;
             var postData = GetDingTalkPostData(jobBaseInfo, message, noticeDingConfig);
@@ -31,11 +32,13 @@ namespace Schedule.Internal
 
             var requestUri = $"https://oapi.dingtalk.com/robot/send?access_token={token}";
             var rlt = await HttpPostAsync(requestUri, postData);
-            JobLogHelper.Debug($"DoNoticeAsync response is {rlt}, \r\n message is {postData.ToJsonStr()} ,\r\n token is {token}", nameof(DoNoticeAsync));
+            JobLogHelper.Debug(
+                $"DoNoticeAsync response is {rlt}, \r\n message is {postData.ToJsonStr()} ,\r\n token is {token}",
+                nameof(DoNoticeAsync));
         }
 
 
-        static string GetNoticeContent(JobBaseInfo jobBaseInfo, string message)
+        private static string GetNoticeContent(JobBaseInfo jobBaseInfo, string message)
         {
             var env = Ioc.GetService<IHostEnvironment>();
             var environmentName = env?.EnvironmentName;
@@ -53,7 +56,8 @@ namespace Schedule.Internal
             return content;
         }
 
-        static object GetDingTalkPostData(JobBaseInfo jobBaseInfo, string message, NoticeDingConfig noticeDingConfig)
+        private static object GetDingTalkPostData(JobBaseInfo jobBaseInfo, string message,
+            NoticeDingConfig noticeDingConfig)
         {
             var atMobiles = string.Empty;
             var isAtAll = false;
@@ -68,6 +72,7 @@ namespace Schedule.Internal
                 atMobiles = ConfigItems.DingtalkPhones;
                 isAtAll = ConfigItems.DingtalkAtAll;
             }
+
             // <font color=#228B22>Failed</font>
             var content = GetNoticeContent(jobBaseInfo, message);
 
@@ -75,37 +80,25 @@ namespace Schedule.Internal
             var obj = new
             {
                 msgtype = "markdown",
-                markdown = new
-                {
-                    title,
-                    text = content
-                },
-                at = new
-                {
-                    atMobiles,
-                    isAtAll
-                }
+                markdown = new { title, text = content },
+                at = new { atMobiles, isAtAll },
             };
             return obj;
         }
 
-        static async Task<string> HttpPostAsync(string url, object bodyObj)
+        private static async Task<string> HttpPostAsync(string url, object bodyObj)
         {
             // var requestUri = $"https://oapi.dingtalk.com/robot/send?access_token={token}";
             var request = new HttpRequestMessage(HttpMethod.Post, url)
             {
-                Content = new StringContent(bodyObj.ToJsonStr(), Encoding.UTF8, "application/json")
+                Content = new StringContent(bodyObj.ToJsonStr(), Encoding.UTF8, "application/json"),
             };
-            var httpClient = new HttpClient
-            {
-                Timeout = TimeSpan.FromSeconds(60)
-            };
+            var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
             httpClient.DefaultRequestHeaders.TryAddWithoutValidation("content-type", "application/json;charset=UTF-8");
 
             var res = await httpClient.SendAsync(request);
             var rlt = await res.Content.ReadAsStringAsync();
             return rlt;
         }
-
     }
 }

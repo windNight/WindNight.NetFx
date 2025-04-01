@@ -3,9 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using System.Configuration;
 using Newtonsoft.Json.Extension;
+using Newtonsoft.Json.Linq;
 using WindNight.Extension.Logger.DbLog.Extensions;
 using WindNight.Extension.Logger.DcLog;
 using WindNight.Extension.Logger.DcLog.Extensions;
@@ -51,14 +50,18 @@ namespace Logger.Demo
                 {
                     logging.AddFilter((provider, category, logLevel) =>
                     {
+                        if (provider.IsNullOrEmpty())
+                        {
+                            return false;
+                        }
                         if (provider.Contains("ConsoleLoggerProvider")
                             && category.Contains("Controller")
                             && logLevel >= LogLevel.Information)
-                            return true;
+                        { return true; }
                         if (provider.Contains("ConsoleLoggerProvider")
                             && category.Contains("Microsoft")
                             && logLevel >= LogLevel.Information)
-                            return true;
+                        { return true; }
                         return false;
                     });
                     var configuration = context.Configuration;

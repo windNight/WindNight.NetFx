@@ -1,8 +1,6 @@
 using System.Net.Sockets;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
-using WindNight.Core.Abstractions;
+using WindNight.Core.ConfigCenter.Extensions;
 using WindNight.Core.SQL;
 using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Dapper.Mssql.@internal;
@@ -571,45 +569,45 @@ namespace WindNight.Extension.Dapper.Mssql
                 }
         }
 
-        internal class ConfigItems //: ConfigItemsBase
+        internal class ConfigItems : DefaultConfigItemBase
         {
-            public static bool OpenDapperLog
-            {
-                get
-                {
-                    var config = Ioc.GetService<IConfigService>();
-                    if (config == null) return false;
-                    return config.GetAppSetting(ConfigItemsKey.OpenDapperLogKey, false, false);
-                }
-            }
+            public static bool OpenDapperLog => GetAppSettingValue(ConfigItemsKey.OpenDapperLogKey, false, false);
+            //{
+            //    get
+            //    {
+            //        var config = Ioc.GetService<IConfigService>();
+            //        if (config == null) return false;
+            //        return config.GetAppSettingValue(ConfigItemsKey.OpenDapperLogKey, false, false);
+            //    }
+            //}
 
-            public static bool IsLogConnectString
-            {
-                get
-                {
-                    var config = Ioc.Instance.CurrentConfigService;
-                    if (config == null) return false;
-                    return config.GetAppSetting(ConfigItemsKey.IsLogConnectStringKey, false, false);
-                }
-            }
+            public static bool IsLogConnectString => GetAppSettingValue(ConfigItemsKey.IsLogConnectStringKey, false, false);
+            //{
+            //    get
+            //    {
+            //        var config = Ioc.Instance.CurrentConfigService;
+            //        if (config == null) return false;
+            //        return config.GetAppSettingValue(ConfigItemsKey.IsLogConnectStringKey, false, false);
+            //    }
+            //}
 
-            public static int DapperWarnMs => GetConfigIntValue(ConfigItemsKey.DapperWarnMsKey, 100);
+            public static int DapperWarnMs => GetAppSettingValue(ConfigItemsKey.DapperWarnMsKey, 100, false);
 
-            private static int GetConfigIntValue(string key, int defaultValue = 0)
-            {
-                try
-                {
-                    var config = Ioc.Instance.CurrentConfigService;
-                    if (config == null) return defaultValue;
-                    var value1 = config.Configuration.GetSection(key).Get<int>();
-                    var value2 = config.GetAppSetting(key, defaultValue, false);
-                    return Math.Max(value2, value1);
-                }
-                catch (Exception ex)
-                {
-                    return defaultValue;
-                }
-            }
+            //private static int GetConfigIntValue(string key, int defaultValue = 0)
+            //{
+            //    try
+            //    {
+            //        var config = Ioc.Instance.CurrentConfigService;
+            //        if (config == null) return defaultValue;
+            //        var value1 = config.Configuration.GetSection(key).Get<int>();
+            //        var value2 = config.GetAppSettingValue(key, defaultValue, false);
+            //        return Math.Max(value2, value1);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        return defaultValue;
+            //    }
+            //}
 
             private static class ConfigItemsKey
             {

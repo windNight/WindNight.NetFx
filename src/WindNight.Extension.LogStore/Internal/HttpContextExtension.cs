@@ -1,7 +1,7 @@
-﻿using System.Net.NetworkInformation;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
-namespace WindNight.Extension.Logger.DcLog.Internal
+namespace WindNight.Extension.Logger.DcLog.@internal
 {
     internal static class HttpContextExtension
     {

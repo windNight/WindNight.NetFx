@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 
@@ -7,10 +7,9 @@ namespace WindNight.LogExtension
     /// <inheritdoc />
     public class DefaultLogService : ILogService
     {
-        public void AddLog(LogLevels logLevel, string msg, Exception? exception = null, long millisecond = 0,
-            string url = "",
-            string serverIp = "", string clientIp = "", bool appendMessage = true, string traceId = "")
+        public void AddLog(LogLevels logLevel, string msg, Exception? exception = null, long millisecond = 0, string url = "", string serverIp = "", string clientIp = "", bool appendMessage = true, string traceId = "")
         {
+
             switch (logLevel)
             {
                 case LogLevels.Debug:

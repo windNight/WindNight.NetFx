@@ -1,4 +1,4 @@
-﻿#if !NET45
+#if !NET45
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
@@ -10,8 +10,7 @@ namespace Microsoft.Extensions.Configuration.Extensions
     /// </summary>
     public static class ConfigurationExtension
     {
-        public static IServiceCollection ConfigureOption<TOptions>(this IServiceCollection services,
-            IConfiguration configuration)
+        public static IServiceCollection ConfigureOption<TOptions>(this IServiceCollection services, IConfiguration configuration)
             where TOptions : class, new()
         {
             var sectionKey = typeof(TOptions).Name;
@@ -19,8 +18,7 @@ namespace Microsoft.Extensions.Configuration.Extensions
             return services;
         }
 
-        public static IServiceCollection ConfigureOption<TOptions>(this IServiceCollection services,
-            IConfiguration configuration, string sectionKey)
+        public static IServiceCollection ConfigureOption<TOptions>(this IServiceCollection services, IConfiguration configuration, string sectionKey)
             where TOptions : class, new()
         {
             var config = configuration.GetSection(sectionKey);
@@ -50,7 +48,9 @@ namespace Microsoft.Extensions.Configuration.Extensions
                 var _section = _config.GetSection(m.Path);
                 list.Add(new ConfigBaseInfo2
                 {
-                    Key = m.Key, Path = m.Path, Value = GetConfiguration(_section.GetChildren()),
+                    Key = m.Key,
+                    Path = m.Path,
+                    Value = GetConfiguration(_section.GetChildren()),
                 });
             }
 
@@ -81,7 +81,9 @@ namespace Microsoft.Extensions.Configuration.Extensions
                 var _section = _config.GetSection(m.Path);
                 list.Add(new ConfigBaseInfo2
                 {
-                    Key = m.Key, Path = m.Path, Value = _config.GetConfiguration(_section.GetChildren()),
+                    Key = m.Key,
+                    Path = m.Path,
+                    Value = _config.GetConfiguration(_section.GetChildren()),
                 });
             }
 

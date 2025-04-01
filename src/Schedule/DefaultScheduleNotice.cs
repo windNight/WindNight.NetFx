@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Schedule.Abstractions;
-using Schedule.Internal;
+using Schedule.@internal;
 
 namespace Schedule
 {
     public class DefaultScheduleNotice : IScheduleNotice
-    { 
+    {
         public void DoNotice(JobBaseInfo jobBaseInfo, string message)
         {
             DoNoticeAsync(jobBaseInfo, message).GetAwaiter().GetResult();

@@ -37,7 +37,7 @@ namespace RabbitMqDemos
             var config = producer.CurrentProducerSettings;
             var co = Ioc.GetService<IConfiguration>();
             var dd = co.GetSection("RabbitMqOptions").Get<RabbitMqOptions>();
-
+            dd.Log2Console();
 #endif
         }
 
@@ -49,19 +49,20 @@ namespace RabbitMqDemos
                 {
                     configBuilder.SetBasePath(AppContext.BaseDirectory)
                         .AddJsonFile("Config/AppSettings.json", false, true)
-                        .AddJsonFile("Config/rabbitMqConfig.json", false, true)
+                        //.AddJsonFile("Config/rabbitMqConfig.json", false, true)
                         .AddJsonFile("Config/rabbitMqConfigV2.json", false, true)
                         ;
                 },
                 configureServicesDelegate: (context, services) =>
                 {
-                    services.AddConfigService();
-                    services.AddDefaultLogService();
+                    var configuration = context.Configuration;
+                    services.AddConfigService(context.Configuration);
+                    services.AddDefaultLogService(configuration);
 
-                    services.AddRabbitMqConsumer();
+                    services.AddRabbitMqConsumer(configuration);
                     services.AddHostedService<TestConsumerBackgroundService>();
 
-                    services.AddRabbitMqProducer();
+                    services.AddRabbitMqProducer(configuration);
 
 
 
@@ -77,10 +78,10 @@ namespace RabbitMqDemos
 
     public static class ConfigExtensionServer
     {
-        public static IServiceCollection AddConfigService(this IServiceCollection services)
+        public static IServiceCollection AddConfigService(this IServiceCollection services, IConfiguration configuration)
         {
             ConfigItems.Init();
-            services.AddDefaultConfigService();
+            services.AddDefaultConfigService(configuration);
 
             return services;
         }

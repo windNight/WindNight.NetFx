@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <Import Project="..\..\build\common.props" />
     <PropertyGroup>
         <TargetFrameworks>
@@ -24,19 +24,15 @@
         <Folder Include="Abstractions\" />
     </ItemGroup>
 
+
     <ItemGroup>
-        <!--<ProjectReference Include="..\WindNight.AspNetCore.Mvc.Extensions\WindNight.AspNetCore.Mvc.Extensions.csproj" />-->
-        <ProjectReference Include="..\WindNight.Config\WindNight.Config.csproj" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
+        <!--<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />-->
     </ItemGroup>
 
     <ItemGroup>
-
-        <!--<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />-->
-
-        <PackageReference Include="WindNight.AspNetCore.Mvc.Extensions" Version="1.1.0-beta.25031801" />
-        <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25031102" />
-
-
+        <!--<ProjectReference Include="..\WindNight.AspNetCore.Mvc.Extensions\WindNight.AspNetCore.Mvc.Extensions.csproj" />-->
+        <ProjectReference Include="..\WindNight.Config\WindNight.Config.csproj" />
     </ItemGroup>
 
     <!--<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">

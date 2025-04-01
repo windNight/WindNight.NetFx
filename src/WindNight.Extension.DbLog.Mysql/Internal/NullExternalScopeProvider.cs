@@ -1,9 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Extensions.Logging;
 
-namespace WindNight.Extension.Logger.DbLog.Internal
+namespace WindNight.Extension.Logger.DbLog.@internal
 {
     internal class NullExternalScopeProvider : IExternalScopeProvider
     {
@@ -34,7 +31,7 @@ namespace WindNight.Extension.Logger.DbLog.Internal
         {
         }
 
-        public static NullScope Instance { get; } = new NullScope();
+        public static NullScope Instance { get; } = new();
 
         /// <inheritdoc />
         public void Dispose()

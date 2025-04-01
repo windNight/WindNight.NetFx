@@ -2,11 +2,12 @@ using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.ConfigCenter.Extensions;
 using WindNight.RabbitMq.Abstractions;
 
 namespace WindNight.RabbitMq.@internal
 {
-    internal static class ConfigItems
+    internal class ConfigItems : DefaultConfigItemBase
     {
         public static bool IsCanLogDebug
         {
@@ -17,24 +18,16 @@ namespace WindNight.RabbitMq.@internal
                     return RabbitMqOptions.CanLogDebug;
                 }
 
-                return GetAppSetting(ConstKey.IsCanLogDebugKey, "1", false) == "1";
+                return GetAppSettingValue(ConstKey.IsCanLogDebugKey, false, false);
             }
         }
 
-        public static string SysAppId =>
-            CurrentConfig.GetAppSetting("AppId", "");
 
-        public static string SysAppCode =>
-            CurrentConfig.GetAppSetting("AppCode", "");
-
-        public static string SysAppName =>
-            CurrentConfig.GetAppSetting("AppName", "");
 
         public static bool IsStopConsumer =>
-            CurrentConfig.GetAppSetting("IsStopConsumer", false, false);
+            GetAppSettingValue("IsStopConsumer", false, false);
 
-        private static IConfiguration Configuration => Ioc.GetService<IConfiguration>();
-        private static IConfigService CurrentConfig => Ioc.GetService<IConfigService>();
+
 
         public static RabbitMqConfig RabbitMqConfig
         {
@@ -53,67 +46,16 @@ namespace WindNight.RabbitMq.@internal
         {
             get
             {
-                if (Configuration == null) return null;
-                var config = Configuration.GetSectionConfigValue<RabbitMqOptions>(nameof(RabbitMqOptions));
+                // if (Configuration == null) return null;
+                var config = GetSectionValue<RabbitMqOptions>(nameof(RabbitMqOptions));
                 return config;
             }
         }
 
-        private static T GetSectionConfigValue<T>(
-            this IConfiguration configuration,
-            string sectionKey,
-            T defaultValue = default,
-            bool isThrow = false)
-        {
-            if (defaultValue == null)
-                defaultValue = default;
-            var obj = defaultValue;
-            try
-            {
-                if (configuration == null)
-                    return defaultValue;
-                obj = configuration.GetSection(sectionKey).Get<T>();
-                return obj ?? defaultValue;
-            }
-            catch (Exception ex)
-            {
-                if (isThrow)
-                {
-                    LogHelper.Error(
-                        $"GetSection({(object)sectionKey}) configValue({(object)obj}) defaultValue({(object)defaultValue}) isThrow({(object)isThrow}) handler error {(object)ex.Message}",
-                        ex);
-                    throw;
-                }
-
-                LogHelper.Warn(
-                    $"GetSection({(object)sectionKey})  configValue({(object)obj}) defaultValue({(object)defaultValue}) isThrow({(object)isThrow})  handler error {(object)ex.Message}",
-                    ex);
-            }
-
-            return defaultValue;
-        }
-
-        private static string GetAppSetting(string configKey, string defaultValue = "", bool isThrow = true)
-        {
-            var configService = Ioc.GetService<IConfigService>();
-            if (configService == null) return defaultValue;
-            return configService.GetAppSetting(configKey, defaultValue, isThrow);
-        }
 
 
-        //
-        // 参数:
-        //   connKey:
-        //
-        //   defaultValue:
-        //
-        //   isThrow:
-        private static string GetConnString(string connKey, string defaultValue = "", bool isThrow = true)
-        {
-            var configService = Ioc.GetService<IConfigService>();
-            if (configService == null) return defaultValue;
-            return configService.GetConnString(connKey, defaultValue, isThrow);
-        }
+
+
 
         //
         // 参数:
@@ -130,19 +72,6 @@ namespace WindNight.RabbitMq.@internal
             return configService.GetFileConfig<T>(fileName, isThrow);
         }
 
-        //
-        // 参数:
-        //   fileName:
-        //
-        //   defaultValue:
-        //
-        //   isThrow:
-        private static string GetFileConfigString(string fileName, string defaultValue = "", bool isThrow = true)
-        {
-            var configService = Ioc.GetService<IConfigService>();
-            if (configService == null) return defaultValue;
-            return configService.GetFileConfigString(fileName, defaultValue, isThrow);
-        }
 
         internal static class ConstKey
         {

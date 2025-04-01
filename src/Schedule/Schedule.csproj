@@ -17,6 +17,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.2" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\WindNight.Config\WindNight.Config.csproj" />
 		<ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />
 		<ProjectReference Include="..\WindNight.Extension\WindNight.Extension.csproj" />
 	</ItemGroup>

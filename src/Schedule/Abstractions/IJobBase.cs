@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Quartz;
 
 namespace WindNight.Core.Abstractions
@@ -9,12 +9,13 @@ namespace WindNight.Core.Abstractions
 
         string CurrentJobCode { get; }
 
-        Task<bool> DoJobAsync(IJobExecutionContext context);
+        //Task<bool> DoJobAsync(IJobExecutionContext context);
+        Task<bool> ExecuteWithResultAsync(IJobExecutionContext context);
 
 
-        Task<bool> RunTestAtStartAsync();
+        Task<bool> RunTestAtStartAsync(int delayS = 2);
 
-        bool RunTestAtStart();
+        bool RunTestAtStart(int delayS = 2);
 
     }
 }

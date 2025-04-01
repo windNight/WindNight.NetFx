@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
@@ -14,12 +14,9 @@ namespace Schedule
         /// </summary>
         /// <param name="stoppingToken">Triggered when <see cref="IHostedService.StopAsync(CancellationToken)" /> is called.</param>
         /// <returns>A <see cref="Task" /> that represents the long running operations.</returns>
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var modIniter = new ScheduleModIniter();
-
-            modIniter.Init();
-            return Task.CompletedTask;
+            await ScheduleModIniter.Instance.InitAsync(stoppingToken: stoppingToken);
         }
 
         /// <summary>
@@ -27,11 +24,14 @@ namespace Schedule
         /// </summary>
         /// <param name="cancellationToken">ndicates that the shutdown process should no longer be graceful.</param>
         /// <returns></returns>
-        public override Task StopAsync(CancellationToken cancellationToken)
+        public override async Task StopAsync(CancellationToken cancellationToken)
         {
             if (ScheduleModConfig.Instance.DefaultScheduler != null)
-                ScheduleModConfig.Instance.DefaultScheduler.Shutdown(true);
-            return base.StopAsync(cancellationToken);
+            {
+                await ScheduleModConfig.Instance.DefaultScheduler.Shutdown(true, cancellationToken);
+            }
+            await base.StopAsync(cancellationToken);
+
         }
     }
 }

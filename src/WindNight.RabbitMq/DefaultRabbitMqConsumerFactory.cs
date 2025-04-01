@@ -26,6 +26,7 @@ namespace WindNight.RabbitMq
         {
             IRabbitMqConsumer consumer;
             if (!ConsumerDict.TryGetValue(queueName, out consumer))
+            {
                 lock (objectLock)
                 {
                     if (!ConsumerDict.TryGetValue(queueName, out consumer))
@@ -34,6 +35,7 @@ namespace WindNight.RabbitMq
                         ConsumerDict.TryAdd(queueName, consumer);
                     }
                 }
+            }
 
             return consumer;
         }

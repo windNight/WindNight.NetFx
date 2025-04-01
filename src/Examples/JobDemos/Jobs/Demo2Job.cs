@@ -1,22 +1,41 @@
-using Quartz;
-using Schedule;
 using System;
 using System.Threading.Tasks;
+using JobDemos.Jobs.Demo1;
+using Newtonsoft.Json.Extension;
+using Quartz;
+using Schedule;
+using Schedule.Func;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Attributes.Abstractions;
+using WindNight.Extension;
 
 namespace JobDemos.Jobs.Demo2
 {
     [Alias(nameof(Demo2Job))]
-    public class Demo2Job : BaseJob
+    [DisallowConcurrentExecution]
+    public class Demo2Job : CommonBaseJob<Demo2Job>
     {
 
-        protected override Task<bool> ExecuteWithResultAsync(IJobExecutionContext context)
+        protected override int CurrentUserId => 200;
+        protected override Func<bool, bool> PreTodo => null;
+        public override async Task<bool> ExecuteWithResultAsync(IJobExecutionContext context)
         {
-            Console.WriteLine($"{HardInfo.Now:yyyy-MM-dd HH:mm:sss} I'm {JobContext.CurrentJobBaseInfo}");
-            return Task.FromResult(true);
+            var jobId = JobId;
+            var jobCode = JobCode;
+            var d = CurrentJobCode;
+            var traceId = CurrentItem.GetSerialNumber;
+            var jobRunParams = context.GetJobRunParams();
+            var obj = new { jobId, jobCode, CurrentJobCode, traceId, jobRunParams };
+            var jobBaseInfo = context.GetJobBaseInfo();
+            ConsoleWriteLine($"{HardInfo.NowString} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()}");
+
+            //  Console.WriteLine($"{HardInfo.NowString} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()}{Environment.NewLine}");
+            return await Task.FromResult(true);
+
         }
 
-        public override string CurrentJobCode => nameof(Demo2Job);
+
+
     }
 
     [Alias(nameof(Demo2Job))]

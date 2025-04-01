@@ -5,18 +5,18 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions.Attributes;
 using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Extensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
+using WindNight.Core.Attributes.Abstractions;
 using WindNight.Extension;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 {
     [Route("api/internal")]
-    [HiddenApi(false, true)]
+    [SysApi(10)]
     [NonAuth]
     public class InternalController : ControllerBase // Controller
     {
@@ -72,9 +72,9 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             return new
             {
                 DateTime = HardInfo.Now,
-                ConfigItems.SysAppId,
-                ConfigItems.SysAppCode,
-                ConfigItems.SysAppName,
+                ConfigItems.SystemAppId,
+                ConfigItems.SystemAppCode,
+                ConfigItems.SystemAppName,
                 AssemblyVersions = GetAssemblyVersions(),
                 ServerIp = _httpContextAccessor.HttpContext.GetServerIp(),
                 IpHelper.LocalServerIp,

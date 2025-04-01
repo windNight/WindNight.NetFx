@@ -1,11 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup> 
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
+        <NoWarn>
+            $(NoWarn);CA2007;1701;1702;1705;1591;
+            CS1572;CS1573;CS1574;CS8767;CS8618;CS8601;CS8602;CS0168;CS8600;CS8603;CS8632;CS8604;CS8625;CS8622;CS8620;CS8621;
+            CS8019;
+            NETSDK;NETSDK1138;
+            NU5048;NU5104;NU1803;
+        </NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
-        <!--<ProjectReference Include="..\..\Schedule\Schedule.csproj" />-->
+        <ProjectReference Include="..\..\Schedule\Schedule.csproj" />
         <!--<ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />-->
 
         <!--<PackageReference Include="log4net" Version="3.0.3" />
@@ -16,7 +24,7 @@
 
 		<PackageReference Include="System.Text.Json" Version="9.0.0" />-->
 
-        <PackageReference Include="WindNight.Schedule" Version="1.1.0-beta.25031801" />
+        <!--<PackageReference Include="WindNight.Schedule" Version="1.1.0-beta.25032402" />-->
     </ItemGroup>
 
 </Project>

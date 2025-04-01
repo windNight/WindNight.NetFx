@@ -1,11 +1,6 @@
-using System.Reflection;
 using Microsoft.AspNetCore.Hosting.WnExtensions;
-using Microsoft.AspNetCore.Mvc.WnExtensions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection.WnExtension;
-using Swashbuckle.AspNetCore.Extensions;
-using WindNight.ConfigCenter.Extension;
-using Swashbuckle.AspNetCore.SwaggerUI;
+using WindNight.Config.Abstractions;
+using WindNight.Config.Extensions;
 
 namespace Net8ApiDemo
 {
@@ -13,16 +8,71 @@ namespace Net8ApiDemo
     {
         public Startup(IConfiguration configuration) : base(configuration)
         {
+
         }
 
-        protected override string NamespaceName => Assembly.GetEntryAssembly()?.FullName;
+        protected override string ToAppendDescription => @$"Net8ApiDemo Test for swagger
+<h3 style='color: #27ae60;'>自定义</h3>
+asdasdasdas
+";
+
+        protected override string BuildType
+        {
+            get
+            {
+                var buildType = "";
+#if DEBUG
+                buildType = "Debug";
+#else
+                buildType = "Release";
+#endif
+                return buildType;
+            }
+        }
+
+        //string Version
+        //{
+        //    get
+        //    {
+        //        try
+        //        {
+        //            var assembly = Assembly.GetEntryAssembly();
+        //            var ver = assembly?.GetName()?.Version;
+        //            return ver?.ToString() ?? "v1";
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return "v1";
+        //        }
+        //    }
+        //}
+
+        //protected override string NamespaceName
+        //{
+        //    get
+        //    {
+        //        try
+        //        {
+        //            var t = Assembly.GetEntryAssembly()?.FullName ?? "";
+        //            var name = t.Substring(0, t.IndexOf(", Culture", StringComparison.Ordinal));
+        //            return name;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return "";
+        //        }
+        //    }
+        //}
+
+
         protected override void UseBizConfigure(IApplicationBuilder app)
         {
         }
 
         protected override void ConfigBizServices(IServiceCollection services)
         {
-
+            services.AddSingleton<IConfigCenterAuth, ConfigCenterAuth>();
+            services.AddConfigExtension(Configuration);
         }
 
         protected override Func<Dictionary<string, string>> SelfSwaggerAuthDictFunc => () => new Dictionary<string, string>
@@ -264,5 +314,13 @@ namespace Net8ApiDemo
 
     //}
 
+    public class ConfigCenterAuth : IConfigCenterAuth
+    {
+        public bool OpenConfigCenterAuth { get; set; }
+        public bool ConfigCenterApiAuth()
+        {
+            return true;
+        }
+    }
 
 }

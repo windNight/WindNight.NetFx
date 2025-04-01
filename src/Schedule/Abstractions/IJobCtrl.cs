@@ -1,4 +1,5 @@
-﻿using Quartz;
+using System.Threading.Tasks;
+using Quartz;
 using Schedule.Model;
 
 namespace Schedule.Abstractions
@@ -19,6 +20,8 @@ namespace Schedule.Abstractions
         /// </summary>
         /// <returns></returns>
         bool StartJob(JobMeta jobParam, bool onceJob = false);
+
+        Task<bool> StartJobAsync(JobMeta jobParam, bool onceJob = false);
 
         /// <summary>
         ///     读取配置文件

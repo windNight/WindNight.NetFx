@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json.Extension;
 using System;
 using System.IO;
 using System.Reflection;
+using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
@@ -147,6 +147,10 @@ namespace WindNight.LogExtension
         {
             var sysInfo = GetSysInfo(buildType);
             var msg = $"register info is {sysInfo.ToJsonStr()}";
+            if (traceId.IsNullOrEmpty())
+            {
+                traceId = HardInfo.NodeCode;
+            }
             Add(msg, LogLevels.SysRegister, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage, traceId: traceId);
         }
 
@@ -159,6 +163,10 @@ namespace WindNight.LogExtension
         {
             var sysInfo = GetSysInfo(buildType);
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
+            if (traceId.IsNullOrEmpty())
+            {
+                traceId = HardInfo.NodeCode;
+            }
             Add(msg, LogLevels.SysOffline, exception, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage, traceId: traceId);
         }
 
@@ -173,6 +181,7 @@ namespace WindNight.LogExtension
                 HardInfo = HardInfo.ToString(),
                 BuildType = buildType,
             };
+
             return sysInfo;
 
         }

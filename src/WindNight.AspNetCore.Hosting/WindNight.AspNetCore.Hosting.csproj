@@ -16,7 +16,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25031102" />
+        <!--<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25031102" />-->
     </ItemGroup>
 
     <ItemGroup>

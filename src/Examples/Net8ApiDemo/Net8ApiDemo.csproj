@@ -1,31 +1,51 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <NoWarn>
+            $(NoWarn);CA2007;1701;1702;1705;1591;
+            CS1572;CS1573;CS1574;CS8767;CS8618;CS8601;CS8602;CS0168;CS8600;CS8603;CS8632;CS8604;CS8625;CS8622;CS8620;CS8621;
+            CS8019;
+            NETSDK;NETSDK1138;
+            NU5048;NU5104;NU1803;
+        </NoWarn>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Config\AppSettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Config\ConnectionStrings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Config\log4net.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Config\testConfigs.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Config\testConfigs2.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+    <PropertyGroup>
+        <VersionMajor>1</VersionMajor>
+        <VersionMinor>0</VersionMinor>
+        <VersionPatch>0</VersionPatch>
+        <VersionQuality>50326</VersionQuality>
+        <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</VersionPrefix>
+        <Version>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</Version>
+        <AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
+        <FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</FileVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
+        <ProjectReference Include="..\..\WindNight.Config.Extensions\WindNight.Config.Extensions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="Config\AppSettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="Config\ConnectionStrings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="Config\log4net.config">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="Config\testConfigs.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="Config\testConfigs2.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
 </Project>

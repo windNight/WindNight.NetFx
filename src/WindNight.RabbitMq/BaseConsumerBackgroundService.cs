@@ -84,7 +84,7 @@ namespace WindNight.RabbitMq
                     if (IsStop || stoppingToken.IsCancellationRequested)
                     {
                         LogHelper.Warn(
-                            $"【{ConfigItems.SysAppName}】 {actName} 开始等待 将等待 IsStopConsumer 开启. Thread.Sleep(60000)");
+                            $"【{ConfigItems.SystemAppName}】 {actName} 开始等待 将等待 IsStopConsumer 开启. Thread.Sleep(60000)");
                         Thread.Sleep(60000);
                         break;
                     }

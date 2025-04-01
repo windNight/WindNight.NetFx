@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
 
-namespace WindNight.Extension.Logger.DbLog.Internal
+namespace WindNight.Extension.Logger.DbLog.@internal
 {
     internal static class HttpContextExtension
     {

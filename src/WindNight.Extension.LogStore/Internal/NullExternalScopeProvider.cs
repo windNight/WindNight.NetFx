@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
-namespace WindNight.Extension.Logger.DcLog.Internal
+namespace WindNight.Extension.Logger.DcLog.@internal
 {
     internal class NullExternalScopeProvider : IExternalScopeProvider
     {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -21,11 +21,13 @@ namespace WindNight.LogExtension
             get
             {
                 if (_log == null)
+                {
                     lock (lockHelper)
                     {
                         if (_log == null)
                             Init();
                     }
+                }
 
                 return _log;
             }
@@ -56,8 +58,7 @@ namespace WindNight.LogExtension
 
         private static string Log4NetConfigDir => Path.GetDirectoryName(Log4NetConfigPath) ?? "";
 
-        private static string CurrentAppDir =>
-            Environment.CurrentDirectory;
+        private static string CurrentAppDir => Environment.CurrentDirectory;
 
         /// <summary>
         ///  需要区分windows 和linux 

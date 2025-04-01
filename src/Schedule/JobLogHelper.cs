@@ -1,10 +1,10 @@
-﻿using System;
+using System;
+using Schedule.@internal;
 
 namespace Schedule
 {
     public static class JobLogHelper
     {
-
         public static void Debug(string message, string actionName = "", long millisecond = 0)
         {
             LogHelper.Debug($"{JobContext.CurrentJobBaseInfo}: {message}", url: FixActionName(actionName), millisecond: millisecond, traceId: JobContext.JobId);

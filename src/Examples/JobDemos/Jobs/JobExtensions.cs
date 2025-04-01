@@ -1,4 +1,4 @@
-﻿using JobDemos.Jobs.Demo1;
+using JobDemos.Jobs.Demo1;
 using JobDemos.Jobs.Demo2;
 using JobDemos.Jobs.Demo3;
 using Microsoft.Extensions.Configuration;

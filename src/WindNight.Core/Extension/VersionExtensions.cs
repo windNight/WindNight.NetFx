@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace WindNight.Core.Extension
 {
@@ -13,11 +13,22 @@ namespace WindNight.Core.Extension
         /// </summary>
         /// <param name="version"></param>
         /// <returns></returns>
-        public static VersionStruct Convert2Struct(this string version)
+        public static VersionStruct Convert2Struct(this string version, bool ignorePre = true)
         {
             try
             {
-                return new VersionStruct { Version = version };
+                if (version.IsNullOrEmpty())
+                {
+                    return VersionStruct.NullVersionStruct;
+                }
+
+                var vers = version;
+                if (ignorePre)
+                {
+                    vers = version.Split("-")[0];
+                }
+
+                return new VersionStruct { Version = vers };
             }
             catch // (Exception ex)
             {
@@ -27,26 +38,33 @@ namespace WindNight.Core.Extension
 
         public static bool IsMax(this string version)
         {
+
             return string.Equals(version, VersionStruct.AllVersion, StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(version, VersionStruct.MaxVersion, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static long Convert2Long(this string? version, long defaultVersion = 0L, bool isThrow = false)
+        public static long Convert2Long(this string? version, long defaultVersion = 0L, bool isThrow = false, bool ignorePre = true)
         {
-            return version.Convert2Long(out var firstNumber, defaultVersion, isThrow);
+            return version.Convert2Long(out var firstNumber, defaultVersion, isThrow, ignorePre);
         }
 
         public static long Convert2Long(this string? version, out int firstNumber, long defaultVersion = 0L,
-            bool isThrow = true)
+            bool isThrow = true, bool ignorePre = true)
         {
             firstNumber = 0;
             try
             {
                 if (version.IsNullOrEmpty() || version == "0") return defaultVersion;
                 if (version.Trim() == "*") return VersionStruct.MaxVersionLong;
-                long.TryParse(version.Replace(".", ""), out var result);
+                var vers = version;
+                if (ignorePre)
+                {
+                    vers = version.Split("-")[0];
+                }
+
+                long.TryParse(vers.Replace(".", ""), out var result);
                 if (result == 0L) return defaultVersion;
-                var strArray = version.Split('.');
+                var strArray = vers.Split('.');
                 firstNumber = strArray[0].ToInt();
                 if (strArray.Length == 3)
                     return long.Parse(strArray[0] + strArray[1].PadLeft(4, '0') + strArray[2].PadLeft(8, '0'));
@@ -64,6 +82,8 @@ namespace WindNight.Core.Extension
                 return defaultVersion;
             }
         }
+
+
     }
 
     public struct VersionStruct
@@ -117,7 +137,7 @@ namespace WindNight.Core.Extension
         }
 
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is VersionStruct objVersionStruct)
             {
@@ -137,5 +157,6 @@ namespace WindNight.Core.Extension
             // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
             return base.GetHashCode();
         }
+
     }
 }

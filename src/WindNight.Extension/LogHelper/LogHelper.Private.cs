@@ -1,8 +1,7 @@
-﻿using Newtonsoft.Json.Extension;
 using System;
 using System.IO;
-using System.Linq;
 using WindNight.Core.Abstractions;
+using WindNight.Core.ExceptionExt;
 using WindNight.Extension;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
@@ -11,12 +10,16 @@ namespace WindNight.LogExtension
     public static partial class LogHelper
     {
         public static void Add(string msg, LogLevels logLevel, Exception? errorStack = null, bool isTimeout = false,
-            long millisecond = 0,
-            // [Maxlength(255)]
+            long millisecond = 0, // [Maxlength(255)]
             string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false, string traceId = "")
         {
             try
             {
+                var canLog = CanLog(logLevel);
+                if (!canLog)
+                {
+                    return;
+                }
                 var logInfo = GeneratorLogInfo(msg, logLevel, errorStack, millisecond, url, serverIp, clientIp,
                     appendMessage, traceId);
 
@@ -51,19 +54,34 @@ namespace WindNight.LogExtension
             return logInfo;
         }
 
-        static string FixLogMessage(string msg) => string.Concat(ConfigItems.SystemAppName, $" [请求序列号：{CurrentItem.GetSerialNumber}]-0: ", msg);
+        static string FixLogMessage(string msg) => ConfigItems.SystemAppName.Concat($" TraceId:[{CurrentItem.GetSerialNumber}]:", msg);
 
-        private static void DoConsoleLog(LogLevels logLevel, string message, Exception? exception = null)
+
+        static void DoConsoleLog(LogLevels logLevel, string message, Exception? exception = null)
         {
-            if (logLevel > LogLevels.Warning)
-                RecordLog.WriteLog($"日志记录异常:【{logLevel}】{message} Exception: {exception.ToJsonStr()}");
-
-            Console.ForegroundColor = logLevel > LogLevels.Information ? ConsoleColor.Red : ConsoleColor.Green;
-            Console.WriteLine(
-                $"ConsoleLog:【{logLevel}】{message} Exception:{exception.ToJsonStr()}");
-            Console.ResetColor();
+            if (ConfigItems.LogOnConsole)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                if (logLevel > LogLevels.Information) Console.ForegroundColor = ConsoleColor.Red;
+                if (exception != null)
+                {
+                    message = $"{message} {Environment.NewLine} {exception.GetMessage()}";
+                }
+                Console.WriteLine($"=={HardInfo.NowString}==ConsoleLog:{Environment.NewLine}{message}");
+                Console.ResetColor();
+            }
         }
 
+
+        static void DoConsoleLog(string message)
+        {
+            if (ConfigItems.LogOnConsole)
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"=={HardInfo.NowString}==ConsoleLog:{Environment.NewLine}{message}");
+                Console.ResetColor();
+            }
+        }
 
         static void FixLogInfo(LogInfo logInfo, bool appendMessage)
         {
@@ -86,7 +104,7 @@ namespace WindNight.LogExtension
 
                 if (logInfo.ClientIp.IsNullOrEmpty()) logInfo.ClientIp = CurrentItem.GetItem<string>(ThreadContext.CLIENTIP);
                 if (logInfo.RequestUrl.IsNullOrEmpty()) logInfo.RequestUrl = CurrentItem.GetItem<string>(ThreadContext.REQUESTPATH);
-                if (appendMessage && ConfigItems.IsAppendLogMessage)
+                if (appendMessage || ConfigItems.IsAppendLogMessage)
                 {
                     var msg = logInfo.Content;
                     msg = msg?.AppendLogMessage();

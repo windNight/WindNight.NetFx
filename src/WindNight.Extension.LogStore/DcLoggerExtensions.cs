@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -10,7 +10,6 @@ using WindNight.Extension.Logger.DcLog.Abstractions;
 
 namespace WindNight.Extension.Logger.DcLog
 {
-
     public static class DcLoggerExtensions
     {
         /// <summary> </summary>
@@ -19,29 +18,27 @@ namespace WindNight.Extension.Logger.DcLog
         /// <summary> </summary>
         public static DcLogOptions DcLogOptions => Ioc.GetService<IOptionsMonitor<DcLogOptions>>().CurrentValue;
 
-        public static IServiceCollection AddDcLogger(this IServiceCollection services,
-            Action<DcLogOptions> configure,
-            IDcLoggerProcessor loggerProcessor = null)
+        public static IServiceCollection AddDcLogger(this IServiceCollection services, IConfiguration configuration, Action<DcLogOptions> configure, IDcLoggerProcessor loggerProcessor = null)
         {
             if (configure == null) throw new ArgumentNullException(nameof(configure));
             services.Configure(configure);
             services.AddSingleton<DcLogOptions>();
 
-            services.AddInternalLog(loggerProcessor);
+            services.AddInternalLog(configuration, loggerProcessor);
 
             return services;
         }
 
 
         public static IServiceCollection AddDcLogger(this IServiceCollection services,
-            IConfiguration configuration = null,
+            IConfiguration configuration,
             IDcLoggerProcessor loggerProcessor = null)
         {
             if (configuration == null) configuration = services.BuildServiceProvider().GetService<IConfiguration>();
             services.ConfigureOption<DcLogOptions>(configuration);
             // var configValue = services.BuildServiceProvider().GetService<IOptionsMonitor<DbLogOptions>>().CurrentValue;
 
-            services.AddInternalLog(loggerProcessor);
+            services.AddInternalLog(configuration, loggerProcessor);
             return services;
         }
 
@@ -51,9 +48,7 @@ namespace WindNight.Extension.Logger.DcLog
         /// <param name="builder"></param>
         /// <param name="loggerProcessor"></param>
         /// <returns></returns>
-        public static ILoggingBuilder AddDcLogger(this ILoggingBuilder builder,
-            IConfiguration configuration = null,
-            IDcLoggerProcessor loggerProcessor = null)
+        public static ILoggingBuilder AddDcLogger(this ILoggingBuilder builder, IConfiguration configuration, IDcLoggerProcessor loggerProcessor = null)
         {
             builder.AddConfiguration();
             var services = builder.Services;
@@ -71,7 +66,7 @@ namespace WindNight.Extension.Logger.DcLog
             // services.AddSingleton<DbLogOptions>();
             // var configValue = services.BuildServiceProvider().GetService<IOptionsMonitor<DbLogOptions>>().CurrentValue;
 
-            services.AddInternalLog(loggerProcessor);
+            services.AddInternalLog(configuration, loggerProcessor);
 
             return builder;
         }
@@ -82,9 +77,7 @@ namespace WindNight.Extension.Logger.DcLog
         /// <param name="configure"></param>
         /// <param name="loggerProcessor"></param>
         /// <returns></returns>
-        public static ILoggingBuilder AddDcLogger(this ILoggingBuilder builder,
-            Action<DcLogOptions> configure,
-            IDcLoggerProcessor loggerProcessor = null)
+        public static ILoggingBuilder AddDcLogger(this ILoggingBuilder builder, IConfiguration configuration, Action<DcLogOptions> configure, IDcLoggerProcessor loggerProcessor = null)
         {
             if (configure == null) throw new ArgumentNullException(nameof(configure));
 
@@ -93,7 +86,7 @@ namespace WindNight.Extension.Logger.DcLog
             services.Configure(configure);
             services.AddSingleton<DcLogOptions>();
 
-            services.AddInternalLog(loggerProcessor);
+            services.AddInternalLog(configuration, loggerProcessor);
 
             return builder;
         }
@@ -103,25 +96,21 @@ namespace WindNight.Extension.Logger.DcLog
         /// </summary>
         /// <param name="services"></param>
         /// <param name="loggerProcessor"></param>
-        public static void UseDcLoggerProcessor(this IServiceCollection services,
-            IDcLoggerProcessor loggerProcessor = null)
+        public static void UseDcLoggerProcessor(this IServiceCollection services, IConfiguration configuration, IDcLoggerProcessor loggerProcessor = null)
         {
-            services.AddInternalLog(loggerProcessor);
+            services.AddInternalLog(configuration, loggerProcessor);
         }
 
-        private static void AddInternalLog(this IServiceCollection services,
+        private static void AddInternalLog(this IServiceCollection services, IConfiguration configuration,
             IDcLoggerProcessor loggerProcessor = null)
         {
             services.AddSingleton<ILoggerProvider, DcLoggerProvider>();
 
-            services.AddDcLoggerProcessor(loggerProcessor);
-
+            services.AddDcLoggerProcessor(configuration, loggerProcessor);
         }
 
 
-
-        private static IServiceCollection AddDcLoggerProcessor(this IServiceCollection services,
-            IDcLoggerProcessor loggerProcessor = null)
+        private static IServiceCollection AddDcLoggerProcessor(this IServiceCollection services, IConfiguration configuration, IDcLoggerProcessor loggerProcessor = null)
         {
             if (loggerProcessor != null)
             {
@@ -136,5 +125,4 @@ namespace WindNight.Extension.Logger.DcLog
             return services;
         }
     }
-
 }

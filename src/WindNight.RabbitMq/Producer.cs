@@ -183,7 +183,7 @@ namespace WindNight.RabbitMq
 
         public void Dispose()
         {
-            ///退出修复线程
+            //退出修复线程
             breakRepairLoop = true;
         }
 
@@ -369,7 +369,10 @@ namespace WindNight.RabbitMq
         {
             var msg = new
             {
-                Exchange = producerConfigInfo.ExchangeName, RoutingKey = routingKey, Msg = message, Uri = EncryptUri,
+                Exchange = producerConfigInfo.ExchangeName,
+                RoutingKey = routingKey,
+                Msg = message,
+                Uri = EncryptUri,
             }.ToJsonStr();
             spareProduce.Send(msg, producerConfigInfo.SpareRoutingKey);
         }

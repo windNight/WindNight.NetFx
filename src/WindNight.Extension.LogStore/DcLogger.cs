@@ -1,9 +1,9 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
 using WindNight.Extension.Logger.DcLog.Abstractions;
-using WindNight.Extension.Logger.DcLog.Internal;
+using WindNight.Extension.Logger.DcLog.@internal;
 
 namespace WindNight.Extension.Logger.DcLog
 {

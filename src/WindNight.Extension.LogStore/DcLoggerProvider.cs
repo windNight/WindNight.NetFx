@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using WindNight.Extension.Logger.DcLog.Abstractions;
-using WindNight.Extension.Logger.DcLog.Internal;
+using WindNight.Extension.Logger.DcLog.@internal;
 
 namespace WindNight.Extension.Logger.DcLog
 {

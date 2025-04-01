@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+    <PropertyGroup>
+        <Description>In .NET reflection is slow... well, kinda slow. If you need access to the members of an arbitrary type, with the type and member-names known only at runtime - then it is frankly hard (especially for DLR types). This library makes such access easy and fast.</Description>
+        <Copyright>Copyright © Marc Gravell 2012-2016</Copyright>
+        <AssemblyTitle>FastMember</AssemblyTitle>
+        <Version>1.5.0</Version>
+        <Authors>Marc Gravell</Authors>
+        <TargetFrameworks>
+            netstandard2.0;
+            netstandard2.1;
+            <!--net461;
+        netcoreapp2.0-->
+        </TargetFrameworks>
+        <AssemblyName>FastMember_ForEngird</AssemblyName>
+        <PackageTags>Reflection;Dynamic;Member;Access</PackageTags>
+        <PackageReleaseNotes>core-clr support (rtm)</PackageReleaseNotes>
+        <PackageProjectUrl>https://github.com/mgravell/fast-member</PackageProjectUrl>
+        <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/mgravell/fast-member</RepositoryUrl>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <OutputPath>..\..\..\..\Output\$(Configuration)</OutputPath>
+    </PropertyGroup>
+
+
+    <PropertyGroup>
+        <VersionMajor>1</VersionMajor>
+        <VersionMinor>5</VersionMinor>
+        <VersionPatch>0</VersionPatch>
+        <VersionQuality>0</VersionQuality>
+        <VersionTT>-beta.25031001</VersionTT>
+        <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</VersionPrefix>
+        <AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
+        <FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</FileVersion>
+
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <EmbeddedResource Include="**\*.resx" />
+        <EmbeddedResource Include="compiler\resources\**\*" />
+    </ItemGroup>
+
+    <!--<ItemGroup Condition="'$(TargetFramework)'=='net461'">
+        <Reference Include="Microsoft.CSharp" />
+    </ItemGroup>
+
+
+    <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+        <PackageReference Include="System.Data.Common" Version="4.3.0" />
+        <PackageReference Include="System.Reflection" Version="4.3.0" />
+        <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+        <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
+        <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+        <PackageReference Include="System.Security.Permissions" Version="9.0.2" />
+    </ItemGroup>-->
+
+
+    <ItemGroup>
+        <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+        <PackageReference Include="System.Data.Common" Version="4.3.0" />
+        <PackageReference Include="System.Reflection" Version="4.3.0" />
+        <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+        <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
+        <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+        <PackageReference Include="System.Security.Permissions" Version="9.0.2" />
+    </ItemGroup>
+
+
+</Project>

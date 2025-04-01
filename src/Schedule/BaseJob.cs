@@ -1,15 +1,25 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Quartz;
+using Schedule.Abstractions;
 using Schedule.Func;
+using Schedule.@internal;
 using Schedule.Model;
 using Schedule.Model.Enums;
 
 namespace Schedule
 {
-    public abstract class BaseJob : IJob
+    public abstract partial class BaseJob : IJob
     {
+
+        /// <summary>
+        ///     重写后必须返回正确的值 业务代码执行结果 true|false
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public abstract Task<bool> ExecuteWithResultAsync(IJobExecutionContext context);
+
         /// <summary> </summary>
         protected virtual string JobId { get; private set; } = string.Empty;
 
@@ -27,15 +37,35 @@ namespace Schedule
             CurrentJobContext = context;
         }
 
+
+
+    }
+
+    public abstract partial class BaseJob
+    {
+
         public virtual async Task Execute(IJobExecutionContext context)
         {
-
             CurrentJobContext = context;
             JobId = context.GetJobDbId();
             JobCode = context.GetJobCode();
             JobName = context.GetJobName();
+            var jobInfo = context.GetJobBaseInfo();
+            if (jobInfo == null || jobInfo.JobExecTs < HardInfo.Now.AddMinutes(-2).ConvertToUnixTime())
+            {
+                jobInfo = new JobBaseInfo
+                {
+                    JobId = JobId,
+                    JobCode = JobCode,
+                    JobName = JobName,
+                    JobExecTs = HardInfo.NowUnixTime,
+                    ExecTag = "BaseJob.Execute",
+                };
+                context.JobDetail.SetJobBaseInfo(jobInfo);
+                JobContext.SetCurrentJobBaseInfo(jobInfo);
 
-            JobContext.SetCurrentJobBaseInfo(JobId, JobCode, JobName);
+            }
+
 
             var job = context.JobDetail;
             var state = JobBusinessStateEnum.Processing;
@@ -52,34 +82,34 @@ namespace Schedule
 
             job.SetJobBusinessState(state);
         }
+    }
 
-        public virtual async Task<bool> RunTestAtStartAsync()
+    public abstract partial class BaseJob
+    {
+
+        public virtual async Task<bool> RunTestAtStartAsync(int delayS = 2)
         {
             return await Task.FromResult(true);
         }
 
-        public virtual bool RunTestAtStart()
+        public virtual bool RunTestAtStart(int delayS = 2)
         {
             return true;
         }
 
+    }
 
-        /// <summary>
-        ///     重写后必须返回正确的值 业务代码执行结果 true|false
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        protected abstract Task<bool> ExecuteWithResultAsync(IJobExecutionContext context);
-
-
-        protected virtual void ConsoleWriteLine(string format, params object[] args)
+    public abstract partial class BaseJob
+    {
+        protected virtual void ConsoleWriteLine(string msg, bool isForce = true)
         {
-#if DEBUG
-            var stringBuilder = new StringBuilder(format.Length + args.Length * 8);
-            stringBuilder.AppendFormat(null, format, args);
-            var msg = stringBuilder.ToString();
-            Console.WriteLine(msg);
-#endif
+            //var stringBuilder = new StringBuilder(format.Length + args.Length * 8);
+            //stringBuilder.AppendFormat(null, format, args);
+            //var msg = stringBuilder.ToString();
+            msg.Log2Console(isForce: true);
+
         }
     }
+
+
 }

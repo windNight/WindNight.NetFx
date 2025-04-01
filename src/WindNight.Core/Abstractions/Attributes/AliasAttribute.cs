@@ -1,6 +1,7 @@
 using System;
+using System.Xml.Linq;
 
-namespace WindNight.Core.Abstractions
+namespace WindNight.Core.Attributes.Abstractions
 {
     [AttributeUsage(AttributeTargets.All)]
     public class AliasAttribute : Attribute
@@ -16,4 +17,12 @@ namespace WindNight.Core.Abstractions
 
         public string Name { get; set; }
     }
+
+
+
+
+
 }
+
+
+

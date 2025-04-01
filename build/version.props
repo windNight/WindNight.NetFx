@@ -22,13 +22,16 @@ Patch：仅可向后兼容的 bug 修复
 1.0.1-alpha
 -->
 		<VersionMajor>1</VersionMajor>
-		<VersionMinor>1</VersionMinor>
+		<VersionMinor>2</VersionMinor>
 		<VersionPatch>0</VersionPatch>
 		<VersionQuality>0</VersionQuality>
-		<VersionTT>-beta.25031801</VersionTT>
-		<VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</VersionPrefix>
+		<VersionTT>-beta.25040101</VersionTT>
+		<!--<VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</VersionPrefix>
 		<AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
-		<FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</FileVersion>
+		<FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</FileVersion>-->
+		<VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)$(VersionTT)</VersionPrefix>
+		<AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch)</AssemblyVersion>
+		<FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch)$(VersionTT)</FileVersion>
 		<!--<Version>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</Version>-->
 	</PropertyGroup>
 </Project>

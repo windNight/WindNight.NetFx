@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Text.Extension;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Quartz;
 using Schedule.Abstractions;
+using Schedule.Model.Enums;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;
 using static Quartz.Logging.OperationName;
@@ -28,21 +29,20 @@ namespace Schedule
         {
         }
 
-        public abstract Task<bool> DoJobAsync(IJobExecutionContext context);
+        //public abstract Task<bool> DoJobAsync(IJobExecutionContext context);
 
         protected abstract int CurrentUserId { get; }
 
         protected abstract Func<bool, bool> PreTodo { get; }
 
-        
+
         #region RunTest
 
 
         public virtual bool CanRunTest => CurrentJobMeta?.CanRunTest ?? false;
 
 
-
-        public override bool RunTestAtStart()
+        public override bool RunTestAtStart(int delayS = 2)
         {
             if (!CanRunTest)
             {
@@ -50,7 +50,7 @@ namespace Schedule
             }
 
             var userId = CurrentUserId;
-            CurrentItem.AddItem("serialnumber", GuidHelper.GenerateOrderNumber());
+            var traceId = CurrentItem.GetSerialNumber;
             CurrentItem.AddItem("CurrentJobUserId", userId);
             if (PreTodo != null)
             {
@@ -60,15 +60,36 @@ namespace Schedule
                     return false;
                 }
             }
-
-
             var sc = Ioc.GetService<ICommandCtrl>();
-
-            var res = sc?.StartJob(CurrentJobCode, HardInfo.Now.AddSeconds(3), "oncejob", false);
+            var res = sc?.StartJob(CurrentJobCode, HardInfo.Now.AddSeconds(delayS), "oncejob:RunTestAtStart", false);
             return true;
 
-            //  return await DoJobAsync(null);
         }
+
+
+        public override async Task<bool> RunTestAtStartAsync(int delayS = 2)
+        {
+            if (!CanRunTest)
+            {
+                return false;
+            }
+
+            var userId = CurrentUserId;
+            var traceId = CurrentItem.GetSerialNumber;
+            CurrentItem.AddItem("CurrentJobUserId", userId);
+            if (PreTodo != null)
+            {
+                var flag = PreTodo.Invoke(true);
+                if (!flag)
+                {
+                    return false;
+                }
+            }
+            var sc = Ioc.GetService<ICommandCtrl>();
+            var res = sc?.StartJob(CurrentJobCode, HardInfo.Now.AddSeconds(delayS), "oncejob:RunTestAtStart", false);
+            return await Task.FromResult(true);
+        }
+
 
         #endregion
 

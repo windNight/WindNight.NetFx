@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using WindNight.Extension.Logger.DbLog.Abstractions;
+using WindNight.Extension.Logger.DbLog.@internal;
 using WindNight.Extension.Logger.Mysql.DbLog;
-using WindNight.Extension.Logger.DbLog.Internal;
 
 namespace WindNight.Extension.Logger.DbLog
 {

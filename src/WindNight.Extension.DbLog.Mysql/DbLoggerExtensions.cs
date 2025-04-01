@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+using System.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -6,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Options;
-using System.Configuration;
 using WindNight.Extension.Logger.DbLog;
 using WindNight.Extension.Logger.DbLog.Abstractions;
 
@@ -20,19 +20,19 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
         /// <summary> </summary>
         public static DbLogOptions DbLogOptions => Ioc.GetService<IOptionsMonitor<DbLogOptions>>().CurrentValue;
 
-        public static IServiceCollection AddDbLogger(this IServiceCollection services, Action<DbLogOptions> configure, IDbLoggerProcessor loggerProcessor = null)
+        public static IServiceCollection AddDbLogger(this IServiceCollection services, IConfiguration configuration, Action<DbLogOptions> configure, IDbLoggerProcessor loggerProcessor = null)
         {
             if (configure == null) throw new ArgumentNullException(nameof(configure));
             services.Configure(configure);
             services.AddSingleton<DbLogOptions>();
 
-            services.AddInternalLog(loggerProcessor);
+            services.AddInternalLog(configuration, loggerProcessor);
 
             return services;
         }
 
 
-        public static IServiceCollection AddDbLogger(this IServiceCollection services, IConfiguration configuration = null, IDbLoggerProcessor loggerProcessor = null)
+        public static IServiceCollection AddDbLogger(this IServiceCollection services, IConfiguration configuration, IDbLoggerProcessor loggerProcessor = null)
         {
             if (configuration == null)
             {
@@ -41,7 +41,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
             services.ConfigureOption<DbLogOptions>(configuration);
             // var configValue = services.BuildServiceProvider().GetService<IOptionsMonitor<DbLogOptions>>().CurrentValue;
 
-            services.AddInternalLog(loggerProcessor);
+            services.AddInternalLog(configuration, loggerProcessor);
             return services;
         }
 
@@ -52,7 +52,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
         /// <param name="builder"></param>
         /// <param name="loggerProcessor"></param>
         /// <returns></returns>
-        public static ILoggingBuilder AddDbLogger(this ILoggingBuilder builder, IConfiguration configuration = null, IDbLoggerProcessor loggerProcessor = null)
+        public static ILoggingBuilder AddDbLogger(this ILoggingBuilder builder, IConfiguration configuration, IDbLoggerProcessor loggerProcessor = null)
         {
             builder.AddConfiguration();
             var services = builder.Services;
@@ -73,7 +73,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
             // services.AddSingleton<DbLogOptions>();
             // var configValue = services.BuildServiceProvider().GetService<IOptionsMonitor<DbLogOptions>>().CurrentValue;
 
-            services.AddInternalLog(loggerProcessor);
+            services.AddInternalLog(configuration, loggerProcessor);
 
             return builder;
         }
@@ -84,7 +84,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
         /// <param name="configure"></param>
         /// <param name="loggerProcessor"></param>
         /// <returns></returns>
-        public static ILoggingBuilder AddDbLogger(this ILoggingBuilder builder, Action<DbLogOptions> configure,
+        public static ILoggingBuilder AddDbLogger(this ILoggingBuilder builder, IConfiguration configuration, Action<DbLogOptions> configure,
             IDbLoggerProcessor loggerProcessor = null)
         {
             if (configure == null) throw new ArgumentNullException(nameof(configure));
@@ -94,7 +94,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
             services.Configure(configure);
             services.AddSingleton<DbLogOptions>();
 
-            services.AddInternalLog(loggerProcessor);
+            services.AddInternalLog(configuration, loggerProcessor);
 
             return builder;
         }
@@ -104,31 +104,31 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
         /// </summary>
         /// <param name="services"></param>
         /// <param name="loggerProcessor"></param>
-        public static void UseDbLoggerProcessor(this IServiceCollection services, IDbLoggerProcessor loggerProcessor = null)
+        public static void UseDbLoggerProcessor(this IServiceCollection services, IConfiguration configuration, IDbLoggerProcessor loggerProcessor = null)
         {
 
-            services.AddInternalLog(loggerProcessor);
+            services.AddInternalLog(configuration, loggerProcessor);
 
         }
 
-        static void AddInternalLog(this IServiceCollection services, IDbLoggerProcessor loggerProcessor = null)
+        static void AddInternalLog(this IServiceCollection services, IConfiguration configuration, IDbLoggerProcessor loggerProcessor = null)
         {
             services.AddSingleton<ILoggerProvider, DbLoggerProvider>();
-            services.AddDbLoggerProcessor(loggerProcessor);
-            services.AddDefaultMysqlLogsProcess();
+            services.AddDbLoggerProcessor(configuration, loggerProcessor);
+            services.AddDefaultMysqlLogsProcess(configuration);
         }
 
         /// <summary>
         /// </summary>
         /// <param name="services"></param> 
         /// <returns></returns>
-        public static IServiceCollection AddDefaultMysqlLogsProcess(this IServiceCollection services)
+        public static IServiceCollection AddDefaultMysqlLogsProcess(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<ISystemLogsProcess, MysqlLogsProcess>();
             return services;
         }
 
-        private static IServiceCollection AddDbLoggerProcessor(this IServiceCollection services, IDbLoggerProcessor loggerProcessor = null)
+        private static IServiceCollection AddDbLoggerProcessor(this IServiceCollection services, IConfiguration configuration, IDbLoggerProcessor loggerProcessor = null)
         {
             if (loggerProcessor != null)
             {

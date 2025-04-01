@@ -1,6 +1,10 @@
 using System;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.@internal;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+
 #if NETSTANDARD2_1
 using System.Diagnostics.CodeAnalysis;
 #endif
@@ -8,7 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Newtonsoft.Json.Extension
 {
     /// <summary> </summary>
-    public static class JsonExtensions
+    public static class NJsonExtensions
     {
         /// <summary>
         ///     DeserializeObject Use Newtonsoft.Json
@@ -125,4 +129,53 @@ namespace Newtonsoft.Json.Extension
             return JsonConvert.SerializeObject(obj, formatting, settings);
         }
     }
+}
+
+
+namespace System.Text.Json.Extension
+{
+    /// <summary> </summary>
+    public static class MJsonExtensions
+    {
+
+    }
+
+    public abstract class JsonNamingPolicy : System.Text.Json.JsonNamingPolicy
+    {
+        /// <summary>Gets the naming policy for PascalCase.</summary>
+        public static JsonNamingPolicy PascalCase { get; } = new PascalCaseJsonNamingPolicy();
+
+    }
+
+    public class PascalCaseJsonNamingPolicy : JsonNamingPolicy
+    {
+        public override string ConvertName(string name)
+        {
+            if (name.IsNullOrEmpty())
+                return name;
+
+            // 将名称按分隔符（如下划线、连字符）或大小写变化拆分成单词
+            var words = SplitIntoWords(name);
+            return words.Select(CapitalizeFirstLetter).Concat();
+        }
+
+        private static IEnumerable<string> SplitIntoWords(string name)
+        {
+            // 使用正则表达式分割：大写字母前、下划线、连字符
+            return Regex.Split(name, @"(?<!^)(?=[A-Z])|[_\-]");
+        }
+
+        private static string CapitalizeFirstLetter(string word)
+        {
+            if (word.IsNullOrEmpty())
+            {
+                return word;
+            }
+
+            return $"{word[0].ToUpper()}{word.Substring(1)}";//.ToLower();
+        }
+
+    }
+
+
 }

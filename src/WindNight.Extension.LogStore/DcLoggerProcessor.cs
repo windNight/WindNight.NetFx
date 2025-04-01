@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
-using WindNight.Extension.Logger.DcLog.Internal;
+using WindNight.Extension.Logger.DcLog.@internal;
 
 namespace WindNight.Extension.Logger.DcLog
 {
@@ -56,7 +56,7 @@ namespace WindNight.Extension.Logger.DcLog
                     return true;
                 }
 
-                if (message.LevelType >= (int)ConfigItems.GlobalMinLogLevel)
+                if (message.LevelType >= (int)ConfigItems.GlobalMiniLogLevel)
                 {
                     return true;
                 }

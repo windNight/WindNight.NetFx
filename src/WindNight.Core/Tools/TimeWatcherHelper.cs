@@ -18,7 +18,7 @@ namespace WindNight.Core.Tools
             {
                 var configService = Ioc.Instance.CurrentConfigService;
                 if (configService == null) return false;
-                var configValue = configService.GetAppSetting(TimeWatcherIsOpenKey, false, false);
+                var configValue = configService.GetAppSettingValue(TimeWatcherIsOpenKey, false, false);
                 return configValue;
             }
         }
@@ -32,7 +32,7 @@ namespace WindNight.Core.Tools
                     var configService = Ioc.Instance.CurrentConfigService;
                     if (configService == null) return DefaultWarnMiSeconds;
                     var configValue =
-                        configService.GetAppSetting("TimeWatcherWarnMiSeconds", DefaultWarnMiSeconds, false);
+                        configService.GetAppSettingValue("TimeWatcherWarnMiSeconds", DefaultWarnMiSeconds, false);
                     return configValue;
                 }
                 catch
@@ -48,7 +48,7 @@ namespace WindNight.Core.Tools
             {
                 var configService = Ioc.Instance.CurrentConfigService;
                 if (configService == null) return false;
-                var configValue = configService.GetAppSetting("DebugIsOpen", false, false);
+                var configValue = configService.GetAppSettingValue("DebugIsOpen", false, false);
                 return configValue;
             }
         }

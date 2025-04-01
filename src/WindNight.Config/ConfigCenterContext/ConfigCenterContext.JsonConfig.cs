@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WindNight.Config.@internal;
@@ -101,7 +101,10 @@ namespace WindNight.ConfigCenter.Extension
             if (fileName.IsNullOrEmpty()) return defaultValue;
             var key = FixDictKey(ConfigType.JsonConfig, fileName);
             var configValue = GetFromConfigurationDict(key, defaultValue);
-            if (!configValue.IsNullOrEmpty()) return configValue;
+            if (!configValue.IsNullOrEmpty())
+            {
+                return configValue;
+            }
 
             var loadRlt = ConfigProvider.Instance.LoadConfigFile(configValue);
 

@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions.Attributes;
 using System.Attributes;
+using Microsoft.AspNetCore.Http;
+using WindNight.Core.Attributes.Abstractions;
 using WindNight.Extension;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 {
     [Route("api/monitor")]
-    [HiddenApi(testApi: true)]
+    [SysApi(1)]
     [NonAuth]
     public class MonitorController : ControllerBase
     {
@@ -16,6 +16,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             _httpContextAccessor = httpContextAccessor;
         }
+
         /// <summary>
         /// </summary>
         /// <returns></returns>

@@ -7,6 +7,7 @@ using Newtonsoft.Json.Extension;
 using RestSharp;
 using WindNight.Core;
 using WindNight.Extension.@internal;
+using WindNight.LogExtension;
 
 namespace WindNight.Extension
 {
@@ -381,7 +382,7 @@ namespace WindNight.Extension
                 {
                     var config = Ioc.Instance.CurrentConfigService; // Ioc.GetService<IConfigService>();
                     if (config == null) return false;
-                    return config.GetAppSetting("OpenDebug", false, false);
+                    return config.GetAppSettingValue("OpenDebug", false, false);
                 }
             }
         }

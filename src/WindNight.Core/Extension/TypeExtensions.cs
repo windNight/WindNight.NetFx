@@ -1,7 +1,11 @@
-﻿namespace System.Reflection
+using System.Collections.Concurrent;
+
+namespace System.Reflection
 {
     public static class TypeExtensions
     {
+        private static readonly ConcurrentDictionary<string, object> _asmCache = new();
+
         /// <summary>Retrieves a custom attribute of a specified type that is applied to a specified assembly.</summary>
         /// <param name="element">The assembly to inspect.</param>
         /// <param name="attributeType">The type of attribute to search for.</param>

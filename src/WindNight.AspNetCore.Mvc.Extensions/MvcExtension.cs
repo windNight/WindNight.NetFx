@@ -1,7 +1,6 @@
-﻿#if CORE31LATER
+#if CORE31LATER
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
-
 #endif
 using System;
 using System.Collections.Generic;
@@ -9,9 +8,12 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Filters.Extensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Controllers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
+using Swashbuckle.AspNetCore.HideApi.Abstractions;
 using WindNight.Linq.Extensions.Expressions;
+using WindNight.AspNetCore.Mvc.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions
 {
@@ -36,7 +38,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// Callback to configure <see cref="T:Microsoft.AspNetCore.Mvc.MvcNewtonsoftJsonOptions" />
         /// </param>
         /// <returns></returns>
-        public static IMvcBuilder AddMvcBuilderWithSelfFilters(this IServiceCollection services, IEnumerable<Type> actionFilters = null, bool addDefaultFilters = true
+        public static IMvcBuilder AddMvcBuilderWithSelfFilters(this IServiceCollection services, IConfiguration configuration, IEnumerable<Type> actionFilters = null, bool addDefaultFilters = true
 #if !CORE31LATER
             , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
@@ -51,7 +53,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                 typeof (ValidateInputAttribute),
             };
 
-            return services.AddMvcBuilder(options =>
+            return services.AddMvcBuilder(configuration, options =>
                 {
 
                     if (!actionFilters.IsNullOrEmpty())
@@ -78,8 +80,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                             options.Filters.Add(typeFilterAttribute);
 
                     }
-
-
 
 
                 }
@@ -111,7 +111,8 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// Callback to configure <see cref="T:Microsoft.AspNetCore.Mvc.MvcNewtonsoftJsonOptions" />
         /// </param>
         /// <returns></returns>
-        public static IMvcBuilder AddMvcBuilder(this IServiceCollection services, Action<MvcOptions> mvcOption
+        public static IMvcBuilder AddMvcBuilder(this IServiceCollection services, IConfiguration configuration,
+            Action<MvcOptions> mvcOption
 #if !CORE31LATER
             , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
@@ -119,7 +120,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 #endif
             )
         {
-            AddCommonMvc(services);
+            AddCommonMvc(services, configuration);
 
 #if CORE31LATER
             return services.AddControllers(mvcOption)
@@ -151,7 +152,8 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         ///     4、 <see cref="Microsoft.AspNetCore.Mvc.Filters.Extensions.LogProcessAttribute" />
         /// </remarks>
         /// <returns></returns>
-        public static IMvcBuilder AddMvcBuilderWithDefaultFilters(this IServiceCollection services
+        public static IMvcBuilder AddMvcBuilderWithDefaultFilters(this IServiceCollection services,
+            IConfiguration configuration
 #if !CORE31LATER
             , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
@@ -159,7 +161,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 #endif
         )
         {
-            return services.AddMvcBuilder(options =>
+            return services.AddMvcBuilder(configuration, options =>
                  {
                      options.Filters.Add(new LogProcessAttribute());
                      options.Filters.Add(new ApiResultFilterAttribute());
@@ -179,10 +181,12 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        private static IServiceCollection AddCommonMvc(this IServiceCollection services)
+        private static IServiceCollection AddCommonMvc(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpContextAccessor();
-            services.AddInternalController();
+            services.AddInternalController(configuration);
+            services.AddSwaggerHiddenCheck(configuration);
+
 
 #if NETCOREAPP3_1
 
@@ -194,7 +198,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddInternalController(this IServiceCollection services)
+        public static IServiceCollection AddInternalController(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient(typeof(InternalController));
             services.AddTransient(typeof(MonitorController));
@@ -231,6 +235,13 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
 
         }
+
+        public static IServiceCollection AddSwaggerHiddenCheck(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSingleton<ISwaggerHiddenCheck, SwaggerHiddenCheckImpl>();
+            return services;
+        }
+
 
     }
 }

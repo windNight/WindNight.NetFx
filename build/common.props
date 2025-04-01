@@ -5,13 +5,14 @@
 		<Product> </Product>
 		<Title>$(AssemblyName)</Title>
 		<PackageProjectUrl>https://github.com/windNight/WindNight.NetFx.git</PackageProjectUrl>
-		<PackageLicenseUrl></PackageLicenseUrl>
+		<PackageLicense></PackageLicense>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/windNight/WindNight.NetFx.git</RepositoryUrl>
 		<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
 		<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
 		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<NoWarn>
 			$(NoWarn);CA2007;1701;1702;1705;1591;
@@ -32,6 +33,15 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<Content Include="bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml">
+			<Pack>true</Pack>
+			<PackagePath>lib\$(TargetFramework)</PackagePath>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Remove="bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml" />
+	</ItemGroup>
 
 	<!--
 https://learn.microsoft.com/en-us/dotnet/standard/frameworks

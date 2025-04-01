@@ -1,10 +1,10 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DbLog.Abstractions;
 using WindNight.Extension.Logger.Mysql.DbLog;
-using IpHelper = WindNight.Extension.Logger.DbLog.Internal.HttpContextExtension;
+using IpHelper = WindNight.Extension.Logger.DbLog.@internal.HttpContextExtension;
 
 namespace WindNight.Extension.Logger.DbLog.Extensions
 {

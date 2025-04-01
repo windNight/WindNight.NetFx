@@ -1,6 +1,6 @@
-﻿using WindNight.Core.SQL.Abstractions;
-using WindNight.Extension.Db.Abstractions;
+using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Dapper.Mysql.@internal;
+using WindNight.Extension.Db.Abstractions;
 
 namespace WindNight.Extension.Dapper.Mysql
 {
@@ -39,8 +39,6 @@ namespace WindNight.Extension.Dapper.Mysql
     UNION ALL
     SELECT c.* FROM {0} c ,td WHERE c.Id = td.ParentId
 ) SELECT * FROM td WHERE td.IsDeleted=0  ORDER BY td.Id; ";
-        protected virtual string BaseTreeColumns => $"ParentId,{BaseStatusColumns}";
-        protected virtual string BaseTreeColumnValues => $"@ParentId,{BaseStatusColumnValues}";
 
 
         #region ITreeRepositoryService
@@ -130,7 +128,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual IEnumerable<T> QueryChildrenByParentId<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1) 
+        public virtual IEnumerable<T> QueryChildrenByParentId<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
             where T : class, ITreeEntity<TId>, new()
         {
             if (tableName.IsNullOrEmpty())
@@ -139,7 +137,7 @@ namespace WindNight.Extension.Dapper.Mysql
             }
 
             var sql = GeneratorRealSqlForQueryChildren(tableName, parentId, rootCondition);
-    
+
             param ??= new Dictionary<string, object>();
             if (IdIsValid(parentId))
             {
@@ -158,7 +156,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<T>> QueryChildrenByParentIdAsync<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1) 
+        public virtual async Task<IEnumerable<T>> QueryChildrenByParentIdAsync<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
             where T : class, ITreeEntity<TId>, new()
         {
             return await QueryChildrenByParentIdAsync<T>(BaseTableName, parentId, warnMs: warnMs);
@@ -174,14 +172,14 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<T>> QueryChildrenByParentIdAsync<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1) 
+        public virtual async Task<IEnumerable<T>> QueryChildrenByParentIdAsync<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
             where T : class, ITreeEntity<TId>, new()
         {
             if (tableName.IsNullOrEmpty())
             {
                 tableName = BaseTableName;
             }
-          
+
             var sql = GeneratorRealSqlForQueryChildren(tableName, parentId, rootCondition);
 
 
@@ -245,7 +243,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1) 
+        public virtual async Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
             where T : class, ITreeEntity<TId>, new()
         {
             return await QueryParentsByChildIdAsync<T>(BaseTableName, childId, rootCondition, param, warnMs: warnMs);

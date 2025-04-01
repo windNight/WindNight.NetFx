@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Schedule.Model;
 using Schedule.Model.Enums;
 
 namespace Schedule.Ctrl
 {
+    /// <summary>
+    ///   TODO 统一写法
+    /// </summary>
     public class JobSearchInput
     {
         /// <summary>

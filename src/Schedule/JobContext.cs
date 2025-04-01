@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Linq;
-using Schedule.Abstractions;
 using System.Threading;
-using Schedule.Model;
 using Quartz;
+using Schedule.Abstractions;
 using Schedule.Func;
+using Schedule.Model;
 
 namespace Schedule
 {
@@ -17,15 +17,15 @@ namespace Schedule
             CurrentJobBaseInfoAsyncLocal.Value = jobBaseInfo;
         }
 
-        public static void SetCurrentJobBaseInfo(string jobId, string jobCode, string jobName)
-        {
-            SetCurrentJobBaseInfo(new JobBaseInfo
-            {
-                JobId = jobId,
-                JobCode = jobCode,
-                JobName = jobName,
-            });
-        }
+        //public static void SetCurrentJobBaseInfo(string jobId, string jobCode, string jobName)
+        //{
+        //    SetCurrentJobBaseInfo(new JobBaseInfo
+        //    {
+        //        JobId = jobId,
+        //        JobCode = jobCode,
+        //        JobName = jobName,
+        //    });
+        //}
 
         public static JobBaseInfo CurrentJobBaseInfo => CurrentJobBaseInfoAsyncLocal.Value;
 

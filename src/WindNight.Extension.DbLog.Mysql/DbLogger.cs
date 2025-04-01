@@ -1,9 +1,9 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
 using WindNight.Extension.Logger.DbLog.Abstractions;
-using WindNight.Extension.Logger.DbLog.Internal;
+using WindNight.Extension.Logger.DbLog.@internal;
 
 namespace WindNight.Extension.Logger.Mysql.DbLog
 {
@@ -63,7 +63,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
                         SerialNumber = stateEntry.SerialNumber,
                         RunMs = stateEntry.Timestamps,
                         LogTs = stateEntry.LogTs,
-                        
+
                         Level = stateEntry.Level.ToString(),
                         LevelType = (int)stateEntry.Level,
                         NodeCode = HardInfo.NodeCode ?? "",

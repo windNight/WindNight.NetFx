@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WindNight.AspNetCore.Hosting.@internal;
 using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;
@@ -439,6 +438,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         {
             return hostBuilder?.ConfigureServices((context, services) =>
             {
+                Ioc.Instance.InitServiceProvider(services);
                 HardInfo.InitHardInfo();
                 services.AddOptions();
                 services.AddHttpContextAccessor();
@@ -447,11 +447,16 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                 configureDelegate?.Invoke(context, services);
 
                 services.AddSingleton<ICurrentContext, DefaultCurrentContext>();
-                Ioc.Instance.InitServiceProvider(services.BuildServiceProvider());
                 if (Ioc.Instance.CurrentConfigService == null)
                 {
-                    services.AddSingleton<IConfigService, DefaultConfigService>();
-                    Ioc.Instance.InitServiceProvider(services.BuildServiceProvider());
+                    //services.AddSingleton<IConfigService, DefaultConfigService>();
+                    services.AddDefaultConfigService(configuration);
+                    Ioc.Instance.InitServiceProvider(services);
+                }
+                if (Ioc.Instance.CurrentLogService == null)
+                {
+                    services.AddDefaultLogService(configuration);
+                    Ioc.Instance.InitServiceProvider(services);
                 }
                 LogHelper.LogRegisterInfo(buildType, false);
 

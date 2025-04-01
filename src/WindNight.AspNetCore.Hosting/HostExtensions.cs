@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
 using System.Threading.Tasks;
-using static Microsoft.AspNetCore.WindNight.Hosting.@internal.LogHelper;
+using Microsoft.Extensions.DependencyInjection;
+using static WindNight.Core.SysLogCenter.Extensions.DefaultLogHelperBase;
 
 namespace Microsoft.Extensions.Hosting.WnExtensions
 {

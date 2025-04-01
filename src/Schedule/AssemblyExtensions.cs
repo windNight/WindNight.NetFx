@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Attributes.Abstractions;
 
 namespace Schedule
 {
@@ -29,15 +28,24 @@ namespace Schedule
                 //var hasAlias = currentType.GetCustomAttribute<AliasAttribute>() is not null;
                 // var hasAlias = Attribute.IsDefined(currentType, typeof(AliasAttribute));
                 var hasAlias = currentType.IsDefined<AliasAttribute>();
-                var isEnJob = typeof(IJobBase).IsAssignableFrom(currentType);
-                if (hasAlias && isEnJob)
+                var hasAlias2 = currentType.HasAttribute<AliasAttribute>();
+                if (hasAlias || hasAlias2)
                 {
-                    services.AddTransient(typeof(IJobBase), currentType);
+                    var isEnJob = typeof(IJobBase).IsAssignableFrom(currentType);
+                    if (isEnJob)
+                    {
+                        services.AddTransient(typeof(IJobBase), currentType);
+                    }
                 }
-                else
-                {
-                    continue;
-                }
+                //var isEnJob = typeof(IJobBase).IsAssignableFrom(currentType);
+                //if (hasAlias && isEnJob)
+                //{
+                //    services.AddTransient(typeof(IJobBase), currentType);
+                //}
+                //else
+                //{
+                //    continue;
+                //}
             }
 
             return services;

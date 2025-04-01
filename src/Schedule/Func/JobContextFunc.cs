@@ -1,5 +1,7 @@
-﻿using System;
+using System;
+using Newtonsoft.Json.Extension;
 using Quartz;
+using Schedule.Abstractions;
 using Schedule.Model.Enums;
 using WindNight.Core.Extension;
 
@@ -11,6 +13,7 @@ namespace Schedule.Func
         public const string BizContentKey = "bizContent";
 
         static JobDataMap DataMap(this IJobDetail jobDetail) => jobDetail.JobDataMap;
+
 
         /// <summary>
         ///     设置原始job name
@@ -302,7 +305,7 @@ namespace Schedule.Func
                 return context.JobDetail.JobDataMap[key];
             return string.Empty;
         }
-       
+
         /// <summary>
         ///      
         /// </summary>
@@ -323,6 +326,34 @@ namespace Schedule.Func
         {
             if (!bizContent.IsNullOrEmpty())
                 jobDetail.JobDataMap[BizContentKey] = bizContent;
+        }
+
+        /// <summary>
+        ///      
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static JobBaseInfo GetJobBaseInfo(this IJobExecutionContext context)
+        {
+            var jobBaseInfo = context.JobDetail.JobDataMap.SafeGetValue("jobBaseInfo")?.ToString() ?? "";
+            if (!jobBaseInfo.IsNullOrEmpty())
+            {
+                return jobBaseInfo.To<JobBaseInfo>();
+            }
+
+            return null;
+        }
+        /// <summary>
+        ///     设置原始job baseInfo
+        /// </summary>
+        /// <param name="jobDetail"></param>
+        /// <param name="jobInfo"></param>
+        public static void SetJobBaseInfo(this IJobDetail jobDetail, JobBaseInfo jobInfo)
+        {
+            if (jobInfo != null && !jobInfo.JobId.IsNullOrEmpty() && jobInfo.JobExecTs > 0)
+            {
+                jobDetail.JobDataMap["jobBaseInfo"] = jobInfo.ToJsonStr();
+            }
         }
 
 

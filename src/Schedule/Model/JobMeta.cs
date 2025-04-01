@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Schedule.Model.Enums;
 
 namespace Schedule.Model
@@ -8,32 +8,32 @@ namespace Schedule.Model
         /// <summary>
         ///     临时JobId
         /// </summary>
-        public string JobId { set; get; }
+        public string JobId { set; get; } = "";
 
         /// <summary>
         ///     Job Name
         /// </summary>
-        public string JobName { set; get; }
+        public string JobName { set; get; } = "";
 
         /// <summary>
         ///     Job Group
         /// </summary>
-        public string Group { set; get; }
+        public string Group { set; get; } = "";
 
         /// <summary>
         ///     JobCode from config
         /// </summary>
-        public string JobCode { set; get; }
+        public string JobCode { set; get; } = "";
 
         /// <summary>
         ///     job标题
         /// </summary>
-        public string Title { set; get; }
+        public string Title { set; get; } = "";
 
         /// <summary>
         ///     job描述
         /// </summary>
-        public string? Description { set; get; }
+        public string Description { set; get; } = "";
 
         /// <summary>
         ///     job开始时间
@@ -48,7 +48,7 @@ namespace Schedule.Model
         /// <summary>
         ///     calendar运行时间
         /// </summary>
-        public string CronExpression { set; get; }
+        public string CronExpression { set; get; } = "";
 
         /// <summary>
         ///     job状态
@@ -63,12 +63,12 @@ namespace Schedule.Model
         /// <summary>
         ///     运行参数
         /// </summary>
-        public string RunParams { set; get; }
+        public string RunParams { set; get; } = "";
 
         /// <summary>
         ///     向上依赖的jobs jobCodes ,分割
         /// </summary>
-        public string DepJobs { set; get; }
+        public string DepJobs { set; get; } = "";
 
         /// <summary>
         ///     运行完成后是否退出程序
@@ -77,7 +77,8 @@ namespace Schedule.Model
 
         /// <summary>
         /// </summary>
-        public string JobParamsDesc { set; get; }
+        public string JobParamsDesc { set; get; } = "";
+
         /// <summary>
         ///  是否需要通知 默认 true
         /// </summary>

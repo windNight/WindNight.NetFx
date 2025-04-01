@@ -1,14 +1,53 @@
-﻿using System;
+using System;
+using System.IO;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.ExceptionExt;
+using WindNight.Core.SysLogCenter.Extensions;
+using Microsoft.Extensions.Logging;
+
 #if !NET45
-using WindNight.Config.@internal; 
+using WindNight.Config.@internal;
 #endif
 
 namespace WindNight.ConfigCenter.Extension.@internal
 {
-    internal static class LogHelper
+    internal partial class LogHelper
+    {
+        private static Version _version => new AssemblyName(typeof(DefaultLogHelperBase).Assembly.FullName).Version;
+        private static DateTime _compileTime => File.GetLastWriteTime(typeof(DefaultLogHelperBase).Assembly.Location);
+
+        public static string CurrentVersion => _version.ToString();
+
+        public static DateTime CurrentCompileTime => _compileTime;
+        protected static bool OpenDebug => ConfigItems.OpenDebug;
+
+        protected static LogLevels MiniLogLevel => ConfigItems.GlobalMiniLogLevel;
+
+        protected static bool CanLog(LogLevels level)
+        {
+
+            if (level == LogLevels.None)
+            {
+                return false;
+            }
+
+            if (level == LogLevels.Debug && !OpenDebug)
+            {
+                return false;
+            }
+
+            if (level < MiniLogLevel)
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+    internal partial class LogHelper
     {
         internal static void Debug(string msg, long millisecond = 0, string url = "", string serverIp = "",
             string clientIp = "", bool appendMessage = false, string traceId = "")
@@ -62,35 +101,71 @@ namespace WindNight.ConfigCenter.Extension.@internal
         {
             try
             {
-#if !NET45
-
+#if !NET45 
                 if (!ConfigItems.OpenConfigLogs) return;
 #endif
+                var canLog = CanLog(level);
+                if (!canLog)
+                {
+                    return;
+                }
 
-                var logService = ConfigCenterLogExtension.ConfigCenterLogProvider ?? Ioc.Instance.CurrentLogService;
-
-                //if (logService == null)
-                //{
-                //    logService = Ioc.Instance.CurrentLogService;
-                //}
-
+                // var logService = ConfigCenterLogExtension.ConfigCenterLogProvider ?? Ioc.Instance.CurrentLogService;
+                var logService = Ioc.Instance.CurrentLogService;
                 if (logService != null)
+                {
                     logService.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
+                }
                 else
+                {
+                    if (errorStack != null)
+                    {
+                        msg = $"{msg} {Environment.NewLine} {errorStack.GetMessage()}";
+                    }
                     DoConsoleLog(level, msg);
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("日志异常:{0}", ex.ToJsonStr());
+                DoConsoleLog(LogLevels.Error, $"AddLog 日志异常 ", ex);
             }
         }
 
-        private static void DoConsoleLog(LogLevels logLevel, string message)
+        static void DoConsoleLog(LogLevels logLevel, string message, Exception? exception = null)
         {
-            Console.ForegroundColor = logLevel > LogLevels.Information ? ConsoleColor.Red : ConsoleColor.Green;
-            Console.WriteLine(
-                $"【{logLevel}】ConfigCenterLogExtension.ConfigCenterLogProvider Is null. can not log info {message}");
-            Console.ResetColor();
+            if (ConfigItems.LogOnConsole)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                if (logLevel > LogLevels.Information) Console.ForegroundColor = ConsoleColor.Red;
+                if (exception != null)
+                {
+                    message = $"{message} {Environment.NewLine} {exception.GetMessage()}";
+                }
+                Console.WriteLine($"=={HardInfo.NowString}==ConsoleLog:{Environment.NewLine}Ioc.GetService<ILogService>() Is null.{Environment.NewLine} can not log info{message}");
+                Console.ResetColor();
+            }
+        }
+
+        //public static void DoConsoleLog(LogLevels logLevel, string message)
+        //{
+        //    if (ConfigItems.LogOnConsole)
+        //    {
+        //        Console.ForegroundColor = ConsoleColor.Green;
+        //        if (logLevel > LogLevels.Information) Console.ForegroundColor = ConsoleColor.Red;
+        //        Console.WriteLine(
+        //            $"【{logLevel.ToString()}】:  Ioc.GetService<ILogService>() Is null.\r\n can not log info: {message}");
+        //        Console.ResetColor();
+        //    }
+        //}
+
+        public static void DoConsoleLog(string message)
+        {
+            if (ConfigItems.LogOnConsole)
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine(message);
+                Console.ResetColor();
+            }
         }
     }
 }

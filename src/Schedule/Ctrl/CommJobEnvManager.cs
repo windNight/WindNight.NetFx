@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -43,8 +43,11 @@ namespace Schedule.Ctrl
 
         private bool __Save(List<JobMeta> jobMetas)
         {
-            var encodingJobMetas = new List<string>(jobMetas.Count);
-            foreach (var item in jobMetas) encodingJobMetas.Add(UtilsFunc.JobMetaToString(item));
+            var encodingJobMetas = new List<string>();
+            foreach (var item in jobMetas)
+            {
+                encodingJobMetas.Add(UtilsFunc.JobMetaToString(item));
+            }
             File.WriteAllLines("jobrunningenv.cache", encodingJobMetas, Encoding.UTF8);
             return true;
         }

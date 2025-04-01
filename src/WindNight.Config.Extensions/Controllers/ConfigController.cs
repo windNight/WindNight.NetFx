@@ -1,15 +1,12 @@
 using System;
-using System.Attributes;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions.Attributes;
-using Microsoft.Extensions.DependencyInjection.WnExtension;
-using WindNight.Config.Abstractions;
 using WindNight.Config.Extensions.Attributes;
 using WindNight.ConfigCenter.Extension;
+using WindNight.Core.Attributes.Abstractions;
 
 namespace WindNight.Config.Extensions
 {
@@ -18,9 +15,8 @@ namespace WindNight.Config.Extensions
     ///   配置中心默认接口
     /// </summary>
     [Route("api/configcenter")]
-    [HiddenApi(testApi: false, sysApi: true)]
     [CenterApiAuth]
-    [NonAuth]
+    [SysApi, NonAuth]
     public class ConfigController : ControllerBase
     {
         /// <summary>

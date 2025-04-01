@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Attributes.Abstractions;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace Microsoft.Extensions.DependencyInjection.WnExtension
 {
@@ -61,6 +63,14 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         }
 
         /// <summary>
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        public void InitServiceProvider(IServiceCollection services)
+        {
+            ServiceProvider = services.BuildServiceProvider();
+        }
+
+        /// <summary>
         ///     Get service of type T from the System.IServiceProvider.
         /// </summary>
         /// <typeparam name="T">The type of service object to get</typeparam>
@@ -90,6 +100,14 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
             if (Instance.ServiceProvider == null) return default;
             return Instance.ServiceProvider.GetServices<T>();
         }
+
+        public static bool HasService<T>()
+        {
+            return !GetServices<T>().IsNullOrEmpty();
+        }
+
+
+
 #endif
     }
 

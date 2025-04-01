@@ -70,6 +70,7 @@ namespace WindNight.Linq.Extensions.Expressions
         /// <param name="bag"></param>
         public static void Clear<T>(this ConcurrentBag<T> bag)
         {
+#if NETSTANDARD2_0
             while (!bag.IsEmpty)
             {
                 try
@@ -80,6 +81,10 @@ namespace WindNight.Linq.Extensions.Expressions
                 {
                 }
             }
+#else
+            bag.Clear();
+#endif
+
             //if (!bag.IsEmpty)
             //{
             //    bag.TryTake(out _);
@@ -97,6 +102,8 @@ namespace WindNight.Linq.Extensions.Expressions
             {
                 bag.Add(item);
             }
+
+
         }
 
         /// <summary>
@@ -195,6 +202,7 @@ namespace WindNight.Linq.Extensions.Expressions
 
             return list;
         }
+
     }
 
     /// <summary>

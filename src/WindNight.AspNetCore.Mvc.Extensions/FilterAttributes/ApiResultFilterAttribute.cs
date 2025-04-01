@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions.Attributes;
-using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
-using WindNight.AspNetCore.Mvc.Extensions.Extensions;
+using WindNight.AspNetCore.Mvc.Extensions;
 using WindNight.Core;
+using WindNight.Core.Attributes.Abstractions;
 
 namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 {
@@ -21,10 +20,17 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 
         protected virtual void FixResultBeforeResultExecuting(ResultExecutingContext context)
         {
-            var car = context.ActionDescriptor.GetMethodAttributes<ClearResultAttribute>().FirstOrDefault();
-            var noClear = car?.IsClear ?? false;
+
+            //var car = context.ActionDescriptor.GetMethodAttributes<ClearResultAttribute>().FirstOrDefault();
+
+            var clsAttr = context.ActionDescriptor.GetAttributeOnAction<ClearResultAttribute>();
+
+            var noClear = clsAttr?.IsClear ?? false;
             if (noClear) return;
-            if (!(context.Result is ObjectResult objectResult) || objectResult.Value is ResponseResult) return;
+            if (!(context.Result is ObjectResult objectResult) || objectResult.Value is ResponseResult)
+            {
+                return;
+            }
             if (objectResult.Value is null)
             {
                 context.Result = new ObjectResult(new ResponseResult<object>().NotFound());
