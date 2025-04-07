@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,12 +20,13 @@ namespace WindNight.Extension
     public class IPHelper
     {
         private const string DefaultIp = "0.0.0.0";
+
         // private const string LocalServerIpKey = "WindNight:HttpContext:LocalServerIp";
         // private const string LocalServerIpsKey = "WindNight:HttpContext:LocalServerIps";
 
         public static List<string> LocalServerIps = HardInfo.GetLocalIps().ToList();
-        public static string LocalServerIp = LocalServerIps.FirstOrDefault();
-        public static string LocalServerIpsString = string.Join(",", LocalServerIps);
+        public static string LocalServerIp = LocalServerIps?.FirstOrDefault() ?? "";
+        public static string LocalServerIpsString = LocalServerIps.Join(",");
 
         public static string GetLocalServerIp()
         {
@@ -168,9 +169,11 @@ namespace WindNight.Extension
             var headerDict = new Dictionary<string, string>();
 #if !NETFRAMEWORK
 
-            var validIPKeys = new[] { "X-Real-IP", "HTTP_X_REAL_IP", "x-forwarded-for", "REMOTE_ADDR" };
+            var validIPKeys = new[] { "X-Real-IP", "HTTP_X_REAL_IP", "x-forwarded-for", "REMOTE_ADDR", };
             foreach (var item in context.Request.Headers.Where(m => validIPKeys.Contains(m.Key)))
+            {
                 headerDict.Add(item.Key, item.Value);
+            }
 #else
             foreach (var item in context.Request.Headers.Keys)
             {
@@ -199,7 +202,7 @@ namespace WindNight.Extension
                 "X-Real-IP",
                 "x-forwarded-for",
                 "HTTP_X_FORWARDED_FOR",
-                "REMOTE_ADDR"
+                "REMOTE_ADDR",
             };
             foreach (var key in timKey)
                 if (headerDict.TryGetValue(key, out ip) && !ip.IsNullOrEmpty())

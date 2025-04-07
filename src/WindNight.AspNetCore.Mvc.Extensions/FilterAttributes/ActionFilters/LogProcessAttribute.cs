@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.WnExtensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
-using WindNight.Core.SysLogCenter.Extensions;
 using WindNight.Extension;
 
 namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
@@ -83,13 +82,17 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
             {
                 CurrentItem.AddItem(WebConst.ENDTIME, HardInfo.Now);
                 var result = context.Result;
-                CurrentItem.AddItem(WebConst.RESPONSE, result);
+                if (result.ToJsonStr().Length < 1000)
+                {
+                    CurrentItem.AddItem(WebConst.RESPONSE, result);
+                }
                 var request = context.HttpContext.Request;
+
                 var beginTime = CurrentItem.GetItem<DateTime>(WebConst.BEGINTIME);
 
                 var ms = (long)(HardInfo.Now - beginTime).TotalMilliseconds;
-
-                if (ms > ConfigItems.ApiWarningMis)
+                var isWarn = ms > ConfigItems.ApiWarningMis;
+                if (isWarn)
                 {
                     LogHelper.Warn($"请求共耗时:{ms} ms ", millisecond: ms);
                 }
@@ -100,8 +103,9 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 
                 if (ConfigItems.ApiUrlOpened)
                 {
-                    LogHelper.ApiUrlCall(request.Path, $"请求耗时{ms} {request.Path}", ms, appendMessage: true);
+                    LogHelper.ApiUrlCall(request.Path, $"请求耗时{ms} {request.Path}", ms, appendMessage: isWarn);
                 }
+
             }
             catch
             {

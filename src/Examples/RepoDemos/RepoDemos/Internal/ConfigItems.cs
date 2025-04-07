@@ -6,10 +6,6 @@ namespace RepoDemos.Internal
     internal class ConfigItems : DefaultConfigItemBase
     {
 
-        internal static int SysAppId => GetAppSettingValue("AppId", 0, false);
-        internal static string SysAppCode => GetAppSettingValue("AppCode", "", false);
-        internal static string SysAppName => GetAppSettingValue("AppName", "", false);
-
         public static string DefaultDBConnectString => GetConnectionString("db1");
 
 

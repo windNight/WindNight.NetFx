@@ -4,34 +4,15 @@ namespace WindNight.Extension.Db.Abstractions.@internal
 {
     internal class ConfigItems : DefaultConfigItemBase
     {
-        public static bool OpenDapperLog => GetAppSettingValue(ConfigItemsKey.OpenDapperLogKey, false, false);
-        //{
-        //    get
-        //    {
-        //        var config = Ioc.Instance.CurrentConfigService;// Ioc.GetService<IConfigService>();
-        //        if (config == null)
-        //        {
+        public static bool OpenDapperLog => DapperConfig?.OpenDapperLog ?? GetConfigValue(ConfigItemsKey.OpenDapperLogKey, false, false);
 
-        //            return false;
-        //        }
 
-        //        return config.Configuration.GetSection(ConfigItemsKey.OpenDapperLogKey).Get<bool>() ||
-        //               config.GetAppSetting(ConfigItemsKey.OpenDapperLogKey, false, false);
+        public static bool IsLogConnectString => DapperConfig?.IsLogConnectString ?? GetConfigValue(ConfigItemsKey.IsLogConnectStringKey, false, false);
 
-        //    }
-        //}
 
-        public static bool IsLogConnectString => GetAppSettingValue(ConfigItemsKey.IsLogConnectStringKey, false, false);
-        public static int DapperWarnMs => GetAppSettingValue(ConfigItemsKey.DapperWarnMsKey, 100, false);
-        //{
-        //    get
-        //    {
-        //        return GetConfigBoolValue(ConfigItemsKey.IsLogConnectStringKey);
-        //        // var config = Ioc.Instance.CurrentConfigService;
-        //        // if (config == null) return false;
-        //        // return config.GetAppSetting(ConfigItemsKey.IsLogConnectStringKey, false, false);
-        //    }
-        //}
+        public static long DapperWarnMs => DapperConfig?.WarnMs ?? GetConfigValue(ConfigItemsKey.DapperWarnMsKey, 500L, false);
+
+        public static DapperConfig DapperConfig => GetSectionValue<DapperConfig>(null);
 
         static class ConfigItemsKey
         {
@@ -42,4 +23,14 @@ namespace WindNight.Extension.Db.Abstractions.@internal
         }
 
     }
+
+    internal class DapperConfig
+    {
+        public bool OpenDapperLog { get; set; } = false;
+
+        public bool IsLogConnectString { get; set; } = false;
+
+        public long WarnMs { get; set; } = 500L;
+    }
+
 }

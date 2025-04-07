@@ -1,6 +1,9 @@
+using Microsoft.Extensions.DependencyInjection.WnExtension;
+using Newtonsoft.Json.Extension;
 using WindNight.AspNetCore.Hosting;
 using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.ConfigCenter.Extensions;
 
 namespace Net8ApiDemo
 {
@@ -19,8 +22,25 @@ namespace Net8ApiDemo
             Init(CreateHostBuilder, buildType, () =>
             {
 
+                var config1 = Ioc.GetService<IConfiguration>();
+                var config2 = Ioc.GetService<IConfigService>();
+                var dapperConfig1 = config1.GetSectionValue<DapperConfig>();
+                var dapperConfig2 = config2?.GetSectionValue<DapperConfig>();
+
+                dapperConfig1.ToJsonStr().Log2Console(isForce: true);
+                dapperConfig2.ToJsonStr().Log2Console(isForce: true);
+
 
             }, args);
+        }
+
+        public class DapperConfig
+        {
+            public bool OpenDapperLog { get; set; } = false;
+
+            public bool IsLogConnectString { get; set; } = false;
+
+            public long WarnMs { get; set; } = 500;
         }
 
         private static IHostBuilder CreateHostBuilder(string buildType, string[] args)
@@ -46,7 +66,7 @@ namespace Net8ApiDemo
 
 
         }
-         
+
         public class ConfigItems : ConfigItemsBase
         {
             public static void Init(int sleepTimeInMs = 5000,

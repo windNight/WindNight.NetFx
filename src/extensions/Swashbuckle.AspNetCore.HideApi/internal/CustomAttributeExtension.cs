@@ -12,7 +12,7 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
 {
     internal static class CustomAttributeExtension
     {
-        private static readonly ConcurrentDictionary<string, object> _asmCache = new();
+        // private static readonly ConcurrentDictionary<string, object> _asmCache = new();
 
         /// <summary>
         /// </summary>
@@ -30,25 +30,25 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
                 }
 
                 var key = $"{apiDesc.GetType().FullName}_{typeof(TAttr).FullName}";
-                var attrs = (IEnumerable<TAttr>)_asmCache.GetOrAdd(key, k =>
-                   {
-                       if (!apiDesc.TryGetMethodInfo(out var methodInfo))
-                       {
-                           return Empty<TAttr>();
-                       }
+                // var attrs = (IEnumerable<TAttr>)_asmCache.GetOrAdd(key, k =>
+                //   {
+                if (!apiDesc.TryGetMethodInfo(out var methodInfo))
+                {
+                    return Empty<TAttr>();
+                }
 
-                       if (methodInfo == null)
-                       {
-                           return Empty<TAttr>();
-                       }
-                       var attrs = methodInfo.GetCustomAttributes<TAttr>();
-                       if (methodInfo.DeclaringType != null)
-                       {
-                           attrs = attrs.Concat(methodInfo.DeclaringType.GetCustomAttributes<TAttr>());
-                       }
+                if (methodInfo == null)
+                {
+                    return Empty<TAttr>();
+                }
+                var attrs = methodInfo.GetCustomAttributes<TAttr>();
+                if (methodInfo.DeclaringType != null)
+                {
+                    attrs = attrs.Concat(methodInfo.DeclaringType.GetCustomAttributes<TAttr>());
+                }
 
-                       return attrs;
-                   });
+                return attrs;
+                //  });
 
                 return attrs;
             }

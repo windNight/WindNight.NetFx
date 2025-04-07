@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
 {
-   
+
     internal static class ApiDescriptionExtensions
     {
         public static bool TryGetMethodInfo(
@@ -28,7 +28,9 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
         public static IEnumerable<object> CustomAttributes(this ApiDescription apiDescription)
         {
             if (apiDescription.TryGetMethodInfo(out var methodInfo))
+            {
                 return methodInfo.GetCustomAttributes(true).Union(methodInfo.DeclaringType.GetCustomAttributes(true));
+            }
             return Enumerable.Empty<object>();
         }
 
@@ -39,10 +41,14 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
             out IEnumerable<object> customAttributes)
         {
             if (apiDescription.TryGetMethodInfo(out methodInfo))
+            {
                 customAttributes = methodInfo.GetCustomAttributes(true)
                     .Union(methodInfo.DeclaringType.GetCustomAttributes(true));
+            }
             else
+            {
                 customAttributes = Enumerable.Empty<object>();
+            }
         }
 
         internal static string RelativePathSansQueryString(this ApiDescription apiDescription)

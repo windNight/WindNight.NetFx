@@ -46,6 +46,10 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
             return dict;
         }
 
+        public bool CheckClientIp { get; set; } = true;
+
+        public List<string> LimitIps { get; set; } = new List<string>();
+
         //public Dictionary<string, string> GetResDict()
         //{
         //    var dict = new Dictionary<string, string>();
@@ -190,17 +194,8 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
         public static int ShowSysApiMiniLevel => SwaggerConfigs?.ShowSysApiMiniLevel ?? 0;
         public static bool OpenSwaggerDebug => SwaggerConfigs?.OpenSwaggerDebug ?? false;
 
-        public static string SysAppId =>
-            GetConfigValue("AppSettings:AppId", ZeroString, false);
-
-        public static string SysAppCode =>
-            GetConfigValue("AppSettings:AppCode", ZeroString, false);
-
-        public static string SysAppName =>
-            GetConfigValue("AppSettings:AppName", ZeroString, false);
-
         public static string EnvName =>
-            GetConfigValue("AppSettings:EnvName", "online", false);
+            GetAppSettingValue("EnvName", "online", false);
 
         public static bool SwaggerOnlineDebug =>
             GetAppSettingValue("SwaggerOnlineDebug", false, false);
@@ -209,6 +204,11 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
 
         public static bool IsOnline =>
             EnvName.IsNullOrEmpty() || EnvName.Equals("pre", StringComparison.OrdinalIgnoreCase) || EnvName.Equals("online", StringComparison.OrdinalIgnoreCase) || EnvName.Equals("production", StringComparison.OrdinalIgnoreCase);
+
+
+        public static List<string> LimitIps => SwaggerConfigs?.LimitIps ?? new List<string>();
+
+        public static bool CheckClientIp => SwaggerConfigs?.CheckClientIp ?? true;
 
         public static SwaggerConfigs SwaggerConfigs => GetSectionValue<SwaggerConfigs>();
 

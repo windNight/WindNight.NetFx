@@ -127,7 +127,8 @@ namespace Net8ApiDemo.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)],
             })
                 .ToArray();
-            return new { signData, rangeData };
+            var allHeaderData = GetAllHeaderData(Request);
+            return new { allHeaderData, signData, rangeData };
         }
 
 

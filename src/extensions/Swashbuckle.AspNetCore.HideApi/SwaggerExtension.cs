@@ -2,7 +2,6 @@ using System;
 using System.Attributes;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +13,7 @@ using Swashbuckle.AspNetCore.Extensions.Abstractions;
 using Swashbuckle.AspNetCore.Extensions.@internal;
 using Swashbuckle.AspNetCore.HideApi;
 using Swashbuckle.AspNetCore.HideApi.@internal;
+using Swashbuckle.AspNetCore.HideApi.Middleware;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -250,25 +250,36 @@ namespace Swashbuckle.AspNetCore.Extensions
             Action<SwaggerOptions> swaggerOptionsAction = null, Action<SwaggerUIOptions> swaggerUIOptionsAction = null)
         {
             //  XmlHelper.Instance.Init();
-
+            app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/swagger"), appBuilder =>
+            {
+                appBuilder.UseMiddleware<InternalSwaggerMiddlewareBase>();
+            });
 
             app.Use(async (context, next) =>
             {
+                //if (context.Request.Path.StartsWithSegments("/swagger"))
+                //{
+                //    // 获取客户端IP地址
+                //    //var remoteIp = context.Request.HttpContext.Connection.RemoteIpAddress;
+                //    var remoteIp = context.Request.HttpContext.QueryDefaultClient();
+                //    if (!remoteIp.IpValid())
+                //    {
+                //        context.Response.StatusCode = 404;
+                //        return;
+                //    }
 
-                if (context.Request.Path.StartsWithSegments("/swagger"))
-                {
-                    if (ConfigItems.IsOnline && !ConfigItems.SwaggerOnlineDebug)
-                    {
-                        context.Response.StatusCode = 404;
-                        return;
-                    }
+                //    if (ConfigItems.IsOnline && !ConfigItems.SwaggerOnlineDebug)
+                //    {
+                //        context.Response.StatusCode = 404;
+                //        return;
+                //    }
 
-                    if (ConfigItems.HiddenSwagger)
-                    {
-                        context.Response.StatusCode = 404;
-                        return;
-                    }
-                }
+                //    if (ConfigItems.HiddenSwagger)
+                //    {
+                //        context.Response.StatusCode = 404;
+                //        return;
+                //    }
+                //}
 
                 // 检查请求路径是否匹配指定路由
                 if (context.Request.Path.Equals("/api/internal/swaggerconfigs", StringComparison.OrdinalIgnoreCase))
@@ -299,6 +310,9 @@ namespace Swashbuckle.AspNetCore.Extensions
                     return;
                 }
                 await next();
+
+
+
             });
 
 

@@ -14,29 +14,6 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         public bool HiddenApi(ApiDescription apiDescription)
         {
             return apiDescription.HiddenApiDefaultImpl();
-
-            //var sysApiAttr = apiDescription.GetSysApiAttr();
-            //if (sysApiAttr != null)
-            //{
-            //    if (!ConfigItems.ShowSysApi)
-            //    {
-            //        return true;
-            //    }
-
-            //    if (ConfigItems.ShowSysApiMiniLevel > 0 && sysApiAttr.SysApiLevel < ConfigItems.ShowSysApiMiniLevel)
-            //    {
-            //        return true;
-            //    }
-            //}
-            //var debugApiAttr = apiDescription.GetDebugApiAttr();
-            //if (debugApiAttr != null)
-            //{
-            //    if (!ConfigItems.ShowDebugApi)
-            //    {
-            //        return true;
-            //    }
-            //}
-            //return !ConfigItems.ShowHiddenApi;
         }
 
 

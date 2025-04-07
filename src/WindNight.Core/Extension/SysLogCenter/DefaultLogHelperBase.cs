@@ -107,8 +107,7 @@ namespace WindNight.Core.SysLogCenter.Extensions
         /// <param name="buildType"></param>
         /// <param name="exception"></param>
         /// <param name="appendMessage"></param>
-        public static void LogOfflineInfo(string buildType, Exception exception = null, bool appendMessage = false,
-            string traceId = "")
+        public static void LogOfflineInfo(string buildType, Exception exception = null, bool appendMessage = false, string traceId = "")
         {
             try
             {
@@ -142,6 +141,7 @@ namespace WindNight.Core.SysLogCenter.Extensions
         }
 
     }
+
     public partial class DefaultLogHelperBase
     {
         public static void Debug(string msg, long millisecond = 0, string url = "", string serverIp = "",
@@ -178,11 +178,12 @@ namespace WindNight.Core.SysLogCenter.Extensions
         }
 
         public static void Fatal(string msg, Exception exception, long millisecond = 0, string url = "",
-            string serverIp = "", string clientIp = "", bool appendMessage = false, string traceId = "")
+            string serverIp = "", string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             Add(msg, LogLevels.Critical, exception, millisecond: millisecond, url: url, serverIp: serverIp,
                 clientIp: clientIp, appendMessage: appendMessage, traceId: traceId);
         }
+
     }
 
     public partial class DefaultLogHelperBase
@@ -210,6 +211,7 @@ namespace WindNight.Core.SysLogCenter.Extensions
                 {
                     return;
                 }
+
                 var logService = Ioc.Instance.CurrentLogService;
                 if (logService != null)
                 {

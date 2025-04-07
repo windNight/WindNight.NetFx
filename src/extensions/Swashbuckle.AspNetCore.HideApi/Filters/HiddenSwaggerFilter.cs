@@ -11,6 +11,7 @@ namespace System.Attributes
     {
         public virtual void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
+
             if (ConfigItems.HiddenSwagger) // When clear swaggerDoc.Paths
             {
                 if (context.ApiDescriptions == null) return;

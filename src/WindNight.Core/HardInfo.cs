@@ -279,7 +279,8 @@ namespace System
         {
             var validAddressFamilies = new List<AddressFamily>
             {
-                AddressFamily.InterNetwork, AddressFamily.InterNetworkV6,
+                AddressFamily.InterNetwork,
+                AddressFamily.InterNetworkV6,
             };
 
             try

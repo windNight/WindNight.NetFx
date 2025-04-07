@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Swashbuckle.AspNetCore.Extensions.@internal;
+using Swashbuckle.AspNetCore.HideApi.@internal;
 
 namespace Swashbuckle.AspNetCore.HideApi.Middleware
 {
@@ -18,6 +19,54 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
     //    public bool NoAuth { get; }
     //}
 
+
+    internal class InternalSwaggerMiddlewareBase
+    {
+        private readonly RequestDelegate _next;
+        public InternalSwaggerMiddlewareBase(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public async Task InvokeAsync(HttpContext context)
+        {
+            try
+            {
+                // if (context.Request.Path.StartsWithSegments("/swagger"))
+                if (context.IsInSwaggerPage())
+                {
+                    // 获取客户端IP地址
+                    // var remoteIp = context.Request.HttpContext.Connection.RemoteIpAddress;
+                    var remoteIp = context.Request.HttpContext.QueryDefaultClient();
+                    if (!remoteIp.IpValid())
+                    {
+                        context.Response.StatusCode = 404;
+                        return;
+                    }
+
+                    if (ConfigItems.IsOnline && !ConfigItems.SwaggerOnlineDebug)
+                    {
+                        context.Response.StatusCode = 404;
+                        return;
+                    }
+
+                    if (ConfigItems.HiddenSwagger)
+                    {
+                        context.Response.StatusCode = 404;
+                        return;
+                    }
+                }
+
+                await _next(context);
+
+            }
+            catch (Exception ex)
+            {
+                await _next(context);
+            }
+        }
+
+    }
     public abstract partial class SwaggerSignValidMiddlewareBase
     {
         protected readonly RequestDelegate _next;
@@ -68,6 +117,13 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
             }
         }
 
+        protected virtual bool VerifyClientIp(HttpContext context)
+        {
+            return context.RemoteIpValid();
+            //  var remoteIp = context.Request.HttpContext.QueryDefaultClient();
+            //  return remoteIp.IpValid();
+        }
+
         protected virtual List<string> AllowedPaths => new() { "/api" };
 
         protected abstract bool CheckValidData(HttpContext context, Dictionary<string, string> dict);
@@ -103,13 +159,15 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
                 return;
             }
 
-
             if (!SwaggerCanDebug)
             {
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("Invalid or missing signature");
                 return;
             }
+
+
+
 
             // 执行验证逻辑
             var isAuth = await DoCheckAsync(context);
@@ -134,18 +192,19 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
 
         protected virtual bool IsInSwaggerPage(HttpContext context)
         {
-            var refer = GetHeaderData(context.Request, "Referer");
-            if (refer.IsNullOrEmpty())
-            {
-                return false;
-            }
+            return context.IsInSwaggerPage();
+            //var refer = GetHeaderData(context.Request, "Referer");
+            //if (refer.IsNullOrEmpty())
+            //{
+            //    return false;
+            //}
 
-            if (!refer.Contains("swagger", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
+            //if (!refer.Contains("swagger", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    return false;
+            //}
 
-            return true;
+            //return true;
         }
 
         /// <summary>
@@ -181,6 +240,17 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
             return false;
         }
 
+        protected virtual void InternalTodo(HttpContext context)
+        {
+            if (context.RemoteIpValid())
+            {
+                var defaultToken = GetHeaderData(context.Request, "AppToken");
+                if (defaultToken.IsNullOrEmpty())
+                {
+                    context.Request.Headers["AppToken"] = $"Token_swagger_{HardInfo.NowUnixTime}";
+                }
+            }
+        }
 
         /// <summary>
         ///     获取签名相关的数据。
@@ -221,31 +291,52 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
 
         protected virtual async Task<bool> DoCheckAsync(HttpContext context)
         {
-            if (IsPathAllowed(context.Request.Path))
+            try
             {
-                // 获取当前请求的控制器和方法
-                var endpoint = context.GetEndpoint();
-                if (endpoint == null)
+                if (IsPathAllowed(context.Request.Path))
                 {
-                    return await Task.FromResult(true);
+                    if (!VerifyClientIp(context))
+                    {
+                        return await Task.FromResult(false);
+                    }
+                    else
+                    {
+                        InternalTodo(context);
+                    }
+
+                    // 获取当前请求的控制器和方法
+                    var endpoint = context.GetEndpoint();
+                    if (endpoint == null)
+                    {
+                        return await Task.FromResult(true);
+                    }
+
+                    var hasNonAuth = HasNonAuth(context);
+                    if (hasNonAuth)
+                    {
+                        return await Task.FromResult(true);
+                    }
+
+
+                    if (!CurrentSignKeyDict.IsNullOrEmpty())
+                    {
+                        var signData = TryGetValidData(context);
+
+                        var flag = CheckValidData(context, signData);
+                        return await Task.FromResult(flag);
+                    }
+
+
+
                 }
 
-                var hasNonAuth = HasNonAuth(context);
-                if (hasNonAuth)
-                {
-                    return await Task.FromResult(true);
-                }
-
-                if (!CurrentSignKeyDict.IsNullOrEmpty())
-                {
-                    var signData = TryGetValidData(context);
-
-                    var flag = CheckValidData(context, signData);
-                    return await Task.FromResult(flag);
-                }
+                return await Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                return false;
             }
 
-            return await Task.FromResult(true);
         }
 
         protected virtual string GetHeaderData(HttpRequest httpRequest, string headerName, string defaultValue = "")
