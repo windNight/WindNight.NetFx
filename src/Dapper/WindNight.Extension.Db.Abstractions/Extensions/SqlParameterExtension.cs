@@ -51,26 +51,37 @@ namespace WindNight.Extension.Db.Extensions
         /// <param name="instance"></param>
         public static string ToParamString(this IEntity instance)
         {
-            var sb = new StringBuilder($" -- {instance.GenDefaultTableName()} ");
-            sb.AppendLine(" SELECT ");
-            if (instance != null)
+            try
             {
-                var properties = instance.GetType().GetProperties();
-                foreach (var property in properties)
+
+
+                var sb = new StringBuilder($" -- {instance.GenDefaultTableName()} {Environment.NewLine}");
+                sb.AppendLine(" SELECT ");
+                if (instance != null)
                 {
-                    var value = property.GetValue(instance, null);
-                    if (property.PropertyType.Name == "String")
+                    var properties = instance.GetType().GetProperties();
+                    foreach (var property in properties)
                     {
-                        sb.Append($"@{property.Name}:='{value}',");
-                    }
-                    else
-                    {
-                        sb.Append($"@{property.Name}:={value},");
+                        var value = property.GetValue(instance, null);
+                        var stringType = new[] { "String", "DateTime", };
+                        //if (property.PropertyType.Name == "String" || property.PropertyType.Name == "DateTime")
+                        if (stringType.Contains(property.PropertyType.Name))
+                        {
+                            sb.Append($"@{property.Name}:='{value}',");
+                        }
+                        else
+                        {
+                            sb.Append($"@{property.Name}:={value},");
+                        }
                     }
                 }
-            }
 
-            return sb.ToString().TrimEnd(',');
+                return sb.ToString().TrimEnd(',');
+            }
+            catch
+            {
+                return "";
+            }
         }
     }
 }

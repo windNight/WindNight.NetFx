@@ -215,8 +215,7 @@ namespace WindNight.Extension.Dapper.Mysql
                 sql, param, nameof(DbQueryE), warnMs, execErrorHandler);
         }
 
-        protected virtual async Task<T> DbQueryEAsync<T>(string conn, string sql, object param = null, long warnMs = -1,
-            Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<T> DbQueryEAsync<T>(string conn, string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
             return await SqlTimerAsync(async (_1, _sql, _param, _4) => await QueryAsync<T>(_1, _sql, _param, _4), conn,
                 sql,
@@ -240,8 +239,7 @@ namespace WindNight.Extension.Dapper.Mysql
                 sql, param, nameof(DbQueryEList), warnMs, execErrorHandler);
         }
 
-        protected virtual async Task<IEnumerable<T>> DbQueryEListAsync<T>(string conn, string sql, object param = null,
-            long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<IEnumerable<T>> DbQueryEListAsync<T>(string conn, string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
             return await SqlTimerAsync(async (_1, _sql, _param, _4) => await QueryListAsync<T>(_1, _sql, _param, _4),
                 conn,
@@ -306,8 +304,7 @@ namespace WindNight.Extension.Dapper.Mysql
                 sql, param, nameof(DbExecute), warnMs, execErrorHandler);
         }
 
-        protected virtual async Task<int> DbExecuteAsync(string conn, string sql, object param = null, long warnMs = -1,
-            Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<int> DbExecuteAsync(string conn, string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
             return await SqlTimerAsync(async (_1, _sql, _param, _4) => await ExecuteAsync(_1, _sql, _param, _4),
                 conn, sql, param, nameof(DbExecute), warnMs, execErrorHandler);
@@ -320,8 +317,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="sql"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        protected virtual async Task<T> DbExecuteScalarAsync<T>(string sql, object param = null, long warnMs = -1,
-            Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<T> DbExecuteScalarAsync<T>(string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
             return await SqlTimerAsync(
                 async (_sql, _param, _3) => await ExecuteScalarAsync<T>(DbConnectString, _sql, _param, _3),

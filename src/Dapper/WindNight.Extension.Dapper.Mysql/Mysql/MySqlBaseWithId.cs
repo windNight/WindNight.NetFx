@@ -1,11 +1,12 @@
 using Newtonsoft.Json.Extension;
 using WindNight.Core.SQL.Abstractions;
-using WindNight.Extension.Db.Abstractions;
 using WindNight.Extension.Dapper.Mysql.@internal;
+using WindNight.Extension.Db.Abstractions;
+using WindNight.Extension.Db.Extensions;
 
 namespace WindNight.Extension.Dapper.Mysql
 {
-    ///<inheritdoc />
+    /// <inheritdoc cref="NoIdMysqlBase" />
     public abstract partial class MySqlBase<TEntity, TId> : NoIdMysqlBase<TEntity>,
           IBaseRepositoryServiceWithId<TEntity, TId>
         where TEntity : class, IEntity<TId>, new()
@@ -62,10 +63,14 @@ namespace WindNight.Extension.Dapper.Mysql
             if (entity == null) return default;
 
 
-            var id = DbExecuteScalar<TId>(InsertSql, entity, warnMs: warnMs);
+            var id = DbExecuteScalar<TId>(InsertSql, entity, warnMs: warnMs, execErrorHandler: (ex, sql) =>
+            {
+                LogHelper.Error($" sql:{sql} exec error param is {entity.ToParamString()}  {ex.Message} ", ex);
+            });
             if (id.CompareTo(default) <= 0)
-                LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {entity.ToJsonStr()} . ",
-                    appendMessage: false);
+            {
+                LogHelper.Warn($"Insert Into {BaseTableName} handler error! param is {entity.ToParamString()}   {InsertSql} ", appendMessage: false);
+            }
             entity.Id = id;
             return id;
         }
@@ -74,10 +79,15 @@ namespace WindNight.Extension.Dapper.Mysql
         {
             if (entity == null) return default;
 
-            var id = await DbExecuteScalarAsync<TId>(InsertSql, entity, warnMs: warnMs);
+            var id = await DbExecuteScalarAsync<TId>(InsertSql, entity, warnMs: warnMs, execErrorHandler: (ex, sql) =>
+            {
+                LogHelper.Error($" sql:{sql} exec error param is {entity.ToParamString()}  {ex.Message} ", ex);
+            });
+
             if (id.CompareTo(default) <= 0)
-                LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {entity.ToJsonStr()} . ",
-                    appendMessage: false);
+            {
+                LogHelper.Warn($"Insert Into {BaseTableName} handler error! param is {entity.ToParamString()} {InsertSql}", appendMessage: false);
+            }
             entity.Id = id;
             return id;
         }
