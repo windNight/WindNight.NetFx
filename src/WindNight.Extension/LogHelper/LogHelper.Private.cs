@@ -96,14 +96,21 @@ namespace WindNight.LogExtension
                     }
                     else
                     {
-                        ip = IpHelper.GetServerIp();
+                        ip = IpHelper.GetLocalServerIp();
                     }
 
                     logInfo.ServerIp = ip;
                 }
 
-                if (logInfo.ClientIp.IsNullOrEmpty()) logInfo.ClientIp = CurrentItem.GetItem<string>(ThreadContext.CLIENTIP);
-                if (logInfo.RequestUrl.IsNullOrEmpty()) logInfo.RequestUrl = CurrentItem.GetItem<string>(ThreadContext.REQUESTPATH);
+                if (logInfo.ClientIp.IsNullOrEmpty())
+                {
+                    logInfo.ClientIp = CurrentItem.GetItem<string>(ThreadContext.CLIENTIP);
+                }
+
+                if (logInfo.RequestUrl.IsNullOrEmpty())
+                {
+                    logInfo.RequestUrl = CurrentItem.GetItem<string>(ThreadContext.REQUESTPATH);
+                }
                 if (appendMessage || ConfigItems.IsAppendLogMessage)
                 {
                     var msg = logInfo.Content;
@@ -114,9 +121,20 @@ namespace WindNight.LogExtension
             }
 
             if (logInfo.ServerIp.IsNullOrEmpty())
-                logInfo.ServerIp = string.Join(",", IpHelper.LocalServerIps);
-            if (logInfo.ClientIp.IsNullOrEmpty()) logInfo.ClientIp = IpHelper.GetClientIp();
-            if (logInfo.RequestUrl.IsNullOrEmpty()) logInfo.RequestUrl = IpHelper.GetCurrentUrl();
+            {
+                logInfo.ServerIp = IpHelper.GetLocalServerIp();
+            }
+
+            if (logInfo.ClientIp.IsNullOrEmpty())
+            {
+                logInfo.ClientIp = IpHelper.GetClientIp();
+            }
+
+            if (logInfo.RequestUrl.IsNullOrEmpty())
+            {
+                logInfo.RequestUrl = IpHelper.GetCurrentUrl();
+            }
+
         }
 
         static string AppendLogMessage(this string msg)

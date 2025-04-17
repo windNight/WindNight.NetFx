@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WindNight.Linq.Extensions.Expressions;
 using WindNight.Core.Attributes.Abstractions;
+using WindNight.Core.Extension;
 
 
 #if NETFRAMEWORK
@@ -24,7 +25,7 @@ namespace WindNight.Extension
         // private const string LocalServerIpsKey = "WindNight:HttpContext:LocalServerIps";
 
         public static List<string> LocalServerIps = HardInfo.GetLocalIps().ToList();
-        public static string LocalServerIp = LocalServerIps?.FirstOrDefault() ?? "";
+        public static string LocalServerIp = HardInfo.GetLocalIp().IpV6ToIpV4() ?? "";
         public static string LocalServerIpsString = LocalServerIps.Join(",");
 
         public static string GetLocalServerIp()
@@ -123,8 +124,8 @@ namespace WindNight.Extension
             {
                 if (context == null)
                 {
-                    var serverIps = string.Join(",", LocalServerIps);
-                    return serverIps;
+                    //  var serverIps = LocalServerIps.Join(",");
+                    return LocalServerIp;
                 }
 
                 var serverIp = string.Empty;
@@ -135,7 +136,10 @@ namespace WindNight.Extension
 #endif
 
                 if ("::1".Equals(serverIp))
-                    serverIp = string.Join(",", LocalServerIps);
+                {
+                    // serverIp = LocalServerIps.Join(",");
+                    serverIp = LocalServerIp;
+                }
                 return serverIp;
             }
             catch
@@ -193,7 +197,10 @@ namespace WindNight.Extension
         {
             try
             {
-                if (context == null) return DefaultIp;
+                if (context == null)
+                {
+                    return DefaultIp;
+                }
                 var headerDict = GetHeaderDict(context);
                 var ip = GetIpFromDict(headerDict);
                 if (ip.IsNullOrEmpty())
@@ -205,9 +212,15 @@ namespace WindNight.Extension
 #endif
                 }
 
-                if ("::1".Equals(ip)) return DefaultIp;
+                if ("::1".Equals(ip))
+                {
+                    return DefaultIp;
+                }
 
-                if (ip.IsNullOrEmpty()) return DefaultIp;
+                if (ip.IsNullOrEmpty())
+                {
+                    return DefaultIp;
+                }
 
                 return ip.Split(',')[0];
             }
@@ -225,7 +238,10 @@ namespace WindNight.Extension
             var dict = new Dictionary<string, string>();
             try
             {
-                if (context == null) return dict;
+                if (context == null)
+                {
+                    return dict;
+                }
                 var headerDict = GetHeaderDict(context);
                 if (headerDict.IsNullOrEmpty())
                 {

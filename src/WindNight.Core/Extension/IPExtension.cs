@@ -62,6 +62,11 @@ namespace WindNight.Core.Extension
 
         public static string IpV6ToIpV4(this string ip)
         {
+            if (ip.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
+
             if (IPAddress.TryParse(ip, out var ipAddress))
             {
                 var ipV4 = ipAddress.IpV6ToIpV4();
