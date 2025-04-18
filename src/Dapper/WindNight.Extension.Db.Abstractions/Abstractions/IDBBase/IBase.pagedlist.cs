@@ -1,4 +1,4 @@
-﻿using WindNight.Core.SQL.Abstractions;
+using WindNight.Core.SQL.Abstractions;
 
 namespace WindNight.Extension.Db.Abstractions
 {
@@ -68,6 +68,14 @@ namespace WindNight.Extension.Db.Abstractions
         /// <returns></returns>
         Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1);
 
+        Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageBase pagedInfo, string condition, string orderBy,
+            IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1);
+
+        IPagedList<TEntity> QueryPagedList(IQueryPageBase pagedInfo, string condition, string orderBy,
+            IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1);
+
+
+
         #endregion //end IEntity
 
 
@@ -84,6 +92,16 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="parameters"></param>
         /// <returns></returns>
         IPagedList<T> QueryPagedEList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1)
+            where T : class, new();
+
+        /// <summary>
+        ///   
+        /// </summary>
+        /// <param name="pagedInfo"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        IPagedList<T> QueryPagedEList<T>(IQueryPageBase pagedInfo, string condition,
+            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
             where T : class, new();
 
 
@@ -114,6 +132,16 @@ namespace WindNight.Extension.Db.Abstractions
         Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1)
                  where T : class, new();
 
+
+        /// <summary>
+        ///  异步分页
+        /// </summary>
+        /// <param name="pagedInfo"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageBase pagedInfo, string condition,
+            string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
+            where T : class, new();
 
 
 

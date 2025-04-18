@@ -21,8 +21,8 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Grpc.Swagger" Version="0.1.0-alpha.21317.5" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
-        <PackageReference Include="WindNight.AspNetCore.Hosting" Version="1.1.0-beta.25021902" />
-        <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25030501" />
+        <PackageReference Include="WindNight.AspNetCore.Hosting" Version="1.2.0-beta.25040701" />
+        <PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.2.0-beta.25040701" />
     </ItemGroup>
 
     <ItemGroup>
