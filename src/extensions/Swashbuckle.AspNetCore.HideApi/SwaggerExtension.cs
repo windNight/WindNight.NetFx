@@ -257,29 +257,28 @@ namespace Swashbuckle.AspNetCore.Extensions
 
             app.Use(async (context, next) =>
             {
-                //if (context.Request.Path.StartsWithSegments("/swagger"))
-                //{
-                //    // 获取客户端IP地址
-                //    //var remoteIp = context.Request.HttpContext.Connection.RemoteIpAddress;
-                //    var remoteIp = context.Request.HttpContext.QueryDefaultClient();
-                //    if (!remoteIp.IpValid())
-                //    {
-                //        context.Response.StatusCode = 404;
-                //        return;
-                //    }
+                if (context.Request.Path.StartsWithSegments("/swagger"))
+                {
+                    // 获取客户端IP地址 
+                    var remoteIp = context.Request.HttpContext.QueryDefaultClient();
+                    if (!remoteIp.IpValid())
+                    {
+                        context.Response.StatusCode = 404;
+                        return;
+                    }
 
-                //    if (ConfigItems.IsOnline && !ConfigItems.SwaggerOnlineDebug)
-                //    {
-                //        context.Response.StatusCode = 404;
-                //        return;
-                //    }
+                    if (ConfigItems.IsOnline && !ConfigItems.SwaggerOnlineDebug)
+                    {
+                        context.Response.StatusCode = 404;
+                        return;
+                    }
 
-                //    if (ConfigItems.HiddenSwagger)
-                //    {
-                //        context.Response.StatusCode = 404;
-                //        return;
-                //    }
-                //}
+                    if (ConfigItems.HiddenSwagger)
+                    {
+                        context.Response.StatusCode = 404;
+                        return;
+                    }
+                }
 
                 // 检查请求路径是否匹配指定路由
                 if (context.Request.Path.Equals("/api/internal/swaggerconfigs", StringComparison.OrdinalIgnoreCase))
