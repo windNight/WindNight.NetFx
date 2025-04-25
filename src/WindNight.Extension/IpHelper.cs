@@ -6,6 +6,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Extension;
 using WindNight.Linq.Extensions.Expressions;
 
 #if NETFRAMEWORK
@@ -25,7 +26,7 @@ namespace WindNight.Extension
         // private const string LocalServerIpsKey = "WindNight:HttpContext:LocalServerIps";
 
         public static List<string> LocalServerIps = HardInfo.GetLocalIps().ToList();
-        public static string LocalServerIp = LocalServerIps?.FirstOrDefault() ?? "";
+        public static string LocalServerIp = HardInfo.GetLocalIp().IpV6ToIpV4() ?? "";
         public static string LocalServerIpsString = LocalServerIps.Join(",");
 
         public static string GetLocalServerIp()
@@ -59,16 +60,16 @@ namespace WindNight.Extension
         /// <returns></returns>
         public static bool IsDefaultIp(string ipStr)
         {
-            return ipStr == "127.0.0.1" || ipStr == "0.0.0.0" || ipStr == "::1";
+            return ipStr.IsDefaultIp();
         }
 
         /// <summary> 获取本地IP地址信息  </summary>
-        public static string GetServerIp()
+        public static string GetServerIp(bool onlyIpV4 = true)
         {
             try
             {
                 var context = GetHttpContext();
-                return context.GetServerIp();
+                return context.GetServerIp(onlyIpV4);
             }
             catch
             {
@@ -131,12 +132,12 @@ namespace WindNight.Extension
         /// <summary>
         /// </summary>
         /// <returns></returns>
-        public static string GetClientIp()
+        public static string GetClientIp(bool onlyIpV4 = true)
         {
             try
             {
                 var context = GetHttpContext();
-                return context.GetClientIp();
+                return context.GetClientIp(onlyIpV4);
             }
             catch
             {

@@ -25,10 +25,11 @@ namespace JobDemos.Jobs.Demo1
             var jobRunParams = context.GetJobRunParams();
             var obj = new { jobId, jobCode, CurrentJobCode, traceId, jobRunParams };
             var jobBaseInfo = context.GetJobBaseInfo();
-
-            ConsoleWriteLine($"{HardInfo.NowString} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()}");
+            var msg = $"{HardInfo.NowString} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()}";
+            ConsoleWriteLine(msg);
 
             // Console.WriteLine($"{HardInfo.Now:yyyy-MM-dd HH:mm:sss} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()} {Environment.NewLine}");
+            await DoNoticeAsync(context, $"donotice Test {msg}", "I’m ExtendInfo");
 
             return await Task.FromResult(true);
 

@@ -29,6 +29,7 @@
         <ProjectReference Include="..\..\Dapper\WindNight.Extension.Dapper.Mysql\WindNight.Extension.Dapper.Mysql.csproj" />
         <ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
         <ProjectReference Include="..\..\WindNight.Config.Extensions\WindNight.Config.Extensions.csproj" />
+        <ProjectReference Include="..\..\WindNight.Extension\WindNight.Extension.csproj" />
     </ItemGroup>
 
     <ItemGroup>

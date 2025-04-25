@@ -1,5 +1,12 @@
+using System.Security.Cryptography;
+using System.Security.Cryptography.Extensions;
+using System.Text;
+using System.Web;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
+using Newtonsoft.Json.Extension;
 using WindNight.Core.Attributes.Abstractions;
+using WindNight.Extension;
 using WindNight.LogExtension;
 
 namespace Net8ApiDemo.Controllers
@@ -52,6 +59,76 @@ namespace Net8ApiDemo.Controllers
             }
 
             return dict;
+        }
+
+        [HttpGet("dingtalk")]
+        [NonAuth, DebugApi]
+        public async Task<object> TestDingTalkNoticeAsync([FromQuery] TIn req = null)
+        {
+            var content = GetNoticeContent("测试内容测试内容测试内容");
+
+            var title = "调度任务通知";
+            var obj = new
+            {
+                msgtype = "markdown",
+                markdown = new
+                {
+                    title,
+                    text = content,
+                },
+                at = new
+                {
+
+                },
+            };
+            var token = "";
+            var signKey = "";
+            var ts = HardInfo.NowUnixTime;
+            var sign = EncryptHelper.CalcDingTalkSign(ts, signKey);
+            //var sign1 = EncryptHelper.CalcDingTalkSign1(ts, signKey);
+            var requestUri = $"https://oapi.dingtalk.com/robot/send?access_token={token}&timestamp={ts}&sign={sign}";
+            //var rlt = await HttpPostAsync(requestUri, obj);
+
+            var rlt = await HttpHelper.PostAsync<string>(requestUri, obj, convertFunc: _ => _.ToString());
+
+
+            return rlt;
+
+        }
+
+        async Task<string> HttpPostAsync(string url, object bodyObj)
+        {
+            // var requestUri = $"https://oapi.dingtalk.com/robot/send?access_token={token}";
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(bodyObj.ToJsonStr(), Encoding.UTF8, "application/json"),
+            };
+            var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("content-type", "application/json;charset=UTF-8");
+
+            var res = await httpClient.SendAsync(request);
+            var rlt = await res.Content.ReadAsStringAsync();
+            return rlt;
+        }
+
+
+
+        string GetNoticeContent(string message)
+        {
+            var env = Ioc.GetService<IHostEnvironment>();
+            var environmentName = env?.EnvironmentName;
+            var applicationName = env?.ApplicationName;
+            var content = $"###  Test 任务通知\n" +
+                          " #### 任务基础属性\n\n" +
+                          "> #### JobCode:(任务代号)\n\n" +
+                          $"> ##### TestJobCode\n\n" +
+                          "> #### JobId:(本次运行的jobId)\n\n" +
+                          $"> ##### TestJobId\n\n" +
+                          "#### 执行情况:\n\n" +
+                          $"> ##### {message}\n\n" +
+                          // "> ![screenshot](https://gw.alipayobjects.com/zos/skylark-tools/public/files/84111bbeba74743d2771ed4f062d1f25.png)\n" +
+                          $"  ####  {applicationName}_{environmentName} \n";
+            return content;
         }
 
         [HttpGet("debugapi")]

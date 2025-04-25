@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 
@@ -30,6 +30,7 @@ namespace WindNight.LogExtension
                 return this.ToJsonStr();
             }
         }
+
         internal class ThreadContext
         {
             /// <summary> 业务序列号  </summary>

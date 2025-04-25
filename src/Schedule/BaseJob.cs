@@ -1,8 +1,10 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Quartz;
 using Schedule.Abstractions;
+using Schedule.Extension;
 using Schedule.Func;
 using Schedule.@internal;
 using Schedule.Model;
@@ -109,6 +111,15 @@ namespace Schedule
             msg.Log2Console(isForce: true);
 
         }
+        protected static IScheduleNotice _scheduleNotice => Ioc.GetService<IScheduleNotice>();
+
+        protected virtual async Task DoNoticeAsync(IJobExecutionContext context, string message, string extendInfo = "")
+        {
+            await context.DoNoticeAsync(message, extendInfo);
+        }
+
+
+
     }
 
 

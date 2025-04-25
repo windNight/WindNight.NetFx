@@ -4,37 +4,45 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Extensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
+using WindNight.AspNetCore.Mvc.Extensions;
+using WindNight.Core;
 using WindNight.Core.Attributes.Abstractions;
 using WindNight.Extension;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 {
+
     [Route("api/internal")]
     [SysApi(10)]
     [NonAuth]
-    public class InternalController : ControllerBase // Controller
+    public class InternalController : DefaultApiControllerBase // Controller
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        // private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public InternalController(IHttpContextAccessor httpContextAccessor)
+        public InternalController()
         {
-            _httpContextAccessor = httpContextAccessor;
+
         }
 
 
         [HttpGet("config")]
         public object GetConfigs()
         {
-            if (!ConfigItems.OpenInternalApi)
+            if (!HttpClientIpIsPrivate())
             {
-                return false;
+                if (!ConfigItems.OpenInternalApi)
+                {
+                    return false;
+                }
             }
+
 
             return new { Configuration = GetConfiguration() };
         }
@@ -52,9 +60,12 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
         private object GetConfiguration(IEnumerable<IConfigurationSection> sections = null)
         {
-            if (!ConfigItems.OpenInternalApi)
+            if (!HttpClientIpIsPrivate())
             {
-                return false;
+                if (!ConfigItems.OpenInternalApi)
+                {
+                    return false;
+                }
             }
 
             var _config = Ioc.GetService<IConfiguration>();
@@ -64,19 +75,22 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [HttpGet("info")]
         public object GetProjectVersion()
         {
-            if (!ConfigItems.OpenInternalApi)
+            if (!HttpClientIpIsPrivate())
             {
-                return false;
+                if (!ConfigItems.OpenInternalApi)
+                {
+                    return false;
+                }
             }
 
             return new
             {
-                DateTime = HardInfo.Now,
+                DateTime = HardInfo.NowFullString,
                 ConfigItems.SystemAppId,
                 ConfigItems.SystemAppCode,
                 ConfigItems.SystemAppName,
                 AssemblyVersions = GetAssemblyVersions(),
-                ServerIp = _httpContextAccessor.HttpContext.GetServerIp(),
+                ServerIp = GetHttpServerIp(),
                 IpHelper.LocalServerIp,
                 IpHelper.LocalServerIps,
             };
@@ -85,14 +99,17 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [HttpGet("version")]
         public object GetVersion()
         {
-            if (!ConfigItems.OpenInternalApi)
+            if (!HttpClientIpIsPrivate())
             {
-                return false;
+                if (!ConfigItems.OpenInternalApi)
+                {
+                    return false;
+                }
             }
 
             return new
             {
-                DateTime = HardInfo.Now,
+                DateTime = HardInfo.NowFullString,
                 AssemblyVersion = typeof(InternalController).Assembly?.GetName()?.Version?.ToString(),
             };
         }
@@ -100,30 +117,93 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [HttpGet("versions")]
         public object GetVersions()
         {
-            if (!ConfigItems.OpenInternalApi)
+            if (!HttpClientIpIsPrivate())
             {
-                return false;
+                if (!ConfigItems.OpenInternalApi)
+                {
+                    return false;
+                }
             }
 
-            return new { DateTime = HardInfo.Now, AssemblyVersions = GetAssemblyVersions() };
+            return new
+            {
+                DateTime = HardInfo.NowFullString,
+                AssemblyVersions = GetAssemblyVersions(),
+            };
         }
 
-        private object GetAssemblyVersions()
+        [HttpGet("versions/internal")]
+        public object GetInternalVersions()
+        {
+            if (!HttpClientIpIsPrivate())
+            {
+                if (!ConfigItems.OpenInternalApi)
+                {
+                    return false;
+                }
+            }
+
+            return new
+            {
+                DateTime = HardInfo.NowFullString,
+                AssemblyVersions = GetAssemblyVersions(true),
+            };
+        }
+
+        private object GetAssemblyVersions(bool ignoreMicrosoft = false)
         {
             try
             {
-                var result = new Dictionary<string, string>();
+                var result = new SortedDictionary<string, string>();
                 var path = AppDomain.CurrentDomain.BaseDirectory;
-                foreach (var file in Directory.GetFiles(path).Where(m => ".dll".Equals(Path.GetExtension(m))))
+                var todoFiles = Directory.GetFiles(path).Where(m =>
+                {
+
+                    var flag = ".dll".Equals(Path.GetExtension(m));
+                    if (!flag)
+                    {
+                        return false;
+                    }
+
+                    if (ignoreMicrosoft)
+                    {
+                        var fileName = Path.GetFileName(m);
+                        if (fileName.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) || fileName.StartsWith("System", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return false;
+                        }
+                    }
+                    return flag;
+                });
+                foreach (var file in todoFiles)
+                {
                     try
                     {
                         var assembly = Assembly.LoadFile(file);
                         if (assembly != null)
-                            result.Add(assembly.GetName()?.Name, assembly.GetName()?.Version?.ToString());
+                        {
+                            var assemblyName = assembly.GetName();
+                            if (assemblyName != null)
+                            {
+                                var key = assemblyName.Name;
+                                if (ignoreMicrosoft && (key.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) || key.StartsWith("System", StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    continue;
+                                }
+                                if (!key.IsNullOrEmpty() && !result.ContainsKey(key))
+                                {
+                                    var value = assemblyName.Version.ToString();
+                                    result.Add(key, value);
+
+                                }
+                            }
+                        }
+
                     }
                     catch
                     {
                     }
+                }
 
                 return result;
             }
@@ -133,5 +213,8 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
             return null;
         }
+
+
+
     }
 }

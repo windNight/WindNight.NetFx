@@ -30,7 +30,7 @@ namespace JobDemos.Jobs.Demo3
 
             // Console.WriteLine($"{HardInfo.Now:yyyy-MM-dd HH:mm:sss} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()}{Environment.NewLine}");
 
-            return await Task.FromResult(true);
+            return await Task.FromResult(false);
 
         }
     }

@@ -69,5 +69,26 @@ namespace WindNight.Extension
                 $"HttpPostAsync({domain}{path}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
+
+        public static async Task<T> PostAsync<T>(string url, object bodyObjects,
+            Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
+            int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null,
+            CancellationToken token = default,
+            bool isJsonBody = true, Func<IRestResponse, bool> errStatusFunc = null)
+        {
+            return await TimeWatcherHelper.TimeWatcher(async () =>
+                {
+                    var request = GenPostRequest(url, headerDict, bodyObjects, isJsonBody);
+
+
+                    return await ExecuteHttpClientAsync(url, request, timeOut: timeOut, token: token,
+                        convertFunc: convertFunc, errStatusFunc: errStatusFunc);
+                },
+                $"HttpPostAsync({url}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
+                warnMiSeconds: warnMiSeconds);
+        }
+
+
+
     }
 }

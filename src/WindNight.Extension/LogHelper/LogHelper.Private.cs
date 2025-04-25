@@ -104,7 +104,13 @@ namespace WindNight.LogExtension
 
                 if (logInfo.ClientIp.IsNullOrEmpty())
                 {
-                    logInfo.ClientIp = CurrentItem.GetItem<string>(ThreadContext.CLIENTIP);
+                    var clientIp = CurrentItem.GetItem<string>(ThreadContext.CLIENTIP);
+                    if (clientIp.IsNullOrEmpty())
+                    {
+                        clientIp = IpHelper.GetClientIp();
+                    }
+
+                    logInfo.ClientIp = clientIp;
                 }
 
                 if (logInfo.RequestUrl.IsNullOrEmpty())

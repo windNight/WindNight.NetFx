@@ -55,6 +55,8 @@ namespace Schedule.@internal
 
         public static string DingtalkToken =>
             GetAppSettingValue(ConfigItemsKey.DingtalkTokenKey, "", false);
+        public static string NoticeDingSignKey =>
+                GetAppSettingValue(ConfigItemsKey.DingtalkSignKey, "", false);
 
         public static string DingtalkPhones =>
             GetAppSettingValue(ConfigItemsKey.DingtalkPhonesKey, "", false);
@@ -134,6 +136,7 @@ namespace Schedule.@internal
             internal static string JobRemotingConfigNodeName = "ScheduleJobs:Remoting";
 
             internal static string DingtalkTokenKey = "JobExecuted:NoticeDingToken";
+            internal static string DingtalkSignKey = "JobExecuted:NoticeDingSignKey";
             internal static string DingtalkPhonesKey = "JobExecuted:NoticeDingPhones";
             internal static string DingtalkAtAllKey = "JobExecuted:NoticeDingAtAll";
         }

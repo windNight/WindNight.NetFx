@@ -1,6 +1,8 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Hosting.WnExtensions;
 using WindNight.Config.Abstractions;
 using WindNight.Config.Extensions;
+using WindNight.Core.Abstractions;
 
 namespace Net8ApiDemo
 {
@@ -72,6 +74,7 @@ asdasdasdas
         protected override void ConfigBizServices(IServiceCollection services)
         {
             services.AddSingleton<IConfigCenterAuth, ConfigCenterAuth>();
+            services.AddSingleton<IQuerySvrHostInfo, QuerySvrHostInfo>();
             services.AddConfigExtension(Configuration);
         }
 
@@ -323,4 +326,25 @@ asdasdasdas
         }
     }
 
+
+    public class QuerySvrHostInfo : IQuerySvrHostInfo
+    {
+        public ISvrHostInfo GetSvrHostInfo()
+        {
+            var model = new SvrHostBaseInfo();
+            var buildType = "";
+#if DEBUG
+            buildType = "Debug";
+#else
+            buildType = "Release";
+#endif
+            model.BuildType = buildType;
+            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+
+            model.AssemblyVersion = assembly?.GetName()?.Version?.ToString();
+            model.CompileTime = System.IO.File.GetLastWriteTime(assembly.Location).FormatDateTimeFullString();
+            return model;
+
+        }
+    }
 }

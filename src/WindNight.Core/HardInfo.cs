@@ -4,6 +4,8 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.Extension;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
@@ -18,6 +20,7 @@ namespace System
         public static DateTime MinDate => DateTime.MinValue;
 
         public static DateTime Now => DateTime.Now;
+        public static string NowFullString => DateTime.Now.FormatDateTimeFullString();
         public static DateTime Yesterday => Now.AddDays(-1);
         public static DateTime Tomorrow => Now.AddDays(1);
 
@@ -208,6 +211,8 @@ namespace System
         public static string? NodeCode { get; private set; }
 
         public static string NodeIpAddress { get; private set; } = "";
+        public static string EnvironmentName => Ioc.GetService<IHostEnvironment>()?.EnvironmentName ?? "";
+        public static string ApplicationName => Ioc.GetService<IHostEnvironment>()?.ApplicationName ?? "";
 
         public static bool IsUnix => OperatorSys == OperatorSysEnum.Unix;
         public static bool IsWindows => OperatorSys == OperatorSysEnum.Windows;
@@ -267,9 +272,14 @@ namespace System
             NodeIpAddress = ip;
         }
 
-        public static string GetLocalIp()
+        public static string GetLocalIp(bool onlyIpV4 = true)
         {
-            return GetLocalIps().FirstOrDefault() ?? string.Empty;
+            var ip = GetLocalIps().FirstOrDefault() ?? string.Empty;
+            if (onlyIpV4)
+            {
+                ip = ip.IpV6ToIpV4();
+            }
+            return ip;
         }
 
         /// <summary>
@@ -388,6 +398,8 @@ namespace System
             {
                 NodeCode,
                 NodeIpAddress,
+                EnvironmentName,
+                ApplicationName,
                 OperatorSys = OperatorSys.ToString(),
             };
         }

@@ -159,7 +159,8 @@ namespace WindNight.Extension
                     }
 
                     convertFunc ??= DefaultConvertFunc<T>();
-                    return convertFunc.Invoke(response.Content);
+                    var r = convertFunc.Invoke(response.Content);
+                    return r;
                 }
 
                 if (errStatusFunc != null)

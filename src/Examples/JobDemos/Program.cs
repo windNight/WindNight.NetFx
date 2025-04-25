@@ -126,7 +126,9 @@ namespace JobDemos
                     },
                     NoticeDingConfig = new
                     {
-                        NoticeDingToken = "",//""63c799ab6890b7c293ab32e94b862be21a961e4edb245f6187606e93cc39bcd1",
+                        NoticeDingToken = "",
+                        NoticeDingSignKey = "",
+                        Keywords = "",
                         NoticeDingIsOpen = false,
                     },
                     MiniLogLevel = LogLevels.Debug.ToString(),

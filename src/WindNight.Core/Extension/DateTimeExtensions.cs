@@ -229,6 +229,11 @@ namespace System
             return dateTime.ToString(format);
         }
 
+        public static string FormatDateTimeFullString(this DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
         /// <summary>
         ///     格式为 2015-01-15的字符串转成时间为 20150115
         /// </summary>

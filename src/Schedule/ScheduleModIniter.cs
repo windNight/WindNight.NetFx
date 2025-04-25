@@ -31,7 +31,9 @@ namespace Schedule
         public void Dispose()
         {
             if (ScheduleModConfig.Instance.DefaultScheduler != null)
+            {
                 ScheduleModConfig.Instance.DefaultScheduler.Shutdown(true);
+            }
         }
 
         NameValueCollection GenStdSchedulerDefaultKV()
@@ -119,6 +121,7 @@ namespace Schedule
                 //{
                 //    job.StartJob(config, true);
                 //}
+                IsInit = true;
                 return true;
             }
             else
@@ -126,15 +129,17 @@ namespace Schedule
                 //加载配置文件，并且运行状态为open的任务
                 var allJobs = Ioc.GetServices<IJobCtrl>().ToList();
                 ScheduleModConfig.Instance.Jobs = new List<JobMeta>(allJobs.Count());
-                var sc = new ScheduleCtrl();
-                var cacheJobs = sc.GetBGJobInfo();
+                //var sc = new ScheduleCtrl();
+                //var cacheJobs = sc.GetBGJobInfo();
 
                 foreach (var job in allJobs)
                 {
+
                     var jobParam = job.ReadJobParam();
-                    jobParam = cacheJobs.FirstOrDefault(x => x.JobName.Equals(jobParam.JobName, StringComparison.OrdinalIgnoreCase)) == null
-                        ? jobParam
-                        : cacheJobs.FirstOrDefault(x => x.JobName.Equals(jobParam.JobName, StringComparison.OrdinalIgnoreCase));
+
+                    //jobParam = cacheJobs.FirstOrDefault(x => x.JobName.Equals(jobParam.JobName, StringComparison.OrdinalIgnoreCase)) == null
+                    //    ? jobParam
+                    //    : cacheJobs.FirstOrDefault(x => x.JobName.Equals(jobParam.JobName, StringComparison.OrdinalIgnoreCase));
 
                     ScheduleModConfig.Instance.Jobs.Add(jobParam);
                     if (jobParam.State.Equals(JobStateEnum.Open) || jobParam.State.Equals(JobStateEnum.Pause))
@@ -187,6 +192,7 @@ namespace Schedule
                 //TODO 暂不支持 OnceJob
                 var sc = new ScheduleCtrl();
                 sc.StartJob(config.JobName, config.StartTime, config.RunParams, config.AutoClose);
+                IsInit = true;
                 return true;
             }
             else
@@ -194,15 +200,15 @@ namespace Schedule
                 //加载配置文件，并且运行状态为open的任务
                 var allJobs = Ioc.GetServices<IJobCtrl>().ToList();
                 ScheduleModConfig.Instance.Jobs = new List<JobMeta>(allJobs.Count());
-                var sc = new ScheduleCtrl();
-                var cacheJobs = sc.GetBGJobInfo();
+                //var sc = new ScheduleCtrl();
+                //var cacheJobs = sc.GetBGJobInfo();
 
                 foreach (var job in allJobs)
                 {
                     var jobParam = job.ReadJobParam();
-                    jobParam = cacheJobs.FirstOrDefault(x => x.JobName.Equals(jobParam.JobName)) == null
-                        ? jobParam
-                        : cacheJobs.FirstOrDefault(x => x.JobName.Equals(jobParam.JobName));
+                    //jobParam = cacheJobs.FirstOrDefault(x => x.JobName.Equals(jobParam.JobName)) == null
+                    //    ? jobParam
+                    //    : cacheJobs.FirstOrDefault(x => x.JobName.Equals(jobParam.JobName));
 
                     ScheduleModConfig.Instance.Jobs.Add(jobParam);
                     if (jobParam.State.Equals(JobStateEnum.Open) || jobParam.State.Equals(JobStateEnum.Pause))

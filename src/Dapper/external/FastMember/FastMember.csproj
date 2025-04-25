@@ -3,7 +3,7 @@
         <Description>In .NET reflection is slow... well, kinda slow. If you need access to the members of an arbitrary type, with the type and member-names known only at runtime - then it is frankly hard (especially for DLR types). This library makes such access easy and fast.</Description>
         <Copyright>Copyright © Marc Gravell 2012-2016</Copyright>
         <AssemblyTitle>FastMember</AssemblyTitle>
-        <Version>1.5.0</Version>
+        <!--<Version>1.5.0</Version>-->
         <Authors>Marc Gravell</Authors>
         <TargetFrameworks>
             netstandard2.0;
@@ -27,8 +27,8 @@
         <VersionMajor>1</VersionMajor>
         <VersionMinor>5</VersionMinor>
         <VersionPatch>0</VersionPatch>
-        <VersionQuality>0</VersionQuality>
-        <VersionTT>-beta.25031001</VersionTT>
+        <VersionQuality>1</VersionQuality>
+        <VersionTT>-beta.25042501</VersionTT>
         <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</VersionPrefix>
         <AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
         <FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</FileVersion>
@@ -65,7 +65,7 @@
         <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
         <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="System.Security.Permissions" Version="9.0.2" />
+        <PackageReference Include="System.Security.Permissions" Version="9.0.4" />
     </ItemGroup>
 
 

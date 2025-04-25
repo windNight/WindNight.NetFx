@@ -101,6 +101,8 @@ namespace WindNight.Core.Abstractions
         /// <param name="appendMessage"></param>
         void Offline(string buildType, Exception? exception = null, bool appendMessage = false, string traceId = "");
 
+
         void Report(JObject obj, string traceId = "");
+
     }
 }

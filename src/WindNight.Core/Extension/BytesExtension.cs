@@ -45,7 +45,10 @@ namespace System.Text
         /// </returns>
         public static byte[] ToBytes(this string text, Encoding? encoding = null)
         {
-            if (encoding == null) encoding = Encoding.UTF8;
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
             return encoding.GetBytes(text);
         }
 
@@ -78,7 +81,10 @@ namespace System.Text
         /// <returns>Base64后的字符串</returns>
         public static string ToBase64String(this byte[] bytes)
         {
-            if (bytes.IsNullOrEmpty()) return string.Empty;
+            if (bytes.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
             try
             {
                 return Convert.ToBase64String(bytes);

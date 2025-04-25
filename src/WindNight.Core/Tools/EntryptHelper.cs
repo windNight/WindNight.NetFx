@@ -1,5 +1,7 @@
 using System.IO;
 using System.Text;
+using System.Web;
+using WindNight.Core.@internal;
 
 namespace System.Security.Cryptography.Extensions
 {
@@ -108,12 +110,15 @@ namespace System.Security.Cryptography.Extensions
         {
             string result;
 
-            using (MD5CryptoServiceProvider md5 = new())
+            using (var md5 = new MD5CryptoServiceProvider())
             {
                 bs = md5.ComputeHash(bs);
-                StringBuilder s = new();
+                var s = new StringBuilder();
 
-                foreach (var b in bs) s.Append(b.ToString("X2"));
+                foreach (var b in bs)
+                {
+                    s.Append(b.ToString("X2"));
+                }
 
                 result = s.ToString();
             }
@@ -121,15 +126,6 @@ namespace System.Security.Cryptography.Extensions
             return result.ToLower();
         }
 
-        public static string DoHmacSha1Sign(this string text, string signKey, Encoding encoding = null)
-        {
-            if (encoding == null)
-                encoding = Encoding.UTF8;
-            HMACSHA1 hmacsha1 = new(encoding.GetBytes(signKey));
-            var dataBuffer = encoding.GetBytes(text);
-            var hashBytes = hmacsha1.ComputeHash(dataBuffer);
-            return Convert.ToBase64String(hashBytes);
-        }
 
         /// <summary>
         ///     AES加密
@@ -157,8 +153,8 @@ namespace System.Security.Cryptography.Extensions
                 des.Mode = cipherMode; //CipherMode.CBC;
                 des.Padding = paddingMode; // PaddingMode.Zeros;
 
-                MemoryStream mStream = new();
-                CryptoStream cStream = new(mStream, des.CreateEncryptor(), CryptoStreamMode.Write);
+                var mStream = new MemoryStream();
+                var cStream = new CryptoStream(mStream, des.CreateEncryptor(), CryptoStreamMode.Write);
                 cStream.Write(inputByteArray, 0, inputByteArray.Length);
                 cStream.FlushFinalBlock();
 
@@ -166,7 +162,7 @@ namespace System.Security.Cryptography.Extensions
                 // if (handler != null) return handler.Invoke(desBytes);
                 // if (encoding == null) encoding = Encoding.UTF8;
                 // return encoding.GetString(desBytes);
-                StringBuilder sb = new();
+                var sb = new StringBuilder();
                 foreach (var t in desBytes)
                 {
                     sb.Append(t.ToString("x2"));
@@ -202,17 +198,20 @@ namespace System.Security.Cryptography.Extensions
             try
             {
                 var inputByteArray = decryptString.ToHexByte();
-                SymmetricAlgorithm des = Rijndael.Create();
+                var des = Rijndael.Create();
                 des.Key = Encoding.ASCII.GetBytes(keyLength > 0 ? key.Substring(0, keyLength) : key);
                 des.IV = Encoding.ASCII.GetBytes(ivLength > 0 ? iv.Substring(0, ivLength) : iv);
                 des.Padding = paddingMode; // PaddingMode.Zeros
                 des.Mode = cipherMode; // CipherMode.CBC;
-                MemoryStream mStream = new();
-                CryptoStream cStream = new(mStream, des.CreateDecryptor(), CryptoStreamMode.Write);
+                var mStream = new MemoryStream();
+                var cStream = new CryptoStream(mStream, des.CreateDecryptor(), CryptoStreamMode.Write);
                 cStream.Write(inputByteArray, 0, inputByteArray.Length);
                 cStream.FlushFinalBlock();
                 var desDecryBytes = mStream.ToArray();
-                if (encoding == null) encoding = Encoding.UTF8;
+                if (encoding == null)
+                {
+                    encoding = Encoding.UTF8;
+                }
                 return encoding.GetString(desDecryBytes);
             }
             catch (Exception ex)
@@ -232,10 +231,14 @@ namespace System.Security.Cryptography.Extensions
             {
                 hexString = hexString.Replace(" ", "");
                 if (hexString.Length % 2 != 0)
+                {
                     hexString += " ";
+                }
                 var returnBytes = new byte[hexString.Length / 2];
                 for (var i = 0; i < returnBytes.Length; i++)
+                {
                     returnBytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
+                }
                 return returnBytes;
             }
             catch (Exception ex)
@@ -252,5 +255,108 @@ namespace System.Security.Cryptography.Extensions
             var cipherbytes = rsa.Encrypt(content.ToBytes(), false);
             return cipherbytes.ToBase64String();
         }
+
+
+
+        public static string CalcDingTalkSign(long ts, string signKey)
+        {
+            try
+            {
+
+                var stringToSign = $"{ts}\n{signKey}"; //ts + "\n" + signKey;
+                var hmacsha256 = DoHmacSha256Sign(stringToSign, signKey);
+                var sign = hmacsha256.UrlEncode();
+
+                return sign;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"MakeDingTalkSign Handler Error {ex.Message}", ex);
+                return "";
+            }
+
+        }
+
+        public static string DoHmacSha256Sign(this string text, string signKey, Encoding encoding = null)
+        {
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
+
+            var dataBuffer = text.ToBytes(encoding);
+            var hmacsha256 = new HMACSHA256(signKey.ToBytes(encoding));
+            var hashBytes = hmacsha256.ComputeHash(dataBuffer);
+            return hashBytes.ToBase64String();
+        }
+        public static string DoHmacSha384Sign(this string text, string signKey, Encoding encoding = null)
+        {
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
+
+            var dataBuffer = text.ToBytes(encoding);
+            var hmacsha256 = new HMACSHA384(signKey.ToBytes(encoding));
+            var hashBytes = hmacsha256.ComputeHash(dataBuffer);
+            return hashBytes.ToBase64String();
+        }
+        public static string DoHmacSha512Sign(this string text, string signKey, Encoding encoding = null)
+        {
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
+
+            var dataBuffer = text.ToBytes(encoding);
+            var hmacsha256 = new HMACSHA512(signKey.ToBytes(encoding));
+            var hashBytes = hmacsha256.ComputeHash(dataBuffer);
+            return hashBytes.ToBase64String();
+        }
+        public static string DoHmacMD5Sign(this string text, string signKey, Encoding encoding = null)
+        {
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
+
+            var dataBuffer = text.ToBytes(encoding);
+            var hmacsha256 = new HMACMD5(signKey.ToBytes(encoding));
+            var hashBytes = hmacsha256.ComputeHash(dataBuffer);
+            return hashBytes.ToBase64String();
+        }
+        public static string DoHmacSha1Sign(this string text, string signKey, Encoding encoding = null)
+        {
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
+            var hmacsha1 = new HMACSHA1(signKey.ToBytes(encoding));
+            var dataBuffer = text.ToBytes(encoding);
+            var hashBytes = hmacsha1.ComputeHash(dataBuffer);
+            return hashBytes.ToBase64String();
+        }
+
+        //public static string CalcDingTalkSign1(long ts, string signKey)
+        //{
+        //    try
+        //    {
+
+        //        var stringToSign = $"{ts}\n{signKey}"; //ts + "\n" + signKey;
+        //        using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(signKey)))
+        //        {
+        //            var signData = hmac.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
+        //            var sign = HttpUtility.UrlEncode(Convert.ToBase64String(signData));
+        //            return sign;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogHelper.Error($"MakeDingTalkSign Handler Error {ex.Message}", ex);
+        //        return "";
+        //    }
+
+        //}
+
     }
 }

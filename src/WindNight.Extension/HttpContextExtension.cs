@@ -57,18 +57,18 @@ namespace WindNight.Extension
         /// </summary>
         /// <param name="ipStr"></param>
         /// <returns></returns>
-        public static bool IsDefaultIp(string ipStr)
+        public static bool IsDefaultIp(this string ipStr)
         {
             return ipStr == "127.0.0.1" || ipStr == "0.0.0.0" || ipStr == "::1";
         }
 
         /// <summary> 获取本地IP地址信息  </summary>
-        public static string GetServerIp()
+        public static string GetServerIp(bool onlyIpV4 = true)
         {
             try
             {
                 var context = GetHttpContext();
-                return context.GetServerIp();
+                return context.GetServerIp(onlyIpV4);
             }
             catch
             {
@@ -118,7 +118,7 @@ namespace WindNight.Extension
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string GetServerIp(this HttpContext context)
+        public static string GetServerIp(this HttpContext context, bool onlyIpV4 = true)
         {
             try
             {
@@ -135,11 +135,16 @@ namespace WindNight.Extension
                 serverIp = context.Connection?.LocalIpAddress?.ToString() ?? string.Empty;
 #endif
 
-                if ("::1".Equals(serverIp))
+                if (IsDefaultIp(serverIp))
                 {
                     // serverIp = LocalServerIps.Join(",");
                     serverIp = LocalServerIp;
                 }
+                if (onlyIpV4)
+                {
+                    serverIp = serverIp.IpV6ToIpV4();
+                }
+
                 return serverIp;
             }
             catch
@@ -176,12 +181,12 @@ namespace WindNight.Extension
         /// <summary>
         /// </summary>
         /// <returns></returns>
-        public static string GetClientIp()
+        public static string GetClientIp(bool onlyIpV4 = true)
         {
             try
             {
                 var context = GetHttpContext();
-                return context.GetClientIp();
+                return context.GetClientIp(onlyIpV4);
             }
             catch
             {
@@ -193,7 +198,7 @@ namespace WindNight.Extension
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string GetClientIp(this HttpContext context)
+        public static string GetClientIp(this HttpContext context, bool onlyIpV4 = true)
         {
             try
             {
@@ -222,7 +227,13 @@ namespace WindNight.Extension
                     return DefaultIp;
                 }
 
-                return ip.Split(',')[0];
+                var clientIp = ip.Split(',')[0];
+                if (onlyIpV4)
+                {
+                    clientIp = clientIp.IpV6ToIpV4();
+                }
+
+                return clientIp;
             }
             catch
             {

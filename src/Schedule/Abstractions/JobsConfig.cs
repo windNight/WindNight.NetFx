@@ -48,6 +48,7 @@ namespace Schedule
     public class NoticeDingConfig
     {
         public string NoticeDingToken { get; set; } = "";
+        public string NoticeDingSignKey { get; set; } = "";
         public string NoticeDingPhones { get; set; } = "";
         public bool NoticeDingAtAll { get; set; } = false;
         public bool NoticeDingIsOpen { get; set; } = false;
