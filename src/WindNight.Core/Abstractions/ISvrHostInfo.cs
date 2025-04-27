@@ -47,6 +47,7 @@ namespace WindNight.Core.Abstractions
         public virtual string ContentRootPath { get; set; } = "";
         public virtual string ClientIp { get; set; } = "";
         public virtual string ServerIp { get; set; } = "";
+        public virtual string NodeCode { get; set; } = "";
 
         public static DefaultSvrHostInfo GenDefault
         {
@@ -71,6 +72,7 @@ namespace WindNight.Core.Abstractions
                     EnvironmentName = environmentName,
                     QueryDateTime = HardInfo.NowFullString,
                     ServerIp = HardInfo.GetLocalIp(),
+                    NodeCode = HardInfo.NodeCode,
                 };
                 var impl = Ioc.GetService<IQuerySvrHostInfo>();
                 if (impl != null)
