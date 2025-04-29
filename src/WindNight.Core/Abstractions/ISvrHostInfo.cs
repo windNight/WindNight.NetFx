@@ -27,10 +27,10 @@ namespace WindNight.Core.Abstractions
     public class SvrHostBaseInfo : ISvrHostInfo
     {
 
-        public virtual string BuildType { get; set; }
+        public virtual string BuildType { get; set; } = "";
 
-        public virtual string CompileTime { get; set; }
-        public virtual string AssemblyVersion { get; set; }
+        public virtual string CompileTime { get; set; } = "";
+        public virtual string AssemblyVersion { get; set; } = "";
     }
 
     public class DefaultSvrHostInfo : SvrHostBaseInfo

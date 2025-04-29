@@ -409,7 +409,10 @@ namespace WindNight.Extension
         {
             try
             {
-                if (Items == null || Items.Count == 0) return "";
+                if (Items == null || Items.Count == 0)
+                {
+                    return "";
+                }
                 if (ContainKey("MS_HttpRequestMessage"))
                 {
                     Items.Remove("MS_HttpRequestMessage");

@@ -219,6 +219,8 @@ namespace System
         public static bool IsMac => OperatorSys == OperatorSysEnum.MacOSX;
         public static bool IsXBox => OperatorSys == OperatorSysEnum.XBox;
 
+        public static ISvrHostInfo SvrHostInfo => Ioc.GetService<IQuerySvrHostInfo>()?.GetSvrHostInfo() ?? new SvrHostBaseInfo();
+
         public static OperatorSysEnum OperatorSys
         {
             get
@@ -319,8 +321,6 @@ namespace System
             {
                 try
                 {
-
-
                     // UnixUnicastIPAddressInformation 未实现 IsDnsEligible.get
                     $"OperatorSysEnum is {OperatorSys} handler error {nameof(PlatformNotSupportedException)} : {ex.Message}".Log2Console(ex);
 
@@ -400,15 +400,14 @@ namespace System
                 NodeIpAddress,
                 EnvironmentName,
                 ApplicationName,
+                SvrHostInfo,
                 OperatorSys = OperatorSys.ToString(),
             };
         }
 
-        public new static string ToString() =>
-            Obj().ToJsonStr();
+        public new static string ToString() => Obj().ToJsonStr();
 
-        public static string ToString(Formatting formatting) =>
-            Obj().ToJsonStr(formatting);
+        public static string ToString(Formatting formatting) => Obj().ToJsonStr(formatting);
 
 
     }

@@ -60,7 +60,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 <h3 style='color: #27ae60;'>BuildType</h3>
 <span style='background:#f1c40f;padding:2px;color:red;'><strong>`{BuildType}`</strong></span>
 <h3 style='color: #27ae60;'>  BuildTs  </h3>
-`{BuildDateTime}`
+`{BuildDateTime.FormatDateTimeFullString()}`
 <h3 style='color: #27ae60;'>  ServerInfo  </h3>
 ```
 {HardInfo.ToString(Formatting.Indented)}
