@@ -75,6 +75,13 @@ namespace WindNight.Extension.Db.Abstractions
             IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1);
 
 
+        IPagedList<TEntity> QueryPagedList(IQueryPageBase pageQueryBase, string whereSql,
+            IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true,
+            bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+
+        Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageBase pageQueryBase, string whereSql,
+            IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true,
+            bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
 
         #endregion //end IEntity
 
@@ -143,6 +150,17 @@ namespace WindNight.Extension.Db.Abstractions
             string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1)
             where T : class, new();
 
+        IPagedList<T> QueryPagedEList<T>(IQueryPageBase pageQueryBase, string whereSql,
+            IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true,
+            bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, ICreateEntityBase, new()
+            ;
+
+        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageBase pageQueryBase, string whereSql,
+            IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true,
+            bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, ICreateEntityBase, new()
+            ;
 
 
 

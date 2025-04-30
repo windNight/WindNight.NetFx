@@ -10,6 +10,13 @@ namespace WindNight.Extension.Dapper.Mysql
     /// <inheritdoc cref="IBaseDbExecute" />
     public partial class MySqlBase : IBaseDbExecute
     {
+
+        public virtual MySqlConnectionStringBuilder ParseConnectString(string connectionString, bool isAnalyzed = true)
+        {
+            var sqlConnStringBuilder = new MySqlConnectionStringBuilder(connectionString, isAnalyzed);
+            return sqlConnStringBuilder;
+        }
+
         public virtual IDbConnection GetConnection(string connStr)
         {
             IDbConnection connection = new MySqlConnection(connStr);

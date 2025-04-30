@@ -15,7 +15,7 @@ namespace WindNight.Core
         /// <param name="tableNameAppendPlural">   </param>
         public static QueryPageInfo GenQueryPageInfoForCreateEntity<TEntity>(this IQueryPageBase pageInfo,
             bool tableNameToLower = true, bool tableNameAppendPlural = false)
-            where TEntity : class, ICreateEntityBase, IEntity, new()
+            where TEntity : class, ICreateEntityBase, new()
 
         {
             return new QueryPageInfo(pageInfo)
@@ -36,7 +36,7 @@ namespace WindNight.Core
         /// <param name="tableNameAppendPlural">   </param>
         public static QueryPageInfo GenQueryPageInfo<TEntity>(this IQueryPageBase pageInfo,
             bool tableNameToLower = true, bool tableNameAppendPlural = false)
-            where TEntity : class, ICanPageEntity, IEntity, new()
+            where TEntity : class, IEntity, new()
 
         {
             return new QueryPageInfo(pageInfo)

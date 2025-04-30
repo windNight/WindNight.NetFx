@@ -73,6 +73,15 @@ UPDATE {ToBeUpdateFiled}
 
         protected abstract string GetConnStr();
 
+        protected virtual IEnumerable<TT> EmptyListT<TT>() => Array.Empty<TT>();
+
+        protected virtual IPagedList<TT> EmptyPagedListT<TT>() => System.Collections.Generic.PagedList.Empty<TT>();
+
+        protected virtual IEnumerable<TEntity> EmptyList => Array.Empty<TEntity>();
+
+        protected virtual IPagedList<TEntity> EmptyPagedList => System.Collections.Generic.PagedList.Empty<TEntity>();
+
+
         /// <summary>
         ///     使用默认连接
         /// </summary>

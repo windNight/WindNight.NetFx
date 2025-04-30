@@ -1,4 +1,4 @@
-﻿using WindNight.Core.SQL.Abstractions;
+using WindNight.Core.SQL.Abstractions;
 
 namespace WindNight.Extension.Dapper.Mysql
 {
@@ -6,5 +6,9 @@ namespace WindNight.Extension.Dapper.Mysql
     public abstract class MySqlBase<TEntity> : MySqlBase<TEntity, int>
         where TEntity : class, IEntity<int>, new()
     {
+
     }
+
+
+
 }

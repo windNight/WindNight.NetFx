@@ -8,18 +8,6 @@ namespace WindNight.Core.SQL.Abstractions
     public interface IQueryPagedList
     {
         #region PagedList
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="connStr"></param>
-        /// <param name="sqlPageInfo"></param>
-        /// <param name="parameters"></param>
-        /// <param name="warnMs"></param>
-        /// <param name="execErrorHandler"></param>
-        /// <returns></returns>
-        Task<IPagedList<T>> PagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo,
-            IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null) where T : class, new();
 
         /// <summary>
         /// 
@@ -31,8 +19,21 @@ namespace WindNight.Core.SQL.Abstractions
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        IPagedList<T> PagedList<T>(string connStr, IQueryPageInfo sqlPageInfo,
-            IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null) where T : class, new();
+        Task<IPagedList<T>> PagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connStr"></param>
+        /// <param name="sqlPageInfo"></param>
+        /// <param name="parameters"></param>
+        /// <param name="warnMs"></param>
+        /// <param name="execErrorHandler"></param>
+        /// <returns></returns>
+        IPagedList<T> PagedList<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new();
 
         #endregion
     }
