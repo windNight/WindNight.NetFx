@@ -110,8 +110,8 @@ namespace WindNight.Core.NetCore.@internal
     {
         private readonly Stack<string> _context = new();
 
-        private readonly IDictionary<string, string> _data =
-            new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly IDictionary<string, string?> _data =
+            new SortedDictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
 
         private string _currentPath;
 
@@ -119,26 +119,27 @@ namespace WindNight.Core.NetCore.@internal
         {
         }
 
-        public static IDictionary<string, string> Parse(Stream input)
+        public static IDictionary<string, string?> Parse(Stream input)
             => new JsonConfigurationFileParser().ParseStream(input);
 
-        public static IDictionary<string, string> Parse(object input)
+        public static IDictionary<string, string?> Parse(object input)
             => new JsonConfigurationFileParser().ParseObject(input);
 
-        private IDictionary<string, string> ParseObject(object input)
+        private IDictionary<string, string?> ParseObject(object input)
         {
             var streamConfigStream = new MemoryStream(input.ToJsonStr().ToBytes());
             return ParseStream(streamConfigStream);
         }
 
 
-        private IDictionary<string, string> ParseStream(Stream input)
+        private IDictionary<string, string?> ParseStream(Stream input)
         {
             _data.Clear();
 
             var jsonDocumentOptions = new JsonDocumentOptions
             {
-                CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true,
+                CommentHandling = JsonCommentHandling.Skip,
+                AllowTrailingCommas = true,
             };
 
             using (var reader = new StreamReader(input))

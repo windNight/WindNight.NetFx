@@ -13,10 +13,8 @@ namespace WindNight.Core
         /// </param>
         /// <param name="tableNameToLower">   </param>
         /// <param name="tableNameAppendPlural">   </param>
-        public static QueryPageInfo GenQueryPageInfoForCreateEntity<TEntity>(this IQueryPageBase pageInfo,
-            bool tableNameToLower = true, bool tableNameAppendPlural = false)
+        public static QueryPageInfo GenQueryPageInfoForCreateEntity<TEntity>(this IQueryPageBase pageInfo, bool tableNameToLower = true, bool tableNameAppendPlural = false)
             where TEntity : class, ICreateEntityBase, new()
-
         {
             return new QueryPageInfo(pageInfo)
             {
@@ -34,10 +32,8 @@ namespace WindNight.Core
         /// </param>
         /// <param name="tableNameToLower">   </param>
         /// <param name="tableNameAppendPlural">   </param>
-        public static QueryPageInfo GenQueryPageInfo<TEntity>(this IQueryPageBase pageInfo,
-            bool tableNameToLower = true, bool tableNameAppendPlural = false)
+        public static QueryPageInfo GenQueryPageInfo<TEntity>(this IQueryPageBase pageInfo, bool tableNameToLower = true, bool tableNameAppendPlural = false)
             where TEntity : class, IEntity, new()
-
         {
             return new QueryPageInfo(pageInfo)
             {
@@ -46,6 +42,8 @@ namespace WindNight.Core
                 OrderField = "Id DESC",
             };
         }
+
+
 
         public static string GenDefaultTableName<TEntity>(this object t, bool toLower = true, bool appendPlural = false)
             where TEntity : class, IEntity, new()
@@ -80,6 +78,10 @@ namespace WindNight.Core
 
             return tableName;
         }
+
+
+
+
 
 
     }

@@ -28,7 +28,8 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
 
         internal IExternalScopeProvider ScopeProvider { get; set; }
 
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable? BeginScope<TState>(TState state)
+        // where TState : notnull;
         {
             return ScopeProvider?.Push(state) ?? NullScope.Instance;
         }

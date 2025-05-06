@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace WindNight.DataSourceTestTool.Redis
@@ -50,7 +47,10 @@ namespace WindNight.DataSourceTestTool.Redis
         {
             InitSocket(endpoint);
 
-            if (connectTcs != null) connectTcs.TrySetCanceled();
+            if (connectTcs != null)
+            {
+                connectTcs.TrySetCanceled();
+            }
             connectTcs = new TaskCompletionSource<bool>();
 
             _socket.BeginConnect(endpoint, asyncResult =>
@@ -72,7 +72,10 @@ namespace WindNight.DataSourceTestTool.Redis
         {
             Stream netStream = new NetworkStream(_socket, true);
 
-            if (!_ssl) return netStream;
+            if (!_ssl)
+            {
+                return netStream;
+            }
 
             var sslStream = new SslStream(netStream, true);
             sslStream.AuthenticateAsClient(GetHostForAuthentication());
@@ -84,7 +87,10 @@ namespace WindNight.DataSourceTestTool.Redis
 
         public void Dispose()
         {
-            if (isDisposed) return;
+            if (isDisposed)
+            {
+                return;
+            }
             isDisposed = true;
             try
             {
@@ -150,14 +156,20 @@ namespace WindNight.DataSourceTestTool.Redis
         private string GetHostForAuthentication()
         {
             if (_remote == null)
+            {
                 throw new ArgumentNullException("Remote endpoint is not set");
+            }
             if (_remote is DnsEndPoint)
+            {
                 return (_remote as DnsEndPoint).Host;
+            }
             if (_remote is IPEndPoint)
+            {
                 return (_remote as IPEndPoint).Address.ToString();
+            }
 
             throw new InvalidOperationException("Cannot get remote host");
         }
-         
+
     }
 }

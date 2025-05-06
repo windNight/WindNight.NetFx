@@ -340,8 +340,8 @@ asdasdasdas
 #endif
             model.BuildType = buildType;
             var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
-
-            model.AssemblyVersion = assembly?.GetName()?.Version?.ToString();
+            model.MainAssemblyVersion = assembly?.GetName()?.Version?.ToString();
+            model.MainAssemblyName = assembly.ManifestModule.Name;
             model.CompileTime = System.IO.File.GetLastWriteTime(assembly.Location).FormatDateTimeFullString();
             return model;
 

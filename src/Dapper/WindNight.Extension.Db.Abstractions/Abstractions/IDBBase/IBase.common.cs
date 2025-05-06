@@ -1,4 +1,4 @@
-﻿using WindNight.Core.SQL.Abstractions;
+using WindNight.Core.SQL.Abstractions;
 
 namespace WindNight.Extension.Db.Abstractions
 {
@@ -29,32 +29,33 @@ namespace WindNight.Extension.Db.Abstractions
         /// </summary>
         /// <param name="id">主键Id </param>
         /// <returns></returns>
-        TEntity QueryById(TId id, long warnMs = -1);
+        TEntity QueryById(TId id, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
         ///     异步 根据Id获取数据
         /// </summary>
         /// <param name="id">主键Id</param>
         /// <returns></returns>
-        Task<TEntity> QueryByIdAsync(TId id, long warnMs = -1);
+        Task<TEntity> QueryByIdAsync(TId id, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
     }
 
     /// <summary>
     ///     通用获取数据仓储基类
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    public interface IQueryAllRepositoryService<TEntity> where TEntity : IEntity
+    public interface IQueryAllRepositoryService<TEntity>
+        where TEntity : IEntity
     {
         /// <summary>
         ///     同步 获取所有列表
         /// </summary>
         /// <returns></returns>
-        IEnumerable<TEntity> QueryAllList(long warnMs = -1);
+        IEnumerable<TEntity> QueryAllList(long warnMs = -1, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
         ///     异步 获取所有列表
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<TEntity>> QueryAllListAsync(long warnMs = -1);
+        Task<IEnumerable<TEntity>> QueryAllListAsync(long warnMs = -1, Action<Exception, string> execErrorHandler = null);
     }
 }

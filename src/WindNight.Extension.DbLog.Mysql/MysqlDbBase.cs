@@ -21,18 +21,24 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
         protected override string InsertTableColumns => $"{BusinessColumns},{BaseCreateColumns}";
         protected override string InsertTableColumnValues => $"{BusinessColumnValues},{BaseCreateColumnValues}";
 
-        protected override string EqualEntityCondition { get; }
+        protected override string EqualEntityCondition => "";
 
         public bool Insert(SysLogs entity)
         {
-            if (entity.Content.Contains("syslogs")) return true;
+            if (entity.Content.Contains("syslogs"))
+            {
+                return true;
+            }
             var rtl = InsertOne(entity);
             return rtl > 0;
         }
 
         public async Task<bool> InsertAsync(SysLogs entity)
         {
-            if (entity.Content.Contains("syslogs")) return true;
+            if (entity.Content.Contains("syslogs"))
+            {
+                return true;
+            }
             var rtl = await InsertOneAsync(entity);
             return rtl > 0;
         }
@@ -40,7 +46,10 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
         public bool BatchInsert(List<SysLogs> entities)
         {
             entities = entities.Where(m => !m.Content.Contains("syslogs")).ToList();
-            if (entities.IsNullOrEmpty()) return true;
+            if (entities.IsNullOrEmpty())
+            {
+                return true;
+            }
             var rtl = BatchInsertUseValues(entities);
             return rtl;
         }
@@ -48,7 +57,10 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
         public async Task<bool> BatchInsertAsync(List<SysLogs> entities)
         {
             entities = entities.Where(m => !m.Content.Contains("syslogs")).ToList();
-            if (entities.IsNullOrEmpty()) return true;
+            if (entities.IsNullOrEmpty())
+            {
+                return true;
+            }
             var rtl = await BatchInsertUseValuesAsync(entities);
             return rtl; ;
         }
@@ -61,7 +73,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
         where TEntity : CreateBase<long>, new()
     {
 
-        protected override string Db { get; }
+        protected override string Db => "";
 
         /// <summary> </summary>
         protected string BaseCreateColumns =

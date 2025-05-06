@@ -1,8 +1,3 @@
-using MySqlConnector.Core;
-using MySqlConnector.Logging;
-using MySqlConnector.Protocol.Payloads;
-using MySqlConnector.Protocol.Serialization;
-using MySqlConnector.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,6 +6,11 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
+using MySqlConnector.Core;
+using MySqlConnector.Logging;
+using MySqlConnector.Protocol.Payloads;
+using MySqlConnector.Protocol.Serialization;
+using MySqlConnector.Utilities;
 using AllowNullAttribute = System.Diagnostics.CodeAnalysis.AllowNullAttribute;
 
 #nullable enable
@@ -527,7 +527,7 @@ namespace MySqlConnector
 
         SchemaProvider? m_schemaProvider;
 
-        public MySqlBatch CreateBatch() => CreateDbBatch();
+        public new MySqlBatch CreateBatch() => CreateDbBatch();
 
         /// <summary>
         /// Gets the time (in seconds) to wait while trying to establish a connection
@@ -544,7 +544,7 @@ namespace MySqlConnector
         /// </summary>
         /// <returns></returns>
 
-        private MySqlBatch CreateDbBatch() => new(this);
+        private new MySqlBatch CreateDbBatch() => new(this);
 
         /// <summary>
         /// Creates a <see cref="MySqlBatchCommand"/> object (that can be used with <see cref="MySqlBatch.BatchCommands"/>).
@@ -552,7 +552,7 @@ namespace MySqlConnector
         /// <returns></returns>
         public MySqlBatchCommand CreateBatchCommand() => CreateDbBatchCommand();
         private MySqlBatchCommand CreateDbBatchCommand() => new();
-        public bool CanCreateBatch => true;
+        public new bool CanCreateBatch => true;
 
         protected override void Dispose(bool disposing)
         {

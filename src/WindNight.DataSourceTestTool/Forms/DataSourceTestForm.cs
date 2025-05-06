@@ -1,6 +1,4 @@
-﻿//using MySql.Data.MySqlClient; 
-using MongoDB.Driver;
-using MySqlConnector;
+//using MySql.Data.MySqlClient; 
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -8,6 +6,8 @@ using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MongoDB.Driver;
+using MySqlConnector;
 using WindNight.DataSourceTestTool.RabbitMQ;
 using WindNight.DataSourceTestTool.Redis;
 
@@ -119,7 +119,10 @@ namespace WindNight.DataSourceTestTool.Forms
                 }
             }
 
-            if (!flag) return;
+            if (!flag)
+            {
+                return;
+            }
 
             if (redisOp.DefaultDb > 0)
             {
@@ -135,7 +138,11 @@ namespace WindNight.DataSourceTestTool.Forms
                     flag = false;
                 }
             }
-            if (!flag) return;
+
+            if (!flag)
+            {
+                return;
+            }
             try
             {
                 var clientListRet = client.ClientList().Replace("\n", "\r\n");
@@ -232,10 +239,13 @@ namespace WindNight.DataSourceTestTool.Forms
                 flag = false;
             }
 
-            if (!flag) return;
+            if (!flag)
+            {
+                return;
+            }
             try
             {
-                connection.Open();
+                connection?.Open();
                 flag = true;
 
             }
@@ -246,7 +256,10 @@ namespace WindNight.DataSourceTestTool.Forms
             }
             AppendLine(tb_Output, $"{ConnectString} Open {(flag ? "Success" : "Failed")}");
 
-            if (!flag) return;
+            if (!flag)
+            {
+                return;
+            }
             try
             {
                 connection?.Close();

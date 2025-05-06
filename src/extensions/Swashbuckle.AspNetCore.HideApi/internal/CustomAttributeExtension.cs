@@ -50,7 +50,7 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
                 return attrs;
                 //  });
 
-                return attrs;
+                // return attrs;
             }
             catch (Exception ex)
             {

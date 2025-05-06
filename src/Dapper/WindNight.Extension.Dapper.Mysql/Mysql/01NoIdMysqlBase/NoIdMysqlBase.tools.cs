@@ -11,65 +11,7 @@ namespace WindNight.Extension.Dapper.Mysql
     /// </summary>
     public abstract partial class NoIdMysqlBase<TEntity>
     {
-        protected string DefaultUpdateInfoFiled =
-            "UpdateUserId=@UpdateUserId,UpdateUnixTime=@UpdateUnixTime,UpdateDate=@UpdateDate";
 
-        protected abstract string BusinessColumns { get; }
-
-        protected abstract string BusinessColumnValues { get; }
-
-
-        protected abstract string InsertTableColumns { get; }
-        protected abstract string InsertTableColumnValues { get; }
-
-        protected abstract string EqualEntityCondition { get; }
-
-        protected virtual string QueryAllSqlCondition => " ";
-
-        /// <summary>
-        ///     有些表 是没有 delete 字段的  暂不处理 delete 字段
-        /// </summary>
-        protected virtual string QueryAllSqlStr =>
-            $"SELECT * FROM {BaseTableName} {(QueryAllSqlCondition.IsNullOrEmpty() ? "" : $" WHERE {QueryAllSqlCondition}")} ";
-
-
-        protected virtual string BaseTreeColumns => $"ParentId,{BaseStatusColumns}";
-        protected virtual string BaseTreeColumnValues => $"@ParentId,{BaseStatusColumnValues}";
-
-        protected virtual string BaseStatusColumns => $"Status,{BaseCUColumns}";
-        protected virtual string BaseStatusColumnValues => $"@Status,{BaseCUColumnValues}";
-
-        protected virtual string BaseCColumns => "CreateUserId,CreateDate,CreateUnixTime,IsDeleted";
-        protected virtual string BaseCColumnValues => "@CreateUserId,@CreateDate,@CreateUnixTime,@IsDeleted";
-        protected virtual string BaseCUColumns => $"{BaseCColumns},UpdateUserId,UpdateDate,UpdateUnixTime";
-
-        protected virtual string BaseCUColumnValues => $"{BaseCColumnValues},@UpdateUserId,@UpdateDate,@UpdateUnixTime";
-
-        protected virtual string QueryByUniqueKeySql => EqualEntityCondition.IsNullOrEmpty()
-            ? ""
-            : $"SELECT * FROM {BaseTableName} WHERE {EqualEntityCondition} ";
-
-        protected virtual string UpdateByUniqueKeySql => EqualEntityCondition.IsNullOrEmpty() || ToBeUpdateFiled.IsNullOrEmpty()
-            ? ""
-            : $"UPDATE {BaseTableName} SET {ToBeUpdateFiled} WHERE {EqualEntityCondition} ";
-
-
-        protected virtual string ToBeUpdateFiled => "";
-
-        protected virtual string DefaultInsertOrUpdateSql =>
-            @$"INSERT INTO {BaseTableName}({InsertTableColumns}) 
-VALUES ({InsertTableColumnValues})
-ON DUPLICATE KEY 
-UPDATE {ToBeUpdateFiled}
-;";
-
-
-        protected abstract string Db { get; }
-
-        protected virtual string BaseTableName =>
-            this.GenDefaultTableName<TEntity>(); // typeof(TEntity).Name.ToLower();
-
-        protected virtual string DbConnectString => GetConnStr();
 
         protected abstract string GetConnStr();
 

@@ -153,8 +153,8 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            ConfigSysServices(services, Configuration);
             ConfigBizServices(services);
+            ConfigSysServices(services, Configuration);
             BuildServices(services);
 
             // return BuildServices(services);
@@ -256,7 +256,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             // var prefix = $"{appName}({appCode}) ";
             // var title = $"{prefix}{NamespaceName}";
             var signKeyDict = SelfSwaggerAuthDictFunc?.Invoke() ?? new Dictionary<string, string>();
-
+            Ioc.Instance.InitServiceProvider(services);
             services.AddSwaggerConfig(NamespaceName, configuration, swaggerGenOptionsAction: SelfSwaggerGenOptionsAction, apiVersion: ApiVersion, signKeyDict: signKeyDict, apiDes: ApiDescription);
 
             return services;

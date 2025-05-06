@@ -18,7 +18,9 @@ namespace WindNight.Core.Abstractions
         string BuildType { get; set; }
 
         string CompileTime { get; set; }
-        string AssemblyVersion { get; set; }
+        string MainAssemblyName { get; set; }
+
+        string MainAssemblyVersion { get; set; }
 
     }
 
@@ -30,7 +32,8 @@ namespace WindNight.Core.Abstractions
         public virtual string BuildType { get; set; } = "";
 
         public virtual string CompileTime { get; set; } = "";
-        public virtual string AssemblyVersion { get; set; } = "";
+        public virtual string MainAssemblyName { get; set; } = "";
+        public virtual string MainAssemblyVersion { get; set; } = "";
     }
 
     public class DefaultSvrHostInfo : SvrHostBaseInfo
@@ -81,7 +84,7 @@ namespace WindNight.Core.Abstractions
                     if (svrBaseInfo != null)
                     {
                         model.BuildType = svrBaseInfo.BuildType;
-                        model.AssemblyVersion = svrBaseInfo.AssemblyVersion;
+                        model.MainAssemblyVersion = svrBaseInfo.MainAssemblyVersion;
                         model.CompileTime = svrBaseInfo.CompileTime;
                     }
                 }

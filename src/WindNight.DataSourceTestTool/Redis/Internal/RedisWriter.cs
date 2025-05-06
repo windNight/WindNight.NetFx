@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -17,7 +17,7 @@ namespace WindNight.DataSourceTestTool.Redis.Internal
         {
             _io = io;
         }
-         
+
         public byte[] Prepare(RedisCommand command)
         {
             var parts = command.Command.Split(' ');
@@ -33,6 +33,7 @@ namespace WindNight.DataSourceTestTool.Redis.Internal
             ms.Write(data, 0, data.Length);
 
             foreach (var arg in command.Arguments)
+            {
                 if (arg != null && arg.GetType() == typeof(byte[]))
                 {
                     data = arg as byte[];
@@ -47,7 +48,9 @@ namespace WindNight.DataSourceTestTool.Redis.Internal
                     data = _io.Encoding.GetBytes($"{Bulk}{_io.Encoding.GetByteCount(str)}{EOL}{str}{EOL}");
                     ms.Write(data, 0, data.Length);
                 }
-            
+
+            }
+
             return ms.ToArray();
         }
     }

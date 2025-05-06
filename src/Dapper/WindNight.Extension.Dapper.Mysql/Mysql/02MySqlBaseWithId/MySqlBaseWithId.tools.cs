@@ -1,19 +1,11 @@
 using Newtonsoft.Json.Extension;
 using WindNight.Extension.Dapper.Mysql.@internal;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace WindNight.Extension.Dapper.Mysql
 {
     public abstract partial class MySqlBase<TEntity, TId>
     {
-        protected virtual string InsertSql =>
-            $@"INSERT INTO {BaseTableName}({InsertTableColumns})
-   VALUES ({InsertTableColumnValues});
-   SELECT @@identity;";
-
-        protected virtual string BatchInsertSql =>
-            $@"INSERT INTO {BaseTableName}({InsertTableColumns})
-   VALUES ({InsertTableColumnValues})";
-
 
         /// <summary>
         ///  使用<see cref="BatchInsertSql"/> 语句批量插入
@@ -21,14 +13,20 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="insertList"></param>
         /// <param name="warnMs"></param>
         /// <returns></returns>
-        public virtual bool BatchInsertUseValues(IList<TEntity> insertList, long warnMs = -1)
+        public virtual bool BatchInsertUseValues(IList<TEntity> insertList, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
-            if (insertList == null || !insertList.Any()) return false;
+            if (insertList.IsNullOrEmpty())
+            {
+                return false;
+            }
 
-            var flag = DbExecute(BatchInsertSql, insertList.ToArray(), warnMs: warnMs) > 0;
+            var flag = DbExecute(BatchInsertSql, insertList.ToArray(), warnMs: warnMs, execErrorHandler: execErrorHandler) > 0;
             if (!flag)
+            {
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {insertList.ToJsonStr()} . ",
                     appendMessage: false);
+
+            }
             return flag;
         }
 
@@ -38,14 +36,20 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="insertList"></param>
         /// <param name="warnMs"></param>
         /// <returns></returns>
-        public virtual async Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList, long warnMs = -1)
+        public virtual async Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
-            if (insertList == null || !insertList.Any()) return false;
+            if (insertList.IsNullOrEmpty())
+            {
+                return false;
+            }
 
-            var flag = await DbExecuteAsync(BatchInsertSql, insertList.ToArray(), warnMs: warnMs) > 0;
+            var flag = await DbExecuteAsync(BatchInsertSql, insertList.ToArray(), warnMs: warnMs, execErrorHandler: execErrorHandler) > 0;
             if (!flag)
+            {
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {insertList.ToJsonStr()} . ",
                     appendMessage: false);
+
+            }
             return flag;
         }
 
@@ -54,14 +58,20 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="insertSql"></param>
         /// <param name="insertList"></param>
-        public virtual void BatchInsert(string insertSql, IList<TEntity> insertList, long warnMs = -1)
+        public virtual void BatchInsert(string insertSql, IList<TEntity> insertList, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
-            if (insertList == null || !insertList.Any()) return;
+            if (insertList.IsNullOrEmpty())
+            {
+                return;
+            }
 
-            var flag = DbExecute(insertSql, insertList.ToArray(), warnMs: warnMs) > 0;
+            var flag = DbExecute(insertSql, insertList.ToArray(), warnMs: warnMs, execErrorHandler: execErrorHandler) > 0;
             if (!flag)
+            {
                 LogHelper.Warn($"Insert Into {BaseTableName} handler error ,entities is {insertList.ToJsonStr()} . ",
                     appendMessage: false);
+
+            }
         }
 
         /// <summary>
@@ -69,7 +79,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="insertList"></param>
         /// <param name="warnMs"></param>
-        public virtual void ListInsertOneByOne(IList<TEntity> insertList, long warnMs = -1)
+        public virtual void ListInsertOneByOne(IList<TEntity> insertList, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
             var insertSql =
                 $@"INSERT INTO {BaseTableName}({InsertTableColumns})
@@ -79,10 +89,13 @@ namespace WindNight.Extension.Dapper.Mysql
 
             Parallel.ForEach(insertList, item =>
             {
-                var flag = DbExecute(insertSql, item, warnMs: warnMs) > 0;
+                var flag = DbExecute(insertSql, item, warnMs: warnMs, execErrorHandler: execErrorHandler) > 0;
                 if (!flag)
+                {
                     LogHelper.Warn($"Insert Into {BaseTableName} handler Failed ,entity is {item.ToJsonStr()} . ",
                         appendMessage: false);
+
+                }
             });
         }
 
@@ -93,15 +106,20 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="updateList"></param>
         /// <param name="warnMs"></param>
         /// <returns></returns>
-        public virtual bool BatchUpdate(string updateSql, IList<TEntity> updateList, long warnMs = -1)
+        public virtual bool BatchUpdate(string updateSql, IList<TEntity> updateList, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
-            if (updateList == null || !updateList.Any()) return false;
+            if (updateList.IsNullOrEmpty())
+            {
+                return false;
+            }
             Parallel.ForEach(updateList, item =>
             {
-                var flag = DbExecute(updateSql, item, warnMs: warnMs) > 0;
+                var flag = DbExecute(updateSql, item, warnMs: warnMs, execErrorHandler: execErrorHandler) > 0;
                 if (!flag)
+                {
                     LogHelper.Warn($"Update {BaseTableName} handler Failed ,entity is {item.ToJsonStr()} . ",
                         appendMessage: false);
+                }
             });
             return true;
         }
@@ -118,7 +136,7 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public virtual int BatchInsertOrUpdateData(IEnumerable<TEntity> entities, long warnMs = -1)
+        public virtual int BatchInsertOrUpdateData(IEnumerable<TEntity> entities, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
             var count = 0;
             var error = new List<TEntity>();
@@ -127,7 +145,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
                 try
                 {
-                    var flag = InsertOrUpdateData(entity, warnMs);
+                    var flag = InsertOrUpdateData(entity, warnMs, execErrorHandler);
                     if (flag)
                     {
                         count++;
@@ -151,7 +169,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         }
 
-        public virtual async Task<int> BatchInsertOrUpdateDataAsync(IEnumerable<TEntity> entities, long warnMs = -1)
+        public virtual async Task<int> BatchInsertOrUpdateDataAsync(IEnumerable<TEntity> entities, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
             var count = 0;
             var error = new List<TEntity>();
@@ -160,7 +178,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
                 try
                 {
-                    var flag = await InsertOrUpdateDataAsync(entity, warnMs);
+                    var flag = await InsertOrUpdateDataAsync(entity, warnMs, execErrorHandler);
                     if (flag)
                     {
                         count++;
@@ -191,18 +209,18 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="entity"></param>
         /// <param name="warnMs"></param>
         /// <returns></returns>
-        public virtual bool InsertOrUpdateData(TEntity entity, long warnMs = -1)
+        public virtual bool InsertOrUpdateData(TEntity entity, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
-            var dbData = DbQuery(QueryByUniqueKeySql, entity);
+            var dbData = DbQuery(QueryByUniqueKeySql, entity, warnMs, execErrorHandler);
 
             if (dbData is { Id: > 0 })
             {
-                var exec = DbExecute(UpdateByUniqueKeySql, entity, warnMs);
+                var exec = DbExecute(UpdateByUniqueKeySql, entity, warnMs, execErrorHandler);
                 return exec > 0;
             }
             else
             {
-                var id = InsertOne(entity);
+                var id = InsertOne(entity, warnMs, execErrorHandler);
                 return id.CompareTo(default) > 0;
             }
 
@@ -214,17 +232,17 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="entity"></param>
         /// <param name="warnMs"></param>
         /// <returns></returns>
-        public virtual async Task<bool> InsertOrUpdateDataAsync(TEntity entity, long warnMs = -1)
+        public virtual async Task<bool> InsertOrUpdateDataAsync(TEntity entity, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
-            var dbData = await DbQueryAsync(QueryByUniqueKeySql, entity);
+            var dbData = await DbQueryAsync(QueryByUniqueKeySql, entity, warnMs, execErrorHandler);
             if (dbData is { Id: > 0 })
             {
-                var exec = await DbExecuteAsync(UpdateByUniqueKeySql, entity, warnMs);
+                var exec = await DbExecuteAsync(UpdateByUniqueKeySql, entity, warnMs, execErrorHandler);
                 return exec > 0;
             }
             else
             {
-                var id = await InsertOneAsync(entity);
+                var id = await InsertOneAsync(entity, warnMs, execErrorHandler);
                 return id.CompareTo(default) > 0;
             }
 

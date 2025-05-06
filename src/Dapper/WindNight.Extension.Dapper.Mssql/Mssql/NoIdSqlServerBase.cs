@@ -168,7 +168,7 @@ namespace WindNight.Extension.Dapper.Mssql
                 PageSize = pageSize,
             };
 
-            return PagedList<TEntity>(DbConnectString, pagedInfo, parameters, execErrorHandler: execErrorHandler);
+            return QueryPagedList<TEntity>(DbConnectString, pagedInfo, parameters, execErrorHandler: execErrorHandler);
 
         }
 
@@ -344,7 +344,7 @@ namespace WindNight.Extension.Dapper.Mssql
                 PageSize = pageSize,
             };
 
-            return await PagedListAsync<TEntity>(DbConnectString, pagedInfo, parameters);
+            return await QueryPagedListAsync<TEntity>(DbConnectString, pagedInfo, parameters);
         }
 
         #endregion

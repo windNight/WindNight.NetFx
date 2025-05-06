@@ -21,10 +21,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual T SqlTimer<T>(
-            Func<string, string, object, Action<Exception, string>, T> sqlFunc,
-            string connectString, string sql, object param = null, string actionName = "",
-            long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual T SqlTimer<T>(Func<string, string, object, Action<Exception, string>, T> sqlFunc, string connectString, string sql, object param = null, string actionName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
             var ticks = HardInfo.Now.Ticks;
             try
@@ -86,10 +83,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual async Task<T> SqlTimerAsync<T>(
-            Func<string, string, object, Action<Exception, string>, Task<T>> sqlFunc,
-            string connectString, string sql, object param = null, string actionName = "",
-            long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<T> SqlTimerAsync<T>(Func<string, string, object, Action<Exception, string>, Task<T>> sqlFunc, string connectString, string sql, object param = null, string actionName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
             var ticks = HardInfo.Now.Ticks;
             try
@@ -177,7 +171,7 @@ namespace WindNight.Extension.Dapper.Mysql
         {
             var configW = ConfigItems.DapperWarnMs;
 
-            configW = Math.Max(configW, 50);
+            configW = Math.Max(configW, 100);
             if (warnMs > 0)
             {
                 configW = Math.Max(configW, warnMs);

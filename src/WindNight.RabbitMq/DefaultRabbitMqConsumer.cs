@@ -135,6 +135,7 @@ namespace WindNight.RabbitMq
         private void ReceiveMessageAndExecFunc(Func<string, ulong, string, string, bool> func)
         {
             while (true)
+            {
                 try
                 {
                     var isSuccess = ReceiveNeedAck(out var message, out var deliveryTag, out var routingKey);
@@ -150,6 +151,8 @@ namespace WindNight.RabbitMq
                 {
                     LogHelper.Error($"{Settings.QueueName} handler error:{ex.Message}", ex);
                 }
+
+            }
         }
 
         /// <summary>
@@ -175,8 +178,10 @@ namespace WindNight.RabbitMq
                     received.RoutingKey,
                 };
                 if (Settings.LogSwitch)
+                {
                     LogHelper.Debug(
                         $"BasicDeliverEventArgs obj is {obj.ToJsonStr()} ,messageMd5 is {message.Md5Encrypt()}");
+                }
                 ProcessOneMessage(func, message, received.DeliveryTag, received.RoutingKey);
             });
 
@@ -198,6 +203,7 @@ namespace WindNight.RabbitMq
         {
             var doAck = true;
             if (!string.IsNullOrEmpty(message))
+            {
                 try
                 {
                     var messageMd5 = message.Md5Encrypt();
@@ -215,10 +221,16 @@ namespace WindNight.RabbitMq
                 finally
                 {
                     if (doAck)
+                    {
                         Ack(deliveryTag, false);
+                    }
                     else
+                    {
                         NoAck(deliveryTag, false, true);
+                    }
                 }
+
+            }
         }
 
         #endregion //end Private

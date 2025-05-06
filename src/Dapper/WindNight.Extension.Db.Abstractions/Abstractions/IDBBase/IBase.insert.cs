@@ -1,4 +1,4 @@
-﻿using WindNight.Core.SQL.Abstractions;
+using WindNight.Core.SQL.Abstractions;
 
 namespace WindNight.Extension.Db.Abstractions
 {
@@ -7,7 +7,8 @@ namespace WindNight.Extension.Db.Abstractions
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <inheritdoc />
-    public interface IInsertRepositoryService<TEntity> : IInsertRepositoryService<TEntity, int> where TEntity : IEntity
+    public interface IInsertRepositoryService<TEntity> : IInsertRepositoryService<TEntity, int>
+        where TEntity : IEntity
     {
     }
 
@@ -24,7 +25,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// </summary>
         /// <param name="entity">need inherit from <see cref="IEntity" /></param>
         /// <returns></returns>
-        TId InsertOne(TEntity entity, long warnMs = -1);
+        TId InsertOne(TEntity entity, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
 
 
         /// <summary>
@@ -32,20 +33,20 @@ namespace WindNight.Extension.Db.Abstractions
         /// </summary>
         /// <param name="entity">need inherit from <see cref="IEntity" /></param>
         /// <returns></returns>
-        Task<TId> InsertOneAsync(TEntity entity, long warnMs = -1);
+        Task<TId> InsertOneAsync(TEntity entity, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
         ///     同步 批量插入数据
         /// </summary>
         /// <param name="insertList">list of <see cref="IEntity" /></param>
         /// <returns></returns>
-        bool BatchInsertUseValues(IList<TEntity> insertList, long warnMs = -1);
+        bool BatchInsertUseValues(IList<TEntity> insertList, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
         ///     异步 批量插入数据
         /// </summary>
         /// <param name="insertList">list of <see cref="IEntity" /></param>
         /// <returns></returns>
-        Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList, long warnMs = -1);
+        Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
     }
 }

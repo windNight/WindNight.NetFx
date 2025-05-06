@@ -66,17 +66,17 @@ namespace MySqlConnector
         /// <summary>
         /// Creates a new <see cref="MySqlBatch"/> object.
         /// </summary>
-        public MySqlBatch CreateBatch() => new MySqlBatch();
+        public new MySqlBatch CreateBatch() => new MySqlBatch();
 
         /// <summary>
         /// Creates a new <see cref="MySqlBatchCommand"/> object.
         /// </summary>
-        public MySqlBatchCommand CreateBatchCommand() => new MySqlBatchCommand();
+        public new MySqlBatchCommand CreateBatchCommand() => new MySqlBatchCommand();
 
         /// <summary>
         /// Returns <c>true</c>.
         /// </summary>
-        public bool CanCreateBatch => true;
+        public new bool CanCreateBatch => true;
 
         private MySqlConnectorFactory()
         {

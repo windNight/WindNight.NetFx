@@ -1,4 +1,4 @@
-﻿using WindNight.Core.SQL.Abstractions;
+using WindNight.Core.SQL.Abstractions;
 
 namespace WindNight.Extension.Db.Abstractions
 {
@@ -28,7 +28,7 @@ namespace WindNight.Extension.Db.Abstractions
         ///     <see cref="DataStatusEnums" />
         /// </param>
         /// <returns></returns>
-        IEnumerable<TEntity> QueryListByStatus(DataStatusEnums status, long warnMs = -1);
+        IEnumerable<TEntity> QueryListByStatus(DataStatusEnums status, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
         ///     异步获取指定状态的数据列表
@@ -37,7 +37,7 @@ namespace WindNight.Extension.Db.Abstractions
         ///     <see cref="DataStatusEnums" />
         /// </param>
         /// <returns></returns>
-        Task<IEnumerable<TEntity>> QueryListByStatusAsync(DataStatusEnums status, long warnMs = -1);
+        Task<IEnumerable<TEntity>> QueryListByStatusAsync(DataStatusEnums status, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
 
 
         /// <summary>
@@ -45,13 +45,13 @@ namespace WindNight.Extension.Db.Abstractions
         /// </summary>
         /// <param name="id"> 主键Id </param>
         /// <returns></returns>
-        bool DeleteById(TId id, long warnMs = -1);
+        bool DeleteById(TId id, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
         ///     异步 逻辑删除数据
         /// </summary>
         /// <param name="id"> 主键Id </param>
         /// <returns></returns>
-        Task<bool> DeleteByIdAsync(TId id, long warnMs = -1);
+        Task<bool> DeleteByIdAsync(TId id, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
     }
 }
