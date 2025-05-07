@@ -56,7 +56,6 @@ UPDATE {ToBeUpdateFiled}
 ;";
 
 
-        protected virtual string QueryAllSqlCondition => " ";
 
 
     }

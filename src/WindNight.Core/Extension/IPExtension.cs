@@ -112,6 +112,7 @@ namespace WindNight.Core.Extension
             var bytes = ip.GetAddressBytes();
             return bytes[0] switch
             {
+                0 => true,// 0.0.0.0
                 10 => true,
                 172 when bytes[1] >= 16 && bytes[1] <= 31 => true,
                 192 when bytes[1] == 168 => true,

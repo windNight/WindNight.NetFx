@@ -176,7 +176,10 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         protected virtual void UseSysConfigure(IApplicationBuilder app)
         {
             var env = Ioc.GetService<IWebHostEnvironment>();
-            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
             SelfSwaggerUIOptionsAction ??= (opt => opt.DefaultModelsExpandDepth(-1));
 

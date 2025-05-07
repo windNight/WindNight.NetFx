@@ -35,10 +35,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         protected virtual string GetAppTokenValue() => Request.GetAppTokenValue();
 
         protected virtual string GetAuthorizationValue() => Request.GetAuthorizationValue();
-        protected virtual string GetAppCodeValue() => Request.GetAppCodeValue();
-        protected virtual string GetAppNameValue() => Request.GetAppNameValue();
+        protected virtual string GetRequestAppCodeValue() => Request.GetAppCodeValue();
+        protected virtual string GetRequestAppNameValue() => Request.GetAppNameValue();
 
-        protected virtual long GetTimestampValue() => Request.GetTimestampValue();
+        protected virtual long GetRequestTsValue() => Request.GetTimestampValue();
 
 
         protected virtual string QueryHeaderValue(string key)

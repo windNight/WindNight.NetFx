@@ -25,8 +25,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         protected virtual string ToBeUpdateFiled => "";
 
-
-
+        protected virtual string QueryAllSqlCondition => " ";
 
 
 
