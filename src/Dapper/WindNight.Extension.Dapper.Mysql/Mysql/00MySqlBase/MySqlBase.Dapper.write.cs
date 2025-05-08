@@ -28,9 +28,10 @@ namespace WindNight.Extension.Dapper.Mysql
                     if (execErrorHandler != null)
                     {
                         ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
                     }
 
-                    return default;
+                    throw;
                 }
                 finally
                 {
@@ -53,9 +54,10 @@ namespace WindNight.Extension.Dapper.Mysql
                     if (execErrorHandler != null)
                     {
                         ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
                     }
 
-                    return default;
+                    throw;
                 }
                 finally
                 {
@@ -85,9 +87,10 @@ namespace WindNight.Extension.Dapper.Mysql
                     if (execErrorHandler != null)
                     {
                         ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
                     }
 
-                    return default;
+                    throw;
                 }
                 finally
                 {
@@ -111,9 +114,10 @@ namespace WindNight.Extension.Dapper.Mysql
                     if (execErrorHandler != null)
                     {
                         ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
                     }
 
-                    return default;
+                    throw;
                 }
                 finally
                 {

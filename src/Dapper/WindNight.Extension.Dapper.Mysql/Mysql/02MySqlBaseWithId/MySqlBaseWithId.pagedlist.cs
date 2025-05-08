@@ -106,10 +106,10 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        public virtual IPagedList<T> QueryPagedEList<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
-            where T : class, ICreateEntityBase, new()
+        public virtual IPagedList<T> QueryPagedEList<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new()
         {
-            return DbPagedEList<T>(pageQueryBase, whereSql, paramDict, orderby, tableNameToLower, tableNameAppendPlural, warnMs: warnMs, execErrorHandler);
+            return DbPagedEList<T>(pageQueryBase, whereSql, paramDict, orderby, tableName, warnMs: warnMs, execErrorHandler);
         }
 
         /// <summary>
@@ -125,10 +125,10 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        public virtual async Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
-            where T : class, ICreateEntityBase, new()
+        public virtual async Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new()
         {
-            return await DbPagedEListAsync<T>(pageQueryBase, whereSql, paramDict, orderby, tableNameToLower, tableNameAppendPlural, warnMs: warnMs, execErrorHandler: execErrorHandler);
+            return await DbPagedEListAsync<T>(pageQueryBase, whereSql, paramDict, orderby, tableName, warnMs: warnMs, execErrorHandler: execErrorHandler);
         }
 
 
@@ -183,10 +183,10 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        public virtual IPagedList<T> QueryPagedEList<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
-            where T : class, ICreateEntityBase, new()
+        public virtual IPagedList<T> QueryPagedEList<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new()
         {
-            return DbPagedEList<T>(connStr, pageQueryBase, whereSql, paramDict, orderby, tableNameToLower, tableNameAppendPlural, warnMs: warnMs, execErrorHandler);
+            return DbPagedEList<T>(connStr, pageQueryBase, whereSql, paramDict, orderby, tableName, warnMs: warnMs, execErrorHandler);
         }
 
         /// <summary>
@@ -202,10 +202,10 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        public virtual async Task<IPagedList<T>> QueryPagedEListAsync<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
-            where T : class, ICreateEntityBase, new()
+        public virtual async Task<IPagedList<T>> QueryPagedEListAsync<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new()
         {
-            return await DbPagedEListAsync<T>(connStr, pageQueryBase, whereSql, paramDict, orderby, tableNameToLower, tableNameAppendPlural, warnMs: warnMs, execErrorHandler: execErrorHandler);
+            return await DbPagedEListAsync<T>(connStr, pageQueryBase, whereSql, paramDict, orderby, tableName, warnMs: warnMs, execErrorHandler: execErrorHandler);
         }
 
 

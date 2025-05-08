@@ -29,9 +29,9 @@ namespace WindNight.Extension.Dapper.Mysql
                     if (execErrorHandler != null)
                     {
                         ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
                     }
-
-                    return default;
+                    throw;
                 }
                 finally
                 {
@@ -55,9 +55,10 @@ namespace WindNight.Extension.Dapper.Mysql
                     if (execErrorHandler != null)
                     {
                         ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
                     }
 
-                    return default;
+                    throw;
                 }
                 finally
                 {
@@ -72,8 +73,7 @@ namespace WindNight.Extension.Dapper.Mysql
         #region Async
 
 
-        public virtual async Task<IEnumerable<T>> QueryListAsync<T>(string connStr, string sql, object param = null,
-            Action<Exception, string> execErrorHandler = null)
+        public virtual async Task<IEnumerable<T>> QueryListAsync<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -86,9 +86,10 @@ namespace WindNight.Extension.Dapper.Mysql
                     if (execErrorHandler != null)
                     {
                         ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
                     }
 
-                    return default;
+                    throw;
                 }
                 finally
                 {
@@ -112,9 +113,9 @@ namespace WindNight.Extension.Dapper.Mysql
                     if (execErrorHandler != null)
                     {
                         ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
                     }
-
-                    return default;
+                    throw;
                 }
                 finally
                 {

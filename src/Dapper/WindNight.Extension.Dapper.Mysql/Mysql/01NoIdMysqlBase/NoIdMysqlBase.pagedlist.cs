@@ -11,18 +11,18 @@ namespace WindNight.Extension.Dapper.Mysql
 
 
 
-        protected virtual IPagedList<T> DbPagedEList<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
-            where T : class, ICreateEntityBase, new()
+        protected virtual IPagedList<T> DbPagedEList<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new()
         {
 
-            return DbPagedEList<T>(DbConnectString, pageQueryBase, whereSql, paramDict, orderby, tableNameToLower, tableNameAppendPlural, warnMs, execErrorHandler);
+            return DbPagedEList<T>(DbConnectString, pageQueryBase, whereSql, paramDict, orderby, tableName, warnMs, execErrorHandler);
         }
 
 
-        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
-            where T : class, ICreateEntityBase, new()
+        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new()
         {
-            return await DbPagedEListAsync<T>(DbConnectString, pageQueryBase, whereSql, paramDict, orderby, tableNameToLower, tableNameAppendPlural, warnMs, execErrorHandler);
+            return await DbPagedEListAsync<T>(DbConnectString, pageQueryBase, whereSql, paramDict, orderby, tableName, warnMs, execErrorHandler);
 
         }
 
@@ -30,10 +30,14 @@ namespace WindNight.Extension.Dapper.Mysql
 
 
 
-        protected virtual IPagedList<T> DbPagedEList<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
-            where T : class, ICreateEntityBase, new()
+        protected virtual IPagedList<T> DbPagedEList<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new()
         {
-            var pageInfo = pageQueryBase.GenQueryPageInfoForCreateEntity<T>(tableNameToLower, tableNameAppendPlural);
+            if (tableName.IsNullOrEmpty())
+            {
+                tableName = BaseTableName;
+            }
+            var pageInfo = pageQueryBase.GenQueryPageInfoForDto<T>(tableName);
 
             pageInfo.SqlWhere = whereSql;
             if (!orderby.IsNullOrEmpty())
@@ -46,10 +50,14 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
-            where T : class, ICreateEntityBase, new()
+        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new()
         {
-            var pageInfo = pageQueryBase.GenQueryPageInfoForCreateEntity<T>(tableNameToLower, tableNameAppendPlural);
+            if (tableName.IsNullOrEmpty())
+            {
+                tableName = BaseTableName;
+            }
+            var pageInfo = pageQueryBase.GenQueryPageInfoForDto<T>(tableName);
 
             pageInfo.SqlWhere = whereSql;
             if (!orderby.IsNullOrEmpty())

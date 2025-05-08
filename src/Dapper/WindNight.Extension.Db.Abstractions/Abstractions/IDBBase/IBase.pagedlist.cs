@@ -74,18 +74,11 @@ namespace WindNight.Extension.Db.Abstractions
         Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
 
-        IPagedList<T> QueryPagedEList<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
-            where T : class, ICreateEntityBase, new()
-            ;
+        IPagedList<T> QueryPagedEList<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new();
 
-        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
-            where T : class, ICreateEntityBase, new();
-
-
-
-
-
-
+        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+            where T : class, new();
 
 
 
@@ -122,6 +115,7 @@ namespace WindNight.Extension.Db.Abstractions
         [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
         IPagedList<T> QueryPagedEList<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
+
         /// <summary>
         ///  异步分页
         /// </summary>

@@ -53,8 +53,6 @@ namespace WindNight.Extension.Db.Extensions
         {
             try
             {
-
-
                 var sb = new StringBuilder($" -- {instance.GenDefaultTableName()} {Environment.NewLine}");
                 sb.AppendLine(" SELECT ");
                 if (instance != null)
