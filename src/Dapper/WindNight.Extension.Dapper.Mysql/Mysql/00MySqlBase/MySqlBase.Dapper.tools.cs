@@ -21,7 +21,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual T SqlTimer<T>(Func<string, string, object, Action<Exception, string>, T> sqlFunc, string connectString, string sql, object param = null, string actionName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual T SqlTimer<T>(Func<string, string, object, Action<Exception, string>, T> sqlFunc, string connectString, string sql, object param = null, string actionName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
             var ticks = HardInfo.Now.Ticks;
             try
@@ -30,17 +30,14 @@ namespace WindNight.Extension.Dapper.Mysql
             }
             catch (Exception ex)
             {
+                var msg = $" sql执行报错 {(ConfigItems.IsLogConnectString || isDebug ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}";
                 if (param is IEntity entity)
                 {
-                    LogHelper.Error(
-                        $" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}",
-                        ex);
+                    LogHelper.Error($"{msg} . param is {entity.ToParamString()}", ex);
                 }
                 else
                 {
-                    LogHelper.Error(
-                        $" sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}",
-                        ex);
+                    LogHelper.Error($"{msg} . param is {param.ToJsonStr()}", ex);
                 }
             }
             finally
@@ -49,17 +46,15 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
                     warnMs = FixWarnMs(warnMs);
+                    var msg = $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString || isDebug ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= warnMs ? $"param is {param.ToJsonStr()}" : "")}";
+
                     if (milliseconds > warnMs)
                     {
-                        LogHelper.Warn(
-                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}",
-                            millisecond: milliseconds);
+                        LogHelper.Warn(msg, millisecond: milliseconds);
                     }
                     else if (ConfigItems.OpenDapperLog)
                     {
-                        LogHelper.Info(
-                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}",
-                            milliseconds);
+                        LogHelper.Info(msg, milliseconds);
                     }
                 }
                 catch
@@ -83,7 +78,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual async Task<T> SqlTimerAsync<T>(Func<string, string, object, Action<Exception, string>, Task<T>> sqlFunc, string connectString, string sql, object param = null, string actionName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<T> SqlTimerAsync<T>(Func<string, string, object, Action<Exception, string>, Task<T>> sqlFunc, string connectString, string sql, object param = null, string actionName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
             var ticks = HardInfo.Now.Ticks;
             try
@@ -92,17 +87,14 @@ namespace WindNight.Extension.Dapper.Mysql
             }
             catch (Exception ex)
             {
+                var msg = $" sql执行报错 {(ConfigItems.IsLogConnectString || isDebug ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}";
                 if (param is IEntity entity)
                 {
-                    LogHelper.Error(
-                        $"sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {entity.ToParamString()}",
-                        ex);
+                    LogHelper.Error($"{msg} . param is {entity.ToParamString()}", ex);
                 }
                 else
                 {
-                    LogHelper.Error(
-                        $"sql执行报错 {(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  {actionName} Failed，{sql}.param is {param.ToJsonStr()}",
-                        ex);
+                    LogHelper.Error($"{msg} . param is {param.ToJsonStr()}", ex);
                 }
             }
             finally
@@ -111,17 +103,17 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
                     warnMs = FixWarnMs(warnMs);
+
+                    var msg = $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString || isDebug ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= warnMs ? $"param is {param.ToJsonStr()}" : "")}";
+
+
                     if (milliseconds > warnMs)
                     {
-                        LogHelper.Warn(
-                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")}  sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}",
-                            millisecond: milliseconds);
+                        LogHelper.Warn(msg, millisecond: milliseconds);
                     }
                     else if (ConfigItems.OpenDapperLog)
                     {
-                        LogHelper.Info(
-                            $"sql执行耗时：{milliseconds} ms.{(ConfigItems.IsLogConnectString ? $"【{connectString}】" : "")} sql:{sql}  {(milliseconds >= 100 ? $"param is {param.ToJsonStr()}" : "")}",
-                            milliseconds);
+                        LogHelper.Info(msg, milliseconds);
                     }
                 }
                 catch
@@ -142,7 +134,10 @@ namespace WindNight.Extension.Dapper.Mysql
                 {
                     runCount++;
                     action.Invoke();
-                    if (runCount > 1) LogHelper.Warn($"[{actionName}] 经过[{runCount}]次重试后成功！");
+                    if (runCount > 1)
+                    {
+                        LogHelper.Warn($"[{actionName}] 经过[{runCount}]次重试后成功！");
+                    }
                     break;
                 }
                 catch (Exception ex)
@@ -179,5 +174,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
             return configW;
         }
+
+
     }
 }

@@ -14,8 +14,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         #region Sync
 
-        public virtual T ExecuteScalar<T>(string connStr, string sql, object param = null,
-            Action<Exception, string> execErrorHandler = null)
+        public virtual T ExecuteScalar<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -40,8 +39,7 @@ namespace WindNight.Extension.Dapper.Mysql
             }
         }
 
-        public virtual int Execute(string connStr, string sql, object param = null,
-            Action<Exception, string> execErrorHandler = null)
+        public virtual int Execute(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -73,8 +71,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         #region Async
 
-        public virtual async Task<T> ExecuteScalarAsync<T>(string connStr, string sql, object param = null,
-            Action<Exception, string> execErrorHandler = null)
+        public virtual async Task<T> ExecuteScalarAsync<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -100,8 +97,7 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public virtual async Task<int> ExecuteAsync(string connStr, string sql, object param = null,
-            Action<Exception, string> execErrorHandler = null)
+        public virtual async Task<int> ExecuteAsync(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {

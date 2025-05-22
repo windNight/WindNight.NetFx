@@ -26,7 +26,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <returns></returns>
         protected virtual async Task<T> DbQueryEAsync<T>(string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
         {
-            ;
+
             return await DbQueryEAsync<T>(DbConnectString, sql, param, warnMs, execErrorHandler);
 
             //return await SqlTimerAsync((_1, _2, _3) => QueryAsync<T>(DbConnectString, _1, _2, _3),

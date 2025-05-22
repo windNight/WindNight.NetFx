@@ -15,8 +15,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         #region Sync
 
-        public virtual IEnumerable<T> QueryList<T>(string connStr, string sql, object param = null,
-            Action<Exception, string> execErrorHandler = null)
+        public virtual IEnumerable<T> QueryList<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -41,8 +40,7 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public virtual T Query<T>(string connStr, string sql, object param = null,
-            Action<Exception, string> execErrorHandler = null)
+        public virtual T Query<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
@@ -99,8 +97,7 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        public virtual async Task<T> QueryAsync<T>(string connStr, string sql, object param = null,
-            Action<Exception, string> execErrorHandler = null)
+        public virtual async Task<T> QueryAsync<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {
