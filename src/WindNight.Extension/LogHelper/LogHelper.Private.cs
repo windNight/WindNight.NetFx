@@ -1,5 +1,8 @@
 using System;
 using System.IO;
+using System.Text.Extension;
+using Newtonsoft.Json.Extension;
+using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 using WindNight.Core.ExceptionExt;
 using WindNight.Extension;
@@ -53,6 +56,76 @@ namespace WindNight.LogExtension
             FixLogInfo(logInfo, appendMessage);
             return logInfo;
         }
+
+
+        private static LogInfo GeneratorLogInfo(JObject jo)
+        {
+            var logLevel = LogLevels.Information;
+            var traceId = GuidHelper.GenerateOrderNumber();
+            if (!string.IsNullOrEmpty(jo["serialNumber"]?.ToString()))
+            {
+                traceId = jo["serialNumber"].ToString();
+            }
+            if (!string.IsNullOrEmpty(jo["level"]?.ToString()))
+            {
+                logLevel = Convert2LogLevel(jo["level"].ToString());
+            }
+            var now = HardInfo.Now;
+            var logTimestamps = now.ConvertToUnixTime();
+
+            var logMsg = new LogInfo
+            {
+                SerialNumber = traceId,
+                Level = logLevel,
+                LogTs = logTimestamps,
+                NodeCode = HardInfo.NodeCode ?? "",
+            };
+            logMsg.Content = jo.ToJsonStr();
+            return logMsg;
+
+
+        }
+        static LogLevels Convert2LogLevel(string level)
+        {
+            try
+            {
+                if (level.IsNullOrEmpty())
+                {
+                    return LogLevels.Information;
+                }
+
+                if (level.StartsWith("debug", StringComparison.OrdinalIgnoreCase))
+                {
+                    return LogLevels.Debug;
+                }
+
+                if (level.StartsWith("info", StringComparison.OrdinalIgnoreCase))
+                {
+                    return LogLevels.Information;
+                }
+
+                if (level.StartsWith("warn", StringComparison.OrdinalIgnoreCase))
+                {
+                    return LogLevels.Warning;
+                }
+
+                var flag = Enum.TryParse<LogLevels>(level, true, out var logLevel);
+
+                if (flag)
+                {
+                    return logLevel;
+                }
+
+                return LogLevels.Information;
+
+            }
+            catch (Exception ex)
+            {
+                return LogLevels.Information;
+            }
+
+        }
+
 
         static string FixLogMessage(string msg) => ConfigItems.SystemAppName.Concat($" TraceId:[{CurrentItem.GetSerialNumber}]:", msg);
 

@@ -243,6 +243,10 @@ namespace WindNight.LogExtension
         {
             try
             {
+                if (logInfo.Level == LogLevels.Report)
+                {
+                    return;
+                }
                 Log4(logInfo);
             }
             catch (Exception ex)
@@ -310,7 +314,10 @@ namespace WindNight.LogExtension
 
         public static void Log4(LogInfo? logInfo)
         {
-            if (logInfo == null) return;
+            if (logInfo == null)
+            {
+                return;
+            }
             Log4Internal(logInfo.Level, logInfo.Content, logInfo.Exceptions);
 
         }
@@ -320,7 +327,10 @@ namespace WindNight.LogExtension
         {
             try
             {
-                if (DefaultLog == null) return;
+                if (DefaultLog == null)
+                {
+                    return;
+                }
                 switch (level)
                 {
                     case LogLevels.Information:

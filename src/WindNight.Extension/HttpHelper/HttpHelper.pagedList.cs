@@ -36,7 +36,7 @@ namespace WindNight.Extension
 
                     return await ExecuteHttpClientAsync2<T>(domain, request, headerDict, token, timeOut, errStatusFunc);
                 },
-                $"GetListAsync({domain}{path}) with params {queries.ToJsonStr()}",
+                $"GetPagedListAsync({domain}{path}) with params {queries.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
         }
 

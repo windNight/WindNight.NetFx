@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json.Extension;
+using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
@@ -215,8 +216,22 @@ namespace WindNight.LogExtension
             var sysInfo = GetSysInfo(buildType);
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
             Add(msg, LogLevels.SysOffline, exception, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage, traceId: traceId);
+
         }
 
+        public static void Report(JObject jo, string traceId = "")
+        {
+            var logInfo = GeneratorLogInfo(jo);
+            if (traceId.IsNullOrEmpty())
+            {
+                logInfo.SerialNumber = traceId;
+
+            }
+
+            OnPublishLogInfoHandleEvent(logInfo);
+
+
+        }
 
     }
 }

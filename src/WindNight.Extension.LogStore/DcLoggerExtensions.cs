@@ -20,7 +20,11 @@ namespace WindNight.Extension.Logger.DcLog
 
         public static IServiceCollection AddDcLogger(this IServiceCollection services, IConfiguration configuration, Action<DcLogOptions> configure, IDcLoggerProcessor loggerProcessor = null)
         {
-            if (configure == null) throw new ArgumentNullException(nameof(configure));
+            if (configure == null)
+            {
+                throw new ArgumentNullException(nameof(configure));
+            }
+
             services.Configure(configure);
             services.AddSingleton<DcLogOptions>();
 
@@ -34,7 +38,10 @@ namespace WindNight.Extension.Logger.DcLog
             IConfiguration configuration,
             IDcLoggerProcessor loggerProcessor = null)
         {
-            if (configuration == null) configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+            if (configuration == null)
+            {
+                configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+            }
             services.ConfigureOption<DcLogOptions>(configuration);
             // var configValue = services.BuildServiceProvider().GetService<IOptionsMonitor<DbLogOptions>>().CurrentValue;
 
@@ -60,7 +67,10 @@ namespace WindNight.Extension.Logger.DcLog
             //services.Configure<DbLogOptions>(services.BuildServiceProvider().GetServices<IConfiguration>()
             //    .FirstOrDefault());
 
-            if (configuration == null) configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+            if (configuration == null)
+            {
+                configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+            }
 
             services.ConfigureOption<DcLogOptions>(configuration);
             // services.AddSingleton<DbLogOptions>();
@@ -79,7 +89,10 @@ namespace WindNight.Extension.Logger.DcLog
         /// <returns></returns>
         public static ILoggingBuilder AddDcLogger(this ILoggingBuilder builder, IConfiguration configuration, Action<DcLogOptions> configure, IDcLoggerProcessor loggerProcessor = null)
         {
-            if (configure == null) throw new ArgumentNullException(nameof(configure));
+            if (configure == null)
+            {
+                throw new ArgumentNullException(nameof(configure));
+            }
 
             var services = builder.Services;
 

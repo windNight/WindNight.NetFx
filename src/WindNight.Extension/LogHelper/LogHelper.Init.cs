@@ -64,6 +64,10 @@ namespace WindNight.LogExtension
 
         static void LogConsolePublish(LogInfo logInfo)
         {
+            if (logInfo.Level == LogLevels.Report)
+            {
+                return;
+            }
             if (ConfigItems.LogOnConsole)
             {
                 var logLevel = logInfo.Level;

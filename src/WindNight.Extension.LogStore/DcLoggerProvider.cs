@@ -47,13 +47,17 @@ namespace WindNight.Extension.Logger.DcLog
             _scopeProvider = scopeProvider;
 
             foreach (var logger in _loggers)
+            {
                 logger.Value.ScopeProvider = _scopeProvider;
+            }
 
         }
         private void ReloadLoggerOptions(DcLogOptions options)
         {
             foreach (var logger in _loggers)
+            {
                 logger.Value._options = options;
+            }
         }
 
     }

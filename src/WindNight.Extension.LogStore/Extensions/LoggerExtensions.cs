@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.ExceptionExt;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 using IpHelper = WindNight.Extension.Logger.DcLog.@internal.HttpContextExtension;
 
@@ -202,7 +203,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             }
             catch (Exception ex)
             {
-                Console.WriteLine("日志异常:{0}", ex.ToJsonStr());
+                Console.WriteLine("日志异常:{0}", ex.GetMessage());
             }
         }
 
@@ -259,8 +260,14 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             long millisecond = 0, string url = "", string serverIp = "", string clientIp = "", string serialNumber = ""
         )
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-            if (string.IsNullOrEmpty(eventName)) throw new ArgumentNullException(nameof(eventName));
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+            if (eventName.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(eventName));
+            }
             try
             {
                 var state = new StateDataEntry
@@ -280,7 +287,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             }
             catch (Exception ex)
             {
-                Console.WriteLine("日志异常:{0}", ex.ToJsonStr());
+                Console.WriteLine("日志异常:{0}", ex.GetMessage());
             }
         }
 

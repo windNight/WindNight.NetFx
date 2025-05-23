@@ -12,6 +12,9 @@ namespace WindNight.LogExtension
 
             switch (logLevel)
             {
+                case LogLevels.Report:
+
+                    break;
                 case LogLevels.Debug:
                     LogHelper.Debug(msg, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
                     break;
@@ -37,7 +40,6 @@ namespace WindNight.LogExtension
                     break;
                 case LogLevels.SysRegister:
                 case LogLevels.SysOffline:
-                case LogLevels.Report:
                 case LogLevels.None:
                 case LogLevels.Trace:
                 default:
@@ -99,6 +101,14 @@ namespace WindNight.LogExtension
 
         public void Report(JObject obj, string traceId = "")
         {
+            try
+            {
+                LogHelper.Report(obj, traceId);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
+using WindNight.Core.ExceptionExt;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 using WindNight.Extension.Logger.DcLog.@internal;
 
@@ -41,14 +42,20 @@ namespace WindNight.Extension.Logger.DcLog
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            if (!IsEnabled(logLevel)) return;
+            if (!IsEnabled(logLevel))
+            {
+                return;
+            }
 
-            if (formatter == null) throw new ArgumentNullException(nameof(formatter));
+            if (formatter == null)
+            {
+                throw new ArgumentNullException(nameof(formatter));
+            }
 
             var message = formatter(state, exception);
 
             var now = HardInfo.Now;
-            if (!string.IsNullOrEmpty(message) || exception != null)
+            if (!message.IsNullOrEmpty() || exception != null)
             {
                 if (state is StateDataEntry stateEntry)
                 {
@@ -75,7 +82,7 @@ namespace WindNight.Extension.Logger.DcLog
                         messageEntity.ExceptionObj = new ExceptionData
                         {
                             Message = exception.Message,
-                            StackTraceString = exception.StackTrace
+                            StackTraceString = exception.StackTrace,
                         };
                         messageEntity.Exceptions = messageEntity.ExceptionObj.ToJsonStr();
                     }
@@ -116,8 +123,15 @@ namespace WindNight.Extension.Logger.DcLog
 
             if (TryGetJObject(state, out var jo))
             {
-                if (string.IsNullOrEmpty(jo["logAppCode"]?.ToString())) jo["logAppCode"] = _options.LogAppCode;
-                if (string.IsNullOrEmpty(jo["logAppName"]?.ToString())) jo["logAppName"] = _options.LogAppName;
+                if (string.IsNullOrEmpty(jo["logAppCode"]?.ToString()))
+                {
+                    jo["logAppCode"] = _options.LogAppCode;
+                }
+
+                if (string.IsNullOrEmpty(jo["logAppName"]?.ToString()))
+                {
+                    jo["logAppName"] = _options.LogAppName;
+                }
                 jo["logTimestamps"] = logTimestamps;
                 jo["logDate"] = logDate;
                 message = jo.ToJsonStr();
@@ -167,7 +181,9 @@ namespace WindNight.Extension.Logger.DcLog
             {
                 jo = null;
                 if (_options.IsConsoleLog)
-                    Console.WriteLine(e);
+                {
+                    Console.WriteLine(e.GetMessage());
+                }
                 return false;
             }
         }

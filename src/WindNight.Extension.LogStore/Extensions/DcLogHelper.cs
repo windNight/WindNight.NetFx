@@ -1,5 +1,6 @@
 using System.Reflection;
 using Newtonsoft.Json.Extension;
+using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 using IpHelper = WindNight.Extension.Logger.DcLog.@internal.HttpContextExtension;
@@ -7,7 +8,7 @@ using IpHelper = WindNight.Extension.Logger.DcLog.@internal.HttpContextExtension
 namespace WindNight.Extension.Logger.DcLog.Extensions
 {
     /// <summary> </summary>
-    public static class DcLogHelper
+    public static partial class DcLogHelper
     {
         private static Version _version => new AssemblyName(typeof(DcLogHelper).Assembly.FullName).Version;
         private static DateTime _compileTime => File.GetLastWriteTime(typeof(DcLogHelper).Assembly.Location);
@@ -172,7 +173,125 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             Add(msg, LogLevels.SysOffline, exception, serverIp: serverIp.FirstOrDefault());
         }
 
+        public static void Report(JObject jo, string traceId = "")
+        {
+            if (DcLoggerProcessor == null || DcLogOptions == null)
+            {
+                return;
+            }
+            var logLevel = LogLevels.Information;
 
+            if (!string.IsNullOrEmpty(jo["serialNumber"]?.ToString()))
+            {
+                traceId = jo["serialNumber"].ToString();
+            }
+
+            var now = HardInfo.Now;
+
+            var logTimestamps = now.ConvertToUnixTime();
+
+            var logDate = now.ToString("yyyyMMdd");
+            if (!string.IsNullOrEmpty(jo["level"]?.ToString()))
+            {
+                logLevel = Convert2LogLevel(jo["level"].ToString());
+            }
+
+            var logMsg = new SysLogs
+            {
+                SerialNumber = traceId,
+                LogAppCode = DcLogOptions?.LogAppCode ?? "",
+                LogAppName = DcLogOptions?.LogAppName ?? "",
+                Level = logLevel.ToString(),
+                LevelType = (int)logLevel,
+                LogTs = logTimestamps,
+                NodeCode = HardInfo.NodeCode ?? "",
+                LogPluginVersion = $"{nameof(DcLogHelper)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
+
+            };
+
+            if (string.IsNullOrEmpty(jo["logAppCode"]?.ToString()))
+            {
+                jo["logAppCode"] = DcLogOptions.LogAppCode;
+            }
+            if (string.IsNullOrEmpty(jo["logAppName"]?.ToString()))
+            {
+                jo["logAppName"] = DcLogOptions.LogAppName;
+            }
+
+
+
+
+
+
+            logMsg.LogAppCode = jo["logAppCode"].ToString();
+            logMsg.LogAppName = jo["logAppName"].ToString();
+
+            jo["logTs"] = logTimestamps;
+
+            jo["logDate"] = logDate;
+            logMsg.RunMs = jo.SafeGetValue("runMs", 0);
+            logMsg.RequestUrl = jo.SafeGetValue("requestUrl", "");
+            if (logLevel == LogLevels.Error)
+            {
+                logMsg.Exceptions = jo.SafeGetValue("exceptions", "{}");
+                logMsg.ExceptionObj = logMsg.Exceptions.To<ExceptionData>();
+                //if (!string.IsNullOrEmpty(jo["exceptions"]?.ToString()))
+                //{
+                //    logMsg.Exceptions = jo.SafeGetValue("exceptions", "{}");
+                //    logMsg.ExceptionObj = logMsg.Exceptions.To<ExceptionData>();
+                //}
+            }
+
+            var message = jo.ToJsonStr();
+
+            logMsg.Content = FixContent(message);
+
+            DcLoggerProcessor.EnqueueMessage(logMsg);
+
+
+        }
+
+
+        static LogLevels Convert2LogLevel(string level)
+        {
+            try
+            {
+                if (level.IsNullOrEmpty())
+                {
+                    return LogLevels.Information;
+                }
+
+                if (level.StartsWith("debug", StringComparison.OrdinalIgnoreCase))
+                {
+                    return LogLevels.Debug;
+                }
+
+                if (level.StartsWith("info", StringComparison.OrdinalIgnoreCase))
+                {
+                    return LogLevels.Information;
+                }
+
+                if (level.StartsWith("warn", StringComparison.OrdinalIgnoreCase))
+                {
+                    return LogLevels.Warning;
+                }
+
+                var flag = Enum.TryParse<LogLevels>(level, true, out var logLevel);
+
+                if (flag)
+                {
+                    return logLevel;
+                }
+
+                return LogLevels.Information;
+
+            }
+            catch (Exception ex)
+            {
+                return LogLevels.Information;
+            }
+
+        }
 
         /// <summary>
         /// </summary>
@@ -190,7 +309,10 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
 
             try
             {
-                if (DcLoggerProcessor == null || DcLogOptions == null) return;
+                if (DcLoggerProcessor == null || DcLogOptions == null)
+                {
+                    return;
+                }
 
                 if ((int)logLevel < (int)DcLogOptions.MinLogLevel)
                 {
@@ -228,7 +350,11 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                 if (exception != null)
                 {
                     messageEntity.ExceptionObj = new ExceptionData
-                    { Message = exception.Message, StackTraceString = exception.StackTrace };
+                    {
+                        Message = exception.Message,
+                        StackTraceString = exception.StackTrace,
+
+                    };
                     messageEntity.Exceptions = messageEntity.ExceptionObj.ToJsonStr();
                 }
                 else

@@ -160,7 +160,9 @@ namespace WindNight.Extension.Logger.DcLog
                     if (_stopwatch.ElapsedMilliseconds >= 1000 * 60 * 5 && MessageQueue.Count >= DcLogOptions.QueuedMaxMessageCount)
                     {
                         if (DcLogOptions.IsConsoleLog)
+                        {
                             Console.WriteLine("start backupThread to sender batch");
+                        }
                         Debug.Assert(MessageQueue.Count >= DcLogOptions.QueuedMaxMessageCount,
                             $"Current Length In Queue is {MessageQueue.Count}");
                         ProcessBackupLogs();
