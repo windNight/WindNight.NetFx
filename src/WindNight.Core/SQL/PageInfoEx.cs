@@ -43,7 +43,24 @@ namespace WindNight.Core
             };
         }
 
-
+        /// <summary>
+        ///     分页信息实例
+        /// </summary>
+        /// <param name="pageInfo">
+        ///     <see cref="IQueryPageBase" />
+        /// </param>
+        /// <param name="tableNameToLower">   </param>
+        /// <param name="tableNameAppendPlural">   </param>
+        public static QueryPageInfo GenQueryPageInfoForDto<T>(this IQueryPageBase pageInfo, string tableName)
+            where T : class, new()
+        {
+            return new QueryPageInfo(pageInfo)
+            {
+                TableName = tableName,
+                Fields = "*",
+                OrderField = "Id DESC",
+            };
+        }
 
         public static string GenDefaultTableName<TEntity>(this object t, bool toLower = true, bool appendPlural = false)
             where TEntity : class, IEntity, new()
