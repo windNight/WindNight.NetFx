@@ -33,6 +33,7 @@
     <ItemGroup>
         <!--<ProjectReference Include="..\WindNight.AspNetCore.Mvc.Extensions\WindNight.AspNetCore.Mvc.Extensions.csproj" />-->
         <ProjectReference Include="..\WindNight.Config\WindNight.Config.csproj" />
+        <ProjectReference Include="..\WindNight.Extension\WindNight.Extension.csproj" />
     </ItemGroup>
 
     <!--<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">

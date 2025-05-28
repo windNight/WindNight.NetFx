@@ -5,6 +5,7 @@ using System.Text.Unicode;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Filters.Extensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Controllers;
@@ -38,7 +39,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// Callback to configure <see cref="T:Microsoft.AspNetCore.Mvc.MvcNewtonsoftJsonOptions" />
         /// </param>
         /// <returns></returns>
-        public static IMvcBuilder AddMvcBuilderWithSelfFilters(this IServiceCollection services, IConfiguration configuration, IEnumerable<Type> actionFilters = null, bool addDefaultFilters = true
+        public static IMvcBuilder AddMvcBuilderWithSelfFilters(this IServiceCollection services, IConfiguration configuration, IEnumerable<Type> actionFilters = null, bool addDefaultFilters = true//, Action<MvcOptions> mvcOption = null
 #if !CORE31LATER
             , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
@@ -55,29 +56,43 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
             return services.AddMvcBuilder(configuration, options =>
                 {
-
+                    //if (mvcOption != null)
+                    //{
+                    //    mvcOption.Invoke(options);
+                    //}
                     if (!actionFilters.IsNullOrEmpty())
                     {
                         foreach (var actionFilter in actionFilters.Distinct())
                         {
-                            if (actionFilter.GetInterfaces().Contains(typeof(IFilterMetadata)) && !defaultFilters.Contains(actionFilter))
+                            if (actionFilter.GetInterfaces().Contains(typeof(IFilterMetadata)) &&
+                                !defaultFilters.Contains(actionFilter))
+                            {
                                 AddFilter(actionFilter);
+                            }
                         }
                     }
 
                     if (addDefaultFilters)
+                    {
                         foreach (var actionFilter in defaultFilters)
+                        {
                             AddFilter(actionFilter);
+                        }
+                    }
 
                     void AddFilter(Type actionFilter)
                     {
                         if (!typeof(IFilterMetadata).IsAssignableFrom(actionFilter))
+                        {
                             return;
+                        }
 
                         var typeFilterAttribute = new TypeFilterAttribute(actionFilter);
 
                         if (!options.Filters.Contains(typeFilterAttribute))
+                        {
                             options.Filters.Add(typeFilterAttribute);
+                        }
 
                     }
 
@@ -153,7 +168,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// </remarks>
         /// <returns></returns>
         public static IMvcBuilder AddMvcBuilderWithDefaultFilters(this IServiceCollection services,
-            IConfiguration configuration
+            IConfiguration configuration//, Action<MvcOptions> mvcOption = null
 #if !CORE31LATER
             , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
@@ -163,6 +178,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         {
             return services.AddMvcBuilder(configuration, options =>
                  {
+                     //if (mvcOption != null)
+                     //{
+                     //    mvcOption.Invoke(options);
+                     //}
                      options.Filters.Add(new LogProcessAttribute());
                      options.Filters.Add(new ApiResultFilterAttribute());
                      options.Filters.Add(new ApiExceptionFilterAttribute());

@@ -1,9 +1,9 @@
 using System;
-using Newtonsoft.Json.Linq;
-using WindNight.Core.@internal;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
+using WindNight.Core.@internal;
 
 #if NETSTANDARD2_1
 using System.Diagnostics.CodeAnalysis;
@@ -12,7 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Newtonsoft.Json.Extension
 {
     /// <summary> </summary>
-    public static class NJsonExtensions
+    public static partial class NJsonExtensions
     {
         /// <summary>
         ///     DeserializeObject Use Newtonsoft.Json
@@ -128,7 +128,71 @@ namespace Newtonsoft.Json.Extension
 
             return JsonConvert.SerializeObject(obj, formatting, settings);
         }
+
+
+
+
     }
+
+
+    public static partial class NJsonExtensions
+    {
+        public static bool HasKey(this JObject jo, string key)
+        {
+            return jo.ContainsKey(key);
+        }
+
+        public static JToken SafeGetValueBase(this JObject jo, string key, JToken defaultValue = null)
+        {
+            try
+            {
+                if (!jo.HasKey(key))
+                {
+                    return defaultValue;
+                }
+
+                if (!string.IsNullOrEmpty(jo[key]?.ToString()))
+                {
+                    return jo[key];
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return defaultValue;
+
+        }
+
+        public static string SafeGetValue(this JObject jo, string key, string defaultValue = "")
+        {
+            var value = jo.SafeGetValueBase(key);
+            if (value != null)
+            {
+                return value.ToString();
+            }
+            return defaultValue;
+        }
+
+
+
+
+        public static int SafeGetValue(this JObject jo, string key, int defaultValue = 0)
+        {
+            var value = jo.SafeGetValueBase(key);
+            if (value != null)
+            {
+                return value.ToInt();
+            }
+            return defaultValue;
+        }
+
+
+
+
+
+    }
+
 }
 
 
