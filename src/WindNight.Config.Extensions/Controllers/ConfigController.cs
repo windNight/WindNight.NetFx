@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WindNight.AspNetCore.Mvc.Extensions;
 using WindNight.Config.Extensions.Attributes;
 using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Attributes.Abstractions;
+using WindNight.Core.Extension;
+using WindNight.Extension;
 
 namespace WindNight.Config.Extensions
 {
@@ -17,7 +21,8 @@ namespace WindNight.Config.Extensions
     [Route("api/configcenter")]
     [CenterApiAuth]
     [SysApi, NonAuth]
-    public class ConfigController : ControllerBase
+    // [ApiExplorerSettings(IgnoreApi = true)]
+    public partial class ConfigController : ControllerBase
     {
         /// <summary>
         ///  获取内存里的 AppSetting 配置信息
@@ -26,6 +31,11 @@ namespace WindNight.Config.Extensions
         [HttpGet("appsettings")]
         public List<AppSettingInfo> QueryAppSettingList()
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
+
             return ConfigItemsBase.GetAppSettingList();
         }
 
@@ -36,6 +46,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("connections")]
         public List<ConnectionStringInfo> QueryConnectionStringList()
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.GetConnectionStringList();
         }
 
@@ -46,6 +60,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("jsonconfigs")]
         public List<string> QueryJsonConfigList()
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.GetJsonConfigList().Select(m => m.FileName).ToList();
         }
 
@@ -56,6 +74,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("xmlconfigs")]
         public List<string> QueryXmlConfigList()
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.GetXmlConfigList().Select(m => m.FileName).ToList();
         }
 
@@ -67,6 +89,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("jsonconfig/byfilename")]
         public JsonFileConfigInfo QueryJsonConfigContent(string fileName)
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.GetJsonConfigList().FirstOrDefault(m => m.FileName == fileName);
         }
 
@@ -78,6 +104,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("xmlconfig/byfilename")]
         public XmlFileConfigInfo QueryXmlConfigContent(string fileName)
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.GetXmlConfigList().FirstOrDefault(m => m.FileName == fileName);
         }
 
@@ -89,6 +119,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/byfilename")]
         public FileConfigInfo QueryConfigContent(string fileName)
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             // 根据后缀 实际获取对应的配置文件
             return ConfigItemsBase.ReadConfigFileDirect(fileName);
         }
@@ -101,6 +135,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/byfilename/direct")]
         public FileConfigInfo QueryConfigContentDirect(string fileName)
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.ReadConfigFileDirect(fileName);
         }
 
@@ -113,6 +151,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("selfconfig/byfilename/direct")]
         public FileConfigInfo ReadSelfConfigFileDirect(string fileDir, string fileName)
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.ReadSelfConfigFileDirect(fileDir, fileName);
         }
 
@@ -125,6 +167,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("frontconfig/byfilename/direct")]
         public FileConfigInfo ReadFrontConfigFileDirect(string fileDir, string fileName)
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             fileDir = $"wwwroot/{fileDir.TrimStart('/').TrimStart(Path.DirectorySeparatorChar)}";
             return ConfigItemsBase.ReadSelfConfigFileDirect(fileDir, fileName);
         }
@@ -137,6 +183,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("frontconfig/filenames")]
         public List<string> QueryFrontConfigNamesDirect(string fileDir)
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             fileDir = $"wwwroot/{fileDir.TrimStart('/').TrimStart(Path.DirectorySeparatorChar)}";
             return ConfigItemsBase.FetchSelfConfigNames(fileDir).ToList();
         }
@@ -149,6 +199,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("frontconfig/fileinfos")]
         public List<ConfigFileBaseInfo> QueryFrontConfigInfosDirect(string fileDir)
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             fileDir = $"wwwroot/{fileDir.TrimStart('/').TrimStart(Path.DirectorySeparatorChar)}";
             return ConfigItemsBase.FetchSelfConfigFileInfos(fileDir).ToList();
         }
@@ -161,6 +215,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("selfconfig/filenames")]
         public List<string> QuerySelfConfigNamesDirect(string fileDir)
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.FetchSelfConfigNames(fileDir).ToList();
         }
 
@@ -172,6 +230,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("selfconfig/fileinfos")]
         public List<ConfigFileBaseInfo> QuerySelfConfigFileInfosDirect(string fileDir)
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.FetchSelfConfigFileInfos(fileDir).ToList();
         }
 
@@ -183,6 +245,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/filenames")]
         public List<string> QueryConfigNamesDirect()
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.FetchConfigNames().ToList();
         }
 
@@ -193,6 +259,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/fileinfos")]
         public List<ConfigFileBaseInfo> FetchConfigFileInfosDirect()
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.FetchConfigFileInfos().ToList();
         }
 
@@ -204,6 +274,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("updateflag")]
         public Dictionary<string, string> QueryUpdateFlagDict()
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.GetUpdateFlagDict();
         }
 
@@ -214,6 +288,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("configupdatetime")]
         public Dictionary<string, DateTime> QueryConfigUpdateTime()
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.GetConfigUpdateTime();
         }
 
@@ -225,10 +303,136 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/current")]
         public Dictionary<string, string> QueryCurrentConfiguration()
         {
+            if (!TokenAuthed)
+            {
+                return null;
+            }
             return ConfigItemsBase.GetCurrentConfiguration();
         }
 
     }
 
+    public partial class ConfigController
+    {
+
+    }
+    public partial class ConfigController
+    {
+        protected virtual bool TokenAuthed => AccessTokenIsAuth() || AppTokenIsAuth() || HttpClientIpIsLocal();
+
+
+        protected virtual bool AccessTokenIsAuth()
+        {
+            var ak = GetAccessToken();
+            if (ak.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        protected virtual bool AppTokenIsAuth()
+        {
+            var appToken = GetAppTokenValue();
+            if (appToken.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        protected virtual string GetAccessToken()
+        {
+            var authorizationValue = GetAuthorizationValue();
+
+            if (authorizationValue.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
+
+            var akArray = authorizationValue.Split(' ');
+            if (akArray.Length == 2)
+            {
+                var akType = akArray[0];
+                var ak = akArray[1];
+                return ak;
+            }
+
+            return string.Empty;
+
+        }
+
+        protected virtual string GetUserAgentValue() => Request.GetUserAgentValue();
+
+        protected virtual string GetAppTokenValue() => Request.GetAppTokenValue();
+
+        protected virtual string GetAuthorizationValue() => Request.GetAuthorizationValue();
+        protected virtual string GetRequestAppCodeValue() => Request.GetAppCodeValue();
+        protected virtual string GetRequestAppNameValue() => Request.GetAppNameValue();
+
+        protected virtual long GetRequestTsValue() => Request.GetTimestampValue();
+
+
+
+
+        protected virtual string GetHttpServerIp(bool onlyIpV4 = true)
+        {
+            var value = Request.HttpContext.GetServerIp(onlyIpV4);
+            return value;
+        }
+
+        protected virtual string GetHttpClientIp(bool onlyIpV4 = true)
+        {
+            var value = Request.HttpContext.GetClientIp(onlyIpV4);
+            return value;
+        }
+
+        protected virtual Dictionary<string, string> GetHttpClientIps()
+        {
+            var value = Request.HttpContext.GetClientIps();
+            return value;
+        }
+
+        protected virtual bool HttpClientIpIsPrivate()
+        {
+            var clientIp = GetHttpClientIp();
+            if (clientIp.IsPrivateOrLoopback())
+            {
+                return true;
+            }
+
+            return false;
+
+        }
+
+        protected virtual bool HttpClientIpIsLocal()
+        {
+            var clientIp = GetHttpClientIp();
+            if (clientIp.IsDefaultIp())
+            {
+                return true;
+            }
+            return false;
+        }
+
+        protected string QueryHeaderValue(string headerName, string defaultValue = "")
+        {
+            if (Request.Headers.TryGetValue(headerName, out var requestHeader))
+            {
+                var header = requestHeader.FirstOrDefault();
+                if (!header.IsNullOrEmpty())
+                {
+                    return header.Trim();
+                }
+            }
+
+            return defaultValue;
+        }
+
+
+
+    }
 
 }
