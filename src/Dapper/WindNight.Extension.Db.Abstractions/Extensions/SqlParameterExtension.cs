@@ -65,7 +65,8 @@ namespace WindNight.Extension.Db.Extensions
                         //if (property.PropertyType.Name == "String" || property.PropertyType.Name == "DateTime")
                         if (stringType.Contains(property.PropertyType.Name))
                         {
-                            sb.Append($"@{property.Name}:='{value}',");
+                            var sValue = value == null ? "NULL" : value.ToString();
+                            sb.Append($"@{property.Name}:=\"{sValue}\",");
                         }
                         else
                         {

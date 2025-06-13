@@ -1,4 +1,4 @@
-﻿using WindNight.Core.SQL;
+using WindNight.Core.SQL;
 using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Db.Abstractions;
 
@@ -30,12 +30,12 @@ namespace WindNight.Extension.Dapper.Abstractions
         where TEntity : CreateAndUpdateWithStatusBase<TId>, new()
         where TId : IEquatable<TId>, IComparable<TId>
     {
-        bool InsertOrUpdateData(TEntity entity);
-        Task<bool> InsertOrUpdateDataAsync(TEntity entity);
+        bool InsertOrUpdateData(TEntity entity, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        Task<bool> InsertOrUpdateDataAsync(TEntity entity, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
 
 
-        int BatchInsertOrUpdateData(IEnumerable<TEntity> entities);
-        Task<int> BatchInsertOrUpdateDataAsync(IEnumerable<TEntity> entities);
+        int BatchInsertOrUpdateData(IEnumerable<TEntity> entities, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        Task<int> BatchInsertOrUpdateDataAsync(IEnumerable<TEntity> entities, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
     }
 
 
