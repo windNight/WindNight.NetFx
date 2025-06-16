@@ -156,7 +156,9 @@ namespace System
         {
             var sourceString = obj?.ToString() ?? "";
             if (sourceString.IsNullOrEmpty())
+            {
                 return defaultValue;
+            }
             return int.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -169,7 +171,9 @@ namespace System
         public static int ToInt(this string sourceString, int defaultValue = 0)
         {
             if (sourceString.IsNullOrEmpty())
+            {
                 return defaultValue;
+            }
             return int.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -181,7 +185,9 @@ namespace System
         public static long ToLong(this string sourceString, long defaultValue = 0)
         {
             if (sourceString.IsNullOrEmpty())
+            {
                 return defaultValue;
+            }
             return long.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -190,7 +196,9 @@ namespace System
         {
             var sourceString = obj?.ToString() ?? "";
             if (sourceString.IsNullOrEmpty())
+            {
                 return defaultValue;
+            }
             return long.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -203,7 +211,9 @@ namespace System
         public static decimal ToDecimal(this string sourceString, decimal defaultValue = 0M)
         {
             if (sourceString.IsNullOrEmpty())
+            {
                 return defaultValue;
+            }
             return decimal.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -211,7 +221,9 @@ namespace System
         {
             var sourceString = obj?.ToString() ?? "";
             if (sourceString.IsNullOrEmpty())
+            {
                 return defaultValue;
+            }
             return decimal.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -223,7 +235,9 @@ namespace System
         public static double ToDouble(this string sourceString, double defaultValue = 0)
         {
             if (sourceString.IsNullOrEmpty())
+            {
                 return defaultValue;
+            }
             return double.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -231,7 +245,9 @@ namespace System
         {
             var sourceString = obj?.ToString() ?? "";
             if (sourceString.IsNullOrEmpty())
+            {
                 return defaultValue;
+            }
             return double.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -285,13 +301,19 @@ namespace System
 
         public static string UrlEncode(this string sourceString)
         {
-            if (sourceString.IsNullOrEmpty()) return sourceString;
+            if (sourceString.IsNullOrEmpty())
+            {
+                return sourceString;
+            }
             return WebUtility.UrlEncode(sourceString) ?? string.Empty;
         }
 
         public static string UrlDecode(this string sourceString)
         {
-            if (sourceString.IsNullOrEmpty()) return sourceString;
+            if (sourceString.IsNullOrEmpty())
+            {
+                return sourceString;
+            }
             return WebUtility.UrlDecode(sourceString);
         }
 

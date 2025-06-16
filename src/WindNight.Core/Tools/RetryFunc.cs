@@ -55,7 +55,10 @@ namespace WindNight.Core.Tools
                         break;
                     }
 
-                    if (delayMs > 0) Task.Delay(delayMs).Wait();
+                    if (delayMs > 0)
+                    {
+                        Task.Delay(delayMs).Wait();
+                    }
 
                     #endregion //end do catch
 
@@ -65,7 +68,10 @@ namespace WindNight.Core.Tools
                 #endregion //end try
             }
 
-            if (rlt.Equals(errorResult)) warnAction.KeepSafeAction();
+            if (rlt.Equals(errorResult))
+            {
+                warnAction.KeepSafeAction();
+            }
 
             return rlt;
         }
@@ -97,7 +103,9 @@ namespace WindNight.Core.Tools
                     }
 
                     if (delayMs > 0)
+                    {
                         Task.Delay(delayMs).Wait();
+                    }
                 }
             }
 
@@ -149,7 +157,10 @@ namespace WindNight.Core.Tools
                         break;
                     }
 
-                    if (delayMs > 0) Task.Delay(delayMs).Wait();
+                    if (delayMs > 0)
+                    {
+                        Task.Delay(delayMs).Wait();
+                    }
 
                     #endregion //end do catch
                 }
@@ -174,7 +185,10 @@ namespace WindNight.Core.Tools
 
         public static void KeepSafeAction(this Action<Exception> action, Exception ex = null)
         {
-            if (action == null) return;
+            if (action == null)
+            {
+                return;
+            }
             try
             {
                 action.Invoke(ex);
@@ -189,7 +203,10 @@ namespace WindNight.Core.Tools
 
         public static void KeepSafeAction(this Action<Exception, string> action, Exception ex = null, string msg = null)
         {
-            if (action == null) return;
+            if (action == null)
+            {
+                return;
+            }
             try
             {
                 action.Invoke(ex, msg);
