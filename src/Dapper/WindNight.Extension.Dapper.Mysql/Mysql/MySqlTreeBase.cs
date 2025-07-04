@@ -1,4 +1,5 @@
 using WindNight.Core.SQL.Abstractions;
+using WindNight.Extension.Dapper.Abstractions;
 using WindNight.Extension.Dapper.Mysql.@internal;
 using WindNight.Extension.Db.Abstractions;
 
@@ -15,7 +16,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
 
     ///<inheritdoc />
-    public abstract partial class MySqlTreeBase<TEntity, TId> : MySqlBase<TEntity, TId>, ITreeRepositoryService<TEntity, TId>
+    public abstract partial class MySqlTreeBase<TEntity, TId> : MySqlBase<TEntity, TId>, ITreeReaderBaseRepositoryService<TEntity, TId>
         where TEntity : class, ITreeEntity<TId>, IEntity<TId>, new()
         where TId : IEquatable<TId>, IComparable<TId>
     {
@@ -43,35 +44,35 @@ namespace WindNight.Extension.Dapper.Mysql
 
         #region ITreeRepositoryService
 
-        public virtual IEnumerable<TEntity> QueryChildrenByParentId(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+        public virtual IEnumerable<TEntity> QueryChildrenByParentId(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L)
         {
             return QueryChildrenByParentId<TEntity>(BaseTableName, parentId, warnMs: warnMs);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> QueryChildrenByParentIdAsync(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+        public virtual async Task<IEnumerable<TEntity>> QueryChildrenByParentIdAsync(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L)
         {
             return await QueryChildrenByParentIdAsync<TEntity>(BaseTableName, parentId, warnMs: warnMs);
         }
 
-        public virtual IEnumerable<TEntity> QueryParentsByChildId(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+        public virtual IEnumerable<TEntity> QueryParentsByChildId(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L)
         {
             return QueryParentsByChildId<TEntity>(BaseTableName, childId, warnMs: warnMs);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> QueryParentsByChildIdAsync(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+        public virtual async Task<IEnumerable<TEntity>> QueryParentsByChildIdAsync(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L)
         {
             return await QueryParentsByChildIdAsync<TEntity>(BaseTableName, childId, warnMs: warnMs);
         }
 
         /// <summary>
         /// 
-        /// impl<see cref="ITreeRepositoryService{TEntity, TId}"/>
+        /// impl<see cref="ITreeReaderBaseRepositoryService{TEntity, TId}"/>
         /// </summary>
         /// <param name="parentId"></param>
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual IEnumerable<T> QueryChildrenByParentId<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1) where T : class, ITreeEntity<TId>, new()
+        public virtual IEnumerable<T> QueryChildrenByParentId<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L) where T : class, ITreeEntity<TId>, new()
         {
             return QueryChildrenByParentId<T>(BaseTableName, parentId, rootCondition, param, warnMs: warnMs);
         }
@@ -79,37 +80,34 @@ namespace WindNight.Extension.Dapper.Mysql
         bool IdIsValid(TId id)
         {
             return id != null && id.CompareTo(default(TId)) > 0;
+
         }
 
 
 
 
+        /// <summary>
+        /// 生成查询子节点的递归SQL语句
+        /// </summary>
+        /// <param name="tableName">表名</param>
+        /// <param name="parentId">父节点Id</param>
+        /// <param name="rootCondition">根条件</param>
+        /// <returns>递归查询SQL</returns>
         string GeneratorRealSqlForQueryChildren(string tableName, TId parentId, string rootCondition = "")
         {
-
             bool idValid = IdIsValid(parentId);
-            if (rootCondition.IsNullOrEmpty())
-            {
-                if (idValid) // parentId>0
-                {
-                    rootCondition = $" AND Id= @QueryParentId ";
-                }
-                else
-                {
-                    rootCondition = $" AND ParentId=0 "; //参数id=0 默认查 所有根节点的tree
+            string condition = rootCondition;
 
-                }
+            if (string.IsNullOrWhiteSpace(condition))
+            {
+                condition = idValid ? " AND Id= @QueryParentId " : " AND ParentId=0 ";
             }
-            else
+            else if (idValid)
             {
-                if (idValid)
-                {
-                    rootCondition = $" AND Id= @QueryParentId AND {rootCondition} ";
-                }
-
+                condition = $" AND Id= @QueryParentId AND {condition} ";
             }
 
-            var sql = string.Format(QueryChildrenByParentIdSql, tableName, rootCondition);
+            var sql = string.Format(QueryChildrenByParentIdSql, tableName, condition);
             if (ConfigItems.OpenDapperLog)
             {
                 LogHelper.Debug($"QueryChildrenByParentId({tableName}) sql is :{sql}");
@@ -121,14 +119,14 @@ namespace WindNight.Extension.Dapper.Mysql
 
         /// <summary>
         /// 
-        /// impl<see cref="ITreeRepositoryService{TEntity, TId}"/>
+        /// impl<see cref="ITreeReaderBaseRepositoryService{TEntity, TId}"/>
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="parentId"></param>
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual IEnumerable<T> QueryChildrenByParentId<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+        public virtual IEnumerable<T> QueryChildrenByParentId<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L)
             where T : class, ITreeEntity<TId>, new()
         {
             if (tableName.IsNullOrEmpty())
@@ -156,23 +154,22 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<T>> QueryChildrenByParentIdAsync<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+        public virtual async Task<IEnumerable<T>> QueryChildrenByParentIdAsync<T>(TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L)
             where T : class, ITreeEntity<TId>, new()
         {
             return await QueryChildrenByParentIdAsync<T>(BaseTableName, parentId, warnMs: warnMs);
 
         }
 
-        /// <summary>
-        /// 
-        /// impl<see cref="ITreeRepositoryService{TEntity, TId}"/>
+        /// <summary> 
+        /// impl<see cref="ITreeReaderBaseRepositoryService{TEntity, TId}"/>
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="parentId"></param>
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<T>> QueryChildrenByParentIdAsync<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+        public virtual async Task<IEnumerable<T>> QueryChildrenByParentIdAsync<T>(string tableName, TId parentId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L)
             where T : class, ITreeEntity<TId>, new()
         {
             if (tableName.IsNullOrEmpty())
@@ -195,13 +192,13 @@ namespace WindNight.Extension.Dapper.Mysql
 
         /// <summary>
         /// 
-        /// impl<see cref="ITreeRepositoryService{TEntity, TId}"/>
+        /// impl<see cref="ITreeReaderBaseRepositoryService{TEntity, TId}"/>
         /// </summary>
         /// <param name="childId"></param>
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual IEnumerable<T> QueryParentsByChildId<T>(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+        public virtual IEnumerable<T> QueryParentsByChildId<T>(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L)
             where T : class, ITreeEntity<TId>, new()
         {
             return QueryParentsByChildId<T>(BaseTableName, childId, rootCondition, param, warnMs: warnMs);
@@ -210,14 +207,14 @@ namespace WindNight.Extension.Dapper.Mysql
 
         /// <summary>
         /// 
-        /// impl<see cref="ITreeRepositoryService{TEntity, TId}"/>
+        /// impl<see cref="ITreeReaderBaseRepositoryService{TEntity, TId}"/>
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="childId"></param>
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual IEnumerable<T> QueryParentsByChildId<T>(string tableName, TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+        public virtual IEnumerable<T> QueryParentsByChildId<T>(string tableName, TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L)
             where T : class, ITreeEntity<TId>, new()
         {
             if (tableName.IsNullOrEmpty())
@@ -237,13 +234,13 @@ namespace WindNight.Extension.Dapper.Mysql
 
         /// <summary>
         /// 
-        /// impl<see cref="ITreeRepositoryService{TEntity, TId}"/>
+        /// impl<see cref="ITreeReaderBaseRepositoryService{TEntity, TId}"/>
         /// </summary>
         /// <param name="childId"></param>
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+        public virtual async Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L)
             where T : class, ITreeEntity<TId>, new()
         {
             return await QueryParentsByChildIdAsync<T>(BaseTableName, childId, rootCondition, param, warnMs: warnMs);
@@ -252,14 +249,14 @@ namespace WindNight.Extension.Dapper.Mysql
 
         /// <summary>
         /// 
-        /// impl<see cref="ITreeRepositoryService{TEntity, TId}"/>
+        /// impl<see cref="ITreeReaderBaseRepositoryService{TEntity, TId}"/>
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="childId"></param>
         /// <param name="rootCondition"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(string tableName, TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1)
+        public virtual async Task<IEnumerable<T>> QueryParentsByChildIdAsync<T>(string tableName, TId childId, string rootCondition = "", Dictionary<string, object> param = null, long warnMs = -1L)
             where T : class, ITreeEntity<TId>, new()
         {
             if (tableName.IsNullOrEmpty())

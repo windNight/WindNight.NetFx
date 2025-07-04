@@ -65,6 +65,31 @@ namespace WindNight.Extension.Dapper.Mysql
             }
         }
 
+        public virtual T QueryFirstOrDefault<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
+        {
+            using (var connection = GetConnection(connStr))
+            {
+                try
+                {
+                    return connection.QueryFirstOrDefault<T>(sql, param);
+                }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
+                    }
+
+                    throw;
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
         #endregion //end Sync
 
 
@@ -77,7 +102,8 @@ namespace WindNight.Extension.Dapper.Mysql
             {
                 try
                 {
-                    return (await connection.QueryAsync<T>(sql, param)).ToList();
+                    return await connection.QueryAsync<T>(sql, param);
+                    //return (await connection.QueryAsync<T>(sql, param)).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -120,6 +146,33 @@ namespace WindNight.Extension.Dapper.Mysql
                 }
             }
         }
+
+
+        public virtual async Task<T> QueryFirstOrDefaultAsync<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
+        {
+            using (var connection = GetConnection(connStr))
+            {
+                try
+                {
+                    return (await connection.QueryFirstOrDefaultAsync<T>(sql, param));
+                }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
+                    }
+                    throw;
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+
 
         #endregion //end Async
 

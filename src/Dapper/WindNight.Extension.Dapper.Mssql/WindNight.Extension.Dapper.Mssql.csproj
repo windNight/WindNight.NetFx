@@ -11,10 +11,15 @@
         </Description>
         <PackageReleaseNotes>
         </PackageReleaseNotes>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
         <OutputPath>..\..\..\Output\$(Configuration)</OutputPath>
 
     </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Dapper" Version="2.1.66" />
         <!--<PackageReference Include="FastMember" Verskion="1.5.0" />-->

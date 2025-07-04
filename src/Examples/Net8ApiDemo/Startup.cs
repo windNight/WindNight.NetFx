@@ -1,8 +1,12 @@
+using System.Configuration;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting.WnExtensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using WindNight.Config.Abstractions;
 using WindNight.Config.Extensions;
 using WindNight.Core.Abstractions;
+using WindNight.Extension.Logger.DcLog;
 
 namespace Net8ApiDemo
 {
@@ -15,56 +19,25 @@ namespace Net8ApiDemo
 
         protected override string ToAppendDescription => @$"Net8ApiDemo Test for swagger
 <h3 style='color: #27ae60;'>自定义</h3>
-asdasdasdas
+asdasdasdas  项目构建于: {BuildInfo.HostName}
+BuildMachineName:{Environment.GetEnvironmentVariable("BuildMachineName")}
+RunMachineName: {Environment.MachineName}
 ";
 
-        protected override string BuildType
-        {
-            get
-            {
-                var buildType = "";
-#if DEBUG
-                buildType = "Debug";
-#else
-                buildType = "Release";
-#endif
-                return buildType;
-            }
-        }
+        //        protected override string BuildType
+        //        {
+        //            get
+        //            {
+        //                var buildType = "";
+        //#if DEBUG
+        //                buildType = "Debug";
+        //#else
+        //                buildType = "Release";
+        //#endif
+        //                return buildType;
+        //            }
+        //        }
 
-        //string Version
-        //{
-        //    get
-        //    {
-        //        try
-        //        {
-        //            var assembly = Assembly.GetEntryAssembly();
-        //            var ver = assembly?.GetName()?.Version;
-        //            return ver?.ToString() ?? "v1";
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return "v1";
-        //        }
-        //    }
-        //}
-
-        //protected override string NamespaceName
-        //{
-        //    get
-        //    {
-        //        try
-        //        {
-        //            var t = Assembly.GetEntryAssembly()?.FullName ?? "";
-        //            var name = t.Substring(0, t.IndexOf(", Culture", StringComparison.Ordinal));
-        //            return name;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return "";
-        //        }
-        //    }
-        //}
 
 
         protected override void UseBizConfigure(IApplicationBuilder app)
@@ -73,9 +46,10 @@ asdasdasdas
 
         protected override void ConfigBizServices(IServiceCollection services)
         {
-            services.AddSingleton<IConfigCenterAuth, ConfigCenterAuth>();
+            // services.AddSingleton<IConfigCenterAuth, ConfigCenterAuth>();
             services.AddSingleton<IQuerySvrHostInfo, QuerySvrHostInfo>();
             services.AddConfigExtension(Configuration);
+            services.AddDcLogger(configuration: Configuration);
         }
 
         protected override Func<Dictionary<string, string>> SelfSwaggerAuthDictFunc => () => new Dictionary<string, string>
@@ -91,9 +65,27 @@ asdasdasdas
         {
             var swaggerSignDict = SelfSwaggerAuthDictFunc.Invoke();
             app.UseMiddleware<SelfSwaggerSignValidMiddleware>(swaggerSignDict);
+
+            //app.UseMiddleware<DefaultCenterApiAuthMiddleware>();
+
         };
 
+        //protected override Action<MvcOptions> ActionMvcOptionAction => options =>
+        //{
+        //    //options.Conventions.Add(new ControllerConvention());
+        //};
 
+        //// 自定义的控制器约定，用于过滤控制器
+        //public class ControllerConvention : IControllerModelConvention
+        //{
+        //    public void Apply(ControllerModel controller)
+        //    {
+        //        if (controller.ControllerType == typeof(ConfigController))
+        //        {
+        //            controller.Properties["ShouldExclude"] = true;
+        //        }
+        //    }
+        //}
 
     }
 
@@ -322,7 +314,7 @@ asdasdasdas
         public bool OpenConfigCenterAuth { get; set; }
         public bool ConfigCenterApiAuth()
         {
-            return true;
+            return false;
         }
     }
 
@@ -331,20 +323,43 @@ asdasdasdas
     {
         public ISvrHostInfo GetSvrHostInfo()
         {
-            var model = new SvrHostBaseInfo();
+            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+            var buildType = QueryBuildType();
+            //#if DEBUG
+            //            buildType = "Debug";
+            //#else
+            //            buildType = "Release";
+            //#endif
+            var model = new SvrHostBaseInfo
+            {
+                BuildType = buildType,
+                BuildMachineName = QueryBuildMachineName(),
+                MainAssemblyVersion = assembly?.GetName()?.Version?.ToString(),
+                MainAssemblyName = assembly.ManifestModule.Name,
+                CompileTime = System.IO.File.GetLastWriteTime(assembly.Location).FormatDateTimeFullString(),
+            };
+
+            return model;
+
+        }
+
+        public string QueryBuildMachineName()
+        {
+            return BuildInfo.HostName;
+        }
+
+        public string QueryBuildType()
+        {
             var buildType = "";
 #if DEBUG
             buildType = "Debug";
 #else
             buildType = "Release";
 #endif
-            model.BuildType = buildType;
-            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
-            model.MainAssemblyVersion = assembly?.GetName()?.Version?.ToString();
-            model.MainAssemblyName = assembly.ManifestModule.Name;
-            model.CompileTime = System.IO.File.GetLastWriteTime(assembly.Location).FormatDateTimeFullString();
-            return model;
-
+            return buildType;
         }
+
+
+
     }
 }

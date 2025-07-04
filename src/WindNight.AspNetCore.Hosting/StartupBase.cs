@@ -15,13 +15,15 @@ using Swashbuckle.AspNetCore.Extensions;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using WindNight.Core.Abstractions;
 using WindNight.Core.ConfigCenter.Extensions;
 
 namespace Microsoft.AspNetCore.Hosting.WnExtensions
 {
     public abstract class WebStartupBase : IWnWebStartup//, IStartup
     {
-        protected abstract string BuildType { get; }
+        protected virtual string BuildType => Ioc.GetService<IQuerySvrHostInfo>()?.QueryBuildType() ?? "";
+        protected virtual string BuildMachineName => Ioc.GetService<IQuerySvrHostInfo>()?.QueryBuildMachineName() ?? "";
 
         //protected abstract string NamespaceName { get; }
         protected virtual DateTime BuildDateTime
@@ -59,6 +61,10 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 `{NamespaceName}`  
 <h3 style='color: #27ae60;'>BuildType</h3>
 <span style='background:#f1c40f;padding:2px;color:red;'><strong>`{BuildType}`</strong></span>
+<h3 style='color: #27ae60;'>BuildMachineName</h3>
+<span style='background:#f1c40f;padding:2px;color:red;'><strong>`{BuildMachineName}`</strong></span>
+<h3 style='color: #27ae60;'>RunMachineName</h3>
+<span style='background:#f1c40f;padding:2px;color:red;'><strong>`{Environment.MachineName}`</strong></span>
 <h3 style='color: #27ae60;'>  BuildTs  </h3>
 `{BuildDateTime.FormatDateTimeFullString()}`
 <h3 style='color: #27ae60;'>  ServerInfo  </h3>
@@ -134,6 +140,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         protected virtual Func<Dictionary<string, string>> SelfSwaggerAuthDictFunc { get; } = null;
 
         protected virtual Func<IEnumerable<Type>> ActionFiltersFunc { get; } = null;
+        //protected virtual Action<MvcOptions> ActionMvcOptionAction { get; } = null;
 
         // protected virtual Action<Mvc.MvcJsonOptions>? mvcJsonOption { get; } = null;
 
@@ -242,10 +249,10 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         }
 
 
-        protected virtual IServiceCollection ConfigSysServices(IServiceCollection services,
-            IConfiguration configuration)
+        protected virtual IServiceCollection ConfigSysServices(IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
+
             if (ActionFiltersFunc != null)
             {
                 services.AddMvcBuilderWithSelfFilters(configuration, ActionFiltersFunc.Invoke());
@@ -254,10 +261,12 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             {
                 services.AddMvcBuilderWithDefaultFilters(configuration);
             }
+
             // var appName = configuration.GetAppConfigValue("AppName", "");
             // var appCode = configuration.GetAppConfigValue("AppCode", "");
             // var prefix = $"{appName}({appCode}) ";
             // var title = $"{prefix}{NamespaceName}";
+
             var signKeyDict = SelfSwaggerAuthDictFunc?.Invoke() ?? new Dictionary<string, string>();
             Ioc.Instance.InitServiceProvider(services);
             services.AddSwaggerConfig(NamespaceName, configuration, swaggerGenOptionsAction: SelfSwaggerGenOptionsAction, apiVersion: ApiVersion, signKeyDict: signKeyDict, apiDes: ApiDescription);

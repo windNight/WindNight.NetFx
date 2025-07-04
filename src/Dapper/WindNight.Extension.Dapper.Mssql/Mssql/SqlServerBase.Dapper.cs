@@ -153,6 +153,58 @@ namespace WindNight.Extension.Dapper.Mssql
         }
 
 
+        public virtual T QueryFirstOrDefault<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
+        {
+            using (var connection = GetConnection(connStr))
+            {
+                try
+                {
+                    return connection.QueryFirstOrDefault<T>(sql, param);
+                }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
+                    }
+
+                    throw;
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        public virtual async Task<T> QueryFirstOrDefaultAsync<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null)
+        {
+            using (var connection = GetConnection(connStr))
+            {
+                try
+                {
+                    return (await connection.QueryFirstOrDefaultAsync<T>(sql, param));
+                }
+                catch (Exception ex)
+                {
+                    if (execErrorHandler != null)
+                    {
+                        ExecErrorHandler(execErrorHandler, ex, sql);
+                        return default;
+                    }
+                    throw;
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+
+
+
         #region PageResut
 
         protected IEnumerable<T> PagedListInternal<T>(string connStr, IQueryPageInfo pageInfo, out int recordCount, IDictionary<string, object> parameters)
@@ -270,6 +322,11 @@ namespace WindNight.Extension.Dapper.Mssql
         }
 
         #endregion
+
+
+
+
+
     }
 
 

@@ -9,7 +9,7 @@ namespace WindNight.Core
         public int Code { get; set; }
 
         /// <summary> 响应信息 </summary>
-        public string? Message { get; set; }
+        public string Message { get; set; } = "";
     }
 
 

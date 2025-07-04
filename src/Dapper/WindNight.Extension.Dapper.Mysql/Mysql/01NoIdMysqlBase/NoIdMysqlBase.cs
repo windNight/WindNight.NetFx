@@ -1,3 +1,4 @@
+using WindNight.Core;
 using WindNight.Core.SQL;
 using WindNight.Core.SQL.Abstractions;
 
@@ -11,6 +12,8 @@ namespace WindNight.Extension.Dapper.Mysql
     public abstract partial class NoIdMysqlBase<TEntity> : MySqlBase
         where TEntity : class, IEntity, new()
     {
+        public virtual string DefaultTableName => this.GenDefaultTableName<TEntity>(appendPlural: true);
+
         #region Sync
 
         #region T
@@ -24,7 +27,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual T DbQueryE<T>(string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false) =>
+        protected virtual T DbQueryE<T>(string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false) =>
             DbQueryE<T>(DbConnectString, sql, param, warnMs, execErrorHandler, isDebug);
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual T DbQueryE<T>(string conn, string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
+        protected virtual T DbQueryE<T>(string conn, string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
             return SqlTimer(Query<T>, conn, sql, param, nameof(DbQueryE), warnMs, execErrorHandler, isDebug);
         }
@@ -51,7 +54,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual IEnumerable<T> DbQueryEList<T>(string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
+        protected virtual IEnumerable<T> DbQueryEList<T>(string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
             return DbQueryEList<T>(DbConnectString, sql, param, warnMs, execErrorHandler, isDebug);
             //return SqlTimer((_sql, _param, _3) => QueryList<T>(DbConnectString, _sql, _param, _3),
@@ -68,7 +71,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual IEnumerable<T> DbQueryEList<T>(string conn, string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
+        protected virtual IEnumerable<T> DbQueryEList<T>(string conn, string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
             return SqlTimer(QueryList<T>, conn, sql, param, nameof(DbQueryEList), warnMs, execErrorHandler, isDebug);
         }
@@ -86,7 +89,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual TEntity DbQuery(string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
+        protected virtual TEntity DbQuery(string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
 
             return DbQuery(DbConnectString, sql, param, warnMs, execErrorHandler, isDebug);
@@ -104,7 +107,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual TEntity DbQuery(string conn, string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
+        protected virtual TEntity DbQuery(string conn, string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
             return SqlTimer(Query<TEntity>, conn, sql, param, nameof(DbQuery), warnMs, execErrorHandler, isDebug);
         }
@@ -117,7 +120,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual IEnumerable<TEntity> DbQueryList(string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
+        protected virtual IEnumerable<TEntity> DbQueryList(string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
             return DbQueryList(DbConnectString, sql, param, warnMs, execErrorHandler, isDebug);
             //return SqlTimer((_sql, _param, _3) => QueryList<TEntity>(DbConnectString, _sql, _param, _3),
@@ -133,7 +136,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual IEnumerable<TEntity> DbQueryList(string conn, string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
+        protected virtual IEnumerable<TEntity> DbQueryList(string conn, string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
             return SqlTimer(QueryList<TEntity>, conn, sql, param, nameof(DbQueryList), warnMs, execErrorHandler, isDebug);
         }
@@ -150,7 +153,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual int DbExecute(string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
+        protected virtual int DbExecute(string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
             return DbExecute(DbConnectString, sql, param, warnMs, execErrorHandler, isDebug);
             //return SqlTimer((_sql, _param, _3) => Execute(DbConnectString, _sql, _param, _3),
@@ -166,7 +169,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual int DbExecute(string conn, string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
+        protected virtual int DbExecute(string conn, string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
             return SqlTimer(Execute, conn, sql, param, nameof(DbExecute), warnMs, execErrorHandler, isDebug);
         }
@@ -180,7 +183,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual T DbExecuteScalar<T>(string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
+        protected virtual T DbExecuteScalar<T>(string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
 
             return DbExecuteScalar<T>(DbConnectString, sql, param, warnMs, execErrorHandler, isDebug);
@@ -199,7 +202,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        protected virtual T DbExecuteScalar<T>(string conn, string sql, object param = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
+        protected virtual T DbExecuteScalar<T>(string conn, string sql, object param = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
         {
             return SqlTimer(ExecuteScalar<T>, conn, sql, param, nameof(ExecuteScalar), warnMs, execErrorHandler, isDebug);
         }

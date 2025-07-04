@@ -10,17 +10,21 @@ namespace WindNight.Core.Abstractions
     public interface IQuerySvrHostInfo
     {
         ISvrHostInfo GetSvrHostInfo();
+        string QueryBuildType();
+        string QueryBuildMachineName();
     }
 
     public interface ISvrHostInfo
     {
 
         string BuildType { get; set; }
+        string BuildMachineName { get; set; }
 
         string CompileTime { get; set; }
         string MainAssemblyName { get; set; }
 
         string MainAssemblyVersion { get; set; }
+        //string NowTime { get; set; }
 
     }
 
@@ -30,10 +34,12 @@ namespace WindNight.Core.Abstractions
     {
 
         public virtual string BuildType { get; set; } = "";
+        public virtual string BuildMachineName { get; set; } = "";
 
         public virtual string CompileTime { get; set; } = "";
         public virtual string MainAssemblyName { get; set; } = "";
         public virtual string MainAssemblyVersion { get; set; } = "";
+        //public virtual string NowTime { get; set; } = "";
     }
 
     public class DefaultSvrHostInfo : SvrHostBaseInfo
@@ -51,6 +57,19 @@ namespace WindNight.Core.Abstractions
         public virtual string ClientIp { get; set; } = "";
         public virtual string ServerIp { get; set; } = "";
         public virtual string NodeCode { get; set; } = "";
+        public virtual string RunMachineName { get; set; } = "";
+
+        protected static string GetRunMachineName()
+        {
+            try
+            {
+                return Environment.MachineName;
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }
+        }
 
         public static DefaultSvrHostInfo GenDefault
         {
@@ -76,6 +95,7 @@ namespace WindNight.Core.Abstractions
                     QueryDateTime = HardInfo.NowFullString,
                     ServerIp = HardInfo.GetLocalIp(),
                     NodeCode = HardInfo.NodeCode,
+                    RunMachineName = GetRunMachineName(),
                 };
                 var impl = Ioc.GetService<IQuerySvrHostInfo>();
                 if (impl != null)
@@ -85,7 +105,9 @@ namespace WindNight.Core.Abstractions
                     {
                         model.BuildType = svrBaseInfo.BuildType;
                         model.MainAssemblyVersion = svrBaseInfo.MainAssemblyVersion;
+                        model.MainAssemblyName = svrBaseInfo.MainAssemblyName;
                         model.CompileTime = svrBaseInfo.CompileTime;
+                        model.BuildMachineName = svrBaseInfo.BuildMachineName;
                     }
                 }
                 return model;

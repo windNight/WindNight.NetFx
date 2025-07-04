@@ -3,20 +3,58 @@ using WindNight.Core.SQL.Abstractions;
 
 namespace WindNight.Core.SQL
 {
+
+    public class EntityBase : EntityBase<int> { }
+
+    public class CreateBase : CreateBase<int> { }
+
+    public class LogCreateBase : LogCreateBase<int> { }
+
+    public class CreateAndUpdateBase : CreateAndUpdateBase<int> { }
+
+    public class CreateAndUpdateWithStatusBase : CreateAndUpdateWithStatusBase<int> { }
+
+    public class TreeEntityBase : CommonTreeEntityBase<int> { }
+
+
+
     /// <inheritdoc cref="IEntity" />
-    public class EntityBase<TPrimaryKey> : IEntity<TPrimaryKey>, ICanPageEntity //暂时选定所有带Id的单表都可分页
+    public class EntityBase<TPrimaryKey> : IEntity<TPrimaryKey> //暂时选定所有带Id的单表都可分页
         where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
         public virtual TPrimaryKey Id { get; set; }
 
-        public bool IdIsValid()
+        public virtual bool IdIsValid()
         {
-            return Id.CompareTo(default) > 0;
+            if (Id == null)
+            {
+                return false;
+            }
+
+            // 针对常见主键类型分别处理
+            if (typeof(TPrimaryKey) == typeof(int) || typeof(TPrimaryKey) == typeof(long))
+            {
+                return Id.CompareTo(default(TPrimaryKey)) > 0;
+            }
+
+            if (typeof(TPrimaryKey) == typeof(Guid))
+            {
+                return !Id.Equals((TPrimaryKey)(object)Guid.Empty);
+            }
+
+            if (typeof(TPrimaryKey) == typeof(string))
+            {
+                return !string.IsNullOrWhiteSpace(Id as string);
+            }
+
+            // 其他类型默认用 CompareTo
+            return Id.CompareTo(default(TPrimaryKey)) != 0;
         }
     }
 
     /// <inheritdoc cref="ICreateEntityBase" />
-    public class CreateBase<TPrimaryKey> : EntityBase<TPrimaryKey>, IDeletedEntity, ICreateEntityBase
+    public class CreateBase<TPrimaryKey> : EntityBase<TPrimaryKey>,
+        IDeletedEntity, ICreateEntityBase
         where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
         public CreateBase()
@@ -41,20 +79,37 @@ namespace WindNight.Core.SQL
         }
     }
 
-
-    /// <inheritdoc cref="IUpdateEntityBase" />
-    public class CreateAndUpdateBase<TPrimaryKey> : CreateBase<TPrimaryKey>, IUpdateEntityBase
+    public class LogCreateBase<TPrimaryKey> : CreateBase<TPrimaryKey>, ILogCreateEntityBase<TPrimaryKey>
         where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
+        public LogCreateBase() : base()
+        {
+
+        }
+
+        public string CreateUserName { get; set; }
+
+    }
+
+    /// <inheritdoc cref="IUpdateEntityBase" />
+    public class CreateAndUpdateBase<TPrimaryKey> : CreateBase<TPrimaryKey>, ICUEntityBase<TPrimaryKey>
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
+    {
+        public CreateAndUpdateBase() : base()
+        {
+
+        }
+
         public int UpdateUserId { get; set; }
         public long UpdateUnixTime { get; set; }
 
         public int UpdateDate { get; set; }
+
     }
 
 
     /// <inheritdoc cref="IUpdateEntityBase" />
-    public class CreateAndUpdateWithStatusBase<TPrimaryKey> : CreateAndUpdateBase<TPrimaryKey>, IStatusEntity
+    public class CreateAndUpdateWithStatusBase<TPrimaryKey> : CreateAndUpdateBase<TPrimaryKey>, ICUSEntityBase<TPrimaryKey>
         where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
         public virtual int Status { get; set; } = (int)DataStatusEnums.Enable;
@@ -69,18 +124,9 @@ namespace WindNight.Core.SQL
         public virtual TPrimaryKey ParentId { get; set; }
     }
 
-    public static class SqlEx
-    {
-        //public static string GenDefaultTableName<TEntity>(this object t, bool toLower = true, bool appendPlural = false)
-        //where TEntity : class, IEntity, new()
-        //{
-        //    var tableName = typeof(TEntity).Name;
-        //    if (toLower) tableName = tableName.ToLower();
-        //    if (appendPlural && !tableName.EndsWith("s"))
-        //    {
-        //        tableName = $"{tableName}s";
-        //    }
-        //    return tableName;
-        //}
-    }
+
+
+
+
+
 }

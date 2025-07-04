@@ -9,16 +9,24 @@ namespace WindNight.Core.SQL.Abstractions
 
     public interface IEntity : ICanPageEntity
     {
+
     }
 
-    public interface IEntity<TPrimaryKey> : IEntity
+    public interface IEntity<TPrimaryKey> : IEntityWithId<TPrimaryKey>
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
+    {
+
+    }
+
+    public interface IEntityWithId<TPrimaryKey> : IEntity
         where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
         /// <summary> 主键 </summary>
         TPrimaryKey Id { get; set; }
-
         bool IdIsValid();
     }
+
+
 
     public interface IDeletedEntity : IEntity
     {
@@ -32,14 +40,18 @@ namespace WindNight.Core.SQL.Abstractions
         int Status { get; set; }
     }
 
+    public interface ITreeEntity : ITreeEntity<int>
+    {
 
+    }
 
 
     /// <summary>
     ///     树状
     /// </summary>
     /// <typeparam name="TPrimaryKey"></typeparam>
-    public interface ITreeEntity<TPrimaryKey> : IEntity
+    public interface ITreeEntity<TPrimaryKey> : ICUSEntityBase<TPrimaryKey>
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
         /// <summary>
         ///     父级 Id
@@ -47,10 +59,49 @@ namespace WindNight.Core.SQL.Abstractions
         TPrimaryKey ParentId { get; set; }
     }
 
+    public interface ILogCreateEntityBase : ILogCreateEntityBase<int>
+    {
+
+    }
+
+    public interface ILogCreateEntityBase<TPrimaryKey> : ICreateEntityBase<TPrimaryKey>
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
+    {
+        string CreateUserName { get; set; }
+    }
+
+    public interface ICreateEntityBase : ICreateEntityBase<int>
+    {
+
+    }
+    public interface ICUEntityBase : ICUEntityBase<int>
+    {
+
+    }
+    public interface ICUEntityBase<TPrimaryKey> :
+        ICreateEntityBase<TPrimaryKey>,
+        IUpdateEntityBase,
+        IDeletedEntity
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
+    {
+
+    }
+    public interface ICUSEntityBase : ICUSEntityBase<int>
+    {
+
+    }
+    public interface ICUSEntityBase<TPrimaryKey> :
+        ICUEntityBase<TPrimaryKey>,
+        IStatusEntity
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
+    {
+
+    }
     /// <summary>
-    ///     运行数据或者非配置数据
+    ///     
     /// </summary>
-    public interface ICreateEntityBase : IEntity
+    public interface ICreateEntityBase<TPrimaryKey> : IEntity
+        where TPrimaryKey : IEquatable<TPrimaryKey>, IComparable<TPrimaryKey>
     {
         /// <summary> 创建人编号 </summary>
         int CreateUserId { get; set; }
@@ -64,7 +115,7 @@ namespace WindNight.Core.SQL.Abstractions
 
 
     /// <summary>
-    ///     运行数据或者非配置数据
+    ///     
     /// </summary>
     public interface IUpdateEntityBase : IEntity
     {

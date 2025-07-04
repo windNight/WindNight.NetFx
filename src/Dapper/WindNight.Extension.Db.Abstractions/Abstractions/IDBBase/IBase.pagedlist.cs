@@ -33,7 +33,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        IPagedList<TEntity> QueryPagedList(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        IPagedList<TEntity> QueryPagedList(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
 
         /// <summary>
@@ -42,14 +42,14 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
 
 
 
-        IPagedList<TEntity> QueryPagedList(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        IPagedList<TEntity> QueryPagedList(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
-        Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
         #endregion //end IEntity
 
@@ -61,7 +61,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        IPagedList<T> QueryPagedEList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        IPagedList<T> QueryPagedEList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
 
 
@@ -71,13 +71,13 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
 
-        IPagedList<T> QueryPagedEList<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        IPagedList<T> QueryPagedEList<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", string tableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
 
-        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", string tableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
 
 
@@ -97,7 +97,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="queryTableName"></param>
         /// <returns></returns>
         [Obsolete("Please Use IQueryPageBase or IQueryPageInfo   ")]
-        IPagedList<TEntity> QueryPagedList(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        IPagedList<TEntity> QueryPagedList(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
         ///     常规分页 异步
@@ -110,10 +110,10 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="queryTableName"></param>
         /// <returns></returns>
         [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
-        Task<IPagedList<TEntity>> QueryPagedListAsync(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        Task<IPagedList<TEntity>> QueryPagedListAsync(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
         [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
-        IPagedList<T> QueryPagedEList<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        IPagedList<T> QueryPagedEList<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName"/></param>
         /// <returns></returns>
         [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
-        Task<IPagedList<T>> QueryPagedEListAsync<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        Task<IPagedList<T>> QueryPagedEListAsync<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
 
 
@@ -138,7 +138,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="parameters"></param>
         /// <returns></returns>
         [Obsolete("Please Use rewrite func  ", true)]
-        IPagedList<T> QueryPagedEList<T>(IQueryPageBase pagedInfo, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        IPagedList<T> QueryPagedEList<T>(IQueryPageBase pagedInfo, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
 
 
@@ -150,14 +150,14 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="parameters"></param>
         /// <returns></returns>
         [Obsolete("Please Use rewrite func  ", true)]
-        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageBase pagedInfo, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        Task<IPagedList<T>> QueryPagedEListAsync<T>(IQueryPageBase pagedInfo, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
 
         [Obsolete("Please Use rewrite func  ", true)]
-        Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageBase pagedInfo, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        Task<IPagedList<TEntity>> QueryPagedListAsync(IQueryPageBase pagedInfo, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
         [Obsolete("Please Use rewrite func  ", true)]
-        IPagedList<TEntity> QueryPagedList(IQueryPageBase pagedInfo, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        IPagedList<TEntity> QueryPagedList(IQueryPageBase pagedInfo, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
 
         #endregion

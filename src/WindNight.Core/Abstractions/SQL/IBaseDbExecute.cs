@@ -19,7 +19,7 @@ namespace WindNight.Core.SQL.Abstractions
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        Task<IPagedList<T>> QueryPagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        Task<IPagedList<T>> QueryPagedListAsync<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
             where T : class, new();
 
         /// <summary>
@@ -32,17 +32,10 @@ namespace WindNight.Core.SQL.Abstractions
         /// <param name="warnMs"></param>
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
-        IPagedList<T> QueryPagedList<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        IPagedList<T> QueryPagedList<T>(string connStr, IQueryPageInfo sqlPageInfo, IDictionary<string, object> parameters = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null, bool isDebug = false)
             where T : class, new();
 
         #endregion
-
-        //IPagedList<T> QueryPagedList<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
-
-        //Task<IPagedList<T>> QueryPagedListAsync<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
-
-
-
 
 
 
@@ -267,6 +260,12 @@ namespace WindNight.Core.SQL.Abstractions
         /// <param name="execErrorHandler"></param>
         /// <returns></returns>
         Task<T> QueryAsync<T>(string connStr, string sql, object param = null, Action<Exception, string> execErrorHandler = null);
+
+        T QueryFirstOrDefault<T>(string connStr, string sql, object param = null,
+            Action<Exception, string> execErrorHandler = null);
+
+        Task<T> QueryFirstOrDefaultAsync<T>(string connStr, string sql, object param = null,
+            Action<Exception, string> execErrorHandler = null);
 
     }
 

@@ -9,21 +9,25 @@ namespace WindNight.Extension.Dapper.Abstractions
         string DefaultTableName { get; }
     }
 
-    public interface IDefaultEnBaseRepositoryService<TEntity> : IBaseRepositoryServiceWithId<TEntity>,
+    public interface IDefaultBaseRepositoryService<TEntity> : IBaseRepositoryServiceWithId<TEntity>,
         IQueryDefaultTableName
         where TEntity : IEntity
     {
+
     }
 
-    public interface IDefaultEnBaseRepositoryService<TEntity, TId> : IBaseRepositoryServiceWithId<TEntity, TId>,
+    public interface IDefaultBaseRepositoryService<TEntity, TId> : IBaseRepositoryServiceWithId<TEntity, TId>,
         IQueryDefaultTableName
         where TEntity : IEntity
         where TId : IEquatable<TId>, IComparable<TId>
     {
+
     }
+
     public interface IInsertOrUpdateRepositoryService<TEntity> : IInsertOrUpdateRepositoryService<TEntity, int>
         where TEntity : CreateAndUpdateWithStatusBase<int>, new()
     {
+
     }
 
     public interface IInsertOrUpdateRepositoryService<TEntity, TId>
@@ -32,7 +36,6 @@ namespace WindNight.Extension.Dapper.Abstractions
     {
         bool InsertOrUpdateData(TEntity entity, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
         Task<bool> InsertOrUpdateDataAsync(TEntity entity, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
-
 
         int BatchInsertOrUpdateData(IEnumerable<TEntity> entities, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
         Task<int> BatchInsertOrUpdateDataAsync(IEnumerable<TEntity> entities, long warnMs = -1, Action<Exception, string> execErrorHandler = null);

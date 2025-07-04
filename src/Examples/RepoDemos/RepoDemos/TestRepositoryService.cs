@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using WindNight.Core.SQL;
+using WindNight.Extension.Dapper.Abstractions;
 using WindNight.Extension.Dapper.Mysql;
 using WindNight.Extension.Db.Abstractions;
 
 namespace RepoDemos
 {
-    public class TestStatusE : CreateAndUpdateWithStatusBase<int>
+    public class TestStatusE : CreateAndUpdateWithStatusBase
     {
 
     }
@@ -36,21 +37,23 @@ namespace RepoDemos
 
 
 
-    public class TestTreeE : CommonTreeEntityBase<int>
+    public class TestTreeE : TreeEntityBase
     {
 
     }
 
     public interface ITestTreeERepositoryService :
-        IStatusRepositoryService<TestTreeE>,
-        IBaseRepositoryServiceWithId<TestTreeE>,
-        ITreeRepositoryService<TestTreeE>
+        ITreeWriterBaseRepositoryService<TestTreeE>,
+        ICUSWriterBaseRepositoryService<TestTreeE>
+    // IStatusRepositoryService<TestTreeE>,
+    // IBaseRepositoryServiceWithId<TestTreeE>,
+    // ITreeRepositoryService<TestTreeE>
     {
 
     }
 
 
-    public class TestTreeERepositoryService : DbTreeBase<TestTreeE>, ITestTreeERepositoryService
+    public partial class TestTreeERepositoryService : DbTreeBase<TestTreeE>, ITestTreeERepositoryService
     {
         protected override string BusinessColumns =>
             "F1,F2,F3 ";
@@ -64,6 +67,10 @@ namespace RepoDemos
 
     }
 
+    public partial class TestTreeERepositoryService
+    {
+
+    }
 
 
 }

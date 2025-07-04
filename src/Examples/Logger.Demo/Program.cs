@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
+using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DbLog.Extensions;
 using WindNight.Extension.Logger.DcLog;
 using WindNight.Extension.Logger.DcLog.Extensions;
@@ -463,7 +464,15 @@ namespace Logger.Demo
         {
             try
             {
-                if (logInfo == null) return;
+                if (logInfo == null)
+                {
+                    return;
+                }
+
+                if (logInfo.Level == LogLevels.Report)
+                {
+                    return;
+                }
                 // if (!ConfigItems.IsReportToE) return;
 #if !NET45
                 DbLogHelper.Add(logInfo.Content, logInfo.Level, logInfo.Exceptions, logInfo.SerialNumber,
@@ -481,7 +490,16 @@ namespace Logger.Demo
         {
             try
             {
-                if (logInfo == null) return;
+                if (logInfo == null)
+                {
+                    return;
+                }
+                if (logInfo.Level == LogLevels.Report)
+                {
+                    var jo = JObject.Parse(logInfo.Content);
+                    DcLogHelper.Report(jo, logInfo.SerialNumber);
+                    return;
+                }
                 // if (!ConfigItems.IsReportToE) return;
 #if !NET45
                 DcLogHelper.Add(logInfo.Content, logInfo.Level, logInfo.Exceptions, logInfo.SerialNumber,

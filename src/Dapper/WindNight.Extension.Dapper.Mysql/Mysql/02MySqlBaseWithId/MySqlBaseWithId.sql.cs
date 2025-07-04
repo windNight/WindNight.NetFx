@@ -6,7 +6,6 @@ namespace WindNight.Extension.Dapper.Mysql
 {
     public abstract partial class MySqlBase<TEntity, TId>
     {
-        protected virtual string InsertWithIdSql => $"INSERT INTO {BaseTableName} (Id,{InsertTableColumns})  VALUES ( @Id,{InsertTableColumnValues}); ";
 
 
         protected virtual string QueryDataByIdSql => $"SELECT * FROM {BaseTableName} WHERE Id=@Id; ";
@@ -17,6 +16,7 @@ namespace WindNight.Extension.Dapper.Mysql
         protected virtual string DeleteByIdSql => $@"UPDATE {BaseTableName} SET IsDeleted=1 WHERE Id=@Id; ";
 
         //protected override string QueryAllSqlCondition => $" IsDeleted=0 ";
+        protected virtual string InsertWithIdSql => $"INSERT INTO {BaseTableName} (Id,{InsertTableColumns})  VALUES ( @Id,{InsertTableColumnValues}); ";
 
 
         protected virtual string InsertSql => $@"INSERT INTO {BaseTableName}({InsertTableColumns})

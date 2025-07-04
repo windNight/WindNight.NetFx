@@ -7,9 +7,11 @@ namespace WindNight.Extension.Db.Abstractions
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <inheritdoc />
+    [Obsolete("Please Use IWriterBaseRepositoryService ")]
     public interface IInsertRepositoryService<TEntity> : IInsertRepositoryService<TEntity, int>
         where TEntity : IEntity
     {
+
     }
 
     /// <summary>
@@ -17,6 +19,7 @@ namespace WindNight.Extension.Db.Abstractions
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <typeparam name="TId"></typeparam>
+    [Obsolete("Please Use IWriterBaseRepositoryService ")]
     public interface IInsertRepositoryService<TEntity, TId> where TEntity : IEntity
         where TId : IEquatable<TId>, IComparable<TId>
     {
@@ -25,7 +28,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// </summary>
         /// <param name="entity">need inherit from <see cref="IEntity" /></param>
         /// <returns></returns>
-        TId InsertOne(TEntity entity, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        TId InsertOne(TEntity entity, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
 
         /// <summary>
@@ -33,20 +36,22 @@ namespace WindNight.Extension.Db.Abstractions
         /// </summary>
         /// <param name="entity">need inherit from <see cref="IEntity" /></param>
         /// <returns></returns>
-        Task<TId> InsertOneAsync(TEntity entity, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        Task<TId> InsertOneAsync(TEntity entity, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
         ///     同步 批量插入数据
         /// </summary>
         /// <param name="insertList">list of <see cref="IEntity" /></param>
         /// <returns></returns>
-        bool BatchInsertUseValues(IList<TEntity> insertList, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        bool BatchInsertUseValues(IList<TEntity> insertList, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
         ///     异步 批量插入数据
         /// </summary>
         /// <param name="insertList">list of <see cref="IEntity" /></param>
         /// <returns></returns>
-        Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
     }
+
+
 }

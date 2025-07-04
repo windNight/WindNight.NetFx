@@ -7,6 +7,7 @@ namespace WindNight.Extension.Db.Abstractions
     /// </summary>
     /// <typeparam name="TEntity">  inherit from <see cref="IEntity" /> , <see cref="IStatusEntity" /></typeparam>
     /// <inheritdoc />
+    [Obsolete("Please Use IStatusReaderRepositoryService AND ICUSWriterBaseRepositoryService ")]
     public interface IStatusRepositoryService<TEntity> : IStatusRepositoryService<TEntity, int>
         where TEntity : IEntity, IStatusEntity
     {
@@ -17,6 +18,7 @@ namespace WindNight.Extension.Db.Abstractions
     /// </summary>
     /// <typeparam name="TEntity">  inherit from <see cref="IEntity" /> , <see cref="IStatusEntity" /></typeparam>
     /// <typeparam name="TId"></typeparam>
+    [Obsolete("Please Use IStatusReaderRepositoryService AND ICUSWriterBaseRepositoryService ")]
     public interface IStatusRepositoryService<TEntity, TId>
         where TEntity : IEntity, IStatusEntity
         where TId : IEquatable<TId>, IComparable<TId>
@@ -28,7 +30,7 @@ namespace WindNight.Extension.Db.Abstractions
         ///     <see cref="DataStatusEnums" />
         /// </param>
         /// <returns></returns>
-        IEnumerable<TEntity> QueryListByStatus(DataStatusEnums status, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        IEnumerable<TEntity> QueryListByStatus(int status, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
         ///     异步获取指定状态的数据列表
@@ -37,7 +39,7 @@ namespace WindNight.Extension.Db.Abstractions
         ///     <see cref="DataStatusEnums" />
         /// </param>
         /// <returns></returns>
-        Task<IEnumerable<TEntity>> QueryListByStatusAsync(DataStatusEnums status, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        Task<IEnumerable<TEntity>> QueryListByStatusAsync(int status, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
 
         /// <summary>
@@ -45,13 +47,13 @@ namespace WindNight.Extension.Db.Abstractions
         /// </summary>
         /// <param name="id"> 主键Id </param>
         /// <returns></returns>
-        bool DeleteById(TId id, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        bool DeleteById(TId id, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
         ///     异步 逻辑删除数据
         /// </summary>
         /// <param name="id"> 主键Id </param>
         /// <returns></returns>
-        Task<bool> DeleteByIdAsync(TId id, long warnMs = -1, Action<Exception, string> execErrorHandler = null);
+        Task<bool> DeleteByIdAsync(TId id, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
     }
 }

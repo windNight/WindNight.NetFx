@@ -11,7 +11,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
 
 
-        protected virtual IPagedList<T> DbPagedEList<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual IPagedList<T> DbPagedEList<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
 
@@ -19,7 +19,7 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             return await DbPagedEListAsync<T>(DbConnectString, pageQueryBase, whereSql, paramDict, orderby, tableName, warnMs, execErrorHandler);
@@ -30,7 +30,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
 
 
-        protected virtual IPagedList<T> DbPagedEList<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual IPagedList<T> DbPagedEList<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             if (tableName.IsNullOrEmpty())
@@ -50,7 +50,7 @@ namespace WindNight.Extension.Dapper.Mysql
         }
 
 
-        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict, string orderby = "", string tableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             if (tableName.IsNullOrEmpty())
@@ -77,7 +77,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual IPagedList<T> DbPagedEList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual IPagedList<T> DbPagedEList<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             return DbPagedEList<T>(DbConnectString, pagedInfo, parameters, warnMs, execErrorHandler);
@@ -90,7 +90,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             return await DbPagedEListAsync<T>(DbConnectString, pagedInfo, parameters, warnMs, execErrorHandler);
@@ -101,7 +101,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual IPagedList<T> DbPagedEList<T>(string connStr, IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual IPagedList<T> DbPagedEList<T>(string connStr, IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             return QueryPagedList<T>(connStr, pagedInfo, parameters, warnMs, execErrorHandler);
@@ -114,7 +114,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(string connStr, IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(string connStr, IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             return await QueryPagedListAsync<T>(connStr, pagedInfo, parameters, warnMs, execErrorHandler);
@@ -126,14 +126,14 @@ namespace WindNight.Extension.Dapper.Mysql
         #region TEntity
 
 
-        protected IPagedList<TEntity> DbPagedList(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected IPagedList<TEntity> DbPagedList(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
 
             return DbPagedList(DbConnectString, pageQueryBase, whereSql, paramDict, orderby, tableNameToLower, tableNameAppendPlural, warnMs, execErrorHandler);
 
         }
 
-        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
 
             return await DbPagedListAsync(DbConnectString, pageQueryBase, whereSql, paramDict, orderby,
@@ -141,7 +141,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         }
 
-        protected IPagedList<TEntity> DbPagedList(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected IPagedList<TEntity> DbPagedList(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             var pageInfo = pageQueryBase.GenQueryPageInfo<TEntity>(tableNameToLower, tableNameAppendPlural);
 
@@ -156,7 +156,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         }
 
-        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(string connStr, IQueryPageBase pageQueryBase, string whereSql, IDictionary<string, object> paramDict = null, string orderby = "", bool tableNameToLower = true, bool tableNameAppendPlural = true, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             var pageInfo = pageQueryBase.GenQueryPageInfo<TEntity>(tableNameToLower, tableNameAppendPlural);
 
@@ -179,7 +179,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             return await DbPagedListAsync(DbConnectString, pagedInfo, parameters, warnMs, execErrorHandler);
         }
@@ -189,7 +189,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual IPagedList<TEntity> DbPagedList(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual IPagedList<TEntity> DbPagedList(IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             return DbPagedList(DbConnectString, pagedInfo, parameters, warnMs, execErrorHandler);
         }
@@ -201,7 +201,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(string connStr, IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(string connStr, IQueryPageInfo pagedInfo, IDictionary<string, object> parameters = null, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             return await QueryPagedListAsync<TEntity>(connStr, pagedInfo, parameters, warnMs, execErrorHandler);
         }
@@ -211,7 +211,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="pagedInfo"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual IPagedList<TEntity> DbPagedList(string connStr, IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual IPagedList<TEntity> DbPagedList(string connStr, IQueryPageInfo pagedInfo, IDictionary<string, object> parameters, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             return QueryPagedList<TEntity>(connStr, pagedInfo, parameters, warnMs, execErrorHandler);
         }
@@ -234,7 +234,7 @@ namespace WindNight.Extension.Dapper.Mysql
         #region Obsolete
 
         [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
-        protected virtual IPagedList<T> DbPagedEList<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual IPagedList<T> DbPagedEList<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             var pagedInfo = new QueryPageInfo
@@ -262,7 +262,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName" /></param>
         /// <returns></returns>
         [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
-        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
             var pagedInfo = new QueryPageInfo
@@ -289,7 +289,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="parameters"></param>
         /// <returns></returns>
         [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
-        protected virtual IPagedList<TEntity> DbPagedList(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual IPagedList<TEntity> DbPagedList(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             var pagedInfo = new QueryPageInfo
             {
@@ -315,7 +315,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName" /></param>
         /// <returns></returns>
         [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
-        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             var pagedInfo = new QueryPageInfo
             {

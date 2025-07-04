@@ -13,8 +13,15 @@
         </TargetFrameworks>
         <Description> </Description>
         <PackageReleaseNotes> </PackageReleaseNotes>
+        <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
+
+
+
     <ItemGroup>
         <!--<PackageReference Include="Swashbuckle.AspNetCore.HideApi" Version="1.0.2.3-beta.25031102" />-->
     </ItemGroup>

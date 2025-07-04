@@ -1,22 +1,29 @@
-<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="..\..\build\common.props" />
-	<PropertyGroup>
-		<TargetFrameworks>
-			<!--netstandard2.1;
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\..\build\common.props" />
+    <PropertyGroup>
+        <TargetFrameworks>
+            <!--netstandard2.1;
 			netstandard2.0;
 			netcoreapp3.1;-->
-			<!--net5.0;
+            <!--net5.0;
 			net6.0;-->
-			<!--net7.0;-->
-			net8.0;
-			net9.0;
-		</TargetFrameworks>
-		<Description> </Description>
-		<PackageReleaseNotes> </PackageReleaseNotes>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	</PropertyGroup>
+            <!--net7.0;-->
+            net8.0;
+            net9.0;
+        </TargetFrameworks>
+        <Description> </Description>
+        <PackageReleaseNotes> </PackageReleaseNotes>
 
-	<!--<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+        <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
+    </PropertyGroup>
+
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+
+    <!--<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
 		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
 	</ItemGroup>
 	
@@ -31,39 +38,41 @@
 		</PackageReference>
 	</ItemGroup>-->
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
-			<Version>5.0.17</Version>
-		</PackageReference>
-	</ItemGroup>
+    <!--<ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
+            <Version>5.0.17</Version>
+        </PackageReference>
+    </ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
-			<Version>6.0.36</Version>
-		</PackageReference>
-	</ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
+            <Version>6.0.36</Version>
+        </PackageReference>
+    </ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
-			<Version>7.0.20</Version>
-		</PackageReference>
-	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
-			<Version>8.0.15</Version>
-		</PackageReference>
-	</ItemGroup>
-	
-	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
-			<Version>9.0.4</Version>
-		</PackageReference>
-	</ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
+            <Version>7.0.20</Version>
+        </PackageReference>
+    </ItemGroup>-->
 
 
-	<ItemGroup>
-		<ProjectReference Include="..\extensions\Swashbuckle.AspNetCore.HideApi\Swashbuckle.AspNetCore.HideApi.csproj" />
-		<ProjectReference Include="..\WindNight.Config\WindNight.Config.csproj" />
-		<ProjectReference Include="..\WindNight.Extension\WindNight.Extension.csproj" />
-	</ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
+            <Version>8.0.17</Version>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
+            <Version>9.0.6</Version>
+        </PackageReference>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <ProjectReference Include="..\extensions\Swashbuckle.AspNetCore.HideApi\Swashbuckle.AspNetCore.HideApi.csproj" />
+        <ProjectReference Include="..\WindNight.Config\WindNight.Config.csproj" />
+        <ProjectReference Include="..\WindNight.Extension\WindNight.Extension.csproj" />
+    </ItemGroup>
 </Project>

@@ -18,17 +18,20 @@
         <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/mgravell/fast-member</RepositoryUrl>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <OutputPath>..\..\..\..\Output\$(Configuration)</OutputPath>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    </PropertyGroup>
 
     <PropertyGroup>
         <VersionMajor>1</VersionMajor>
         <VersionMinor>5</VersionMinor>
         <VersionPatch>0</VersionPatch>
         <VersionQuality>1</VersionQuality>
-        <VersionTT>-beta.25042501</VersionTT>
+        <VersionTT>-beta.25070201</VersionTT>
         <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</VersionPrefix>
         <AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
         <FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</FileVersion>
@@ -65,7 +68,7 @@
         <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
         <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="System.Security.Permissions" Version="9.0.4" />
+        <PackageReference Include="System.Security.Permissions" Version="9.0.6" />
     </ItemGroup>
 
 

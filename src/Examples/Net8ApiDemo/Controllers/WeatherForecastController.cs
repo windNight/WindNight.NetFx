@@ -5,8 +5,10 @@ using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
+using Newtonsoft.Json.Linq;
 using WindNight.Core.Attributes.Abstractions;
 using WindNight.Extension;
+using WindNight.Extension.Logger.DcLog.Extensions;
 using WindNight.LogExtension;
 
 namespace Net8ApiDemo.Controllers
@@ -208,7 +210,21 @@ namespace Net8ApiDemo.Controllers
             return new { allHeaderData, signData, rangeData };
         }
 
+        [HttpPost("log")]
+        public bool ReportLog([FromBody] SelfLogReport log)
+        {
+            DcLogHelper.Report(log.LogData, log.TraceId);
 
+            return true;
+        }
+
+        [HttpPost("log/1")]
+        public bool ReportLog([FromBody] JObject log)
+        {
+            DcLogHelper.Report(log, "");
+
+            return true;
+        }
 
 
         [HttpGet]
@@ -225,7 +241,11 @@ namespace Net8ApiDemo.Controllers
     }
 
 
-
+    public class SelfLogReport
+    {
+        public JObject LogData { get; set; }
+        public string TraceId { get; set; } = "";
+    }
 
     /// <summary> </summary>
     public class TIn

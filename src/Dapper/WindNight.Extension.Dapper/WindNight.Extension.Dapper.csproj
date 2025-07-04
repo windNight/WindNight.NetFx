@@ -1,29 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="..\..\..\build\common.props" />
-	<PropertyGroup>
-		<TargetFrameworks>
-			netstandard2.0;
-			netstandard2.1;
-		</TargetFrameworks>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<Description>
-		</Description>
-		<PackageReleaseNotes>
-		</PackageReleaseNotes>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<OutputPath>..\..\..\Output\$(Configuration)</OutputPath>
+    <Import Project="..\..\..\build\common.props" />
+    <PropertyGroup>
+        <TargetFrameworks>
+            netstandard2.0;
+            netstandard2.1;
+        </TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Description>
+        </Description>
+        <PackageReleaseNotes>
+        </PackageReleaseNotes>
+        <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
+        <OutputPath>..\..\..\Output\$(Configuration)</OutputPath>
 
-	</PropertyGroup>
-	<ItemGroup>
+    </PropertyGroup>
 
-	</ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
-		<ProjectReference Include="..\WindNight.Extension.Dapper.Mssql\WindNight.Extension.Dapper.Mssql.csproj" />
-		<ProjectReference Include="..\WindNight.Extension.Dapper.Mysql\WindNight.Extension.Dapper.Mysql.csproj" />
-		<ProjectReference Include="..\WindNight.Extension.Db.Abstractions\WindNight.Extension.Db.Abstractions.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\WindNight.Core\WindNight.Core.csproj" />
+        <ProjectReference Include="..\WindNight.Extension.Dapper.Mssql\WindNight.Extension.Dapper.Mssql.csproj" />
+        <ProjectReference Include="..\WindNight.Extension.Dapper.Mysql\WindNight.Extension.Dapper.Mysql.csproj" />
+        <ProjectReference Include="..\WindNight.Extension.Db.Abstractions\WindNight.Extension.Db.Abstractions.csproj" />
+    </ItemGroup>
 
 </Project>

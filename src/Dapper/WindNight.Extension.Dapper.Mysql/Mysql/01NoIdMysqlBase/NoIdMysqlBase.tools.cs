@@ -39,7 +39,7 @@ namespace WindNight.Extension.Dapper.Mysql
         ///// <returns></returns>
         //protected virtual T SqlTimer<T>(Func<string, object, Action<Exception, string>, T> sqlFunc, string sql,
         //    object param = null,
-        //    string actionName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        //    string actionName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         //{
         //    var ticks = HardInfo.Now.Ticks;
         //    try
@@ -101,7 +101,7 @@ namespace WindNight.Extension.Dapper.Mysql
         ///// <returns></returns>
         //protected virtual async Task<T> SqlTimerAsync<T>(
         //    Func<string, object, Action<Exception, string>, Task<T>> sqlFunc, string sql, object param = null,
-        //    string actionName = "", long warnMs = -1, Action<Exception, string> execErrorHandler = null)
+        //    string actionName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         //{
         //    var ticks = HardInfo.Now.Ticks;
         //    try

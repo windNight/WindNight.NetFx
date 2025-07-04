@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<Import Project="..\..\build\common.props" />
 	<PropertyGroup>
@@ -17,12 +17,18 @@
 		</Description>
 		<PackageReleaseNotes>
 		</PackageReleaseNotes>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
 		<OutputPath>..\..\Output\$(Configuration)</OutputPath>
 		<RootNamespace>WindNight.Extension.Logger.Mysql.DbLog</RootNamespace>
 
 	</PropertyGroup>
-	<ItemGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+
+    <ItemGroup>
 		<ProjectReference Include="..\Dapper\WindNight.Extension.Dapper.Mysql\WindNight.Extension.Dapper.Mysql.csproj" />
 		<ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />
 	</ItemGroup>
@@ -30,7 +36,7 @@
 	<ItemGroup>
 		<!--<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="8.0.0" />-->
-		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="9.0.6" />
 	</ItemGroup>
 
 

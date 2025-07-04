@@ -32,6 +32,8 @@
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
+	<!-- 其他非 Debug 配置的设置 -->
+
 
 	<ItemGroup>
 		<Content Include="bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml">

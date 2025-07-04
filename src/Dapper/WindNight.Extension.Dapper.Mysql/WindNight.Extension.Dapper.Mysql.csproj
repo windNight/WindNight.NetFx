@@ -11,11 +11,17 @@
 		</Description>
 		<PackageReleaseNotes>
 		</PackageReleaseNotes>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
 		<OutputPath>..\..\..\Output\$(Configuration)</OutputPath>
 
 	</PropertyGroup>
-	<ItemGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+
+    <ItemGroup>
 		<PackageReference Include="Dapper" Version="2.1.66" />
 		<PackageReference Include="MySql.Data" Version="9.2.0" />
  

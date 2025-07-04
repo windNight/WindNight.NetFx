@@ -14,7 +14,7 @@
 
         <!--<LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>-->
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <OutputPath>..\..\..\Output\$(Configuration)</OutputPath>
         <!--<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>-->
@@ -28,6 +28,12 @@
     </PropertyGroup>
 
 
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+
+
     <ItemGroup>
         <!--<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />-->
         <!--<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="7.3.1" />-->
@@ -37,8 +43,8 @@
         <!--<PackageReference Include="Swashbuckle.Core" Version="5.6.0" />-->
         <!--<PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />-->
 
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.1.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.1" />
 
     </ItemGroup>
 

@@ -11,6 +11,14 @@
             NETSDK;NETSDK1138;
             NU5048;NU5104;NU1803;
         </NoWarn>
+
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <ServerGarbageCollection>true</ServerGarbageCollection>
+        <GarbageCollectionAdaptationMode>1</GarbageCollectionAdaptationMode>
+
     </PropertyGroup>
 
 
@@ -18,7 +26,7 @@
         <VersionMajor>1</VersionMajor>
         <VersionMinor>0</VersionMinor>
         <VersionPatch>0</VersionPatch>
-        <VersionQuality>50326</VersionQuality>
+        <VersionQuality>50702</VersionQuality>
         <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</VersionPrefix>
         <Version>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</Version>
         <AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
@@ -29,6 +37,7 @@
         <ProjectReference Include="..\..\Dapper\WindNight.Extension.Dapper.Mysql\WindNight.Extension.Dapper.Mysql.csproj" />
         <ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />
         <ProjectReference Include="..\..\WindNight.Config.Extensions\WindNight.Config.Extensions.csproj" />
+        <ProjectReference Include="..\..\WindNight.Extension.LogStore\WindNight.Extension.DcLog.csproj" />
         <ProjectReference Include="..\..\WindNight.Extension\WindNight.Extension.csproj" />
     </ItemGroup>
 
@@ -49,5 +58,61 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+
+
+    <!--<Target Name="GenerateBuildInfo" BeforeTargets="CoreCompile">
+        --><!-- 获取当前机器名 --><!--
+        <PropertyGroup>
+            <BuildMachineName>$([System.Environment]::MachineName)</BuildMachineName>
+        </PropertyGroup>
+
+        --><!-- 生成包含主机名的C#代码文件 --><!--
+        <WriteLinesToFile
+            File="$(IntermediateOutputPath)BuildInfo.cs"
+            Lines="internal static class BuildInfo { public const string HostName = &quot;$(BuildMachineName)&quot;%3B }"
+            Overwrite="true" />
+
+        --><!-- 将生成的文件包含到编译中 --><!--
+        <ItemGroup>
+            <Compile Include="$(IntermediateOutputPath)BuildInfo.cs" />
+        </ItemGroup>
+
+        <Message Text="编译时主机名：$(BuildMachineName)" Importance="high" />
+
+
+    </Target>-->
+
+    <Target Name="GenerateBuildInfo" BeforeTargets="CoreCompile">
+        <!-- Define properties with fallback and conditional evaluation -->
+        <PropertyGroup>
+            <BuildMachineName Condition="'$(BuildMachineName)' == ''">$([System.Environment]::MachineName)</BuildMachineName>
+            <BuildInfoFile>$(IntermediateOutputPath)BuildInfo.cs</BuildInfoFile>
+            <ForceBuildInfoRegeneration Condition="'$(ForceBuildInfoRegeneration)' == ''">true</ForceBuildInfoRegeneration>
+        </PropertyGroup>
+
+        <!-- Generate the BuildInfo.cs file conditionally -->
+        <WriteLinesToFile
+            File="$(BuildInfoFile)"
+            Lines="internal static class BuildInfo { public const string HostName = &quot;$(BuildMachineName)&quot;%3B }"
+            Overwrite="true"
+            Condition="!Exists('$(BuildInfoFile)') Or '$(ForceBuildInfoRegeneration)' == 'true'" />
+
+        <!-- Include the generated file in compilation, only if it exists -->
+        <ItemGroup>
+            <Compile Include="$(BuildInfoFile)" Condition="Exists('$(BuildInfoFile)')">
+                <Link>BuildInfo.cs</Link>
+            </Compile>
+        </ItemGroup>
+
+        <!-- Log the machine name for debugging -->
+        <Message Text="编译时主机名：$(BuildMachineName)" Importance="high" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
+
+        <!-- Optional: Handle errors if file creation fails -->
+        <Error Condition="!Exists('$(BuildInfoFile)') And '$(ForceBuildInfoRegeneration)' != 'true'" Text="Failed to generate BuildInfo.cs. Check write permissions or path: $(BuildInfoFile)" />
+    </Target>
+
+
+
+
 
 </Project>

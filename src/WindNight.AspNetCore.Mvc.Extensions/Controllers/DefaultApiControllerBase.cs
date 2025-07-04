@@ -41,9 +41,9 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         protected virtual long GetRequestTsValue() => Request.GetTimestampValue();
 
 
-        protected virtual string QueryHeaderValue(string key)
+        protected virtual string QueryHeaderValue(string key, string defaultValue = "")
         {
-            var value = Request.QueryHeaderValue(key);
+            var value = Request.QueryHeaderValue(key, defaultValue);
             return value;
         }
 
