@@ -9,6 +9,69 @@ namespace WindNight.Core.Extension
     public static class IPExtension
     {
 
+
+        public static bool IsIpString(this string ip)
+        {
+            return IPAddress.TryParse(ip, out var ipAddress);
+        }
+
+        public static IPAddress TryParseIp(this string ip)
+        {
+            if (IPAddress.TryParse(ip, out var ipAddress))
+            {
+                return ipAddress;
+            }
+
+            return IPAddress.None;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="ipStr"></param>
+        /// <returns></returns>
+        public static bool IsDefaultIp(this string ipStr)
+        {
+            return ipStr.IsNullOrEmpty(true) || ipStr == "127.0.0.1" || ipStr == "0.0.0.0" || ipStr == "::1";
+        }
+
+        public static bool IsNullOrEmptyIp(this string ipStr)
+        {
+            return IsDefaultIp(ipStr);
+        }
+
+        public static bool IsInternalIp(this string ip)
+        {
+            if (ip.IsNullOrEmpty(true))
+            {
+                return false;
+            }
+            if (ip.IsDefaultIp() || ip.IsPrivateOrLoopback())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsDefaultIp(this IPAddress ipAddr)
+        {
+            var ipStr = ipAddr.ToString();
+            return IsDefaultIp(ipStr);
+        }
+
+        public static bool IsNullOrEmptyIp(this IPAddress ipAddr)
+        {
+            var ipStr = ipAddr.ToString();
+            return IsNullOrEmptyIp(ipStr);
+        }
+
+        public static bool IsInternalIp(this IPAddress ipAddr)
+        {
+            var ipStr = ipAddr.ToString();
+            return IsInternalIp(ipStr);
+
+        }
+
         public static bool IsPrivateOrLoopback(this string ip)
         {
             if (IPAddress.TryParse(ip, out var ipAddress))

@@ -18,7 +18,10 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         public static string GetAuthorizationValue(this HttpRequest httpRequest) => httpRequest.QueryHeaderValue(ConstantKeys.AuthorizationKey);
 
         public static string GetAppCodeValue(this HttpRequest httpRequest) => httpRequest.QueryHeaderValue(ConstantKeys.AppCodeKey);
+
         public static string GetAppNameValue(this HttpRequest httpRequest) => httpRequest.QueryHeaderValue(ConstantKeys.AppNameKey);
+
+        public static string GetAppEnvNameValue(this HttpRequest httpRequest) => httpRequest.QueryHeaderValue(ConstantKeys.AppEnvNameKey);
 
         public static long GetTimestampValue(this HttpRequest httpRequest)
         {
@@ -29,7 +32,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
                 return 0L;
             }
 
-            return tsString.ToLong();
+            return tsString.ToLong(0L);
 
         }
 

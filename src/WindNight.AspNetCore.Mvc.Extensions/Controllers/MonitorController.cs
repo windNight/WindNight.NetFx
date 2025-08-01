@@ -74,11 +74,15 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             var clientIp = GetHttpClientIp();
 
-            if (!clientIp.IsPrivateOrLoopback() && GetAppTokenValue().IsNullOrEmpty())
+            //if (!clientIp.IsInternalIp() && GetAppTokenValue().IsNullOrEmpty())
+            //{
+            //    return false;
+            //}
+
+            if (!IsAuthType1())
             {
                 return false;
             }
-
             var svrInfo = DefaultSvrHostInfo.GenDefault;
             var serIp = svrInfo.ServerIp;
             if (serIp.IsNullOrEmpty() || IPHelper.IsDefaultIp(serIp))

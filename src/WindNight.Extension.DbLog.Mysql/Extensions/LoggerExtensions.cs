@@ -1,9 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
-using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DbLog.Abstractions;
-using WindNight.Extension.Logger.Mysql.DbLog;
 using IpHelper = WindNight.Extension.Logger.DbLog.@internal.HttpContextExtension;
 
 namespace WindNight.Extension.Logger.DbLog.Extensions
@@ -142,15 +140,17 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         public static void LogRegisterInfo(this ILogger logger, string buildType, int appId, string appCode,
             string appName)
         {
-            var serverIp = IpHelper.GetLocalIPs();
-            var sysInfo = new
-            {
-                SysAppId = appId,
-                SysAppCode = appCode,
-                SysAppName = appName,
-                ServerIP = serverIp,
-                BuildType = buildType
-            };
+            var serverIp = HardInfo.NodeIpList;//IpHelper.GetLocalIPs();
+            //var sysInfo = new
+            //{
+            //    SysAppId = appId,
+            //    SysAppCode = appCode,
+            //    SysAppName = appName,
+            //    ServerIP = serverIp,
+            //    BuildType = buildType,
+            //};
+
+            var sysInfo = GetSysInfo(buildType);
             var msg = $"register info is {sysInfo.ToJsonStr()}";
             Add(logger, msg, LogLevels.SysRegister, serverIp: serverIp.FirstOrDefault());
         }
@@ -166,19 +166,26 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         public static void LogOfflineInfo(this ILogger logger, string buildType, int appId, string appCode,
             string appName, Exception exception = null)
         {
-            var serverIp = IpHelper.GetLocalIPs();
-            var sysInfo = new
-            {
-                SysAppId = appId,
-                SysAppCode = appCode,
-                SysAppName = appName,
-                ServerIP = serverIp,
-                BuildType = buildType
-            };
+            var serverIp = HardInfo.NodeIpList;// IpHelper.GetLocalIPs();
+            var sysInfo = GetSysInfo(buildType);
+            //new
+            //{
+            //    SysAppId = appId,
+            //    SysAppCode = appCode,
+            //    SysAppName = appName,
+            //    ServerIP = serverIp,
+            //    BuildType = buildType,
+            //};
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
             Add(logger, msg, LogLevels.SysOffline, exception, serverIp: serverIp.FirstOrDefault());
         }
+        private static object GetSysInfo(string buildType)
+        {
+            var sysInfo = HardInfo.TryGetAppRegInfo(buildType);
 
+            return sysInfo;
+
+        }
 
         private static void Add(ILogger logger, string msg, LogLevels logLevel, Exception exception = null,
             long millisecond = 0, string url = "", string serverIp = "", string clientIp = "", string serialNumber = "")
@@ -197,7 +204,6 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     Timestamps = millisecond,
                     SerialNumber = serialNumber,
                     LogTs = HardInfo.NowUnixTime,
-
                 };
 
                 logger.Log(logLevel.SwitchLogLevel(), new EventId(), state, exception, MessageFormatter);
@@ -290,7 +296,5 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         {
             return state.ToString();
         }
-
-
     }
 }

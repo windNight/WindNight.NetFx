@@ -1,11 +1,11 @@
 #if CORE31LATER
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using System.Text.Json.Serialization;
 #endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Filters.Extensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Controllers;
@@ -15,6 +15,8 @@ using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.HideApi.Abstractions;
 using WindNight.Linq.Extensions.Expressions;
 using WindNight.AspNetCore.Mvc.Extensions;
+using System.Text.Json;
+using System.Text;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions
 {
@@ -236,9 +238,24 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 #if CORE31LATER
             return mvcBuilder.AddJsonOptions(options =>
             {
+                //  options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+
                 options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                //options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                // 忽略JSON注释
+                options.JsonSerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+                // 序列化时忽略null值
+                options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                // 忽略尾随逗号
+                options.JsonSerializerOptions.AllowTrailingCommas = true;
+                // 反序列化带引号的数字
+                options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString;
+                // 处理循环引用
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+
                 jsonOptions?.Invoke(options);
+
             }).AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();

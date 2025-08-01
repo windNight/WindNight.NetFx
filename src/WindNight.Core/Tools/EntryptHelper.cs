@@ -1,4 +1,5 @@
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Web;
 using WindNight.Core.@internal;
@@ -16,7 +17,10 @@ namespace System.Security.Cryptography.Extensions
         /// <returns>Base64后的字符串</returns>
         public static string Base64Encrypt(this string str, Encoding encoding = null)
         {
-            if (str.IsNullOrEmpty()) return str;
+            if (str.IsNullOrEmpty())
+            {
+                return str;
+            }
             try
             {
                 return str.ToBytes().ToBase64String();
@@ -36,7 +40,10 @@ namespace System.Security.Cryptography.Extensions
         /// <returns>Base64解密后的字符串</returns>
         public static string Base64Decrypt(this string str, Encoding encoding = null)
         {
-            if (str.IsNullOrEmpty()) return str;
+            if (str.IsNullOrEmpty())
+            {
+                return str;
+            }
             try
             {
                 return BytesExtension.FromBase64String(str).ToGetString(encoding);
@@ -97,7 +104,10 @@ namespace System.Security.Cryptography.Extensions
         /// <returns></returns>
         public static string Md5Encrypt(this string text, Encoding encoding = null)
         {
-            if (encoding == null) encoding = Encoding.UTF8;
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
             var bs = encoding.GetBytes(text);
             return bs.Md5Encrypt();
         }
@@ -108,14 +118,15 @@ namespace System.Security.Cryptography.Extensions
         /// <returns></returns>
         public static string Md5Encrypt(this byte[] bs)
         {
-            string result;
+            var result = "";
 
             using (var md5 = new MD5CryptoServiceProvider())
             {
-                bs = md5.ComputeHash(bs);
+
+                var bs2 = md5.ComputeHash(bs);
                 var s = new StringBuilder();
 
-                foreach (var b in bs)
+                foreach (var b in bs2)
                 {
                     s.Append(b.ToString("X2"));
                 }
@@ -126,6 +137,83 @@ namespace System.Security.Cryptography.Extensions
             return result.ToLower();
         }
 
+        public static string Md5Encrypt(this Stream stream)
+        {
+
+            var result = "";
+
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            using (var md5 = new MD5CryptoServiceProvider())
+            {
+
+                // Save the current stream position and reset it afterward
+                long originalPosition = stream.Position;
+                stream.Position = 0;
+                try
+                {
+
+
+                    var bs = md5.ComputeHash(stream);
+                    var s = new StringBuilder();
+
+                    foreach (var b in bs)
+                    {
+                        s.Append(b.ToString("X2"));
+                    }
+
+                    result = s.ToString();
+                }
+                catch (Exception ex)
+                {
+                    // Restore the original stream position
+                    stream.Position = originalPosition;
+                }
+            }
+
+            return result.ToLower();
+        }
+        private const long ThresholdSizeBytes = 10_485_760; // 10 MB threshold
+        public static string Md5EncryptForBigFile(this Stream stream)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            using (var md5 = MD5.Create())
+            {
+                long originalPosition = stream.Position;
+                stream.Position = 0;
+
+                try
+                {
+
+
+                    byte[] buffer = new byte[8192]; // 8KB buffer
+                    int bytesRead;
+                    while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        md5.TransformBlock(buffer, 0, bytesRead, buffer, 0);
+                    }
+                    md5.TransformFinalBlock(buffer, 0, 0);
+                    byte[] hash = md5.Hash;
+                    var sb = new StringBuilder();
+
+                    foreach (var b in hash)
+                    {
+                        sb.Append(b.ToString("x2"));
+                    }
+
+                    return sb.ToString();
+                }
+                finally
+                {
+                    stream.Position = originalPosition;
+                }
+            }
+        }
 
         /// <summary>
         ///     AES加密

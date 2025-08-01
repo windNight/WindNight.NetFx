@@ -60,6 +60,7 @@ namespace Net8ApiDemo
                     configureServicesDelegate: (context, services) =>
                     {
                         ConfigItems.Init(configuration: context.Configuration, sleepTimeInMs: 10000000);
+                        HardInfo.FillBuildExtDict(BuildInfo.BuildInfoDict);
                     })
 
                 ;

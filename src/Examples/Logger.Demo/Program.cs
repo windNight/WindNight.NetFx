@@ -95,14 +95,15 @@ namespace Logger.Demo
                 {
                     logging.AddFilter((provider, category, logLevel) =>
                     {
-                        if (provider.Contains("ConsoleLoggerProvider")
-                            && category.Contains("Controller")
-                            && logLevel >= LogLevel.Information)
+                        if (provider.Contains("ConsoleLoggerProvider") && category.Contains("Controller") && logLevel >= LogLevel.Information)
+                        {
                             return true;
-                        if (provider.Contains("ConsoleLoggerProvider")
-                            && category.Contains("Microsoft")
-                            && logLevel >= LogLevel.Information)
+                        }
+
+                        if (provider.Contains("ConsoleLoggerProvider") && category.Contains("Microsoft") && logLevel >= LogLevel.Information)
+                        {
                             return true;
+                        }
                         return false;
                     });
                     var configuration = context.Configuration;

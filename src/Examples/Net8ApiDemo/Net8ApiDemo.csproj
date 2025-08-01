@@ -26,7 +26,7 @@
         <VersionMajor>1</VersionMajor>
         <VersionMinor>0</VersionMinor>
         <VersionPatch>0</VersionPatch>
-        <VersionQuality>50702</VersionQuality>
+        <VersionQuality>50731</VersionQuality>
         <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</VersionPrefix>
         <Version>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</Version>
         <AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
@@ -61,18 +61,24 @@
 
 
     <!--<Target Name="GenerateBuildInfo" BeforeTargets="CoreCompile">
-        --><!-- 获取当前机器名 --><!--
+        -->
+    <!-- 获取当前机器名 -->
+    <!--
         <PropertyGroup>
             <BuildMachineName>$([System.Environment]::MachineName)</BuildMachineName>
         </PropertyGroup>
 
-        --><!-- 生成包含主机名的C#代码文件 --><!--
+        -->
+    <!-- 生成包含主机名的C#代码文件 -->
+    <!--
         <WriteLinesToFile
             File="$(IntermediateOutputPath)BuildInfo.cs"
             Lines="internal static class BuildInfo { public const string HostName = &quot;$(BuildMachineName)&quot;%3B }"
             Overwrite="true" />
 
-        --><!-- 将生成的文件包含到编译中 --><!--
+        -->
+    <!-- 将生成的文件包含到编译中 -->
+    <!--
         <ItemGroup>
             <Compile Include="$(IntermediateOutputPath)BuildInfo.cs" />
         </ItemGroup>
@@ -82,20 +88,96 @@
 
     </Target>-->
 
-    <Target Name="GenerateBuildInfo" BeforeTargets="CoreCompile">
-        <!-- Define properties with fallback and conditional evaluation -->
+    <!--<Target Name="GenerateBuildInfo" BeforeTargets="CoreCompile">
+        -->
+    <!-- Define properties with fallback and conditional evaluation -->
+    <!--
         <PropertyGroup>
             <BuildMachineName Condition="'$(BuildMachineName)' == ''">$([System.Environment]::MachineName)</BuildMachineName>
             <BuildInfoFile>$(IntermediateOutputPath)BuildInfo.cs</BuildInfoFile>
             <ForceBuildInfoRegeneration Condition="'$(ForceBuildInfoRegeneration)' == ''">true</ForceBuildInfoRegeneration>
         </PropertyGroup>
 
-        <!-- Generate the BuildInfo.cs file conditionally -->
+        -->
+    <!-- Generate the BuildInfo.cs file conditionally -->
+    <!--
         <WriteLinesToFile
             File="$(BuildInfoFile)"
             Lines="internal static class BuildInfo { public const string HostName = &quot;$(BuildMachineName)&quot;%3B }"
             Overwrite="true"
             Condition="!Exists('$(BuildInfoFile)') Or '$(ForceBuildInfoRegeneration)' == 'true'" />
+
+        -->
+    <!-- Include the generated file in compilation, only if it exists -->
+    <!--
+        <ItemGroup>
+            <Compile Include="$(BuildInfoFile)" Condition="Exists('$(BuildInfoFile)')">
+                <Link>BuildInfo.cs</Link>
+            </Compile>
+        </ItemGroup>
+
+        -->
+    <!-- Log the machine name for debugging -->
+    <!--
+        <Message Text="编译时主机名：$(BuildMachineName)" Importance="high" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
+
+        -->
+    <!-- Optional: Handle errors if file creation fails -->
+    <!--
+        <Error Condition="!Exists('$(BuildInfoFile)') And '$(ForceBuildInfoRegeneration)' != 'true'" Text="Failed to generate BuildInfo.cs. Check write permissions or path: $(BuildInfoFile)" />
+    </Target>-->
+
+    <Target Name="GenerateBuildInfo" BeforeTargets="CoreCompile">
+
+        <PropertyGroup>
+            <ForceBuildInfoRegeneration Condition="'$(ForceBuildInfoRegeneration)' == ''">true</ForceBuildInfoRegeneration>
+            <BuildInfoFile>$(IntermediateOutputPath)BuildInfo.cs</BuildInfoFile>
+
+            <BuildMachineName Condition="'$(BuildMachineName)' == ''">$([System.Environment]::MachineName)</BuildMachineName>
+            <BuildUserName Condition="'$(BuildUserName)' == ''">$([System.Environment]::UserName)</BuildUserName>
+            <BuildOSVersion Condition="'$(BuildOSVersion)' == ''">$([System.Environment]::OSVersion)</BuildOSVersion>
+            <BuildProcessorCount Condition="'$(BuildProcessorCount)' == ''">$([System.Environment]::ProcessorCount)</BuildProcessorCount>
+            <BuildIs64BitOS Condition="'$(BuildIs64BitOS)' == ''">$([System.Environment]::Is64BitOperatingSystem)</BuildIs64BitOS>
+            <BuildRuntimeVersion Condition="'$(BuildRuntimeVersion)' == ''">$([System.Environment]::Version)</BuildRuntimeVersion>
+            <BuildSystemDirectory Condition="'$(BuildSystemDirectory)' == ''">$([System.Environment]::SystemDirectory)</BuildSystemDirectory>
+            <!--<BuildPathEnv Condition="'$(BuildPathEnv)' == ''">$([System.Environment]::GetEnvironmentVariable('PATH'))</BuildPathEnv>-->
+        </PropertyGroup>
+
+        <!--%3B see from https://learn.microsoft.com/zh-cn/visualstudio/msbuild/msbuild-special-characters?view=vs-2022#special-characters -->
+        <PropertyGroup>
+            <BuildInfoContent>
+                internal static class BuildInfo {
+                    public const string MachineName = "$(BuildMachineName)" %3B
+                    public const string UserName = "$(BuildUserName)" %3B
+                    public const string OSVersion = "$(BuildOSVersion)" %3B
+                    public const int ProcessorCount = $(BuildProcessorCount) %3B
+                    public const bool Is64BitOS = $(BuildIs64BitOS.ToLower()) %3B
+                    public const string RuntimeVersion = "$(BuildRuntimeVersion)" %3B
+                    public const string SystemDirectory = @"$(BuildSystemDirectory)" %3B
+
+                    public static IReadOnlyDictionary&lt;string, object&gt; BuildInfoDict = new Dictionary&lt;string, object&gt;
+                        {
+                            { "MachineName", MachineName },
+                            { "UserName", UserName},
+                            { "OSVersion", OSVersion },
+                            { "ProcessorCount", ProcessorCount },
+                            { "Is64BitOS", Is64BitOS },
+                            { "RuntimeVersion",RuntimeVersion },
+                            { "SystemDirectory", SystemDirectory },
+                        }%3B
+
+                }
+            </BuildInfoContent>
+        </PropertyGroup>
+
+        <WriteLinesToFile
+            File="$(BuildInfoFile)"
+            Lines="$(BuildInfoContent)"
+            Overwrite="true"
+            Condition="!Exists('$(BuildInfoFile)') Or '$(ForceBuildInfoRegeneration)' == 'true'" />
+
+
+
 
         <!-- Include the generated file in compilation, only if it exists -->
         <ItemGroup>
@@ -105,12 +187,13 @@
         </ItemGroup>
 
         <!-- Log the machine name for debugging -->
-        <Message Text="编译时主机名：$(BuildMachineName)" Importance="high" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
+        <Message Text="Build Info - Machine: $(BuildMachineName), User: $(BuildUserName), OS: $(BuildOSVersion), Processors: $(BuildProcessorCount), 64BitOS: $(BuildIs64BitOS), Runtime: $(BuildRuntimeVersion)" Importance="high"  Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
+
+        <!--<Message Text="编译时主机名：$(BuildMachineName)" Importance="high" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />-->
 
         <!-- Optional: Handle errors if file creation fails -->
         <Error Condition="!Exists('$(BuildInfoFile)') And '$(ForceBuildInfoRegeneration)' != 'true'" Text="Failed to generate BuildInfo.cs. Check write permissions or path: $(BuildInfoFile)" />
     </Target>
-
 
 
 

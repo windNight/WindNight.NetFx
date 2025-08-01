@@ -25,7 +25,9 @@ namespace WindNight.LogExtension
                     lock (lockHelper)
                     {
                         if (_log == null)
+                        {
                             Init();
+                        }
                     }
                 }
 
@@ -42,7 +44,9 @@ namespace WindNight.LogExtension
                     CheckLog4netConfigPath();
                     var fileInfo = new FileInfo(Log4NetConfigPath);
                     if (!fileInfo.Exists)
+                    {
                         CreateConfigFile(fileInfo);
+                    }
                     var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
                     XmlConfigurator.ConfigureAndWatch(logRepository, fileInfo);
                     _log = LogManager.GetLogger(Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly(), "DefalutLogger");
@@ -96,8 +100,14 @@ namespace WindNight.LogExtension
                 {
                     DoConsoleLog(LogLevels.Warning, $" LogHelper Log4netConfigPath ({Log4NetConfigPath}) not exist use default config  ");
                     if (!Directory.Exists(Log4NetConfigDir))
+                    {
                         Directory.CreateDirectory(Log4NetConfigDir);
-                    if (File.Exists(Log4NetConfigPath)) return;
+                    }
+
+                    if (File.Exists(Log4NetConfigPath))
+                    {
+                        return;
+                    }
                     using (var streamWriter = new StreamWriter(Log4NetConfigPath, false))
                     {
                         try
@@ -234,7 +244,10 @@ namespace WindNight.LogExtension
 
         static void Log4NetPublish(LogInfo? logInfo)
         {
-            if (logInfo == null) return;
+            if (logInfo == null)
+            {
+                return;
+            }
             Log4(logInfo.Level, logInfo.Content, logInfo.Exceptions);
         }
 

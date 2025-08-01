@@ -13,9 +13,13 @@ namespace WindNight.Extension.Logger.DcLog.@internal
         /// <returns></returns>
         public static bool IsDefaultIp(string ipStr)
         {
-            return ipStr == "127.0.0.1" || ipStr == "0.0.0.0" || ipStr == "::1";
+            return ipStr.IsNullOrEmpty(true) || ipStr == "127.0.0.1" || ipStr == "0.0.0.0" || ipStr == "::1";
         }
 
+        public static bool IsNullOrEmptyIp(this string ipStr)
+        {
+            return IsDefaultIp(ipStr);
+        }
 
         /// <summary>
         /// </summary>

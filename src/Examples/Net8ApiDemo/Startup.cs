@@ -19,9 +19,9 @@ namespace Net8ApiDemo
 
         protected override string ToAppendDescription => @$"Net8ApiDemo Test for swagger
 <h3 style='color: #27ae60;'>自定义</h3>
-asdasdasdas  项目构建于: {BuildInfo.HostName}
-BuildMachineName:{Environment.GetEnvironmentVariable("BuildMachineName")}
-RunMachineName: {Environment.MachineName}
+asdasdasdas   <br/>项目构建于: {BuildInfo.MachineName} <br/>
+BuildMachineName:{Environment.GetEnvironmentVariable("UserName")} <br/>
+RunMachineName: {Environment.MachineName} <br/>
 ";
 
         //        protected override string BuildType
@@ -345,7 +345,7 @@ RunMachineName: {Environment.MachineName}
 
         public string QueryBuildMachineName()
         {
-            return BuildInfo.HostName;
+            return $"{BuildInfo.MachineName}:{BuildInfo.UserName}";
         }
 
         public string QueryBuildType()

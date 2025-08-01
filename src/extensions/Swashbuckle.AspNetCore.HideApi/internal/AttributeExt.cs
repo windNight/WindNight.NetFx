@@ -10,7 +10,7 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
     {
         #region ApiDescription
 
-        public static TAttr? GetAttribute<TAttr>(this ApiDescription apiDesc)
+        public static TAttr GetAttribute<TAttr>(this ApiDescription apiDesc)
             where TAttr : Attribute, IAttribute
         {
             try
@@ -60,17 +60,17 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
     {
         #region ApiDescription
 
-        public static HiddenApiAttribute? GetHiddenApiAttr(this ApiDescription apiDesc)
+        public static HiddenApiAttribute GetHiddenApiAttr(this ApiDescription apiDesc)
         {
             return apiDesc.GetAttribute<HiddenApiAttribute>();
         }
 
-        public static DebugApiAttribute? GetDebugApiAttr(this ApiDescription apiDesc)
+        public static DebugApiAttribute GetDebugApiAttr(this ApiDescription apiDesc)
         {
             return apiDesc.GetAttribute<DebugApiAttribute>();
         }
 
-        public static SysApiAttribute? GetSysApiAttr(this ApiDescription apiDesc)
+        public static SysApiAttribute GetSysApiAttr(this ApiDescription apiDesc)
         {
             return apiDesc.GetAttribute<SysApiAttribute>();
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WindNight.Core.Abstractions;
+using WindNight.Core.SysLogCenter.Extensions;
 
 namespace WindNight.AspNetCore.Hosting
 {
@@ -41,7 +42,7 @@ namespace WindNight.AspNetCore.Hosting
             IHost hostBuilder = ProgramBase.CreateHostBuilder(createHostBuilder, buildType, args);
             actBeforeRun();
             hostBuilder.Run();
-            LogHelper.LogOfflineInfo(buildType);
+            DefaultLogHelperBase.LogOfflineInfo(buildType);
             Thread.Sleep(1000);
         }
 
@@ -70,14 +71,15 @@ namespace WindNight.AspNetCore.Hosting
             await actBeforeRun();
 
             await hostBuilder.RunAsync();
-            LogHelper.LogOfflineInfo(buildType);
+            DefaultLogHelperBase.LogOfflineInfo(buildType);
             Thread.Sleep(1000);
         }
 
+        private static ILogService _logService => Ioc.GetService<ILogService>();
 
-        static void UnobservedTaskHandler(object sender, UnobservedTaskExceptionEventArgs e) => Ioc.GetService<ILogService>()?.Fatal("UnobservedTaskException", (Exception)e.Exception);
+        static void UnobservedTaskHandler(object sender, UnobservedTaskExceptionEventArgs e) => _logService?.Fatal("UnobservedTaskException", (Exception)e.Exception);
 
-        static void UnhandledExceptionEventHandler(object sender, UnhandledExceptionEventArgs e) => Ioc.GetService<ILogService>()?.Fatal("UnhandledException", e.ExceptionObject as Exception);
+        static void UnhandledExceptionEventHandler(object sender, UnhandledExceptionEventArgs e) => _logService?.Fatal("UnhandledException", e.ExceptionObject as Exception);
 
 
 

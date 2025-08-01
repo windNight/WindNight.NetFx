@@ -1,7 +1,7 @@
-using System.Security.Cryptography;
+using System.Data.Common;
+using System.Runtime.Serialization;
 using System.Security.Cryptography.Extensions;
 using System.Text;
-using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
@@ -19,23 +19,25 @@ namespace Net8ApiDemo.Controllers
     {
         private static readonly string[] Summaries = new[]
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching",
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+
+
+        private readonly Dictionary<string, string> SignDict = new()
+        {
+            { "Authorization", "格式 Bearer xx" },
+            { "AppId", "AppId" },
+            { "AppCode", "AppCode" },
+            { "AppToken", "Sign" },
+            { "Ts", "当前时间戳" },
+        };
 
         public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
             _logger = logger;
         }
-
-
-
-        private readonly Dictionary<string, string> SignDict = new()
-        {
-            {"Authorization","格式 Bearer xx"},  { "AppId", "AppId" }, { "AppCode", "AppCode" }, { "AppToken", "Sign" }, { "Ts", "当前时间戳" },
-        };
-
 
 
         private string GetHeaderData(HttpRequest httpRequest, string headerName)
@@ -52,7 +54,7 @@ namespace Net8ApiDemo.Controllers
             return string.Empty;
         }
 
-        Dictionary<string, string> GetAllHeaderData(HttpRequest httpRequest)
+        private Dictionary<string, string> GetAllHeaderData(HttpRequest httpRequest)
         {
             var dict = new Dictionary<string, string>();
             foreach (var item in httpRequest.Headers)
@@ -64,25 +66,14 @@ namespace Net8ApiDemo.Controllers
         }
 
         [HttpGet("dingtalk")]
-        [NonAuth, DebugApi]
+        [NonAuth]
+        [DebugApi]
         public async Task<object> TestDingTalkNoticeAsync([FromQuery] TIn req = null)
         {
             var content = GetNoticeContent("测试内容测试内容测试内容");
 
             var title = "调度任务通知";
-            var obj = new
-            {
-                msgtype = "markdown",
-                markdown = new
-                {
-                    title,
-                    text = content,
-                },
-                at = new
-                {
-
-                },
-            };
+            var obj = new { msgtype = "markdown", markdown = new { title, text = content }, at = new { } };
             var token = "";
             var signKey = "";
             var ts = HardInfo.NowUnixTime;
@@ -95,10 +86,9 @@ namespace Net8ApiDemo.Controllers
 
 
             return rlt;
-
         }
 
-        async Task<string> HttpPostAsync(string url, object bodyObj)
+        private async Task<string> HttpPostAsync(string url, object bodyObj)
         {
             // var requestUri = $"https://oapi.dingtalk.com/robot/send?access_token={token}";
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -114,18 +104,17 @@ namespace Net8ApiDemo.Controllers
         }
 
 
-
-        string GetNoticeContent(string message)
+        private string GetNoticeContent(string message)
         {
             var env = Ioc.GetService<IHostEnvironment>();
             var environmentName = env?.EnvironmentName;
             var applicationName = env?.ApplicationName;
-            var content = $"###  Test 任务通知\n" +
+            var content = "###  Test 任务通知\n" +
                           " #### 任务基础属性\n\n" +
                           "> #### JobCode:(任务代号)\n\n" +
-                          $"> ##### TestJobCode\n\n" +
+                          "> ##### TestJobCode\n\n" +
                           "> #### JobId:(本次运行的jobId)\n\n" +
-                          $"> ##### TestJobId\n\n" +
+                          "> ##### TestJobId\n\n" +
                           "#### 执行情况:\n\n" +
                           $"> ##### {message}\n\n" +
                           // "> ![screenshot](https://gw.alipayobjects.com/zos/skylark-tools/public/files/84111bbeba74743d2771ed4f062d1f25.png)\n" +
@@ -134,31 +123,35 @@ namespace Net8ApiDemo.Controllers
         }
 
         [HttpGet("debugapi")]
-        [NonAuth, DebugApi]
+        [NonAuth]
+        [DebugApi]
         public object DebugApi([FromQuery] TIn req = null)
         {
-            LogHelper.Info($"DebugApi");
+            LogHelper.Info("DebugApi");
             return Get(req);
         }
 
         [HttpPost("debugapi/post")]
-        [NonAuth, DebugApi]
+        [NonAuth]
+        [DebugApi]
         public object DebugApiPost([FromBody] TIn req = null)
         {
-            LogHelper.Info($"DebugApiPost");
+            LogHelper.Info("DebugApiPost");
             return Get(req);
         }
 
 
         [HttpGet("sysapi/v0")]
-        [NonAuth, SysApi]
+        [NonAuth]
+        [SysApi]
         public object SysApi([FromQuery] TIn req = null)
         {
             return Get(req);
         }
 
         [HttpGet("sysapi/v10")]
-        [NonAuth, SysApi(10)]
+        [NonAuth]
+        [SysApi(10)]
         public object SysApiV10([FromQuery] TIn req = null)
         {
             return Get(req);
@@ -187,6 +180,17 @@ namespace Net8ApiDemo.Controllers
             return new { allHeaderData, signData, rangeData };
         }
 
+        [HttpGet("loghelper")]
+        public object TestLogHelper()
+        {
+            var testMsg =
+                "sql执行报错   MySql.Data.MySqlClient.MySqlException (0x80004005): Unknown column 'CommunityId' in 'field list'\n   at MySql.Data.MySqlClient.MySqlStream.ReadPacketAsync(Boolean execAsync)\n   at MySql.Data.MySqlClient.NativeDriver.GetResultAsync(Int32 affectedRow, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.GetResultAsync(Int32 statementId, Int32 affectedRows, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.NextResultAsync(Int32 statementId, Boolean force, Boolean execAsync)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQueryAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()\n   at Dapper.SqlMapper.ExecuteCommand(IDbConnection cnn, CommandDefinition& command, Action`2 paramReader) in /_/Dapper/SqlMapper.cs:line 2994\n   at Dapper.SqlMapper.ExecuteImpl(IDbConnection cnn, CommandDefinition& command) in /_/Dapper/SqlMapper.cs:line 685\n   at Dapper.SqlMapper.Execute(IDbConnection cnn, String sql, Object param, IDbTransaction transaction, Nullable`1 commandTimeout, Nullable`1 commandType) in /_/Dapper/SqlMapper.cs:line 556\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.Execute(String connStr, String sql, Object param, Action`2 execErrorHandler)\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.SqlTimer[T](Func`5 sqlFunc, String connectString, String sql, Object param, String actionName, Int64 warnMs, Action`2 execErrorHandler, Boolean isDebug)\n\nMySql.Data.MySqlClient.MySqlException (0x80004005): Unknown column 'CommunityId' in 'field list'\n   at MySql.Data.MySqlClient.MySqlStream.ReadPacketAsync(Boolean execAsync)\n   at MySql.Data.MySqlClient.NativeDriver.GetResultAsync(Int32 affectedRow, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.GetResultAsync(Int32 statementId, Int32 affectedRows, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.NextResultAsync(Int32 statementId, Boolean force, Boolean execAsync)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQueryAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()\n   at Dapper.SqlMapper.ExecuteCommand(IDbConnection cnn, CommandDefinition& command, Action`2 paramReader) in /_/Dapper/SqlMapper.cs:line 2994\n   at Dapper.SqlMapper.ExecuteImpl(IDbConnection cnn, CommandDefinition& command) in /_/Dapper/SqlMapper.cs:line 685\n   at Dapper.SqlMapper.Execute(IDbConnection cnn, String sql, Object param, IDbTransaction transaction, Nullable`1 commandTimeout, Nullable`1 commandType) in /_/Dapper/SqlMapper.cs:line 556\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.Execute(String connStr, String sql, Object param, Action`2 execErrorHandler)\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.SqlTimer[T](Func`5 sqlFunc, String connectString, String sql, Object param, String actionName, Int64 warnMs, Action`2 execErrorHandler, Boolean isDebug)";
+
+            var ex = new MySqlException(" (0x80004005): Unknown column 'CommunityId' in 'field list'");
+            DcLogHelper.Error(testMsg, ex);
+
+            return true;
+        }
 
         [HttpGet("t")]
         public object Get111()
@@ -221,7 +225,7 @@ namespace Net8ApiDemo.Controllers
         [HttpPost("log/1")]
         public bool ReportLog([FromBody] JObject log)
         {
-            DcLogHelper.Report(log, "");
+            DcLogHelper.Report(log);
 
             return true;
         }
@@ -234,9 +238,82 @@ namespace Net8ApiDemo.Controllers
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
                 TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)],
             })
-            .ToArray();
+                .ToArray();
+        }
+
+        public sealed class MySqlException : DbException
+        {
+            internal MySqlException()
+            {
+            }
+
+            internal MySqlException(string msg)
+                : base(msg)
+            {
+            }
+
+            internal MySqlException(string msg, Exception ex)
+                : base(msg, ex)
+            {
+            }
+
+            internal MySqlException(string msg, bool isFatal, Exception inner)
+                : base(msg, inner)
+            {
+                IsFatal = isFatal;
+            }
+
+            internal MySqlException(string msg, int errno, Exception inner)
+                : this(msg, inner)
+            {
+                Number = errno;
+                Data.Add("Server Error Code", errno);
+            }
+
+            internal MySqlException(string msg, int errno, bool isFatal)
+                : this(msg)
+            {
+                Number = errno;
+                IsFatal = isFatal;
+                Data.Add("Server Error Code", errno);
+            }
+
+            internal MySqlException(string msg, int errno)
+                : this(msg, errno, null)
+            {
+            }
+
+            internal MySqlException(uint code, string sqlState, string msg)
+                : base(msg)
+            {
+                Code = code;
+                SqlState = sqlState;
+            }
+
+            private MySqlException(SerializationInfo info, StreamingContext context)
+                : base(info, context)
+            {
+            }
+
+            /// <summary>Gets a number that identifies the type of error.</summary>
+            public int Number { get; }
+
+            /// <summary>
+            ///     True if this exception was fatal and cause the closing of the connection, false otherwise.
+            /// </summary>
+            internal bool IsFatal { get; }
+
+            internal bool IsQueryAborted => Number == 1317 || Number == 1028;
+
+            /// <summary>Gets the SQL state.</summary>
+            public new string SqlState { get; private set; }
+
+            /// <summary>
+            ///     Gets an integer that representes the MySQL error code.
+            /// </summary>
+            public uint Code { get; private set; }
         }
     }
 
@@ -261,10 +338,5 @@ namespace Net8ApiDemo.Controllers
 
         /// <summary> kL1 </summary>
         public string kL1 { get; set; }
-
-
-
     }
-
-
 }

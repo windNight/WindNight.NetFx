@@ -160,13 +160,15 @@ namespace WindNight.Extension.Logger.DcLog
 
         string FixContent(string message)
         {
-            var configMaxLen = _options.ContentMaxLength;
-            var msg = configMaxLen > 0 && message.Length > configMaxLen ?
-                message.Substring(0, configMaxLen)
-                :
-                message;
 
-            return msg;
+            return message;
+            //var configMaxLen = _options.ContentMaxLength;
+            //var msg = configMaxLen > 0 && message.Length > configMaxLen ?
+            //    message.Substring(0, configMaxLen)
+            //    :
+            //    message;
+
+            //return msg;
 
         }
 

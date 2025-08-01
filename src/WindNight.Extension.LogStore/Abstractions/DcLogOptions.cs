@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using WindNight.Extension.Logger.DcLog.Extensions;
 
 namespace WindNight.Extension.Logger.DcLog.Abstractions
@@ -18,7 +18,7 @@ namespace WindNight.Extension.Logger.DcLog.Abstractions
         public string LogAppName { get; set; }
 
         /// <summary> DcLog版本号 </summary>
-        public string DcLogVersion { get; set; }= DcLogHelper.CurrentVersion;
+        public string DcLogVersion { get; set; } = DcLogHelper.CurrentVersion;
 
         ///// <summary> 环境 </summary>
         //public EnvEnum Env { get; set; } = EnvEnum.Online;
@@ -37,7 +37,7 @@ namespace WindNight.Extension.Logger.DcLog.Abstractions
         public bool IsOpenDebug { get; set; } = false;
 
         /// <summary> 上报时进行Gzip压缩 </summary>
-        public bool OpenGZip { get; set; } = false;
+        public bool OpenGZip { get; set; } = true;
 
         public int ContentMaxLength { get; set; } = 300 * 1000;
 

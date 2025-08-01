@@ -73,7 +73,10 @@ namespace WindNight.LogExtension
                 var logLevel = logInfo.Level;
                 var exception = logInfo.Exceptions;
                 Console.ForegroundColor = ConsoleColor.Green;
-                if (logLevel > LogLevels.Information) Console.ForegroundColor = ConsoleColor.Red;
+                if (logLevel > LogLevels.Information)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
                 if (exception != null)
                 {
                     logInfo.Content = $"{logInfo.Content} {Environment.NewLine} {exception.GetMessage()}";

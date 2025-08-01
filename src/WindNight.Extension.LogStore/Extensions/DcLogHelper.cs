@@ -8,7 +8,7 @@ using IpHelper = WindNight.Extension.Logger.DcLog.@internal.HttpContextExtension
 namespace WindNight.Extension.Logger.DcLog.Extensions
 {
     /// <summary> </summary>
-    public static partial class DcLogHelper
+    public static class DcLogHelper
     {
         private static Version _version => new AssemblyName(typeof(DcLogHelper).Assembly.FullName).Version;
         private static DateTime _compileTime => File.GetLastWriteTime(typeof(DcLogHelper).Assembly.Location);
@@ -21,6 +21,8 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
 
         private static DcLogOptions DcLogOptions => DcLoggerExtensions.DcLogOptions;
 
+        public static string LogPluginVersion =>
+            $"{nameof(DcLogHelper)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}";
 
         /// <summary>
         /// </summary>
@@ -62,10 +64,12 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Debug(string msg, string serialNumber = "", string url = "", string serverIp = "", long millisecond = 0,
+        public static void Debug(string msg, string serialNumber = "", string url = "", string serverIp = "",
+            long millisecond = 0,
             string clientIp = "")
         {
-            Add(msg, LogLevels.Debug, serialNumber: serialNumber, url: url, serverIp: serverIp, clientIp: clientIp, millisecond: millisecond);
+            Add(msg, LogLevels.Debug, serialNumber: serialNumber, url: url, serverIp: serverIp, clientIp: clientIp,
+                millisecond: millisecond);
         }
 
         /// <summary>
@@ -75,7 +79,8 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Info(string msg, string serialNumber = "", string url = "", string serverIp = "", long millisecond = 0,
+        public static void Info(string msg, string serialNumber = "", string url = "", string serverIp = "",
+            long millisecond = 0,
             string clientIp = "")
         {
             Add(msg, LogLevels.Information, serialNumber: serialNumber, url: url, serverIp: serverIp,
@@ -91,7 +96,8 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Warn(string msg, Exception exception = null, string serialNumber = "", string url = "", long millisecond = 0,
+        public static void Warn(string msg, Exception exception = null, string serialNumber = "", string url = "",
+            long millisecond = 0,
             string serverIp = "", string clientIp = "")
         {
             Add(msg, LogLevels.Warning, exception, serialNumber, url: url, serverIp: serverIp,
@@ -106,7 +112,8 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Error(string msg, Exception exception, string serialNumber = "", string url = "", long millisecond = 0,
+        public static void Error(string msg, Exception exception, string serialNumber = "", string url = "",
+            long millisecond = 0,
             string serverIp = "",
             string clientIp = "")
         {
@@ -122,7 +129,8 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Fatal(string msg, Exception exception, string serialNumber = "", string url = "", long millisecond = 0,
+        public static void Fatal(string msg, Exception exception, string serialNumber = "", string url = "",
+            long millisecond = 0,
             string serverIp = "", string clientIp = "")
         {
             Add(msg, LogLevels.Critical, exception, serialNumber, url: url, serverIp: serverIp,
@@ -137,15 +145,16 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// <param name="appName"></param>
         public static void LogRegisterInfo(string buildType, int appId, string appCode, string appName)
         {
-            var serverIp = IpHelper.GetLocalIPs().ToList();
-            var sysInfo = new
-            {
-                SysAppId = appId,
-                SysAppCode = appCode,
-                SysAppName = appName,
-                ServerIP = serverIp,
-                BuildType = buildType
-            };
+            var serverIp = HardInfo.NodeIpList;// IpHelper.GetLocalIPs().ToList();
+            //var sysInfo = new
+            //{
+            //    SysAppId = appId,
+            //    SysAppCode = appCode,
+            //    SysAppName = appName,
+            //    ServerIP = serverIp,
+            //    BuildType = buildType,
+            //};
+            var sysInfo = GetSysInfo(buildType);
             var msg = $"register info is {sysInfo.ToJsonStr()}";
             Add(msg, LogLevels.SysRegister, serverIp: serverIp.FirstOrDefault());
         }
@@ -160,25 +169,33 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         public static void LogOfflineInfo(string buildType, int appId, string appCode, string appName,
             Exception exception = null)
         {
-            var serverIp = IpHelper.GetLocalIPs().ToList();
-            var sysInfo = new
-            {
-                SysAppId = appId,
-                SysAppCode = appCode,
-                SysAppName = appName,
-                ServerIP = serverIp,
-                BuildType = buildType
-            };
+            var serverIp = HardInfo.NodeIpList;// IpHelper.GetLocalIPs().ToList();
+            //var sysInfo = new
+            //{
+            //    SysAppId = appId,
+            //    SysAppCode = appCode,
+            //    SysAppName = appName,
+            //    ServerIP = serverIp,
+            //    BuildType = buildType,
+            //};
+            var sysInfo = GetSysInfo(buildType);
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
             Add(msg, LogLevels.SysOffline, exception, serverIp: serverIp.FirstOrDefault());
         }
+        private static object GetSysInfo(string buildType)
+        {
+            var sysInfo = HardInfo.TryGetAppRegInfo(buildType);
 
+            return sysInfo;
+
+        }
         public static void Report(JObject jo, string traceId = "")
         {
             if (DcLoggerProcessor == null || DcLogOptions == null)
             {
                 return;
             }
+
             var logLevel = LogLevels.Information;
 
             if (!string.IsNullOrEmpty(jo["serialNumber"]?.ToString()))
@@ -206,21 +223,17 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                 LogTs = logTimestamps,
                 NodeCode = HardInfo.NodeCode ?? "",
                 LogPluginVersion = $"{nameof(DcLogHelper)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
-
             };
 
             if (string.IsNullOrEmpty(jo["logAppCode"]?.ToString()))
             {
                 jo["logAppCode"] = DcLogOptions.LogAppCode;
             }
+
             if (string.IsNullOrEmpty(jo["logAppName"]?.ToString()))
             {
                 jo["logAppName"] = DcLogOptions.LogAppName;
             }
-
-
-
-
 
 
             logMsg.LogAppCode = jo["logAppCode"].ToString();
@@ -247,12 +260,10 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             logMsg.Content = FixContent(message);
 
             DcLoggerProcessor.EnqueueMessage(logMsg);
-
-
         }
 
 
-        static LogLevels Convert2LogLevel(string level)
+        private static LogLevels Convert2LogLevel(string level)
         {
             try
             {
@@ -284,13 +295,11 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                 }
 
                 return LogLevels.Information;
-
             }
             catch (Exception ex)
             {
                 return LogLevels.Information;
             }
-
         }
 
         /// <summary>
@@ -306,7 +315,6 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         public static void Add(string msg, LogLevels logLevel, Exception exception = null, string serialNumber = "",
             long millisecond = 0, string url = "", string serverIp = "", string clientIp = "")
         {
-
             try
             {
                 if (DcLoggerProcessor == null || DcLogOptions == null)
@@ -329,6 +337,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                 {
                     serialNumber = CurrentItem.GetSerialNumber;
                 }
+
                 var messageEntity = new SysLogs
                 {
                     //Content = msg,
@@ -344,8 +353,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                     RequestUrl = url,
                     SerialNumber = serialNumber,
                     NodeCode = HardInfo.NodeCode ?? "",
-                    LogPluginVersion = $"{nameof(DcLogHelper)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
-
+                    LogPluginVersion = LogPluginVersion,
                 };
                 if (exception != null)
                 {
@@ -353,7 +361,6 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                     {
                         Message = exception.Message,
                         StackTraceString = exception.StackTrace,
-
                     };
                     messageEntity.Exceptions = messageEntity.ExceptionObj.ToJsonStr();
                 }
@@ -362,7 +369,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                     messageEntity.Exceptions = "{}";
                 }
 
-                var logMsg = FixLogMessage(msg);
+                //  var logMsg = FixLogMessage(msg);
                 messageEntity.Content = FixContent(msg);
 
 
@@ -376,22 +383,20 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             catch (Exception ex)
             {
                 Console.WriteLine("日志异常:{0}", ex.ToJsonStr());
-
             }
         }
 
-        static string FixContent(string logMsg)
+        private static string FixContent(string logMsg)
         {
-            var configMaxLen = DcLogOptions.ContentMaxLength;
-            var msg = configMaxLen > 0 && logMsg.Length > configMaxLen ?
-                   logMsg.Substring(0, configMaxLen)
-                   :
-                   logMsg;
-            return msg;
+            return logMsg;
+            //var configMaxLen = DcLogOptions.ContentMaxLength;
+            //var msg = configMaxLen > 0 && logMsg.Length > configMaxLen
+            //    ? logMsg.Substring(0, configMaxLen)
+            //    : logMsg;
+            //return msg;
         }
 
-        static string FixLogMessage(string msg) => msg;
+        private static string FixLogMessage(string msg) => msg;
         //  string.Concat(ConfigItems.SystemAppName, $" [请求序列号：{CurrentItem.GetSerialNumber}]-0: ", msg);
-
     }
 }

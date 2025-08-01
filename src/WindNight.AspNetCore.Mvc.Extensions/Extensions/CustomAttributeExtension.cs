@@ -21,7 +21,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         /// <typeparam name="TAttr"></typeparam>
         /// <param name="actionDescriptor"></param>
         /// <returns></returns>
-        public static TAttr? GetAttributeOnAction<TAttr>(this ActionDescriptor actionDescriptor)
+        public static TAttr GetAttributeOnAction<TAttr>(this ActionDescriptor actionDescriptor)
             where TAttr : Attribute, IAttribute
         {
 
@@ -140,7 +140,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         /// <typeparam name="TAttr"></typeparam>
         /// <param name="apiDesc"></param>
         /// <returns></returns>
-        public static TAttr? GetAttributeOnControllerAndAction<TAttr>(this ActionDescriptor actionDescriptor)
+        public static TAttr GetAttributeOnControllerAndAction<TAttr>(this ActionDescriptor actionDescriptor)
             where TAttr : Attribute, IAttribute
         {
             return actionDescriptor.GetControllerAndActionAttributes<TAttr>()?.LastOrDefault() ?? null;
@@ -227,7 +227,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         /// <typeparam name="TAttr"></typeparam>
         /// <param name="apiDesc"></param>
         /// <returns></returns>
-        public static TAttr? GetAttributeOnControllerAndAction<TAttr>(this ApiDescription apiDesc)
+        public static TAttr GetAttributeOnControllerAndAction<TAttr>(this ApiDescription apiDesc)
             where TAttr : Attribute, IAttribute
         {
             return apiDesc.GetAttributesOnControllerAndAction<TAttr>()?.LastOrDefault() ?? null;

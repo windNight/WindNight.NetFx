@@ -11,6 +11,7 @@ using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Extension;
 using WindNight.Core.@internal;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace System
 {
@@ -208,12 +209,23 @@ namespace System
             { "Pacific/Tongatapu", "Tonga Standard Time" },
         };
 
-        public static string? NodeCode { get; private set; }
-
+        public static string NodeCode { get; private set; }
+        /// <summary>
+        /// 默认的IP
+        /// </summary>
         public static string NodeIpAddress { get; private set; } = "";
+        public static IEnumerable<string> NodeIpList => GetLocalIps();
         public static string EnvironmentName => Ioc.GetService<IHostEnvironment>()?.EnvironmentName ?? "";
         public static string ApplicationName => Ioc.GetService<IHostEnvironment>()?.ApplicationName ?? "";
+        public static string ContentRootPath => Ioc.GetService<IHostEnvironment>()?.ContentRootPath ?? "";
+        public static IAppBaseInfo AppBaseInfo => new DefaultAppBaseInfo();
 
+        public static string AppId => AppBaseInfo.AppId;
+        public static string AppCode => AppBaseInfo.AppCode;
+        public static string AppName => AppBaseInfo.AppName;
+        public static string BuildType => SvrHostInfo.BuildType;
+
+        public static IAppRegisterInfo AppRegisteredInfo { get; private set; } = new AppRegisterInfo();
         public static bool IsUnix => OperatorSys == OperatorSysEnum.Unix;
         public static bool IsWindows => OperatorSys == OperatorSysEnum.Windows;
         public static bool IsMac => OperatorSys == OperatorSysEnum.MacOSX;
@@ -263,7 +275,7 @@ namespace System
             }
             if (ip.IsNullOrEmpty())
             {
-                ip = GetLocalIps().Join();
+                ip = NodeIpList.Join();
             }
 
             if (NodeCode.IsNullOrEmpty())
@@ -272,6 +284,7 @@ namespace System
             }
             // if (string.IsNullOrEmpty(NodeIpAddress) || NodeIpAddress == DefaultIp)
             NodeIpAddress = ip;
+            AppRegisteredInfo = AppRegisterInfo.Gen();
         }
 
         public static string GetLocalIp(bool onlyIpV4 = true)
@@ -287,7 +300,7 @@ namespace System
         /// <summary>
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<string> GetLocalIps()
+        private static IEnumerable<string> GetLocalIpsV00()
         {
             var validAddressFamilies = new List<AddressFamily>
             {
@@ -297,7 +310,10 @@ namespace System
 
             try
             {
-                if (!NodeIpAddress.IsNullOrEmpty()) return NodeIpAddress.Split(',');
+                if (!NodeIpAddress.IsNullOrEmpty())
+                {
+                    return NodeIpAddress.Split(',');
+                }
 
                 var ipList = NetworkInterface.GetAllNetworkInterfaces()?
                     .Where(m => m.OperationalStatus == OperationalStatus.Up)?
@@ -348,6 +364,131 @@ namespace System
                 return new List<string> { DefaultIp };
             }
         }
+        static bool IsDefaultIp(string ipStr)
+        {
+            return ipStr.IsNullOrEmpty(true) || ipStr == "127.0.0.1" || ipStr == "0.0.0.0" || ipStr == "::1";
+        }
+
+        static bool IsNullOrEmptyIp(string ipStr)
+        {
+            return IsDefaultIp(ipStr);
+        }
+
+
+        public static IEnumerable<string> GetLocalIps()
+        {
+            // 优先检查是否有预配置的IP地址
+            if (!NodeIpAddress.IsNullOrEmpty(true))
+            {
+                var ips = NodeIpAddress.Split(',').Where(ip => !IsNullOrEmptyIp(ip));
+                if (!ips.IsNullOrEmpty(true))
+                {
+                    return ips;
+                }
+
+            }
+            var validAddressFamilies = new[] { AddressFamily.InterNetwork, AddressFamily.InterNetworkV6 };
+            var ipAddresses = new List<string>();
+            try
+            {
+
+                foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+                {
+                    // 跳过非活动接口和特定类型的接口
+                    if (ni.OperationalStatus != OperationalStatus.Up ||
+                        ni.NetworkInterfaceType == NetworkInterfaceType.Loopback ||
+                        ni.NetworkInterfaceType == NetworkInterfaceType.Tunnel)
+                    {
+                        continue;
+                    }
+
+                    // 获取接口的IP属性
+                    var ipProperties = ni.GetIPProperties();
+                    if (ipProperties == null)
+                    {
+                        continue;
+                    }
+
+                    // 处理单播地址
+                    foreach (var unicastAddr in ipProperties.UnicastAddresses)
+                    {
+                        if (unicastAddr?.Address == null)
+                        {
+                            continue;
+                        }
+
+                        // 检查地址族和回环状态
+                        if (!validAddressFamilies.Contains(unicastAddr.Address.AddressFamily))
+                        {
+                            continue;
+                        }
+
+                        if (IPAddress.IsLoopback(unicastAddr.Address))
+                        {
+                            continue;
+                        }
+
+                        // Windows特有检查
+                        if (!IsUnix && !IsDnsEligible(unicastAddr))
+                        {
+                            continue;
+                        }
+
+                        ipAddresses.Add(unicastAddr.Address.ToString());
+                    }
+                }
+                // 如果没有找到IP，返回默认IP 
+                var ipList = ipAddresses.Any() ? ipAddresses.Distinct().ToList() : new List<string> { DefaultIp };
+                NodeIpAddress = ipList.Join();
+                return ipList;
+            }
+            catch (PlatformNotSupportedException ex)
+            {
+                var msg = $"Platform OperatorSysEnum is {OperatorSys} handler error  not supported: {ex.Message}";
+                msg.Log2Console(ex);
+                return FallbackGetLocalIps();
+            }
+            catch (Exception ex)
+            {
+                var msg = $"Error getting local IPs: {ex.Message}";
+                msg.Log2Console(ex);
+                return new List<string> { DefaultIp };
+            }
+        }
+
+        private static IEnumerable<string> FallbackGetLocalIps()
+        {
+            try
+            {
+                // 回退方法：使用 Dns.GetHostAddresses
+                var hostAddresses = Dns.GetHostAddresses(Dns.GetHostName());
+                return hostAddresses
+                    .Where(ip => ip.AddressFamily == AddressFamily.InterNetwork || ip.AddressFamily == AddressFamily.InterNetworkV6)
+                    .Select(ip => ip.ToString())
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                var msg = $"  Dns.GetHostAddresses Handler Error: {ex.Message}";
+                msg.Log2Console(ex);
+                return new List<string> { DefaultIp };
+            }
+        }
+
+        private static bool IsDnsEligible(UnicastIPAddressInformation addrInfo)
+        {
+            try
+            {
+                // 在Windows上检查地址是否适合DNS
+                return addrInfo.IsDnsEligible;
+            }
+            catch
+            {
+                // 如果无法检查，默认返回true
+                return true;
+            }
+        }
+
 
         /// <summary>
         ///     Converts an Olson time zone ID to a Windows time zone ID.
@@ -394,23 +535,82 @@ namespace System
 
         public static object Obj()
         {
-            return new
-            {
-                NodeCode,
-                NodeIpAddress,
-                EnvironmentName,
-                ApplicationName,
-                SvrHostInfo,
-                OperatorSys = OperatorSys.ToString(),
-            };
+            var info = AppRegisteredInfo;
+
+            //  info.SvrHostInfo;
+
+            return info;
         }
+        //{
+        //    return new
+        //    {
+        //        NodeCode,
+        //        NodeIpAddress,
+        //        EnvironmentName,
+        //        ApplicationName,
+        //        SvrHostInfo,
+        //        OperatorSys = OperatorSys.ToString(),
+        //    };
+        //}
 
         public new static string ToString() => Obj().ToJsonStr();
 
         public static string ToString(Formatting formatting) => Obj().ToJsonStr(formatting);
 
+        public static bool FillBuildExtDict(IReadOnlyDictionary<string, object> dict)
+        {
+
+            return AppRegisteredInfo.FillBuildExtDict(dict);
+
+        }
+
+        public static IAppRegisterInfo TryGetAppRegInfo(string buildType)
+        {
+            var sysInfo = AppRegisteredInfo;
+            //if (sysInfo.IsNullOrEmpty())
+            //{
+            //    var sysInfo1 = new
+            //    {
+            //        SysAppId = AppBaseInfo.AppId,
+            //        SysAppCode = AppBaseInfo.AppCode,
+            //        SysAppName = AppBaseInfo.AppName,
+            //        RegistTs = NowString,
+            //        HardInfo = Obj(),
+            //        BuildType = buildType,
+            //    };
+
+            //    return sysInfo1;
+            //}
+            sysInfo.ResetBuildType(buildType);
+
+            return sysInfo;
+        }
 
     }
 
+    public class AppHardInfo : IAppHardInfo
+    {
+        public string NodeCode { get; private set; }
+        public IEnumerable<string> NodeIpList { get; private set; }
+        public string NodeIpAddress { get; private set; }
+        public string EnvironmentName { get; private set; }
+        public string ApplicationName { get; private set; }
+        public string ContentRootPath { get; private set; }
+        public OperatorSysEnum OperatorSys { get; private set; }
 
+        public static IAppHardInfo Gen()
+        {
+            return new AppHardInfo
+            {
+                OperatorSys = HardInfo.OperatorSys,
+                NodeCode = HardInfo.NodeCode,
+                EnvironmentName = HardInfo.EnvironmentName,
+                ApplicationName = HardInfo.ApplicationName,
+                ContentRootPath = HardInfo.ContentRootPath,
+                NodeIpList = HardInfo.NodeIpList,
+                NodeIpAddress = HardInfo.NodeIpAddress,
+            };
+
+        }
+    }
 }

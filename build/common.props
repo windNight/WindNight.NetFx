@@ -31,9 +31,13 @@
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
-	<!-- 其他非 Debug 配置的设置 -->
 
+	<ItemGroup>
+
+		<None Include="..\..\README-NuGet.md" Link="README.md" Pack="true" PackagePath="README.md" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Content Include="bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml">
@@ -44,6 +48,7 @@
 	<ItemGroup>
 		<Content Remove="bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml" />
 	</ItemGroup>
+	<!-- 其他非 Debug 配置的设置 -->
 
 	<!--
 https://learn.microsoft.com/en-us/dotnet/standard/frameworks

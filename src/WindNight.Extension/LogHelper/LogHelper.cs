@@ -10,12 +10,10 @@ namespace WindNight.LogExtension
 {
     public static partial class LogHelper
     {
+        public delegate void PublishLogInfoEvent(LogInfo logInfo);
 
         private static Version Version => new AssemblyName(typeof(LogHelper).Assembly.FullName).Version;
         private static DateTime CompileTime => File.GetLastWriteTime(typeof(LogHelper).Assembly.Location);
-
-
-        public delegate void PublishLogInfoEvent(LogInfo logInfo);
 
         public static event PublishLogInfoEvent PublishLogInfoHandleEvent = null!;
 
@@ -152,7 +150,9 @@ namespace WindNight.LogExtension
             {
                 traceId = HardInfo.NodeCode;
             }
-            Add(msg, LogLevels.SysRegister, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage, traceId: traceId);
+
+            Add(msg, LogLevels.SysRegister, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage,
+                traceId: traceId);
         }
 
         /// <summary>
@@ -160,7 +160,8 @@ namespace WindNight.LogExtension
         /// <param name="buildType"></param>
         /// <param name="exception"></param>
         /// <param name="appendMessage"></param>
-        public static void LogOfflineInfo(string buildType, Exception? exception = null, bool appendMessage = false, string traceId = "")
+        public static void LogOfflineInfo(string buildType, Exception? exception = null, bool appendMessage = false,
+            string traceId = "")
         {
             var sysInfo = GetSysInfo(buildType);
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
@@ -168,20 +169,29 @@ namespace WindNight.LogExtension
             {
                 traceId = HardInfo.NodeCode;
             }
-            Add(msg, LogLevels.SysOffline, exception, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage, traceId: traceId);
+
+            Add(msg, LogLevels.SysOffline, exception, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage,
+                traceId: traceId);
         }
 
-        static object GetSysInfo(string buildType)
+        private static object GetSysInfo(string buildType)
         {
-            var sysInfo = new
-            {
-                SysAppId = ConfigItems.SystemAppId,
-                SysAppCode = ConfigItems.SystemAppCode,
-                SysAppName = ConfigItems.SystemAppName,
-                RegistTs = HardInfo.NowString,
-                HardInfo = HardInfo.ToString(),
-                BuildType = buildType,
-            };
+            var sysInfo = HardInfo.TryGetAppRegInfo(buildType);
+            //if (sysInfo.IsNullOrEmpty())
+            //{
+            //    var sysInfo1 = new
+            //    {
+            //        SysAppId = ConfigItems.SystemAppId,
+            //        SysAppCode = ConfigItems.SystemAppCode,
+            //        SysAppName = ConfigItems.SystemAppName,
+            //        RegistTs = HardInfo.NowString,
+            //        HardInfo = HardInfo.ToString(),
+            //        BuildType = buildType,
+            //    };
+
+            //    return sysInfo1;
+            //}
+
 
             return sysInfo;
 
@@ -199,7 +209,8 @@ namespace WindNight.LogExtension
         {
             var sysInfo = GetSysInfo(buildType);
             var msg = $"register info is {sysInfo.ToJsonStr()}";
-            Add(msg, LogLevels.SysRegister, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage, traceId: traceId);
+            Add(msg, LogLevels.SysRegister, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage,
+                traceId: traceId);
         }
 
         /// <summary>
@@ -215,8 +226,8 @@ namespace WindNight.LogExtension
         {
             var sysInfo = GetSysInfo(buildType);
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
-            Add(msg, LogLevels.SysOffline, exception, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage, traceId: traceId);
-
+            Add(msg, LogLevels.SysOffline, exception, serverIp: IpHelper.LocalServerIp, appendMessage: appendMessage,
+                traceId: traceId);
         }
 
         public static void Report(JObject jo, string traceId = "")
@@ -225,13 +236,9 @@ namespace WindNight.LogExtension
             if (traceId.IsNullOrEmpty())
             {
                 logInfo.SerialNumber = traceId;
-
             }
 
             OnPublishLogInfoHandleEvent(logInfo);
-
-
         }
-
     }
 }

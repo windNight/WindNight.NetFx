@@ -53,15 +53,6 @@ namespace WindNight.Extension
         }
 
 
-        /// <summary>
-        /// </summary>
-        /// <param name="ipStr"></param>
-        /// <returns></returns>
-        public static bool IsDefaultIp(this string ipStr)
-        {
-            return ipStr == "127.0.0.1" || ipStr == "0.0.0.0" || ipStr == "::1";
-        }
-
         /// <summary> 获取本地IP地址信息  </summary>
         public static string GetServerIp(bool onlyIpV4 = true)
         {
@@ -135,7 +126,7 @@ namespace WindNight.Extension
                 serverIp = context.Connection?.LocalIpAddress?.ToString() ?? string.Empty;
 #endif
 
-                if (IsDefaultIp(serverIp))
+                if (serverIp.IsDefaultIp())
                 {
                     // serverIp = LocalServerIps.Join(",");
                     serverIp = LocalServerIp;

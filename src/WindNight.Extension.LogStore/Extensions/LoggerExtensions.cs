@@ -3,7 +3,6 @@ using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Core.ExceptionExt;
 using WindNight.Extension.Logger.DcLog.Abstractions;
-using IpHelper = WindNight.Extension.Logger.DcLog.@internal.HttpContextExtension;
 
 namespace WindNight.Extension.Logger.DcLog.Extensions
 {
@@ -141,15 +140,16 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         public static void LogRegisterInfo(this ILogger logger, string buildType, int appId, string appCode,
             string appName)
         {
-            var serverIp = IpHelper.GetLocalIPs();
-            var sysInfo = new
-            {
-                SysAppId = appId,
-                SysAppCode = appCode,
-                SysAppName = appName,
-                ServerIP = serverIp,
-                BuildType = buildType
-            };
+            var serverIp = HardInfo.NodeIpList;// IpHelper.GetLocalIPs();
+            //var sysInfo = new
+            //{
+            //    SysAppId = appId,
+            //    SysAppCode = appCode,
+            //    SysAppName = appName,
+            //    ServerIP = serverIp,
+            //    BuildType = buildType,
+            //};
+            var sysInfo = GetSysInfo(buildType);
             var msg = $"register info is {sysInfo.ToJsonStr()}";
             Add(logger, msg, LogLevels.SysRegister, serverIp: serverIp.FirstOrDefault());
         }
@@ -165,24 +165,34 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         public static void LogOfflineInfo(this ILogger logger, string buildType, int appId, string appCode,
             string appName, Exception exception = null)
         {
-            var serverIp = IpHelper.GetLocalIPs();
-            var sysInfo = new
-            {
-                SysAppId = appId,
-                SysAppCode = appCode,
-                SysAppName = appName,
-                ServerIP = serverIp,
-                BuildType = buildType
-            };
+            var serverIp = HardInfo.NodeIpList;// HardInfo.NodeIpList;// IpHelper.GetLocalIPs();
+            //var sysInfo = new
+            //{
+            //    SysAppId = appId,
+            //    SysAppCode = appCode,
+            //    SysAppName = appName,
+            //    ServerIP = serverIp,
+            //    BuildType = buildType,
+            //};
+            var sysInfo = GetSysInfo(buildType);
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
             Add(logger, msg, LogLevels.SysOffline, exception, serverIp: serverIp.FirstOrDefault());
         }
 
+        private static object GetSysInfo(string buildType)
+        {
+            var sysInfo = HardInfo.TryGetAppRegInfo(buildType);
 
+            return sysInfo;
+
+        }
         private static void Add(ILogger logger, string msg, LogLevels logLevel, Exception exception = null,
             long millisecond = 0, string url = "", string serverIp = "", string clientIp = "", string serialNumber = "")
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
             try
             {
                 var state = new StateDataEntry
@@ -196,7 +206,6 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                     Timestamps = millisecond,
                     SerialNumber = serialNumber,
                     LogTs = HardInfo.NowUnixTime,
-
                 };
 
                 logger.Log(logLevel.SwitchLogLevel(), new EventId(), state, exception, MessageFormatter);
@@ -264,10 +273,12 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             {
                 throw new ArgumentNullException(nameof(logger));
             }
+
             if (eventName.IsNullOrEmpty())
             {
                 throw new ArgumentNullException(nameof(eventName));
             }
+
             try
             {
                 var state = new StateDataEntry
@@ -295,7 +306,5 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         {
             return state.ToString();
         }
-
-
     }
 }

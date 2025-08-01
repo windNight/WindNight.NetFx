@@ -21,6 +21,7 @@ namespace WindNight.Core.SysLogCenter.Extensions
         public static string CurrentVersion => _version.ToString();
 
         public static DateTime CurrentCompileTime => _compileTime;
+
         protected static bool OpenDebug => ConfigItems.OpenDebug;
 
         protected static LogLevels MiniLogLevel => ConfigItems.GlobalMiniLogLevel;

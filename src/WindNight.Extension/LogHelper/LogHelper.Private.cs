@@ -135,7 +135,10 @@ namespace WindNight.LogExtension
             if (ConfigItems.LogOnConsole)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                if (logLevel > LogLevels.Information) Console.ForegroundColor = ConsoleColor.Red;
+                if (logLevel > LogLevels.Information)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
                 if (exception != null)
                 {
                     message = $"{message} {Environment.NewLine} {exception.GetMessage()}";
@@ -231,9 +234,14 @@ namespace WindNight.LogExtension
                     var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "LogException");
                     var filePath = Path.Combine(dir, now.FormatDateTime("yyyyMMdd"), "err.log");
                     if (!Directory.Exists(dir))
+                    {
                         Directory.CreateDirectory(dir);
+                    }
+
                     if (!File.Exists(filePath))
+                    {
                         File.Create(filePath).Close();
+                    }
                     using (var streamWriter = new StreamWriter(filePath, true))
                     {
                         try

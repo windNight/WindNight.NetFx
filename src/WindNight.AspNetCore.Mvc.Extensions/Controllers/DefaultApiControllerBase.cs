@@ -30,13 +30,36 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
         }
 
+        protected virtual bool IsAuthType1(bool ignoreIp = true)
+        {
+            if (ignoreIp && HttpClientIpIsPrivate())
+            {
+                return true;
+            }
+
+            var ak = GetAccessToken();
+
+            var appToken = GetAppTokenValue();
+            if (ak.IsNullOrEmpty(true) && appToken.IsNullOrEmpty(true))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
         protected virtual string GetUserAgentValue() => Request.GetUserAgentValue();
 
         protected virtual string GetAppTokenValue() => Request.GetAppTokenValue();
 
         protected virtual string GetAuthorizationValue() => Request.GetAuthorizationValue();
+
         protected virtual string GetRequestAppCodeValue() => Request.GetAppCodeValue();
+
         protected virtual string GetRequestAppNameValue() => Request.GetAppNameValue();
+
+        protected virtual string GetAppEnvNameValue() => Request.GetAppEnvNameValue();
 
         protected virtual long GetRequestTsValue() => Request.GetTimestampValue();
 
@@ -44,9 +67,41 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         protected virtual string QueryHeaderValue(string key, string defaultValue = "")
         {
             var value = Request.QueryHeaderValue(key, defaultValue);
+            if (!value.IsNullOrEmpty())
+            {
+                value = value.UrlDecode();
+            }
             return value;
         }
 
+        protected virtual string QueryValueInHeader(string key, string defaultValue = "")
+        {
+            return QueryHeaderValue(key);
+        }
+
+
+        protected virtual bool QueryValueInHeader(string key, bool defaultValue = false)
+        {
+            var value = QueryHeaderValue(key, "");
+
+            return value.ToBoolean(defaultValue);
+
+        }
+
+
+        protected virtual int QueryValueInHeader(string key, int defaultValue = 0)
+        {
+            var value = QueryHeaderValue(key);
+
+            return value.ToInt(defaultValue);
+        }
+
+        protected virtual long QueryValueInHeader(string key, long defaultValue = 0L)
+        {
+            var value = QueryHeaderValue(key);
+
+            return value.ToLong(defaultValue);
+        }
 
         protected virtual string GetHttpServerIp(bool onlyIpV4 = true)
         {
@@ -69,12 +124,19 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         protected virtual bool HttpClientIpIsPrivate()
         {
             var clientIp = GetHttpClientIp();
-            if (clientIp.IsPrivateOrLoopback())
+
+            if (clientIp.IsInternalIp())
             {
                 return true;
             }
+
             return false;
+
         }
+
+        protected virtual bool RequestWithInternalNet => HttpClientIpIsPrivate();
+
+
     }
 
 }

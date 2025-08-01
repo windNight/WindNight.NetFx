@@ -16,12 +16,14 @@ namespace WindNight.Core
         public const string AuthorizationTypeKey = "Bearer";
         public const string USER_AGENT_KEY = "User-Agent";
 
+        public const string AppEnvNameKey = "EnvName";
+
         public const bool ObsoleteTrue = true;
         public const bool ObsoleteFalse = false;
 
-        public static readonly string[] TrueStrings = { "1", bool.TrueString.ToUpper(), "T" };
+        public static readonly string[] TrueStrings = { "是", "1", bool.TrueString.ToUpper(), "T" };
 
-        public static readonly string[] FalseStrings = { "0", bool.FalseString.ToUpper(), "F" };
+        public static readonly string[] FalseStrings = { "否", "0", bool.FalseString.ToUpper(), "F" };
 
         public const string ZeroString = "0";
         public const int ZeroInt = 0;

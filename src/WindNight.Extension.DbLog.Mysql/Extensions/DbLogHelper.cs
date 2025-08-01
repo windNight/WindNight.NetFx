@@ -1,6 +1,5 @@
 using System.Reflection;
 using Newtonsoft.Json.Extension;
-using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DbLog.Abstractions;
 using WindNight.Extension.Logger.Mysql.DbLog;
@@ -17,9 +16,10 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         private static DateTime _compileTime => File.GetLastWriteTime(typeof(DbLogHelper).Assembly.Location);
 
         public static string CurrentVersion => _version.ToString();
+
         public static DateTime CurrentCompileTime => _compileTime;
 
-
+        public static string LogPluginVersion => $"{nameof(DbLogHelper)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}";
 
         /// <summary>
         /// </summary>
@@ -61,7 +61,8 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Debug(string msg, string serialNumber = "", string url = "", string serverIp = "", long millisecond = 0,
+        public static void Debug(string msg, string serialNumber = "", string url = "", string serverIp = "",
+            long millisecond = 0,
             string clientIp = "")
         {
             Add(msg, LogLevels.Debug, serialNumber: serialNumber, url: url,
@@ -75,7 +76,8 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Info(string msg, string serialNumber = "", string url = "", string serverIp = "", long millisecond = 0,
+        public static void Info(string msg, string serialNumber = "", string url = "", string serverIp = "",
+            long millisecond = 0,
             string clientIp = "")
         {
             Add(msg, LogLevels.Information, serialNumber: serialNumber, url: url, serverIp: serverIp,
@@ -91,7 +93,8 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Warn(string msg, Exception exception = null, string serialNumber = "", string url = "", long millisecond = 0,
+        public static void Warn(string msg, Exception exception = null, string serialNumber = "", string url = "",
+            long millisecond = 0,
             string serverIp = "", string clientIp = "")
         {
             Add(msg, LogLevels.Warning, exception, serialNumber, url: url, serverIp: serverIp,
@@ -106,7 +109,8 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Error(string msg, Exception exception, string serialNumber = "", string url = "", long millisecond = 0,
+        public static void Error(string msg, Exception exception, string serialNumber = "", string url = "",
+            long millisecond = 0,
             string serverIp = "", string clientIp = "")
         {
             Add(msg, LogLevels.Error, exception, serialNumber, url: url, serverIp: serverIp,
@@ -121,7 +125,8 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Fatal(string msg, Exception exception, string serialNumber = "", string url = "", long millisecond = 0,
+        public static void Fatal(string msg, Exception exception, string serialNumber = "", string url = "",
+            long millisecond = 0,
             string serverIp = "", string clientIp = "")
         {
             Add(msg, LogLevels.Critical, exception, serialNumber, url: url, serverIp: serverIp,
@@ -136,14 +141,14 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="appName"></param>
         public static void LogRegisterInfo(string buildType, int appId, string appCode, string appName)
         {
-            var serverIp = IpHelper.GetLocalIPs().ToList();
+            var serverIp = HardInfo.NodeIpList;// IpHelper.GetLocalIPs().ToList();
             var sysInfo = new
             {
                 SysAppId = appId,
                 SysAppCode = appCode,
                 SysAppName = appName,
                 ServerIP = serverIp,
-                BuildType = buildType
+                BuildType = buildType,
             };
             var msg = $"register info is {sysInfo.ToJsonStr()}";
             Add(msg, LogLevels.SysRegister, serverIp: serverIp.FirstOrDefault());
@@ -159,19 +164,18 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         public static void LogOfflineInfo(string buildType, int appId, string appCode, string appName,
             Exception exception = null)
         {
-            var serverIp = IpHelper.GetLocalIPs().ToList();
+            var serverIp = HardInfo.NodeIpList;// IpHelper.GetLocalIPs().ToList();
             var sysInfo = new
             {
                 SysAppId = appId,
                 SysAppCode = appCode,
                 SysAppName = appName,
                 ServerIP = serverIp,
-                BuildType = buildType
+                BuildType = buildType,
             };
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
             Add(msg, LogLevels.SysOffline, exception, serverIp: serverIp.FirstOrDefault());
         }
-
 
 
         /// <summary>
@@ -187,7 +191,6 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         public static void Add(string msg, LogLevels logLevel, Exception exception = null, string serialNumber = "",
             long millisecond = 0, string url = "", string serverIp = "", string clientIp = "")
         {
-
             try
             {
                 if (DbLoggerProcessor == null || DbLogOptions == null) return;
@@ -220,13 +223,15 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     RequestUrl = url,
                     SerialNumber = serialNumber,
                     NodeCode = HardInfo.NodeCode ?? "",
-                    LogPluginVersion = $"{nameof(DbLogHelper)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
-
+                    LogPluginVersion = LogPluginVersion,
                 };
                 if (exception != null)
                 {
                     messageEntity.ExceptionObj = new ExceptionData
-                    { Message = exception.Message, StackTraceString = exception.StackTrace };
+                    {
+                        Message = exception.Message,
+                        StackTraceString = exception.StackTrace,
+                    };
                     messageEntity.Exceptions = messageEntity.ExceptionObj.ToJsonStr();
                 }
                 else
@@ -234,14 +239,15 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     messageEntity.Exceptions = "{}";
                 }
 
-                messageEntity.Content = DbLogOptions.ContentMaxLength > 0 && msg.Length > DbLogOptions.ContentMaxLength ? msg.Substring(0, DbLogOptions.ContentMaxLength) : msg;
+                messageEntity.Content = DbLogOptions.ContentMaxLength > 0 && msg.Length > DbLogOptions.ContentMaxLength
+                    ? msg.Substring(0, DbLogOptions.ContentMaxLength)
+                    : msg;
 
                 DbLoggerProcessor.EnqueueMessage(messageEntity);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("日志异常:{0}", ex.ToJsonStr());
-
             }
         }
     }

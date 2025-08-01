@@ -12,13 +12,22 @@ namespace WindNight.Linq.Extensions.Expressions
     public static class EnumerableExtensions
     {
 
-        public static bool IsNullOrEmpty<T>(this IPagedList<T>? items)
+        public static bool IsNullOrEmpty<T>(this IPagedList<T>? items, bool ignoreNullItem = false)
         {
+            if (ignoreNullItem)
+            {
+                return items == null || items.RecordCount == 0 || items.List.IsNullOrEmpty(ignoreNullItem);
+            }
+
             return items == null || items.RecordCount == 0 || items.List.IsNullOrEmpty();
         }
 
-        public static bool IsNullOrEmpty<T>(this IEnumerable<T>? items)
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T>? items, bool ignoreNullItem = false)
         {
+            if (ignoreNullItem)
+            {
+                return items == null || !items.Any() || items.Count(m => m != null) == 0;
+            }
             return items == null || !items.Any();
         }
 

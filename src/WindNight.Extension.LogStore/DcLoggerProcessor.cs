@@ -14,7 +14,7 @@ namespace WindNight.Extension.Logger.DcLog
 {
     public class DcLoggerProcessor : IDcLoggerProcessor
     {
-        private const int OpenGZipLimit = 150_000;
+        private const int OpenGZipLimit = 1500;
         private const string GZipFlagStr = "gzip@";
         private readonly Stopwatch _stopwatch = new Stopwatch();
         //private ISystemLogsProcess _repo => Ioc.GetService<ISystemLogsProcess>();
@@ -107,7 +107,10 @@ namespace WindNight.Extension.Logger.DcLog
             Thread.CurrentThread.Name = "DbLoggerProcessor-sender";
             while (true)
             {
-                if (IsStop) break;
+                if (IsStop)
+                {
+                    break;
+                }
                 try
                 {
                     if (MessageQueue.TryDequeue(out var message))
@@ -195,7 +198,8 @@ namespace WindNight.Extension.Logger.DcLog
         {
             if (DcLogOptions.IsOpenDebug)
             {
-                Console.WriteLine($"ProcessLog({message})");
+                $"ProcessLog({message})".Log2Console();
+                //  Console.WriteLine($"ProcessLog({message})"); 
             }
 
             using (var udpClient = new UdpClient())
@@ -222,16 +226,17 @@ namespace WindNight.Extension.Logger.DcLog
                     var count = udpClient.Send(sendData, sendData.Length, EndPoint);
                     if (count != sendData.Length)
                     {
-                        Console.WriteLine($"Send Msg:{message}  Count ({count})");
+                        $"Send Msg:{message}  Count ({count})".Log2Console();
                     }
                     if (DcLogOptions.IsConsoleLog)
                     {
-                        Console.WriteLine($"send msg success {EndPoint.Address}:{EndPoint.Port} :{message.ToJsonStr()}, Current Length In Queue is {MessageQueue.Count}");
+                        $"send msg success {EndPoint.Address}:{EndPoint.Port} :{message.ToJsonStr()}, Current Length In Queue is {MessageQueue.Count}".Log2Console();
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Send Msg:{message} Handler Error {ex.Message}");
+                    $"Send Msg:{message} Handler Error {ex.Message}".Log2Console(ex);
+
                 }
             }
 
@@ -243,7 +248,7 @@ namespace WindNight.Extension.Logger.DcLog
             var list = messages.ToList();
             if (DcLogOptions.IsOpenDebug)
             {
-                Console.WriteLine($"ProcessLog({list.ToJsonStr()})");
+                $"ProcessLog({list.ToJsonStr()})".Log2Console();
             }
 
             using (var udpClient = new UdpClient())
@@ -264,12 +269,12 @@ namespace WindNight.Extension.Logger.DcLog
                         udpClient.Send(sendData, sendData.Length, EndPoint);
                         if (DcLogOptions.IsConsoleLog)
                         {
-                            Console.WriteLine($"send msg success {EndPoint.Address}:{EndPoint.Port} :{message.ToJsonStr()}, Current Length In Queue is {MessageQueue.Count}");
+                            $"send msg success {EndPoint.Address}:{EndPoint.Port} :{message.ToJsonStr()}, Current Length In Queue is {MessageQueue.Count}".Log2Console();
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Send Msg:{message} Handler Error {ex.Message}");
+                        $"Send Msg:{message} Handler Error {ex.Message}".Log2Console(ex);
                     }
                 }
 
@@ -280,7 +285,9 @@ namespace WindNight.Extension.Logger.DcLog
         private byte[] FixSendContent(byte[] originBytes)
         {
             if (DcLogOptions.OpenGZip && originBytes.Length > OpenGZipLimit)
+            {
                 return MergerGZipFlag(originBytes);
+            }
 
             return originBytes;
         }

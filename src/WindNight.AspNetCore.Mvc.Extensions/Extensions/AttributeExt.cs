@@ -13,7 +13,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
     {
         #region ApiDescription
 
-        public static TAttr? GetAttribute<TAttr>(this ApiDescription apiDesc)
+        public static TAttr GetAttribute<TAttr>(this ApiDescription apiDesc)
             where TAttr : Attribute, IAttribute
         {
             try
@@ -59,7 +59,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
 
         #region ActionDescriptor
 
-        public static TAttr? GetAttribute<TAttr>(this ActionDescriptor apiDesc)
+        public static TAttr GetAttribute<TAttr>(this ActionDescriptor apiDesc)
             where TAttr : Attribute, IAttribute
         {
             try
@@ -109,38 +109,46 @@ namespace WindNight.AspNetCore.Mvc.Extensions
     {
         #region ApiDescription
 
-        public static HiddenApiAttribute? GetHiddenApiAttr(this ApiDescription apiDesc)
+        public static HiddenApiAttribute GetHiddenApiAttr(this ApiDescription apiDesc)
         {
             return apiDesc.GetAttribute<HiddenApiAttribute>();
         }
 
-        public static DebugApiAttribute? GetDebugApiAttr(this ApiDescription apiDesc)
+        public static DebugApiAttribute GetDebugApiAttr(this ApiDescription apiDesc)
         {
             return apiDesc.GetAttribute<DebugApiAttribute>();
         }
 
-        public static SysApiAttribute? GetSysApiAttr(this ApiDescription apiDesc)
+        public static SysApiAttribute GetSysApiAttr(this ApiDescription apiDesc)
         {
             return apiDesc.GetAttribute<SysApiAttribute>();
+        }
+        public static NonAuthAttribute GetNonAuthAttr(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttribute<NonAuthAttribute>();
         }
 
         #endregion // end ApiDescription
 
         #region ActionDescriptor
 
-        public static HiddenApiAttribute? GetHiddenApiAttr(this ActionDescriptor apiDesc)
+        public static HiddenApiAttribute GetHiddenApiAttr(this ActionDescriptor apiDesc)
         {
             return apiDesc.GetAttribute<HiddenApiAttribute>();
         }
 
-        public static DebugApiAttribute? GetDebugApiAttr(this ActionDescriptor apiDesc)
+        public static DebugApiAttribute GetDebugApiAttr(this ActionDescriptor apiDesc)
         {
             return apiDesc.GetAttribute<DebugApiAttribute>();
         }
 
-        public static SysApiAttribute? GetSysApiAttr(this ActionDescriptor apiDesc)
+        public static SysApiAttribute GetSysApiAttr(this ActionDescriptor apiDesc)
         {
             return apiDesc.GetAttribute<SysApiAttribute>();
+        }
+        public static NonAuthAttribute GetNonAuthAtt(this ActionDescriptor apiDesc)
+        {
+            return apiDesc.GetAttribute<NonAuthAttribute>();
         }
 
         #endregion // end ActionDescriptor
