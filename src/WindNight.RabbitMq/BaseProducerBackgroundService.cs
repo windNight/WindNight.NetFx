@@ -11,12 +11,17 @@ namespace WindNight.RabbitMq
 {
     public abstract class BaseProducerService
     {
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
+
+
         protected readonly IRabbitMqProducer Producer;
 
         public BaseProducerService(IRabbitMqProducerFactory producerFactory, IRabbitMqProducerSettings producerSettings)
         {
             if (producerSettings == null || string.IsNullOrEmpty(producerSettings.ExchangeName))
+            {
                 producerSettings = DefaultRabbitMqProducerSettings;
+            }
             LogHelper.Info($" IRabbitMqProducerSettings is {producerSettings.ToJsonStr()}");
             Producer = producerFactory.GetRabbitMqProducer(producerSettings);
         }
@@ -31,7 +36,9 @@ namespace WindNight.RabbitMq
             {
                 var config = ConfigItems.RabbitMqConfig.Items.FirstOrDefault(m => m.ProducerName == ProducerName);
                 if (config == null)
+                {
                     throw new ArgumentNullException($"RabbitMqConfig({ProducerName}) Can not Get from config");
+                }
                 return new RabbitMqProducerSettings
                 {
                     RabbitMqUrl = config.RabbitMqUrl,
@@ -68,7 +75,10 @@ namespace WindNight.RabbitMq
             IRabbitMqProducerSettings producerSettings)
         {
             if (producerSettings == null || string.IsNullOrEmpty(producerSettings.ExchangeName))
+            {
                 producerSettings = DefaultRabbitMqProducerSettings;
+            }
+
             LogHelper.Info($" IRabbitMqProducerSettings is {producerSettings.ToJsonStr()}");
             Producer = producerFactory.GetRabbitMqProducer(producerSettings);
         }

@@ -43,8 +43,7 @@ namespace WindNight.Extension
                 }
             }
 
-            request.AddOrUpdateHeader(PluginInfoKey,
-                $"HttpHelper/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}");
+            request.AddOrUpdateHeader(PluginInfoKey, HttpHelperPluginVersion);
         }
 
 #if !NET45
@@ -87,7 +86,9 @@ namespace WindNight.Extension
             if (queries != null)
             {
                 foreach (var query in queries)
+                {
                     request.AddParameter(query.Key, query.Value);
+                }
             }
 
 

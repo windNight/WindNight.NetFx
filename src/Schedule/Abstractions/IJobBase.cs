@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Quartz;
+using Schedule.Model.Enums;
 
 namespace WindNight.Core.Abstractions
 {
@@ -10,7 +11,7 @@ namespace WindNight.Core.Abstractions
         string CurrentJobCode { get; }
 
         //Task<bool> DoJobAsync(IJobExecutionContext context);
-        Task<bool> ExecuteWithResultAsync(IJobExecutionContext context);
+        Task<JobBusinessStateEnum> ExecuteWithResultAsync(IJobExecutionContext context);
 
 
         Task<bool> RunTestAtStartAsync(int delayS = 2);

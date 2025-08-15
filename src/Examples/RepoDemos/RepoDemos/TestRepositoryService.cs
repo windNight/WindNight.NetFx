@@ -13,9 +13,7 @@ namespace RepoDemos
 
     }
 
-    public interface ITestRepositoryService :
-        IStatusRepositoryService<TestStatusE>,
-        IBaseRepositoryServiceWithId<TestStatusE>
+    public interface ITestRepositoryService : ICUSWriterBaseRepositoryService<TestStatusE>
     {
 
     }
@@ -45,9 +43,7 @@ namespace RepoDemos
     public interface ITestTreeERepositoryService :
         ITreeWriterBaseRepositoryService<TestTreeE>,
         ICUSWriterBaseRepositoryService<TestTreeE>
-    // IStatusRepositoryService<TestTreeE>,
-    // IBaseRepositoryServiceWithId<TestTreeE>,
-    // ITreeRepositoryService<TestTreeE>
+
     {
 
     }

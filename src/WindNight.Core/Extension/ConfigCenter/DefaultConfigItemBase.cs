@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Extension;
 
 namespace WindNight.Core.ConfigCenter.Extensions
 {
@@ -174,7 +175,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
 
         protected const int DEFAULT_API_WARNING_MIS = 200;
 
-        public static int SystemAppId => ConfigService?.SystemAppId ?? Configuration?.GetAppId() ?? 0;
+        public static string SystemAppId => ConfigService?.SystemAppId ?? Configuration?.GetAppId() ?? "";
         public static string SystemAppCode => ConfigService?.SystemAppCode ?? Configuration?.GetAppCode() ?? "";
         public static string SystemAppName => ConfigService?.SystemAppCode ?? Configuration?.GetAppName() ?? "";
 
@@ -349,6 +350,90 @@ namespace WindNight.Core.ConfigCenter.Extensions
         }
 
     }
+
+
+    public partial class DefaultConfigItemBase
+    {
+        public static DomainConfigs DomainConfigs => GetSectionValue<DomainConfigs>() ?? new DomainConfigs();
+
+
+        public static string QueryDomainConfig(string name)
+        {
+            var config = DomainConfigs.Items.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            return config?.Domain ?? "";
+        }
+
+        public static DomainConfigDto QueryDomainInfoConfig(string name)
+        {
+            var config = DomainConfigs.Items.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            return config;
+        }
+
+
+    }
+
+    public class DomainConfigs
+    {
+        public List<DomainConfigDto> Items { get; set; } = new List<DomainConfigDto>();
+    }
+
+    public partial class DomainConfigDto
+    {
+        public string Name { get; set; } = "";
+
+        public string Domain { get; set; } = "";
+
+        public string Remark { get; set; } = "";
+
+        public Dictionary<string, string> Extension { get; set; } = new Dictionary<string, string>();
+        //public IEnumerable<KV<object>> Extension { get; set; } = Array.Empty<KV<object>>();
+
+
+    }
+
+
+    public partial class DomainConfigDto
+    {
+
+        public string GetValueInExtension(string key, string defaultValue = "")
+        {
+            var extInfo = Extension.SafeGetValue(key, null);
+
+            if (extInfo != null)
+            {
+                return extInfo;
+            }
+
+            return defaultValue;
+        }
+
+        public int GetValueInExtension(string key, int defaultValue = 0)
+        {
+            var configValue = GetValueInExtension(key, null);
+            if (configValue == null)
+            {
+                return defaultValue;
+
+            }
+
+            return configValue.ToInt(defaultValue);
+        }
+
+        public bool GetValueInExtension(string key, bool defaultValue = false)
+        {
+            var configValue = GetValueInExtension(key, "");
+            if (configValue.IsNullOrEmpty())
+            {
+                return defaultValue;
+            }
+
+            return configValue.ToBoolean(defaultValue);
+        }
+
+
+
+    }
+
 
 
 }

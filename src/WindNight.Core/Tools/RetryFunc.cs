@@ -171,7 +171,10 @@ namespace WindNight.Core.Tools
 
         public static void KeepSafeAction(this Action action)
         {
-            if (action == null) return;
+            if (action == null)
+            {
+                return;
+            }
             try
             {
                 action.Invoke();

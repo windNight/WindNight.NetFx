@@ -10,19 +10,17 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
     /// <summary> </summary>
     public static class DcLogHelper
     {
-        private static Version _version => new AssemblyName(typeof(DcLogHelper).Assembly.FullName).Version;
-        private static DateTime _compileTime => File.GetLastWriteTime(typeof(DcLogHelper).Assembly.Location);
+        // private static Version _version => new AssemblyName(typeof(DcLogHelper).Assembly.FullName).Version;
+        // private static string _compileTime => BuildInfo.BuildTime;// File.GetLastWriteTime(typeof(DcLogHelper).Assembly.Location);
 
-        public static string CurrentVersion => _version.ToString();
-
-        public static DateTime CurrentCompileTime => _compileTime;
+        public static string CurrentVersion => BuildInfo.BuildVersion;
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
 
         private static IDcLoggerProcessor DcLoggerProcessor => DcLoggerExtensions.LoggerProcessor;
 
         private static DcLogOptions DcLogOptions => DcLoggerExtensions.DcLogOptions;
 
-        public static string LogPluginVersion =>
-            $"{nameof(DcLogHelper)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}";
+        public static string LogPluginVersion => $"{nameof(DcLogHelper)}/{CurrentVersion} {CurrentCompileTime}";
 
         /// <summary>
         /// </summary>
@@ -222,7 +220,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                 LevelType = (int)logLevel,
                 LogTs = logTimestamps,
                 NodeCode = HardInfo.NodeCode ?? "",
-                LogPluginVersion = $"{nameof(DcLogHelper)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
+                LogPluginVersion = LogPluginVersion,
             };
 
             if (string.IsNullOrEmpty(jo["logAppCode"]?.ToString()))

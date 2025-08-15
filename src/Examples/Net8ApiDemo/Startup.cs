@@ -3,9 +3,14 @@ using System.Reflection;
 using Microsoft.AspNetCore.Hosting.WnExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using MySqlX.XDevAPI;
+using WindNight.AspNetCore.Mvc.Extensions;
 using WindNight.Config.Abstractions;
 using WindNight.Config.Extensions;
+using WindNight.Core;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Extension;
+using WindNight.Extension;
 using WindNight.Extension.Logger.DcLog;
 
 namespace Net8ApiDemo
@@ -47,7 +52,9 @@ RunMachineName: {Environment.MachineName} <br/>
         protected override void ConfigBizServices(IServiceCollection services)
         {
             // services.AddSingleton<IConfigCenterAuth, ConfigCenterAuth>();
-            services.AddSingleton<IQuerySvrHostInfo, QuerySvrHostInfo>();
+            services.AddSingleton<ISysApiAuthCheck, SysApiAuthCheckImpl>();
+            //services.AddSingleton<IQuerySvrHostInfo, QuerySvrHostInfoImpl>();
+            services.AddSvrHostInfo(Configuration);
             services.AddConfigExtension(Configuration);
             services.AddDcLogger(configuration: Configuration);
         }
@@ -59,6 +66,7 @@ RunMachineName: {Environment.MachineName} <br/>
             {"AppCode","执行的AppCode"},
             {"AppToken","当前请求的Token"},
             {"Ts","当前时间戳"},
+            {ConstantKeys.ReqTraceIdKey,"ReqTraceId"},
         };
 
         protected override Action<IApplicationBuilder> SelfMiddlewareAction => app =>
@@ -317,30 +325,173 @@ RunMachineName: {Environment.MachineName} <br/>
             return false;
         }
     }
-
-
-    public class QuerySvrHostInfo : IQuerySvrHostInfo
+    public static class DefaultSvrExt
     {
-        public ISvrHostInfo GetSvrHostInfo()
+        public static IServiceCollection AddSvrHostInfo(this IServiceCollection services, IConfiguration configuration)
         {
-            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
-            var buildType = QueryBuildType();
-            //#if DEBUG
-            //            buildType = "Debug";
-            //#else
-            //            buildType = "Release";
-            //#endif
-            var model = new SvrHostBaseInfo
-            {
-                BuildType = buildType,
-                BuildMachineName = QueryBuildMachineName(),
-                MainAssemblyVersion = assembly?.GetName()?.Version?.ToString(),
-                MainAssemblyName = assembly.ManifestModule.Name,
-                CompileTime = System.IO.File.GetLastWriteTime(assembly.Location).FormatDateTimeFullString(),
-            };
+            services.AddSingleton<IQuerySvrHostInfo, QuerySvrHostInfoImpl>();
+            return services;
+        }
 
+        public static string QueryBuildType()
+        {
+            var buildType = BuildInfo.BuildConfiguration;
+            if (buildType.IsNullOrEmpty(true))
+            {
+#if DEBUG
+                buildType = "Debug";
+#else
+                buildType = "Release";
+#endif
+            }
+            return buildType;
+        }
+
+    }
+
+    public class SysApiAuthCheckImpl : ISysApiAuthCheck
+    {
+        HttpContext HttpContext => IPHelper.GetHttpContext();
+        HttpRequest HttpRequest => HttpContext?.Request;
+        protected virtual string GetAppTokenValue() => HttpRequest?.GetAppTokenValue() ?? "";
+        protected virtual string GetAccessTokenValue() => HttpRequest?.GetAccessTokenValue() ?? "";
+        protected virtual string GetClientIp(bool onlyIpV4 = true) => HttpContext?.GetClientIp(onlyIpV4) ?? "";
+
+        protected virtual bool AccessTokenIsAuth()
+        {
+            var ak = GetAccessTokenValue();
+            if (ak.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        protected virtual bool AppTokenIsAuth()
+        {
+            var appToken = GetAppTokenValue();
+            if (appToken.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            return true;
+        }
+        public bool OpenSysApiAuthCheck => true;
+
+        public bool SysApiAuth()
+        {
+            var httpContext = IPHelper.GetHttpContext();
+            if (httpContext == null)
+            {
+                return false;
+            }
+
+            if (ReqClientIpCheck())
+            {
+                return true;
+            }
+            var auth = AccessTokenIsAuth() || AppTokenIsAuth();
+
+            return auth;
+
+        }
+
+
+
+
+        public bool ReqClientIpCheck()
+        {
+            var clientIp = GetClientIp();
+            return ReqClientIpCheck(clientIp);
+        }
+        public bool ReqClientIpCheck(string clientIp)
+        {
+            if (clientIp.IsInternalIp())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+    }
+
+
+    /// <summary>
+    ///  TODO 
+    /// </summary>
+    public class QuerySvrHostInfoImpl : IQuerySvrHostInfo
+    {
+        /// <summary>
+        ///  预留支持查看其他dll
+        /// </summary>
+        public Assembly MainAssembly => Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+
+
+        public ISvrHostInfo QuerySvrHostInfo()
+        {
+            var model = SvrHostBaseInfo.Gen(MainAssembly);
             return model;
 
+        }
+
+        public string QueryBuildInfoItem(string key, string defaultValue = "")
+        {
+            try
+            {
+                var dict = BuildInfo.BuildInfoDict;
+                if (!dict.ContainsKey(key))
+                {
+                    return defaultValue;
+                }
+                var info = dict.SafeGetValue(key, "").ToString();
+                if (info.IsNullOrEmpty(true))
+                {
+                    return defaultValue;
+
+                }
+                return info;
+            }
+            catch
+            {
+                return defaultValue;
+
+            }
+        }
+
+        public long QueryBuildInfoItem(string key, long defaultValue = 0L)
+        {
+            try
+            {
+                var dict = BuildInfo.BuildInfoDict;
+                if (!dict.ContainsKey(key))
+                {
+                    return defaultValue;
+                }
+                var info = dict.SafeGetValue(key, "").ToString();
+                if (info.IsNullOrEmpty(true))
+                {
+                    return defaultValue;
+
+                }
+                return info.ToLong(defaultValue);
+            }
+            catch
+            {
+                return defaultValue;
+
+            }
+        }
+
+        public ISvrBuildInfo QuerySvrBuildInfo()
+        {
+            var dict = BuildInfo.BuildInfoDict;
+            var model = new SvrBuildInfoDto();
+            model.SetSvrBuildInfoDict(dict);
+            return model;
         }
 
         public string QueryBuildMachineName()
@@ -350,16 +501,28 @@ RunMachineName: {Environment.MachineName} <br/>
 
         public string QueryBuildType()
         {
-            var buildType = "";
-#if DEBUG
-            buildType = "Debug";
-#else
-            buildType = "Release";
-#endif
-            return buildType;
+
+            return DefaultSvrExt.QueryBuildType();
+        }
+
+
+        public bool SysApiCheckIp(string ip)
+        {
+            return false;
+        }
+
+        public IEnumerable<string> QueryWhiteIpList()
+        {
+            return new List<string>();
+
         }
 
 
 
+
+
     }
+
+
+
 }

@@ -17,19 +17,14 @@
         <Description>
         </Description>
         <PackageReleaseNotes>
-        </PackageReleaseNotes>
-        <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
+        </PackageReleaseNotes> 
         <OutputPath>..\..\Output\$(Configuration)</OutputPath>
         <RootNamespace>WindNight.Extension.Logger.DcLog</RootNamespace>
 
     </PropertyGroup>
 
 
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    </PropertyGroup>
-
-
+  
 
     <ItemGroup>
         <ProjectReference Include="..\WindNight.Core\WindNight.Core.csproj" />
@@ -38,7 +33,7 @@
 
     <ItemGroup>
 
-        <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="9.0.8" />
 
     </ItemGroup>
 

@@ -9,6 +9,13 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 {
     public class DefaultApiControllerBase : ControllerBase
     {
+
+        protected virtual string SysAppId => HardInfo.AppId;
+
+        protected virtual string SysAppCode => HardInfo.AppCode;
+
+        protected virtual string SysAppName => HardInfo.AppName;
+
         protected virtual string GetAccessToken()
         {
             var authorizationValue = GetAuthorizationValue();

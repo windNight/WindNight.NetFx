@@ -35,16 +35,29 @@ namespace Schedule.Ctrl
         public JobInfoOutput GetJobInfo(JobSearchInput search)
         {
             var allJobInfo = GetAllJobInfo();
+
             if (search.JobName != null)
+            {
                 allJobInfo = allJobInfo.Where(x => x.JobName.Equals(search.JobName)).ToList();
+            }
+
             if (search.State != null)
+            {
                 allJobInfo = allJobInfo.Where(x => x.State == (search.State ?? JobStateEnum.Open)).ToList();
+            }
+
             if (search.SupportOnceJob != null)
+            {
                 allJobInfo = allJobInfo.Where(x => x.SupportOnceJob == (search.SupportOnceJob ?? true)).ToList();
+            }
+
             if (search.ShowOnceJob != null)
+            {
                 allJobInfo = allJobInfo.Where(x => !x.JobId.IsNullOrEmpty() == search.ShowOnceJob.Value).ToList();
+            }
 
             var totalJobsCount = allJobInfo.Count;
+
             allJobInfo = allJobInfo.Skip((search.PageCurrent - 1) * search.PageSize).Take(search.PageSize).ToList();
 
             return new JobInfoOutput
@@ -77,7 +90,8 @@ namespace Schedule.Ctrl
             jSInput.JobName = name;
             jSInput.PageCurrent = 1;
             jSInput.PageSize = 1;
-            return GetJobInfo(jSInput).DataList.FirstOrDefault();
+            var info = GetJobInfo(jSInput)?.DataList?.FirstOrDefault();
+            return info;
         }
 
         /// <summary>
@@ -102,9 +116,16 @@ namespace Schedule.Ctrl
         {
             //从原始配置中复制一份数据
             var job = Ioc.GetService<IJobCtrl>(name);
-            var jobParams = job.ReadJobParam();
 
-            if (jobParams.SupportOnceJob == false) return JobActionRetEnum.Conflict;
+            var jobParams = job.ReadJobParam();
+            if (jobParams == null)
+            {
+                return JobActionRetEnum.NoConfig;
+            }
+            if (jobParams.SupportOnceJob == false)
+            {
+                return JobActionRetEnum.Conflict;
+            }
 
             //修改配置
             jobParams.RunParams = runParams;
@@ -177,15 +198,29 @@ namespace Schedule.Ctrl
         {
             var jobParams = GetAllJobInfo()
                 .FirstOrDefault(x => x.JobName.Equals(name) && x.JobId.IsNullOrEmpty());
-            if (jobParams == null) return JobActionRetEnum.Failed;
 
-            if (jobParams.State == JobStateEnum.Closed) return JobActionRetEnum.Conflict;
-            if (jobParams.State == JobStateEnum.Open) return JobActionRetEnum.Success;
+            if (jobParams == null)
+            {
+                return JobActionRetEnum.NoConfig;
+            }
+
+            if (jobParams.State == JobStateEnum.Closed)
+            {
+                return JobActionRetEnum.Conflict;
+            }
+            if (jobParams.State == JobStateEnum.Open)
+            {
+                return JobActionRetEnum.Success;
+            }
 
             jobParams.State = JobStateEnum.Open;
             __JobEnvManager.SaveJobEnv(jobParams);
 
             var jobCtrl = Ioc.GetService<IJobCtrl>(name);
+            if (jobCtrl == null)
+            {
+                return JobActionRetEnum.Failed;
+            }
             ScheduleModConfig.Instance.DefaultScheduler.ResumeJob(jobCtrl.GetJobKey());
             return JobActionRetEnum.Success;
         }
@@ -194,7 +229,7 @@ namespace Schedule.Ctrl
         {
             var job = Ioc.GetService<IJobCtrl>(name);
             var jobParams = job.ReadJobParam();
-            return jobParams.JobParamsDesc;
+            return jobParams?.JobParamsDesc ?? "";
         }
     }
 }

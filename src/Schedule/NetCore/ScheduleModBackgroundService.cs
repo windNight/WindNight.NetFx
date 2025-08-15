@@ -1,6 +1,12 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
+using Quartz;
+using Schedule.Abstractions;
+using Schedule.Func;
+using Schedule.Model.Enums;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace Schedule
 {
@@ -26,12 +32,47 @@ namespace Schedule
         /// <returns></returns>
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
+            await CheckBeforeCrashedAsync();
+
             if (ScheduleModConfig.Instance.DefaultScheduler != null)
             {
-                await ScheduleModConfig.Instance.DefaultScheduler.Shutdown(true, cancellationToken);
+                await ScheduleModConfig.Instance.DefaultScheduler.Shutdown(false, cancellationToken);
             }
+
             await base.StopAsync(cancellationToken);
 
         }
+
+        async Task CheckBeforeCrashedAsync()
+        {
+            try
+            {
+                var now = HardInfo.NowFullString;
+                var jobCtrl = Ioc.GetService<IScheduleOrderCtrl>();
+                if (jobCtrl == null)
+                {
+                    // await Task.CompletedTask;
+                    return;
+                }
+
+                var allJobs = await ScheduleModConfig.Instance.DefaultScheduler.GetCurrentlyExecutingJobs();
+                foreach (var context in allJobs)
+                {
+                    var jobInfo = context?.GetJobBaseInfo();
+                    var jobId = jobInfo?.JobId;
+                    jobCtrl?.CompleteJobSafety(jobId, JobRunStateEnum.Crashed, $"App Crashed {now}");
+                }
+
+
+            }
+            catch
+            {
+
+            }
+
+        }
+
+
+
     }
 }

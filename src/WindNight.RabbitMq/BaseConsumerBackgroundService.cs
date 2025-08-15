@@ -14,13 +14,18 @@ namespace WindNight.RabbitMq
         private const long DefaultLockTakeKeyExpireMs = 1000 * 60 * 10; //默认 10分钟
 
         protected readonly IRabbitMqConsumer Consumer;
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
 
+
+        protected readonly IRabbitMqProducer Producer;
         public BaseConsumerBackgroundService(IRabbitMqConsumerFactory consumerFactory,
             IRabbitMqConsumerSettings consumerSettings
         )
         {
             if (consumerSettings == null || string.IsNullOrEmpty(consumerSettings.QueueName))
+            {
                 consumerSettings = DefaultRabbitMqConsumerSettings;
+            }
             LogHelper.Info($" RabbitMqConsumerSettings  is {consumerSettings.ToJsonStr()}");
             //初始化MQ消费者队列信息
             Consumer = consumerFactory.GetRabbitMqConsumer(consumerSettings.QueueName, consumerSettings);
@@ -33,7 +38,10 @@ namespace WindNight.RabbitMq
             get
             {
                 var config = ConfigItems.RabbitMqConfig.Items.FirstOrDefault(m => m.QueueTag == QueueTag);
-                if (config == null) throw new ArgumentNullException("RabbitMqConfig Can not Get from config");
+                if (config == null)
+                {
+                    throw new ArgumentNullException("RabbitMqConfig Can not Get from config");
+                }
                 return new RabbitMqConsumerSettings
                 {
                     RabbitMqUrl = config.RabbitMqUrl,
@@ -185,27 +193,6 @@ namespace WindNight.RabbitMq
             }, cancellationToken);
         }
 
-        //protected virtual bool RedisLockTake(Func<string, string, bool> func, RedisLockPrefixKey preKey, string message, string messageMd5, long expireMs = 0L)
-        //{
-        //    bool rlt = false;
-        //    if (expireMs == 0L) expireMs = DefaultLockTakeKeyExpireMs;
-        //    if (_redisLockRedis.RedisLockTake(preKey, messageMd5, expireMs))//异常时 才会用到expireMs
-        //    {
-        //        try
-        //        {
-        //            rlt = func.Invoke(message, messageMd5);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            LogHelper.Error($"Process Message Handler Error {ex.Message}. {message}", ex);
-        //        }
-        //        finally
-        //        {
-        //            _redisLockRedis.RedisLockRelease(preKey, messageMd5);
-        //        }
-        //    }
 
-        //    return rlt;
-        //}
     }
 }

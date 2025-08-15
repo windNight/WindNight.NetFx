@@ -6,13 +6,20 @@ namespace WindNight.RabbitMq
 {
     public class DefaultRabbitMqConsumerFactory : IRabbitMqConsumerFactory, IDisposable
     {
+        public static string CurrentVersion => BuildInfo.BuildVersion;
+
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
+
         private static readonly object objectLock = new();
 
         private readonly ConcurrentDictionary<string, IRabbitMqConsumer> ConsumerDict = new();
 
         public DefaultRabbitMqConsumerFactory()
         {
-            if (ConsumerDict == null) ConsumerDict = new ConcurrentDictionary<string, IRabbitMqConsumer>();
+            if (ConsumerDict == null)
+            {
+                ConsumerDict = new ConcurrentDictionary<string, IRabbitMqConsumer>();
+            }
         }
 
 

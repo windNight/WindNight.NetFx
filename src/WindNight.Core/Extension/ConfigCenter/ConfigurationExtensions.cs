@@ -19,7 +19,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
         private static readonly string[] FalseStrings = ConstantKeys.FalseStrings;
 
 
-        public static int GetAppId(this IConfiguration configuration, int defaultValue = 0)
+        public static string GetAppId(this IConfiguration configuration, string defaultValue = "")
         {
             return configuration.GetAppSettingValue(AppIdKey, defaultValue);
         }

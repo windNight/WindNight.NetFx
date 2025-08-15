@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Quartz;
 using Schedule.Abstractions;
+using Schedule.@internal;
 using Schedule.Model.Enums;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;
@@ -25,8 +26,18 @@ namespace Schedule
 
     public abstract class CommonBaseJob : BaseJob, IJobBase
     {
+        protected bool OpenDebug => ConfigItems.OpenDebug;
+
+        public override async Task<JobBusinessStateEnum> ExecuteWithResultAsync(IJobExecutionContext context)
+        {
+
+            return await DoBizJobAsync(context);
+        }
+        public abstract Task<JobBusinessStateEnum> DoBizJobAsync(IJobExecutionContext context);
+
         public CommonBaseJob()
         {
+
         }
 
         //public abstract Task<bool> DoJobAsync(IJobExecutionContext context);

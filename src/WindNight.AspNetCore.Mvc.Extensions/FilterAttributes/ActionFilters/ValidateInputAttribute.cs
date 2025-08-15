@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -19,8 +19,10 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 
         protected virtual void ValidateInput(ActionExecutingContext context)
         {
-            if (!ConfigItems.IsValidateInput || context.ModelState.IsValid) return;
-            string message;
+            if (!ConfigItems.IsValidateInput || context.ModelState.IsValid)
+            {
+                return;
+            }
 
             var invalidValue = context.ModelState.Values
                     .Where(m => m.ValidationState == ModelValidationState.Invalid)
@@ -28,12 +30,16 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                     .ToList()
                 ;
 
+            string message = "";
             if (!invalidValue.Any())
-                message = unknownParamterError;
+            {
+                message = unknownParamError;
+            }
             else
-                message = string.Join("|",
-                    invalidValue.Select(m => $"{m.Key}:{string.Join(",", m.Errors.Select(p => p.ErrorMessage))}")
-                );
+            {
+                message = invalidValue.Where(m => m != null).Select(m => $"{m.Key}:{m.Errors.Select(p => p.ErrorMessage).Join(",")}").Join("|");
+
+            }
 
             context.Result = new ObjectResult(new ResponseResult<object>().BadRequest(100420, message));
         }
@@ -64,8 +70,8 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 
         #region 常量
 
-        private const string unknownParamterError = "您输入的参数有误";
-        private const string notSpecificErroMessage = "您输入的参数{0}有误";
+        private const string unknownParamError = "您输入的参数有误";
+        private const string notSpecificErrorMessage = "您输入的参数{0}有误";
 
         #endregion 常量
     }

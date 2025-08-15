@@ -16,12 +16,10 @@ namespace WindNight.ConfigCenter.Extension.@internal
 {
     internal partial class LogHelper
     {
-        private static Version _version => new AssemblyName(typeof(DefaultLogHelperBase).Assembly.FullName).Version;
-        private static DateTime _compileTime => File.GetLastWriteTime(typeof(DefaultLogHelperBase).Assembly.Location);
+        public static string CurrentVersion => BuildInfo.BuildVersion;
 
-        public static string CurrentVersion => _version.ToString();
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
 
-        public static DateTime CurrentCompileTime => _compileTime;
         protected static bool OpenDebug => ConfigItems.OpenDebug;
 
         protected static LogLevels MiniLogLevel => ConfigItems.GlobalMiniLogLevel;

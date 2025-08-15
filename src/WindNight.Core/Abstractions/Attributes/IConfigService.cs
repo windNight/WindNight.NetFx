@@ -13,7 +13,7 @@ namespace WindNight.Core.Abstractions
         IConfiguration Configuration { get; }
 
         /// <summary> 服务编号 </summary>
-        int SystemAppId { get; }
+        string SystemAppId { get; }
 
         /// <summary> 服务代号 </summary>
         string SystemAppCode { get; }

@@ -10,6 +10,24 @@ namespace Schedule
 {
     public static class JobContext
     {
+
+        public static JobBaseInfo Parse2JobBaseInfo(this IJobExecutionContext context)
+        {
+            var jobId = context.GetJobDbId();
+            var jobCode = context.GetJobCode();
+            var jobName = context.GetJobName();
+
+            var jobInfo = new JobBaseInfo
+            {
+                JobId = jobId,
+                JobCode = jobCode,
+                JobName = jobName,
+            };
+
+            return jobInfo;
+        }
+
+
         private static readonly AsyncLocal<JobBaseInfo> CurrentJobBaseInfoAsyncLocal = new AsyncLocal<JobBaseInfo>();
 
         public static void SetCurrentJobBaseInfo(JobBaseInfo jobBaseInfo)

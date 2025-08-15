@@ -33,11 +33,17 @@ namespace Schedule.Ctrl
 
         public List<JobMeta> ReadAllJobEnv()
         {
-            if (!File.Exists("jobrunningenv.cache")) return new List<JobMeta>(0);
+            if (!File.Exists("jobrunningenv.cache"))
+            {
+                return new List<JobMeta>(0);
+            }
 
             var allJobStr = File.ReadAllLines("jobrunningenv.cache", Encoding.UTF8);
             var jobMetaList = new List<JobMeta>(allJobStr.Length);
-            foreach (var item in allJobStr) jobMetaList.Add(UtilsFunc.StringToJobMeta(item));
+            foreach (var item in allJobStr)
+            {
+                jobMetaList.Add(UtilsFunc.StringToJobMeta(item));
+            }
             return jobMetaList;
         }
 

@@ -9,12 +9,10 @@ namespace WindNight.LogExtension
 {
     public static partial class LogHelper
     {
-        private static Version _version => new AssemblyName(typeof(LogHelper).Assembly.FullName).Version;
-        private static DateTime _compileTime => File.GetLastWriteTime(typeof(LogHelper).Assembly.Location);
+        public static string CurrentVersion => BuildInfo.BuildVersion;
 
-        public static string CurrentVersion => _version.ToString();
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
 
-        public static DateTime CurrentCompileTime => _compileTime;
         static bool OpenDebug => ConfigItems.OpenDebug;
 
         static LogLevels MiniLogLevel => ConfigItems.GlobalMiniLogLevel;

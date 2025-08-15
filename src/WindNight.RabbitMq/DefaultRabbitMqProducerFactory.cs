@@ -6,13 +6,20 @@ namespace WindNight.RabbitMq
 {
     public class DefaultRabbitMqProducerFactory : IRabbitMqProducerFactory, IDisposable
     {
+        public static string CurrentVersion => BuildInfo.BuildVersion;// _version.ToString();
+
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
+
         private static readonly object objectLock = new();
 
         private readonly ConcurrentDictionary<string, IRabbitMqProducer> ProducerDict = new();
 
         public DefaultRabbitMqProducerFactory()
         {
-            if (ProducerDict == null) ProducerDict = new ConcurrentDictionary<string, IRabbitMqProducer>();
+            if (ProducerDict == null)
+            {
+                ProducerDict = new ConcurrentDictionary<string, IRabbitMqProducer>();
+            }
         }
 
 
@@ -26,6 +33,7 @@ namespace WindNight.RabbitMq
             IRabbitMqProducer producer;
             // 是否使用settings.ExchangeName 更合适
             if (!ProducerDict.TryGetValue(settings.ProducerName, out producer))
+            {
                 lock (objectLock)
                 {
                     if (!ProducerDict.TryGetValue(settings.ProducerName, out producer))
@@ -34,6 +42,8 @@ namespace WindNight.RabbitMq
                         ProducerDict.TryAdd(settings.ProducerName, producer);
                     }
                 }
+
+            }
 
             return producer;
         }

@@ -1,10 +1,15 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
+using System.Reflection.PortableExecutable;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.WnExtensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
+using WindNight.AspNetCore.Mvc.Extensions;
+using WindNight.Core;
+using WindNight.Core.Extension;
 using WindNight.Extension;
 
 namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
@@ -35,6 +40,59 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
             }
         }
 
+
+        string QueryTraceIdFromActionArguments(ActionExecutingContext context)
+        {
+
+            try
+            {
+
+                if (context.ActionArguments == null)
+                {
+                    return string.Empty;
+                }
+
+                var key = ConstantKeys.ReqTraceIdKey;
+                var argument = context.ActionArguments.FirstOrDefault();
+                if (argument.Value != null)
+                {
+                    if (argument.Value == null || argument.Value.GetType().IsValueType || argument.Value is string)
+                    {
+                        if (argument.Key.ToLower()
+                            .Equals(ConstantKeys.ReqTraceIdKey, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return argument.Value?.ToString() ?? "";
+                        }
+                    }
+                    else if (argument.Value is IList)
+                    {
+                        //  CurrentItem.AddItem("list", argument.Value.ToJsonStr());
+                    }
+                    else
+                    {
+                        var input = JObject.FromObject(argument.Value);
+                        var traceId = "";
+
+                        if (input.ContainsKey(key))
+                        {
+                            traceId = input[key]?.ToString() ?? string.Empty;
+
+                            return traceId;
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"QueryTraceIdFromActionArguments Handler Error", ex);
+            }
+            return string.Empty;
+
+
+        }
+
+
         protected virtual void AppendActionArguments(ActionExecutingContext context)
         {
             if (context.ActionArguments != null)
@@ -43,27 +101,41 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 {
                     try
                     {
-                        if (argument.Value == null || argument.Value.GetType().IsValueType || argument.Value is string)
+                        if (argument.Key.ToLower().Equals(ConstantKeys.ReqTraceIdKey, StringComparison.OrdinalIgnoreCase))
                         {
-                            CurrentItem.AddItem($"{argument.Key.ToLower()}", argument.Value?.ToString());
-                        }
-                        else if (argument.Value is IList)
-                        {
-                            CurrentItem.AddItem("list", argument.Value.ToJsonStr());
+                            if (argument.Value is string)
+                            {
+                                CurrentItem.AddItem($"{argument.Key.ToLower()}", argument.Value?.ToString());
+                            }
                         }
                         else
                         {
-                            var input = JObject.FromObject(argument.Value);
-                            if (input == null) continue;
-                            foreach (var each in input)
+
+                            if (argument.Value == null || argument.Value.GetType().IsValueType || argument.Value is string)
                             {
-                                if (each.Key.ToLower().Contains(ACCESSTOKENKEY))
+                                CurrentItem.AddItem($"{argument.Key.ToLower()}", argument.Value?.ToString());
+                            }
+                            else if (argument.Value is IList)
+                            {
+                                CurrentItem.AddItem("list", argument.Value.ToJsonStr());
+                            }
+                            else
+                            {
+                                var input = JObject.FromObject(argument.Value);
+                                if (input == null)
                                 {
-                                    CurrentItem.AddItem(WebConst.ACCESSTOKEN, each.Value.ToString());
+                                    continue;
                                 }
-                                else
+                                foreach (var each in input)
                                 {
-                                    CurrentItem.AddItem($"object:{each.Key.ToLower()}", each.Value.ToString());
+                                    if (each.Key.ToLower().Contains(ACCESSTOKENKEY))
+                                    {
+                                        CurrentItem.AddItem(WebConst.ACCESSTOKEN, each.Value.ToString());
+                                    }
+                                    else
+                                    {
+                                        CurrentItem.AddItem($"object:{each.Key.ToLower()}", each.Value.ToString());
+                                    }
                                 }
                             }
                         }
@@ -112,11 +184,13 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
             }
         }
 
+
         protected virtual void AppendCommonContext(ActionExecutingContext context)
         {
+
             CurrentItem.AddItem(WebConst.HEARDER, context.HttpContext.Request.Headers);
             CurrentItem.AddItem(WebConst.BEGINTIME, HardInfo.Now);
-            var traceId = CurrentItem.GetSerialNumber;
+            //   var traceId = CurrentItem.GetSerialNumber;
             //if (!CurrentItem.Items.ContainsKey(WebConst.SERIZLNUMBER))
             //{
             //    CurrentItem.AddItem(WebConst.SERIZLNUMBER, $"{GuidHelper.GenerateOrderNumber()}");
@@ -139,9 +213,19 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
+            var reqTraceId = context.HttpContext.Request.GetReqTraceIdValue();
+            if (reqTraceId.IsNullOrEmpty())
+            {
+                reqTraceId = QueryTraceIdFromActionArguments(context);
+            }
+
+            var _ = CurrentItem.AddSerialNumber(reqTraceId, !reqTraceId.IsNullOrEmpty());
+
             AppendCommonContext(context);
             AppendHeaderInfo(context.HttpContext);
             AppendActionArguments(context);
+
+
             base.OnActionExecuting(context);
         }
 

@@ -444,6 +444,9 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                 services.AddHttpContextAccessor();
                 var configuration = context.Configuration;
                 services.TryAddSingleton(configuration);
+
+                services.AddSvrMonitorService(configuration);
+
                 configureDelegate?.Invoke(context, services);
 
                 services.AddSingleton<ICurrentContext, DefaultCurrentContext>();

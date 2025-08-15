@@ -23,7 +23,9 @@ namespace Schedule.Func
         public static void SetJobCode(this IJobDetail jobDetail, string origName)
         {
             if (!origName.IsNullOrEmpty())
+            {
                 jobDetail.JobDataMap["jobCode"] = origName;
+            }
         }
 
         /// <summary>
@@ -46,7 +48,9 @@ namespace Schedule.Func
         public static void SetJobName(this IJobDetail jobDetail, string name)
         {
             if (!name.IsNullOrEmpty())
+            {
                 jobDetail.JobDataMap["jobName"] = name;
+            }
         }
 
         /// <summary>
@@ -69,7 +73,9 @@ namespace Schedule.Func
         public static void SetJobRunParams(this IJobDetail jobDetail, string runParams)
         {
             if (!runParams.IsNullOrEmpty())
+            {
                 jobDetail.JobDataMap["runParams"] = runParams;
+            }
         }
 
         /// <summary>
@@ -135,7 +141,9 @@ namespace Schedule.Func
         public static void SetDepJobs(this IJobDetail jobDetail, string depJobs)
         {
             if (!depJobs.IsNullOrEmpty())
+            {
                 jobDetail.JobDataMap.Add("depJobs", depJobs);
+            }
         }
 
         /// <summary>
@@ -158,7 +166,9 @@ namespace Schedule.Func
         public static void SetJobDbId(this IJobDetail jobDetail, string jobDbId)
         {
             if (!jobDbId.IsNullOrEmpty())
+            {
                 jobDetail.JobDataMap.Add("jobId", jobDbId);
+            }
         }
 
         /// <summary>
@@ -274,7 +284,9 @@ namespace Schedule.Func
         public static void SetVotedReason(this IJobDetail jobDetail, string reason)
         {
             if (!reason.IsNullOrEmpty())
+            {
                 jobDetail.JobDataMap.Add("vetoedReason", reason);
+            }
         }
 
         /// <summary>
@@ -294,15 +306,21 @@ namespace Schedule.Func
         public static void SetTempConfig(this IJobExecutionContext context, string key, object value)
         {
             if (context.JobDetail.JobDataMap.ContainsKey(key))
+            {
                 context.JobDetail.JobDataMap[key] = value;
+            }
             else
+            {
                 context.JobDetail.JobDataMap.Add(key, value);
+            }
         }
 
         public static object GetTempConfig(this IJobExecutionContext context, string key)
         {
             if (context.JobDetail.JobDataMap.ContainsKey(key))
+            {
                 return context.JobDetail.JobDataMap[key];
+            }
             return string.Empty;
         }
 
@@ -325,7 +343,9 @@ namespace Schedule.Func
         public static void SetBizContent(this IJobDetail jobDetail, string bizContent)
         {
             if (!bizContent.IsNullOrEmpty())
+            {
                 jobDetail.JobDataMap[BizContentKey] = bizContent;
+            }
         }
 
         /// <summary>
@@ -343,6 +363,7 @@ namespace Schedule.Func
 
             return null;
         }
+
         /// <summary>
         ///     设置原始job baseInfo
         /// </summary>

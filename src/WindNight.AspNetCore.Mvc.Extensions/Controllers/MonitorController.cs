@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using WindNight.AspNetCore.Mvc.Extensions.FilterAttributes;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Attributes.Abstractions;
 using WindNight.Core.Extension;
@@ -23,6 +26,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         /// <returns></returns>
         [HttpGet("check/ips")]
         [ClearResult]
+        [SysApiAuthActionFilter(false)]
         public object HealthCheckIps()
         {
             return GetHttpClientIps();
@@ -34,6 +38,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [HttpGet("healthcheck")]
         [HttpGet("basicmonitor")]
         [ClearResult]
+        [SysApiAuthActionFilter(false)]
         public object HealthCheck()
         {
             return GetInfo();
@@ -44,6 +49,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         /// <returns></returns>
         [HttpGet("zabbix")]
         [ClearResult]
+        [SysApiAuthActionFilter(false)]
         public object Zabbix()
         {
             return GetInfo();
@@ -54,6 +60,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         /// <returns></returns>
         [HttpGet("slb")]
         [ClearResult]
+        [SysApiAuthActionFilter(false)]
         public object Slb()
         {
             return GetInfo();
@@ -70,6 +77,8 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("svrinfo")]
+        [NonAuth, SysApi(5)]
+        [SysApiAuthActionFilter]
         public object SvrInfo()
         {
             var clientIp = GetHttpClientIp();
@@ -83,7 +92,9 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             {
                 return false;
             }
-            var svrInfo = DefaultSvrHostInfo.GenDefault;
+            //  var svrInfo = DefaultSvrHostInfo.GenDefault;
+            var svrInfo = DefaultSvrMonitorInfo.GenSvrMonitorInfo(SvrMonitorTypeEnum.Query);
+            svrInfo.QueryDateTime = HardInfo.NowFullString;
             var serIp = svrInfo.ServerIp;
             if (serIp.IsNullOrEmpty() || IPHelper.IsDefaultIp(serIp))
             {
@@ -92,6 +103,30 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
             svrInfo.ClientIp = clientIp;
             return svrInfo;
+        }
+
+        [HttpGet("buildinfo")]
+        [NonAuth, SysApi(5)]
+        [SysApiAuthActionFilter]
+        public virtual object QueryBuildInfo()
+        {
+            if (!IsAuthType1())
+            {
+                return false;
+            }
+
+            var buildInfo = HardInfo.QuerySvrBuildInfo();
+
+            var obj = buildInfo.SvrBuildInfoDict.ToDictionary(k => k.Key, v => v.Value);
+
+            obj["AppId"] = SysAppId;
+            obj["AppCode"] = SysAppCode;
+            obj["AppName"] = SysAppName;
+            obj["ClientIp"] = GetHttpClientIp();
+            obj["ServiceIp"] = GetHttpServerIp();
+
+            // obj["BuildTime"] = BuildInfo.BuildTs.ConvertToTimeFormatUseUnix();
+            return obj;
         }
 
 

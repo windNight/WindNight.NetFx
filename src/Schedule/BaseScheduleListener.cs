@@ -16,7 +16,49 @@ namespace Schedule
 {
     public class BaseScheduleListener<T> : IScheduleListener where T : IJob
     {
+        protected static string CurrentPluginVersion => BuildInfo.BuildVersion;
+
+        protected static string CurrentPluginCompileTime => BuildInfo.BuildTime;
+
+        public IJobBaseInfo CurrentJob { get; private set; }
+
         protected readonly IScheduleNotice _scheduleNotice;
+
+        //protected IJobExecutionContext _jobExecutionContext;
+
+        //public JobBusinessStateEnum JobStatus { get; protected set; } = JobBusinessStateEnum.Unknown;
+
+        //public bool JobIsRunning()
+        //{
+        //    return JobStatus == JobBusinessStateEnum.Processing;
+        //}
+
+        //internal void InitJobStatus()
+        //{
+        //    $"Job({JobBaseInfo}) JobStatus->Init".Log2Console();
+        //    JobStatus = JobBusinessStateEnum.Unknown;
+        //}
+
+        //void JobDoing()
+        //{
+        //    $"Job({JobBaseInfo}) Doing".Log2Console();
+
+        //    JobStatus = JobBusinessStateEnum.Processing;
+        //}
+
+        //void JobVetoed()
+        //{
+        //    $"Job({JobBaseInfo}) Vetoed".Log2Console();
+        //    JobStatus = JobBusinessStateEnum.Vetoed;
+        //}
+
+        //void SetBizJobStatus(JobBusinessStateEnum bizStatus)
+        //{
+        //    $"Job({JobBaseInfo}) JobStatus->{bizStatus}".Log2Console();
+        //    JobStatus = bizStatus;
+        //}
+
+        //public IJobExecutionContext GetCurrentJobContext() => _jobExecutionContext;
 
         /// <summary>
         ///     监听器名称
@@ -76,8 +118,7 @@ namespace Schedule
         /// </param>
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns></returns>
-        public virtual async Task TriggerFired(ITrigger trigger, IJobExecutionContext context,
-            CancellationToken cancellationToken = default)
+        public virtual async Task TriggerFired(ITrigger trigger, IJobExecutionContext context, CancellationToken cancellationToken = default)
         {
             var jobId = SetJobId(context);
             Debug(nameof(ITriggerListener), nameof(TriggerFired));
@@ -100,11 +141,11 @@ namespace Schedule
         /// <param name="trigger">The Quartz.ITrigger that has misfired.</param>
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns></returns>
-        public virtual async Task TriggerMisfired(ITrigger trigger,
-            CancellationToken cancellationToken = default)
+        public virtual async Task TriggerMisfired(ITrigger trigger, CancellationToken cancellationToken = default)
         {
             Debug(nameof(ITriggerListener), nameof(TriggerMisfired));
             await Task.CompletedTask;
+
         }
 
         /// <summary>
@@ -125,16 +166,16 @@ namespace Schedule
         /// </param>
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns></returns>
-        public virtual async Task TriggerComplete(ITrigger trigger, IJobExecutionContext context,
-            SchedulerInstruction triggerInstructionCode,
-            CancellationToken cancellationToken = default)
+        public virtual async Task TriggerComplete(ITrigger trigger, IJobExecutionContext context, SchedulerInstruction triggerInstructionCode, CancellationToken cancellationToken = default)
         {
             Debug(nameof(ITriggerListener), nameof(TriggerComplete));
             var beginTicks = context.GetJobBeginDateTimeTicks();
             var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - beginTicks).TotalMilliseconds;
 
             if (milliseconds > 5 * 1000)
+            {
                 JobLogHelper.Warn($"{JobInfo} 耗时{milliseconds} ms ", null, nameof(TriggerComplete), millisecond: milliseconds);
+            }
             else if (milliseconds > 0)
             {
                 var isLogJobLC = context.GetIsLogJobLC();
@@ -147,6 +188,9 @@ namespace Schedule
 
             var bizState = context.GetJobBusinessState();
             var bizStatsStr = bizState.ToString();
+
+            // SetBizJobStatus(bizState);
+
             if (bizState == JobBusinessStateEnum.Success)
             {
                 bizStatsStr = $"<font color=#20CE43>{bizState}</font>";
@@ -157,9 +201,15 @@ namespace Schedule
             }
 
             var bizContent = context.GetBizContent();
+
             await DoNoticeAsync($"耗时 {milliseconds} ms. 任务状态为 {bizStatsStr}", bizContent);
 
+            // InitJobStatus();
+
             await Task.CompletedTask;
+
+
+
         }
 
         /// <summary>
@@ -179,15 +229,16 @@ namespace Schedule
         /// </param>
         /// <param name="cancellationToken"> The cancellation instruction.</param>
         /// <returns> Returns true if job execution should be vetoed, false otherwise. </returns>
-        public virtual async Task<bool> VetoJobExecution(ITrigger trigger, IJobExecutionContext context,
-            CancellationToken cancellationToken = default)
+        public virtual async Task<bool> VetoJobExecution(ITrigger trigger, IJobExecutionContext context, CancellationToken cancellationToken = default)
         {
             Debug(nameof(ITriggerListener), nameof(VetoJobExecution));
+
             var origJobName = context.GetJobCode();
             //检查依赖选项是否满足
             var isOnceJob = context.IsOnceJob();
             var depJobs = context.GetDepJobs(); //jobcodes
             var isContinueRun = isOnceJob || depJobs.IsNullOrEmpty() || await WaitJobCompleted(origJobName, depJobs.Split(',').ToList(), HardInfo.Now.Date);
+
             context.JobDetail.SetContinueRunFlag(isContinueRun);
 
             if (!isContinueRun)
@@ -195,6 +246,7 @@ namespace Schedule
                 Debug(nameof(ITriggerListener), origJobName + "未满足运行条件");
                 // Do Notice
                 await DoNoticeAsync($"前置job：{depJobs} 未全部完成！ ");
+                // JobVetoed();
                 return await Task.FromResult(true);
             }
 
@@ -217,12 +269,12 @@ namespace Schedule
         /// </param>
         /// <param name="cancellationToken"> The cancellation instruction.</param>
         /// <returns></returns>
-        public virtual async Task JobToBeExecuted(IJobExecutionContext context,
-            CancellationToken cancellationToken = default)
+        public virtual async Task JobToBeExecuted(IJobExecutionContext context, CancellationToken cancellationToken = default)
         {
             Debug(nameof(IJobListener), nameof(JobToBeExecuted));
             try
             {
+                //  JobDoing();
                 var jobName = context.GetJobName();
                 var jobCode = context.GetJobCode();
                 var autoClose = context.GetAutoClose();
@@ -288,8 +340,7 @@ namespace Schedule
         /// </param>
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns></returns>
-        public virtual async Task JobExecutionVetoed(IJobExecutionContext context,
-            CancellationToken cancellationToken = default)
+        public virtual async Task JobExecutionVetoed(IJobExecutionContext context, CancellationToken cancellationToken = default)
         {
             //TODO Add Notice 
             Debug(nameof(IJobListener), nameof(JobExecutionVetoed));
@@ -315,8 +366,7 @@ namespace Schedule
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <param name="jobException"></param>
         /// <returns></returns>
-        public virtual async Task JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException,
-            CancellationToken cancellationToken = default)
+        public virtual async Task JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException, CancellationToken cancellationToken = default)
         {
             Debug(nameof(IJobListener), nameof(JobWasExecuted));
             var retCode = 0;
@@ -335,8 +385,9 @@ namespace Schedule
                 {
                     var delJobRet = await new ScheduleCtrl().StopJobAsync(jobName);
                     if (delJobRet != JobActionRetEnum.Success)
-                        JobLogHelper.Error(
-                            $"{JobInfo}:单次运行job结束后删除job失败，job ：{JobContext.CurrentJobBaseInfo}，返回结果：{delJobRet}", null, nameof(JobWasExecuted));
+                    {
+                        JobLogHelper.Error($"{JobInfo}:单次运行job结束后删除job失败，job ：{JobContext.CurrentJobBaseInfo}，返回结果：{delJobRet}", null, nameof(JobWasExecuted));
+                    }
                 }
 
                 var jobId = JobId;
@@ -402,8 +453,10 @@ namespace Schedule
             {
                 var autoClose = context.GetAutoClose();
                 if (autoClose)
-                    // TODO 通知注册中心下线 
-                    Environment.Exit(retCode);
+                {
+                    //  // TODO 通知注册中心下线 
+                    //  Environment.Exit(retCode);
+                }
             }
 
             await Task.CompletedTask;
@@ -424,13 +477,19 @@ namespace Schedule
         private async Task<bool> WaitJobCompleted(string sourceJob, List<string> jobCodes, DateTime jobStartTime)
         {
             var ctrl = Ioc.GetService<IScheduleOrderCtrl>();
-            if (ctrl == null) return await Task.FromResult(true);
+            if (ctrl == null)
+            {
+                return await Task.FromResult(true);
+            }
 
             while (true)
             {
                 var allJobRunState = await ctrl.WaitJobCompleted(sourceJob, jobCodes, jobStartTime);
 
-                if (allJobRunState == JobRunStateEnum.Ok) return await Task.FromResult(true);
+                if (allJobRunState == JobRunStateEnum.Ok)
+                {
+                    return await Task.FromResult(true);
+                }
 
                 if (allJobRunState == JobRunStateEnum.Running)
                 {
@@ -448,7 +507,10 @@ namespace Schedule
         /// <returns></returns>
         protected string SetJobId(IJobExecutionContext context)
         {
+            //  _jobExecutionContext = context;
+
             var jobId = GuidHelper.GetGuid();
+
             context.JobDetail.SetJobDbId(jobId);
             context.JobDetail.SetJobBeginDateTimeTicks();
             JobId = jobId;
@@ -456,7 +518,8 @@ namespace Schedule
             IsDoNotice = context.GetIsDoNotice();
 
             var jobInfo = context.GetJobBaseInfo();
-            if (jobInfo == null || jobInfo.JobExecTs < HardInfo.Now.AddMinutes(-2).ConvertToUnixTime())
+            var limitTs = HardInfo.Now.AddMinutes(-2).ConvertToUnixTime();
+            if (jobInfo == null || jobInfo.JobExecTs < limitTs)
             {
                 jobInfo = new JobBaseInfo
                 {
@@ -466,9 +529,14 @@ namespace Schedule
                     ExecTag = "Listener.TriggerFired",
                     JobExecTs = HardInfo.NowUnixTime,
                 };
+
                 context.JobDetail.SetJobBaseInfo(jobInfo);
+
                 JobContext.SetCurrentJobBaseInfo(jobInfo);
+
             }
+
+            CurrentJob = jobInfo;
 
             return JobId;
         }

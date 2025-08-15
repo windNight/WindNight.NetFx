@@ -4,6 +4,10 @@ namespace WindNight.RabbitMq
 {
     public class DefaultRabbitMqProducer : Producer, IRabbitMqProducer
     {
+        public static string CurrentVersion => BuildInfo.BuildVersion;
+
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
+
         public DefaultRabbitMqProducer(IRabbitMqProducerSettings settings) :
             base(settings.RabbitMqUrl,
                 new ProducerConfigInfo

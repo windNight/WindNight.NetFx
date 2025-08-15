@@ -22,7 +22,10 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
         [NJsonIgnore, MJsonIgnore]
         public bool IsManageApp { get; set; } = false;
 
-        public int ShowSysApiMiniLevel { get; set; } = 0;
+        /// <summary>
+        ///  <see cref="WindNight.Core.Attributes.Abstractions.SysApiAttribute"/>   值越大等级越高
+        /// </summary>
+        public int ShowSysApiMiniLevel { get; set; } = 5;
 
         public bool OpenSwaggerDebug { get; set; } = false;
 
@@ -191,7 +194,7 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
             }
         }
 
-        public static int ShowSysApiMiniLevel => SwaggerConfigs?.ShowSysApiMiniLevel ?? 0;
+        public static int ShowSysApiMiniLevel => SwaggerConfigs?.ShowSysApiMiniLevel ?? 5;
         public static bool OpenSwaggerDebug => SwaggerConfigs?.OpenSwaggerDebug ?? false;
 
         public static string EnvName =>

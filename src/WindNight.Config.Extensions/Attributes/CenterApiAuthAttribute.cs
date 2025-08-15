@@ -38,7 +38,7 @@ namespace WindNight.Config.Extensions.Attributes
             }
 
             var remoteIp = context.HttpContext.GetClientIp();
-            if (!remoteIp.IsPrivateOrLoopback())
+            if (!remoteIp.IsInternalIp())
             {
                 var ak = GetAccessToken(context.HttpContext);
                 var token = GetAppTokenValue(context.HttpContext);

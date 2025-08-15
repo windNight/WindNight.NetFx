@@ -250,7 +250,7 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="isThrow"></param>
         /// <returns></returns>
         protected static decimal GetConfigValue(string configKey, decimal defaultValue = 0M, bool isThrow = true) =>
-            GetAppSetting(configKey, defaultValue.ToString(CultureInfo.InvariantCulture), isThrow)
+            GetAppSetting(configKey, defaultValue.ToString(), isThrow)
                 .ToDecimal(defaultValue);
 
         /// <summary>

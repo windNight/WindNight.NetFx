@@ -9,11 +9,16 @@ namespace Schedule.Abstractions
     /// </summary>
     public interface IJobCtrl
     {
+
+        string JobCode { get; }
+
         /// <summary>
         ///     获取job key
         /// </summary>
         /// <returns></returns>
         JobKey GetJobKey();
+
+        bool JobCanSkip();
 
         /// <summary>
         ///     开始执行任务
@@ -28,5 +33,7 @@ namespace Schedule.Abstractions
         /// </summary>
         /// <returns></returns>
         JobMeta ReadJobParam();
+
+
     }
 }

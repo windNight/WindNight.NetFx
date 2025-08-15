@@ -12,14 +12,11 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
     {
         private static IDbLoggerProcessor DbLoggerProcessor => DbLoggerExtensions.LoggerProcessor;
         private static DbLogOptions DbLogOptions => DbLoggerExtensions.DbLogOptions;
-        private static Version _version => new AssemblyName(typeof(DbLogHelper).Assembly.FullName).Version;
-        private static DateTime _compileTime => File.GetLastWriteTime(typeof(DbLogHelper).Assembly.Location);
+        public static string CurrentVersion => BuildInfo.BuildVersion;
 
-        public static string CurrentVersion => _version.ToString();
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
 
-        public static DateTime CurrentCompileTime => _compileTime;
-
-        public static string LogPluginVersion => $"{nameof(DbLogHelper)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}";
+        public static string LogPluginVersion => $"{nameof(DbLogHelper)}/{CurrentVersion} {CurrentCompileTime}";
 
         /// <summary>
         /// </summary>

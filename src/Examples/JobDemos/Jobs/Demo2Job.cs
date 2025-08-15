@@ -1,10 +1,12 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using JobDemos.Jobs.Demo1;
 using Newtonsoft.Json.Extension;
 using Quartz;
 using Schedule;
 using Schedule.Func;
+using Schedule.Model.Enums;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Attributes.Abstractions;
 using WindNight.Extension;
@@ -18,7 +20,7 @@ namespace JobDemos.Jobs.Demo2
 
         protected override int CurrentUserId => 200;
         protected override Func<bool, bool> PreTodo => null;
-        public override async Task<bool> ExecuteWithResultAsync(IJobExecutionContext context)
+        public override async Task<JobBusinessStateEnum> DoBizJobAsync(IJobExecutionContext context)
         {
             var jobId = JobId;
             var jobCode = JobCode;
@@ -27,10 +29,13 @@ namespace JobDemos.Jobs.Demo2
             var jobRunParams = context.GetJobRunParams();
             var obj = new { jobId, jobCode, CurrentJobCode, traceId, jobRunParams };
             var jobBaseInfo = context.GetJobBaseInfo();
-            ConsoleWriteLine($"{HardInfo.NowString} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()}");
 
-            //  Console.WriteLine($"{HardInfo.NowString} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()}{Environment.NewLine}");
-            return await Task.FromResult(true);
+            $"Start {HardInfo.NowString} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()}".Log2Console();
+
+            Thread.Sleep(100_000);
+            $"End {HardInfo.NowString} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()}".Log2Console();
+
+            return await Task.FromResult(JobBusinessStateEnum.Success);
 
         }
 

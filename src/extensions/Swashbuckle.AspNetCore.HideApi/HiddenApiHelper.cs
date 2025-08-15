@@ -14,6 +14,10 @@ namespace Swashbuckle.AspNetCore.HideApi
         {
             try
             {
+                if (apiDescription.RelativePath.Contains("svrinfo"))
+                {
+
+                }
                 var sysApiAttr = apiDescription.GetSysApiAttr();
                 if (sysApiAttr != null)
                 {
@@ -22,9 +26,13 @@ namespace Swashbuckle.AspNetCore.HideApi
                         return true;
                     }
 
-                    if (ConfigItems.ShowSysApiMiniLevel > 0 && sysApiAttr.SysApiLevel < ConfigItems.ShowSysApiMiniLevel)
+                    if (ConfigItems.ShowSysApiMiniLevel > 0)//&& sysApiAttr.SysApiLevel >= ConfigItems.ShowSysApiMiniLevel)
                     {
-                        return true;
+                        var sysApiAttrs = apiDescription.GetSysApiAttrs();
+                        if (sysApiAttrs.Any(m => m.SysApiLevel >= ConfigItems.ShowSysApiMiniLevel))
+                        {
+                            return true;
+                        }
                     }
                 }
                 var debugApiAttr = apiDescription.GetDebugApiAttr();

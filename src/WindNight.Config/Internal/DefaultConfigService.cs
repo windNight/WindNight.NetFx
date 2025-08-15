@@ -110,7 +110,7 @@ namespace WindNight.Config.@internal
     {
         public virtual IConfiguration Configuration => Ioc.GetService<IConfiguration>();
 
-        public virtual int SystemAppId => Configuration?.GetAppId() ?? 0;
+        public virtual string SystemAppId => Configuration?.GetAppId() ?? "";
         public virtual string SystemAppCode => Configuration?.GetAppCode() ?? "";
         public virtual string SystemAppName => Configuration?.GetAppName() ?? "";
 

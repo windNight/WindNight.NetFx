@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Extensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.AspNetCore.Mvc.Extensions;
+using WindNight.AspNetCore.Mvc.Extensions.FilterAttributes;
 using WindNight.Core;
 using WindNight.Core.Attributes.Abstractions;
 using WindNight.Extension;
@@ -22,6 +23,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
     [Route("api/internal")]
     [SysApi(10)]
     [NonAuth]
+    [SysApiAuthActionFilter]
     public class InternalController : DefaultApiControllerBase // Controller
     {
         // private readonly IHttpContextAccessor _httpContextAccessor;
@@ -35,7 +37,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [HttpGet("config")]
         public object GetConfigs()
         {
-            if (!HttpClientIpIsPrivate())
+            if (!IsAuthType1())
             {
                 if (!ConfigItems.OpenInternalApi)
                 {
@@ -43,8 +45,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 }
             }
 
-
-            return new { Configuration = GetConfiguration() };
+            return new
+            {
+                Configuration = GetConfiguration(),
+            };
         }
 
         //[HttpGet("config2")]
@@ -60,7 +64,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
         private object GetConfiguration(IEnumerable<IConfigurationSection> sections = null)
         {
-            if (!HttpClientIpIsPrivate())
+            if (!IsAuthType1())
             {
                 if (!ConfigItems.OpenInternalApi)
                 {
@@ -75,7 +79,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [HttpGet("info")]
         public object GetProjectVersion()
         {
-            if (!HttpClientIpIsPrivate())
+            if (!IsAuthType1())
             {
                 if (!ConfigItems.OpenInternalApi)
                 {
@@ -99,7 +103,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [HttpGet("version")]
         public object GetVersion()
         {
-            if (!HttpClientIpIsPrivate())
+            if (!IsAuthType1())
             {
                 if (!ConfigItems.OpenInternalApi)
                 {
@@ -117,7 +121,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [HttpGet("versions")]
         public object GetVersions()
         {
-            if (!HttpClientIpIsPrivate())
+            if (!IsAuthType1())
             {
                 if (!ConfigItems.OpenInternalApi)
                 {
@@ -135,7 +139,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         [HttpGet("versions/internal")]
         public object GetInternalVersions()
         {
-            if (!HttpClientIpIsPrivate())
+            if (!IsAuthType1())
             {
                 if (!ConfigItems.OpenInternalApi)
                 {
@@ -214,6 +218,46 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             return null;
         }
 
+
+
+        [HttpGet("svr/pid")]
+        [SysApi(100)]
+        public object GetSvrPId()
+        {
+            if (!IsAuthType1())
+            {
+                if (!ConfigItems.OpenInternalApi)
+                {
+                    return false;
+                }
+            }
+
+            return new
+            {
+                DateTime = HardInfo.NowFullString,
+                PId = HardInfo.QueryRuntimeProcessId(),
+            };
+
+        }
+
+
+        [HttpGet("svr/kill")]
+        [SysApi(100)]
+        public object KillSvr()
+        {
+            if (!IsAuthType1())
+            {
+                if (!ConfigItems.OpenInternalApi)
+                {
+                    return false;
+                }
+            }
+
+            Environment.Exit(-1);
+
+            return -1;
+
+        }
 
 
     }

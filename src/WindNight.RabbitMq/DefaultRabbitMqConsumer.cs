@@ -12,6 +12,10 @@ namespace WindNight.RabbitMq
 {
     public class DefaultRabbitMqConsumer : Consumer, IRabbitMqConsumer
     {
+        public static string CurrentVersion => BuildInfo.BuildVersion;
+
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
+
         public DefaultRabbitMqConsumer(IRabbitMqConsumerSettings settings) :
             base(settings.RabbitMqUrl,
                 new ConsumerConfigInfo

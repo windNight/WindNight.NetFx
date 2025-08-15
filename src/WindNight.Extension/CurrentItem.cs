@@ -220,6 +220,7 @@ namespace WindNight.Extension
 
         /// <summary>  </summary>
         public static string GetSerialNumber => GetSerialNumberInternal();
+
         //        {
         //            get
         //            {

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using WindNight.AspNetCore.Mvc.Extensions;
 using WindNight.Config.Extensions.Attributes;
 using WindNight.ConfigCenter.Extension;
+using WindNight.Core.Abstractions;
 using WindNight.Core.Attributes.Abstractions;
 using WindNight.Core.Extension;
 using WindNight.Extension;
@@ -20,7 +21,7 @@ namespace WindNight.Config.Extensions
     /// </summary>
     [Route("api/configcenter")]
     [CenterApiAuth]
-    [SysApi, NonAuth]
+    [SysApi(6), NonAuth]
     // [ApiExplorerSettings(IgnoreApi = true)]
     public partial class ConfigController : ControllerBase
     {
@@ -31,7 +32,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("appsettings")]
         public List<AppSettingInfo> QueryAppSettingList()
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -46,7 +47,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("connections")]
         public List<ConnectionStringInfo> QueryConnectionStringList()
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -60,7 +61,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("jsonconfigs")]
         public List<string> QueryJsonConfigList()
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -74,7 +75,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("xmlconfigs")]
         public List<string> QueryXmlConfigList()
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -89,7 +90,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("jsonconfig/byfilename")]
         public JsonFileConfigInfo QueryJsonConfigContent(string fileName)
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -104,7 +105,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("xmlconfig/byfilename")]
         public XmlFileConfigInfo QueryXmlConfigContent(string fileName)
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -119,7 +120,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/byfilename")]
         public FileConfigInfo QueryConfigContent(string fileName)
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -135,7 +136,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/byfilename/direct")]
         public FileConfigInfo QueryConfigContentDirect(string fileName)
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -151,7 +152,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("selfconfig/byfilename/direct")]
         public FileConfigInfo ReadSelfConfigFileDirect(string fileDir, string fileName)
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -167,7 +168,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("frontconfig/byfilename/direct")]
         public FileConfigInfo ReadFrontConfigFileDirect(string fileDir, string fileName)
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -183,7 +184,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("frontconfig/filenames")]
         public List<string> QueryFrontConfigNamesDirect(string fileDir)
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -199,7 +200,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("frontconfig/fileinfos")]
         public List<ConfigFileBaseInfo> QueryFrontConfigInfosDirect(string fileDir)
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -215,7 +216,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("selfconfig/filenames")]
         public List<string> QuerySelfConfigNamesDirect(string fileDir)
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -230,7 +231,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("selfconfig/fileinfos")]
         public List<ConfigFileBaseInfo> QuerySelfConfigFileInfosDirect(string fileDir)
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -245,7 +246,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/filenames")]
         public List<string> QueryConfigNamesDirect()
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -259,7 +260,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/fileinfos")]
         public List<ConfigFileBaseInfo> FetchConfigFileInfosDirect()
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -274,7 +275,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("updateflag")]
         public Dictionary<string, string> QueryUpdateFlagDict()
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -288,7 +289,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("configupdatetime")]
         public Dictionary<string, DateTime> QueryConfigUpdateTime()
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -303,7 +304,7 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/current")]
         public Dictionary<string, string> QueryCurrentConfiguration()
         {
-            if (!TokenAuthed)
+            if (!IsAuthType1())
             {
                 return null;
             }
@@ -314,7 +315,15 @@ namespace WindNight.Config.Extensions
 
     public partial class ConfigController
     {
+        protected virtual bool IsAuthType1(bool ignoreIp = true)
+        {
+            if (ignoreIp && HttpClientIpIsPrivate())
+            {
+                return true;
+            }
+            return AccessTokenIsAuth() || AppTokenIsAuth();
 
+        }
     }
     public partial class ConfigController
     {
@@ -398,7 +407,7 @@ namespace WindNight.Config.Extensions
         protected virtual bool HttpClientIpIsPrivate()
         {
             var clientIp = GetHttpClientIp();
-            if (clientIp.IsPrivateOrLoopback())
+            if (clientIp.IsInternalIp())
             {
                 return true;
             }

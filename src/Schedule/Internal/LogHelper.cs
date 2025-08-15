@@ -13,12 +13,10 @@ namespace Schedule.@internal
 {
     internal partial class LogHelper
     {
-        private static Version _version => new AssemblyName(typeof(DefaultLogHelperBase).Assembly.FullName).Version;
-        private static DateTime _compileTime => File.GetLastWriteTime(typeof(DefaultLogHelperBase).Assembly.Location);
 
-        public static string CurrentVersion => _version.ToString();
+        public static string CurrentVersion => BuildInfo.BuildVersion;
 
-        public static DateTime CurrentCompileTime => _compileTime;
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
 
         protected static bool OpenDebug => ConfigItems.OpenDebug;
 
@@ -148,9 +146,11 @@ namespace Schedule.@internal
             if (ConfigItems.LogOnConsole)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                if (logLevel > LogLevels.Information) Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(
-                    $"【{logLevel.ToString()}】:  Ioc.GetService<ILogService>() Is null.\r\n can not log info: {message}");
+                if (logLevel > LogLevels.Information)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                $"【{logLevel.ToString()}】:  Ioc.GetService<ILogService>() Is null.\r\n can not log info: {message}".Log2Console();
                 Console.ResetColor();
             }
         }
@@ -159,7 +159,7 @@ namespace Schedule.@internal
             if (ConfigItems.LogOnConsole)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine(message);
+                message.Log2Console();
                 Console.ResetColor();
             }
         }

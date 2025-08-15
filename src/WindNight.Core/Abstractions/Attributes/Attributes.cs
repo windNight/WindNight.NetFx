@@ -107,4 +107,29 @@ namespace WindNight.Core.Attributes.Abstractions
         public bool SysApi { get; protected set; } = false;
 
     }
+
+
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public class ScheduleJobCanSkipAttribute : Attribute, IAttribute
+    {
+        public ScheduleJobCanSkipAttribute()
+        {
+            CanSkip = true;
+        }
+
+        public ScheduleJobCanSkipAttribute(bool canSkip = true)
+        {
+            CanSkip = canSkip;
+        }
+
+        /// <summary>
+        ///     是否可以跳过
+        /// </summary>
+        public bool CanSkip { get; protected set; }
+
+    }
+
+
+
 }

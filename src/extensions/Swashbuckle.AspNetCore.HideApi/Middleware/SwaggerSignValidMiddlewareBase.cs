@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Extension;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
 using Swashbuckle.AspNetCore.Extensions.@internal;
 using Swashbuckle.AspNetCore.HideApi.@internal;
+using WindNight.Core;
+using WindNight.Core.Attributes.Abstractions;
 
 namespace Swashbuckle.AspNetCore.HideApi.Middleware
 {
@@ -249,6 +253,12 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
                 {
                     context.Request.Headers["AppToken"] = $"Token_swagger_{HardInfo.NowUnixTime}";
                 }
+
+                var traceId = GetHeaderData(context.Request, ConstantKeys.ReqTraceIdKey);
+                if (traceId.IsNullOrEmpty())
+                {
+                    context.Request.Headers[ConstantKeys.ReqTraceIdKey] = $"TraceId_swagger_{GuidHelper.GenerateOrderNumber()}";
+                }
             }
         }
 
@@ -280,6 +290,12 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
                             data = ConvertToUnixTime(DateTime.Now).ToString();
                             context.Request.Headers["Timestamp"] = data;
                         }
+
+                        if (key.Equals(ConstantKeys.ReqTraceIdKey, StringComparison.OrdinalIgnoreCase))
+                        {
+                            context.Request.Headers[ConstantKeys.ReqTraceIdKey] = $"swagger_{GuidHelper.GenerateOrderNumber()}";
+                        }
+
                     }
 
                     signData.Add(key, data);

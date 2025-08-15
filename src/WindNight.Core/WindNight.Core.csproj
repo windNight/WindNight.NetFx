@@ -14,14 +14,10 @@
         </Description>
         <PackageReleaseNotes>
 
-        </PackageReleaseNotes>
-        <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
+        </PackageReleaseNotes> 
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    </PropertyGroup>
-
+ 
 
     <ItemGroup>
         <None Include="..\.editorconfig" Link=".editorconfig" />
@@ -30,14 +26,14 @@
 
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
         <!--<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.2" />-->
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.7" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.7" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.7" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
-        <PackageReference Include="System.Text.Json" Version="9.0.7" />
-        <PackageReference Include="System.IO.Pipelines" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.8" />
+        <PackageReference Include="System.Text.Json" Version="9.0.8" />
+        <PackageReference Include="System.IO.Pipelines" Version="9.0.8" />
     </ItemGroup>
 
 

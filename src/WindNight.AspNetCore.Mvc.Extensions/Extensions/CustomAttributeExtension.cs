@@ -13,7 +13,6 @@ namespace WindNight.AspNetCore.Mvc.Extensions
 {
     public static partial class CustomAttributeExtension
     {
-        //  private static readonly ConcurrentDictionary<string, object> _asmCache = new();
 
         /// <summary>
         /// 
@@ -39,12 +38,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
             where TAttr : Attribute, IAttribute
         {
             return actionDescriptor.GetAttributesOnAction<TAttr>();
-            //if (actionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
-            //{
-            //    return controllerActionDescriptor.MethodInfo.GetCustomAttributes<TAttr>();
-            //}
 
-            //return Empty<TAttr>();
         }
 
         /// <summary>
@@ -58,12 +52,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         {
 
             return actionDescriptor.GetAttributesOnAction<TAttr>();
-            //if (actionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
-            //{
-            //    return controllerActionDescriptor.MethodInfo.GetCustomAttributes<TAttr>();
-            //}
 
-            //return Empty<TAttr>();
 
         }
 
@@ -78,17 +67,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         {
 
             return actionDescriptor.GetAttributesOnControllerAndAction<TAttr>();
-            //if (actionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
-            //{
-            //    var methodInfo = controllerActionDescriptor.MethodInfo;
-            //    var attrs = methodInfo.GetCustomAttributes<TAttr>();
-            //    if (methodInfo.DeclaringType != null)
-            //    {
-            //        attrs = attrs.Concat(methodInfo.DeclaringType.GetCustomAttributes<TAttr>());
-            //    }
-            //    return attrs;
-            //}
-            //return Empty<TAttr>();
+
         }
 
 
@@ -108,9 +87,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
                     return Empty<TAttr>();
                 }
 
-                // var key = $"{actionDescriptor.GetType().FullName}_{typeof(TAttr).FullName}";
-                //   var attrs = (IEnumerable<TAttr>)_asmCache.GetOrAdd(key, k =>
-                //{
+
                 if (actionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
                 {
                     var methodInfo = controllerActionDescriptor.MethodInfo;
@@ -122,9 +99,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
                     return attrs;
                 }
                 return Empty<TAttr>();
-                // });
 
-                //return attrs;
             }
             catch (Exception ex)
             {
@@ -158,19 +133,13 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         {
             try
             {
-                //var key = $"{actionDescriptor.GetType().FullName}_{typeof(TAttr).FullName}";
 
-                // var attrs = (IEnumerable<TAttr>)_asmCache.GetOrAdd(key, k =>
-                // {
                 if (actionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
                 {
                     return controllerActionDescriptor.MethodInfo.GetCustomAttributes<TAttr>();
                 }
 
                 return Empty<TAttr>();
-                //  });
-
-                // return attrs;
 
             }
             catch (Exception ex)
@@ -201,25 +170,6 @@ namespace WindNight.AspNetCore.Mvc.Extensions
             where TAttr : Attribute, IAttribute
         {
             return apiDesc.GetAttributesOnControllerAndAction<TAttr>();
-
-            //if (!apiDesc.TryGetMethodInfo(out var methodInfo) || methodInfo == null)
-            //{
-            //    return Empty<TAttr>();
-            //}
-
-            ////if (methodInfo == null)
-            ////{
-            ////    return Enumerable.Empty<TAttr>();
-            ////}
-
-            //var attrs = methodInfo.GetCustomAttributes<TAttr>();
-
-            //if (methodInfo.DeclaringType != null)
-            //{
-            //    attrs = attrs.Concat(methodInfo.DeclaringType.GetCustomAttributes<TAttr>());
-            //}
-
-            //return attrs;
         }
 
         /// <summary>
@@ -230,7 +180,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         public static TAttr GetAttributeOnControllerAndAction<TAttr>(this ApiDescription apiDesc)
             where TAttr : Attribute, IAttribute
         {
-            return apiDesc.GetAttributesOnControllerAndAction<TAttr>()?.LastOrDefault() ?? null;
+            return apiDesc.GetAttributesOnControllerAndAction<TAttr>()?.FirstOrDefault() ?? null;
         }
 
         /// <summary>
@@ -243,10 +193,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         {
             try
             {
-                //  var key = $"{apiDesc.GetType().FullName}_{typeof(TAttr).FullName}";
 
-                // var attrs = (IEnumerable<TAttr>)_asmCache.GetOrAdd(key, k =>
-                // {
                 if (!apiDesc.TryGetMethodInfo(out var methodInfo) || methodInfo == null)
                 {
                     return Empty<TAttr>();
@@ -261,9 +208,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
                 }
 
                 return attrs;
-                // });
 
-                // return attrs;
 
             }
             catch (Exception ex)

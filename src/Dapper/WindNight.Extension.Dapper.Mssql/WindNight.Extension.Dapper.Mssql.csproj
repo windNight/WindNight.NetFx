@@ -4,22 +4,13 @@
         <TargetFrameworks>
             netstandard2.0;
             netstandard2.1;
-        </TargetFrameworks>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <Description>
-        </Description>
-        <PackageReleaseNotes>
-        </PackageReleaseNotes>
-        <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
+        </TargetFrameworks> 
+        <Description></Description>
+        <PackageReleaseNotes></PackageReleaseNotes> 
         <OutputPath>..\..\..\Output\$(Configuration)</OutputPath>
 
     </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    </PropertyGroup>
-
+ 
     <ItemGroup>
         <PackageReference Include="Dapper" Version="2.1.66" />
         <!--<PackageReference Include="FastMember" Verskion="1.5.0" />-->

@@ -13,11 +13,12 @@ namespace WindNight.Extension
 {
     public static partial class HttpHelper
     {
-        private static Version _version => new AssemblyName(typeof(HttpHelper).Assembly.FullName).Version;
-        private static DateTime _compileTime => File.GetLastWriteTime(typeof(HttpHelper).Assembly.Location);
 
-        public static string CurrentVersion => _version.ToString();
-        public static DateTime CurrentCompileTime => _compileTime;
+        public static string CurrentVersion => BuildInfo.BuildVersion;
+
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
+
+        public static string HttpHelperPluginVersion => $"{nameof(HttpHelper)}/{CurrentVersion} {CurrentCompileTime}";
 
 
         public static bool CheckRemoteFile(string url,

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.WnExtensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,11 +19,22 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using WindNight.Core.Abstractions;
 using WindNight.Core.ConfigCenter.Extensions;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace Microsoft.AspNetCore.Hosting.WnExtensions
 {
     public abstract class WebStartupBase : IWnWebStartup//, IStartup
     {
+        /// <summary> Default <see cref="ResponseCompressionDefaults.MimeTypes"/>  </summary>
+        protected virtual IEnumerable<string> GzipMimeTypes => new List<string>
+        {
+            "text/html",
+            "text/css",
+            "text/javascript",
+            "application/x-font-ttf",
+        };
+
+        protected virtual bool OpenGZip => false;
         protected virtual string BuildType => Ioc.GetService<IQuerySvrHostInfo>()?.QueryBuildType() ?? "";
         protected virtual string BuildMachineName => Ioc.GetService<IQuerySvrHostInfo>()?.QueryBuildMachineName() ?? "";
 
@@ -32,8 +45,9 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             {
                 try
                 {
-                    var assembly = Assembly.GetEntryAssembly();
-                    return System.IO.File.GetLastWriteTime(assembly.Location);
+                    return HardInfo.QueryBuildDateTime().ToDateTime();
+                    //var assembly = Assembly.GetEntryAssembly();
+                    //return System.IO.File.GetLastWriteTime(assembly.Location);
                 }
                 catch (Exception ex)
                 {
@@ -54,17 +68,31 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                     var appName = Configuration.GetAppName();
                     var appCode = Configuration.GetAppCode();
                     var prefix = $"{appName}({appCode}) ";
+                    //                    var apiDesV1 =
+                    //@$"<h3 style='color: #27ae60;'>Info</h3>
+                    //`{prefix}`  
+                    //<h3 style='color: #27ae60;'>Namespace</h3>
+                    //`{NamespaceName}`  
+                    //<h3 style='color: #27ae60;'>BuildType</h3>
+                    //<span style='background:#f1c40f;padding:2px;color:red;'><strong>`{BuildType}`</strong></span>
+                    //<h3 style='color: #27ae60;'>BuildMachineName</h3>
+                    //<span style='background:#f1c40f;padding:2px;color:red;'><strong>`{BuildMachineName}`</strong></span>
+                    //<h3 style='color: #27ae60;'>RunMachineName</h3>
+                    //<span style='background:#f1c40f;padding:2px;color:red;'><strong>`{Environment.MachineName}`</strong></span>
+                    //<h3 style='color: #27ae60;'>  BuildTs  </h3>
+                    //`{BuildDateTime.FormatDateTimeFullString()}`
+                    //<h3 style='color: #27ae60;'>  ServerInfo  </h3>
+                    //```
+                    //{HardInfo.ToString(Formatting.Indented)}
+                    //```
+                    //";
                     var apiDes =
-@$"<h3 style='color: #27ae60;'>Info</h3>
+                        @$"<h3 style='color: #27ae60;'>Info</h3>
 `{prefix}`  
 <h3 style='color: #27ae60;'>Namespace</h3>
-`{NamespaceName}`  
-<h3 style='color: #27ae60;'>BuildType</h3>
-<span style='background:#f1c40f;padding:2px;color:red;'><strong>`{BuildType}`</strong></span>
+`{NamespaceName}`
 <h3 style='color: #27ae60;'>BuildMachineName</h3>
 <span style='background:#f1c40f;padding:2px;color:red;'><strong>`{BuildMachineName}`</strong></span>
-<h3 style='color: #27ae60;'>RunMachineName</h3>
-<span style='background:#f1c40f;padding:2px;color:red;'><strong>`{Environment.MachineName}`</strong></span>
 <h3 style='color: #27ae60;'>  BuildTs  </h3>
 `{BuildDateTime.FormatDateTimeFullString()}`
 <h3 style='color: #27ae60;'>  ServerInfo  </h3>
@@ -72,6 +100,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 {HardInfo.ToString(Formatting.Indented)}
 ```
 ";
+
                     if (!ToAppendDescription.IsNullOrEmpty())
                     {
                         apiDes =
@@ -187,6 +216,13 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                if (OpenGZip)
+                {
+                    app.UseResponseCompression();
+                }
+            }
 
             SelfSwaggerUIOptionsAction ??= (opt => opt.DefaultModelsExpandDepth(-1));
 
@@ -251,6 +287,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
         protected virtual IServiceCollection ConfigSysServices(IServiceCollection services, IConfiguration configuration)
         {
+
             services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
 
             if (ActionFiltersFunc != null)
@@ -267,9 +304,27 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             // var prefix = $"{appName}({appCode}) ";
             // var title = $"{prefix}{NamespaceName}";
 
-            var signKeyDict = SelfSwaggerAuthDictFunc?.Invoke() ?? new Dictionary<string, string>();
+
+            services.AddResponseCompression(options =>
+            {
+                options.Providers.Add<GzipCompressionProvider>();
+
+                var mimeTypes = ResponseCompressionDefaults.MimeTypes;
+
+                if (!GzipMimeTypes.IsNullOrEmpty())
+                {
+                    mimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(GzipMimeTypes).Distinct();
+                }
+
+                options.MimeTypes = mimeTypes;
+
+            });
+
             Ioc.Instance.InitServiceProvider(services);
+
+            var signKeyDict = SelfSwaggerAuthDictFunc?.Invoke() ?? new Dictionary<string, string>();
             services.AddSwaggerConfig(NamespaceName, configuration, swaggerGenOptionsAction: SelfSwaggerGenOptionsAction, apiVersion: ApiVersion, signKeyDict: signKeyDict, apiDes: ApiDescription);
+
 
             return services;
 

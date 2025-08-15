@@ -1,4 +1,4 @@
-﻿namespace Schedule.Model.Enums
+namespace Schedule.Model.Enums
 {
     public enum JobRunStateEnum
     {
@@ -16,10 +16,18 @@
         /// <summary> 正在运行  </summary>
         Running = 40,
 
-        /// <summary> 未开始运行 </summary>
-        NotStarted = 50,
+        /// <summary> 空跑的任务 </summary>
+        EmptyRun = 50,
 
         /// <summary> 业务错误</summary>
-        BusinessError = 60
+        BusinessError = 60,
+
+        /// <summary> job心跳 </summary> 
+        Heartbeat = 90,
+
+        /// <summary> Crashed </summary>
+        Crashed = 99,
+
+
     }
 }

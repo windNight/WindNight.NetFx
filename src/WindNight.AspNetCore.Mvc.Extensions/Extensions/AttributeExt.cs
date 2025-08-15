@@ -114,6 +114,11 @@ namespace WindNight.AspNetCore.Mvc.Extensions
             return apiDesc.GetAttribute<HiddenApiAttribute>();
         }
 
+        public static ClearResultAttribute GetClearResultAttr(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttribute<ClearResultAttribute>();
+        }
+
         public static DebugApiAttribute GetDebugApiAttr(this ApiDescription apiDesc)
         {
             return apiDesc.GetAttribute<DebugApiAttribute>();
@@ -128,9 +133,52 @@ namespace WindNight.AspNetCore.Mvc.Extensions
             return apiDesc.GetAttribute<NonAuthAttribute>();
         }
 
+
+        public static IEnumerable<ClearResultAttribute> GetClearResultAttrs(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttributes<ClearResultAttribute>();
+        }
+
+        public static IEnumerable<HiddenApiAttribute> GetHiddenApiAttrs(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttributes<HiddenApiAttribute>();
+        }
+
+        public static IEnumerable<DebugApiAttribute> GetDebugApiAttrs(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttributes<DebugApiAttribute>();
+        }
+
+        public static IEnumerable<SysApiAttribute> GetSysApiAttrs(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttributes<SysApiAttribute>();
+        }
+        public static IEnumerable<NonAuthAttribute> GetNonAuthAttrs(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttributes<NonAuthAttribute>();
+        }
+
+        public static ScheduleJobCanSkipAttribute GetScheduleJobCanSkipAttr(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttribute<ScheduleJobCanSkipAttribute>();
+        }
+
+        public static IEnumerable<ScheduleJobCanSkipAttribute> GetScheduleJobCanSkipAttrs(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttributes<ScheduleJobCanSkipAttribute>();
+        }
+
+
         #endregion // end ApiDescription
 
         #region ActionDescriptor
+
+        public static ClearResultAttribute GetClearResultAttr(this ActionDescriptor apiDesc)
+        {
+            return apiDesc.GetAttribute<ClearResultAttribute>();
+        }
+
+
 
         public static HiddenApiAttribute GetHiddenApiAttr(this ActionDescriptor apiDesc)
         {
@@ -146,9 +194,46 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         {
             return apiDesc.GetAttribute<SysApiAttribute>();
         }
-        public static NonAuthAttribute GetNonAuthAtt(this ActionDescriptor apiDesc)
+
+        public static NonAuthAttribute GetNonAuthAttr(this ActionDescriptor apiDesc)
         {
             return apiDesc.GetAttribute<NonAuthAttribute>();
+        }
+
+        public static ScheduleJobCanSkipAttribute GetScheduleJobCanSkipAttr(this ActionDescriptor apiDesc)
+        {
+            return apiDesc.GetAttribute<ScheduleJobCanSkipAttribute>();
+        }
+
+
+        public static IEnumerable<ClearResultAttribute> GetClearResultAttrs(this ActionDescriptor apiDesc)
+        {
+            return apiDesc.GetAttributes<ClearResultAttribute>();
+        }
+
+        public static IEnumerable<HiddenApiAttribute> GetHiddenApiAttrs(this ActionDescriptor apiDesc)
+        {
+            return apiDesc.GetAttributes<HiddenApiAttribute>();
+        }
+
+        public static IEnumerable<DebugApiAttribute> GetDebugApiAttrs(this ActionDescriptor apiDesc)
+        {
+            return apiDesc.GetAttributes<DebugApiAttribute>();
+        }
+
+        public static IEnumerable<SysApiAttribute> GetSysApiAttrs(this ActionDescriptor apiDesc)
+        {
+            return apiDesc.GetAttributes<SysApiAttribute>();
+        }
+
+        public static IEnumerable<NonAuthAttribute> GetNonAuthAttrs(this ActionDescriptor apiDesc)
+        {
+            return apiDesc.GetAttributes<NonAuthAttribute>();
+        }
+
+        public static IEnumerable<ScheduleJobCanSkipAttribute> GetScheduleJobCanSkipAttrs(this ActionDescriptor apiDesc)
+        {
+            return apiDesc.GetAttributes<ScheduleJobCanSkipAttribute>();
         }
 
         #endregion // end ActionDescriptor
@@ -182,6 +267,12 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         {
             return apiDesc.HasAttribute<NonAuthAttribute>();
         }
+        public static bool HasScheduleJobCanSkipAttr(this ApiDescription apiDesc)
+        {
+            return apiDesc.HasAttribute<ScheduleJobCanSkipAttribute>();
+        }
+
+
 
         #endregion // end ApiDescription
 
@@ -213,6 +304,13 @@ namespace WindNight.AspNetCore.Mvc.Extensions
             return apiDesc.HasAttribute<NonAuthAttribute>();
         }
 
+        public static bool HasScheduleJobCanSkipAttr(this ActionDescriptor apiDesc)
+        {
+            return apiDesc.HasAttribute<ScheduleJobCanSkipAttribute>();
+        }
+
         #endregion // end ActionDescriptor
     }
+
+
 }

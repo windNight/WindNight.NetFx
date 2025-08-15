@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Quartz;
 using Quartz.Impl.Matchers;
@@ -8,6 +9,7 @@ using Schedule.Func;
 using Schedule.@internal;
 using Schedule.Model;
 using Schedule.Model.Enums;
+using WindNight.Core.Attributes.Abstractions;
 
 namespace Schedule
 {
@@ -15,8 +17,48 @@ namespace Schedule
         where T : IJob
         where LT : IScheduleListener, new()
     {
+        protected static string CurrentPluginVersion => BuildInfo.BuildVersion;
+
+        protected static string CurrentPluginCompileTime => BuildInfo.BuildTime;
+
         public virtual string JobCode => typeof(T).Name.ToLower();
 
+
+        public virtual bool JobCanSkip()
+        {
+            try
+            {
+                var canSkip = typeof(T).GetCustomAttribute<ScheduleJobCanSkipAttribute>();
+                if (canSkip == null)
+                {
+                    return false;
+                }
+
+                return canSkip.CanSkip;
+            }
+            catch
+            {
+                return false;
+
+            }
+        }
+
+
+        IJobDetail BuildJobDetail(JobMeta jobParam, JobKey jobKey, bool onceJob = false)
+        {
+            var job = JobBuilder.Create<T>().WithIdentity(jobKey).Build();
+
+            job.SetJobName(jobParam.JobName);
+            job.SetJobCode(jobParam.JobCode);
+            job.SetOnceJobFlag(onceJob);
+            job.SetDepJobs(jobParam.DepJobs);
+            job.SetJobRunParams(jobParam.RunParams);
+            job.SetAutoClose(jobParam.AutoClose);
+            job.SetIsDoNotice(jobParam.IsDoNotice);
+            job.SetIsLogJobLC(jobParam.IsLogJobLC);
+
+            return job;
+        }
 
         /// <summary>
         ///     开启job
@@ -28,30 +70,31 @@ namespace Schedule
         {
             try
             {
-                var triggerKey = onceJob ? UtilsFunc.GenTriggerKey(jobParam.JobName) : GetTriggerKey();
-                var trigger = GenTrigger(triggerKey, jobParam.StartTime, jobParam.Interval, jobParam.CronExpression,
-                    onceJob);
-                if (trigger == null)
-                {
-                    JobLogHelper.Error(
-                        $"创建{jobParam.JobName}的trigger失败，参数为{onceJob},{jobParam.StartTime},{jobParam.Interval},{jobParam.CronExpression}",
-                        null, nameof(StartJob));
-                    return false;
-                }
+                //var triggerKey = onceJob ? UtilsFunc.GenTriggerKey(jobParam.JobName) : GetTriggerKey();
+                //var trigger = GenTrigger(triggerKey, jobParam.StartTime, jobParam.Interval, jobParam.CronExpression,
+                //    onceJob);
+                //if (trigger == null)
+                //{
+                //    JobLogHelper.Error(
+                //        $"创建{jobParam.JobName}的trigger失败，参数为{onceJob},{jobParam.StartTime},{jobParam.Interval},{jobParam.CronExpression}",
+                //        null, nameof(StartJob));
+                //    return false;
+                //}
 
-                var jobkey = onceJob ? UtilsFunc.GenJobKey(jobParam.JobName) : GetJobKey();
-                var job = JobBuilder.Create<T>()
-                    .WithIdentity(jobkey)
-                    .Build();
+                //var jobkey = onceJob ? UtilsFunc.GenJobKey(jobParam.JobName) : GetJobKey();
+                //var job = JobBuilder.Create<T>()
+                //    .WithIdentity(jobkey)
+                //    .Build();
 
-                job.SetJobName(jobParam.JobName);
-                job.SetJobCode(jobParam.JobCode);
-                job.SetOnceJobFlag(onceJob);
-                job.SetDepJobs(jobParam.DepJobs);
-                job.SetJobRunParams(jobParam.RunParams);
-                job.SetAutoClose(jobParam.AutoClose);
-                job.SetIsDoNotice(jobParam.IsDoNotice);
-                job.SetIsLogJobLC(jobParam.IsLogJobLC);
+                //job.SetJobName(jobParam.JobName);
+                //job.SetJobCode(jobParam.JobCode);
+                //job.SetOnceJobFlag(onceJob);
+                //job.SetDepJobs(jobParam.DepJobs);
+                //job.SetJobRunParams(jobParam.RunParams);
+                //job.SetAutoClose(jobParam.AutoClose);
+                //job.SetIsDoNotice(jobParam.IsDoNotice);
+                //job.SetIsLogJobLC(jobParam.IsLogJobLC);
+
                 //if (onceJob)
                 //{
                 //    ScheduleModConfig.Instance.InitOnceJobScheduler();
@@ -70,14 +113,33 @@ namespace Schedule
                 //}
                 //else
                 //{
+                var triggerKey = onceJob ? UtilsFunc.GenTriggerKey(jobParam.JobName) : GetTriggerKey();
+                var trigger = GenTrigger(triggerKey, jobParam.StartTime, jobParam.Interval, jobParam.CronExpression,
+                    onceJob);
+                if (trigger == null)
+                {
+                    JobLogHelper.Error(
+                        $"创建{jobParam.JobName}的trigger失败，参数为{onceJob},{jobParam.StartTime},{jobParam.Interval},{jobParam.CronExpression}",
+                        null, nameof(StartJob));
+                    return false;
+                }
+
+                var jobkey = onceJob ? UtilsFunc.GenJobKey(jobParam.JobName) : GetJobKey();
+
+                var job = BuildJobDetail(jobParam, jobkey, onceJob);
 
                 ScheduleModConfig.Instance.DefaultScheduler.ScheduleJob(job, trigger);
                 var jobListener = new LT();
-                if (onceJob) jobListener.SetName(UtilsFunc.GenListenerName(jobParam.JobName));
+                if (onceJob)
+                {
+                    jobListener.SetName(UtilsFunc.GenListenerName(jobParam.JobName));
+                }
                 ScheduleModConfig.Instance.DefaultScheduler.ListenerManager.AddJobListener(jobListener,
                     KeyMatcher<JobKey>.KeyEquals(jobkey));
+
                 ScheduleModConfig.Instance.DefaultScheduler.ListenerManager.AddTriggerListener(jobListener,
                     KeyMatcher<TriggerKey>.KeyEquals(triggerKey));
+
                 if (jobParam.State == JobStateEnum.Pause)
                 {
                     ScheduleModConfig.Instance.DefaultScheduler.PauseJob(jobkey);
@@ -114,19 +176,19 @@ namespace Schedule
                     return false;
                 }
 
-                var jobkey = onceJob ? UtilsFunc.GenJobKey(jobParam.JobName) : GetJobKey();
-                var job = JobBuilder.Create<T>()
-                    .WithIdentity(jobkey)
-                    .Build();
+                //var job = JobBuilder.Create<T>()
+                //    .WithIdentity(jobkey)
+                //    .Build();
 
-                job.SetJobName(jobParam.JobName);
-                job.SetJobCode(jobParam.JobCode);
-                job.SetOnceJobFlag(onceJob);
-                job.SetDepJobs(jobParam.DepJobs);
-                job.SetJobRunParams(jobParam.RunParams);
-                job.SetAutoClose(jobParam.AutoClose);
-                job.SetIsDoNotice(jobParam.IsDoNotice);
-                job.SetIsLogJobLC(jobParam.IsLogJobLC);
+                //job.SetJobName(jobParam.JobName);
+                //job.SetJobCode(jobParam.JobCode);
+                //job.SetOnceJobFlag(onceJob);
+                //job.SetDepJobs(jobParam.DepJobs);
+                //job.SetJobRunParams(jobParam.RunParams);
+                //job.SetAutoClose(jobParam.AutoClose);
+                //job.SetIsDoNotice(jobParam.IsDoNotice);
+                //job.SetIsLogJobLC(jobParam.IsLogJobLC);
+
                 //if (onceJob)
                 //{
                 //    await ScheduleModConfig.Instance.InitOnceJobSchedulerAsync();
@@ -145,14 +207,23 @@ namespace Schedule
                 //}
                 //else
                 //{
+                var jobkey = onceJob ? UtilsFunc.GenJobKey(jobParam.JobName) : GetJobKey();
+                var job = BuildJobDetail(jobParam, jobkey, onceJob);
 
                 await ScheduleModConfig.Instance.DefaultScheduler.ScheduleJob(job, trigger);
+
                 var jobListener = new LT();
-                if (onceJob) jobListener.SetName(UtilsFunc.GenListenerName(jobParam.JobName));
+                if (onceJob)
+                {
+                    jobListener.SetName(UtilsFunc.GenListenerName(jobParam.JobName));
+                }
+
                 ScheduleModConfig.Instance.DefaultScheduler.ListenerManager.AddJobListener(jobListener,
                     KeyMatcher<JobKey>.KeyEquals(jobkey));
+
                 ScheduleModConfig.Instance.DefaultScheduler.ListenerManager.AddTriggerListener(jobListener,
                     KeyMatcher<TriggerKey>.KeyEquals(triggerKey));
+
                 if (jobParam.State == JobStateEnum.Pause)
                 {
                     await ScheduleModConfig.Instance.DefaultScheduler.PauseJob(jobkey);
@@ -169,12 +240,18 @@ namespace Schedule
             }
         }
 
-
         public JobMeta ReadJobParam()
         {
             var jobCode = GetJobKey().Name;
-            var jobMeta = ConfigItems.JobsConfig?.Items?.FirstOrDefault(m =>
-                string.Equals(m.JobCode, jobCode, StringComparison.InvariantCultureIgnoreCase));
+            //var jobMeta = ConfigItems.JobsConfig?.Items?.FirstOrDefault(m =>
+            //    string.Equals(m.JobCode, jobCode, StringComparison.InvariantCultureIgnoreCase));
+            var jobMeta = ConfigItems.JobsConfig.FetchJobConfig(jobCode);
+
+            if (jobMeta == null)
+            {
+
+                throw new ArgumentNullException("JobCode", $"JobCode({jobCode}) 缺少配置项");
+            }
 
             return new JobMeta
             {

@@ -64,15 +64,27 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
         {
             return apiDesc.GetAttribute<HiddenApiAttribute>();
         }
-
+        public static IEnumerable<HiddenApiAttribute> GetHiddenApiAttrs(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttributes<HiddenApiAttribute>();
+        }
         public static DebugApiAttribute GetDebugApiAttr(this ApiDescription apiDesc)
         {
             return apiDesc.GetAttribute<DebugApiAttribute>();
         }
-
+        public static IEnumerable<DebugApiAttribute> GetDebugApiAttrs(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttributes<DebugApiAttribute>();
+        }
         public static SysApiAttribute GetSysApiAttr(this ApiDescription apiDesc)
         {
             return apiDesc.GetAttribute<SysApiAttribute>();
+        }
+
+
+        public static IEnumerable<SysApiAttribute> GetSysApiAttrs(this ApiDescription apiDesc)
+        {
+            return apiDesc.GetAttributes<SysApiAttribute>();
         }
 
         #endregion // end ApiDescription

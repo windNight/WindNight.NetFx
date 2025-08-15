@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json.Extension;
 using Schedule.Model.Enums;
 
 namespace Schedule.Model
@@ -94,7 +95,9 @@ namespace Schedule.Model
         /// </summary>
         public bool CanRunTest { set; get; } = false;
 
-
-
+        public override string ToString()
+        {
+            return this.ToJsonStr();
+        }
     }
 }

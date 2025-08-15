@@ -23,6 +23,30 @@ namespace WindNight.AspNetCore.Mvc.Extensions
 
         public static string GetAppEnvNameValue(this HttpRequest httpRequest) => httpRequest.QueryHeaderValue(ConstantKeys.AppEnvNameKey);
 
+        public static string GetReqTraceIdValue(this HttpRequest httpRequest) => httpRequest.QueryHeaderValue(ConstantKeys.ReqTraceIdKey);
+
+        public static string GetAccessTokenValue(this HttpRequest httpRequest)
+        {
+            var authorizationValue = GetAuthorizationValue(httpRequest);
+
+            if (authorizationValue.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
+
+            var akArray = authorizationValue.Split(' ');
+            if (akArray.Length == 2)
+            {
+                var akType = akArray[0];
+                var ak = akArray[1];
+                return ak;
+            }
+
+            return string.Empty;
+
+        }
+
+
         public static long GetTimestampValue(this HttpRequest httpRequest)
         {
 

@@ -1,4 +1,4 @@
-﻿namespace Schedule.Model.Enums
+namespace Schedule.Model.Enums
 {
     public enum JobBusinessStateEnum
     {
@@ -8,6 +8,13 @@
         /// <summary> 成功  </summary>
         Success = 20,
         /// <summary> 失败 </summary>
-        Fail = 30
+        Fail = 30,
+        /// <summary> 否决 </summary>
+        Vetoed = 40,
+        /// <summary> 空跑的任务 </summary>
+        EmptyRun = 50,
+        /// <summary> Crashed </summary>
+        Crashed = 99,
+
     }
 }

@@ -48,14 +48,20 @@ namespace WindNight.AspNetCore.Hosting.Middleware
 
             if (controllerActionDescriptor != null)
             {
-                var nonAuthAttrs = controllerActionDescriptor.GetAttributes<NonAuthAttribute>();
+
+                var nonAuthAttrs = controllerActionDescriptor.GetNonAuthAttrs();// controllerActionDescriptor.GetAttributes<NonAuthAttribute>();
 
                 //controllerActionDescriptor.GetControllerAndActionAttributes<NonAuthAttribute>().OfType<NonAuthAttribute>().ToList();
 
-                if (!nonAuthAttrs.IsNullOrEmpty())
+                if (nonAuthAttrs.Any(m => m.NoAuth))
                 {
                     return true;
                 }
+
+                //if (!nonAuthAttrs.IsNullOrEmpty())
+                //{
+                //    return true;
+                //}
 
                 return false;
 

@@ -12,14 +12,14 @@ namespace JobDemos.Jobs
     {
         public static IServiceCollection AddScheduleJobs(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IJobCtrl, Demo1JobCtrl>();
-            services.AddSingleton<IScheduleListener, Demo1JobScheduleListener>();
+            services.AddTransient<IJobCtrl, Demo1JobCtrl>();
+            services.AddTransient<IScheduleListener, Demo1JobScheduleListener>();
 
-            services.AddSingleton<IJobCtrl, Demo2JobCtrl>();
-            services.AddSingleton<IScheduleListener, Demo2JobScheduleListener>();
+            services.AddTransient<IJobCtrl, Demo2JobCtrl>();
+            services.AddTransient<IScheduleListener, Demo2JobScheduleListener>();
 
-            services.AddSingleton<IJobCtrl, Demo3JobCtrl>();
-            services.AddSingleton<IScheduleListener, Demo3JobScheduleListener>();
+            services.AddTransient<IJobCtrl, Demo3JobCtrl>();
+            services.AddTransient<IScheduleListener, Demo3JobScheduleListener>();
             services.UseQuartz(configuration);
 
             return services;

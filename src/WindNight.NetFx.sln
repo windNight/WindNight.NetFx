@@ -24,6 +24,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resource", "resource", "{F13DE86C-E85B-4369-832B-A19E659B01E3}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\build\build.props = ..\build\build.props
 		..\build\common.props = ..\build\common.props
 		..\README-NuGet.md = ..\README-NuGet.md
 		..\ReadMe.md = ..\ReadMe.md

@@ -10,16 +10,11 @@
         <Description>
         </Description>
         <PackageReleaseNotes>
-        </PackageReleaseNotes>
-        <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
+        </PackageReleaseNotes> 
         <OutputPath>..\..\..\Output\$(Configuration)</OutputPath>
 
     </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    </PropertyGroup>
-
+ 
     <ItemGroup>
 
     </ItemGroup>

@@ -56,14 +56,20 @@ namespace WindNight.Extension
             if (headerDict == null)
             {
                 if (CurrentItem.Items != null)
+                {
                     headerDict = new Dictionary<string, string>
                     {
                         { Consts.SERIZLNUMBER, CurrentItem.GetSerialNumber },
+
                     };
+                }
             }
             else if (!headerDict.ContainsKey(Consts.SERIZLNUMBER))
             {
-                if (CurrentItem.Items != null) headerDict.Add(Consts.SERIZLNUMBER, CurrentItem.GetSerialNumber);
+                if (CurrentItem.Items != null)
+                {
+                    headerDict.Add(Consts.SERIZLNUMBER, CurrentItem.GetSerialNumber);
+                }
             }
 
             return headerDict ?? new Dictionary<string, string>();
@@ -91,9 +97,7 @@ namespace WindNight.Extension
             };
         }
 
-        private static Func<string, IEnumerable<T>>
-            DefaultEnumerableResConvertFunc<
-                T>() // => _ => _.To<ResponseResult<IEnumerable<T>>>()?.Data ?? Array.Empty<T>();
+        private static Func<string, IEnumerable<T>> DefaultEnumerableResConvertFunc<T>() // => _ => _.To<ResponseResult<IEnumerable<T>>>()?.Data ?? Array.Empty<T>();
         {
             return s =>
             {
@@ -115,8 +119,7 @@ namespace WindNight.Extension
         }
 
 
-        private static Func<string, IPagedList<T>>
-            DefaultPagedConvertFunc<T>() //=> _ => _.To<ResponseResult<PagedList<T>>>()?.Data ?? PagedList.Empty<T>();
+        private static Func<string, IPagedList<T>> DefaultPagedConvertFunc<T>() //=> _ => _.To<ResponseResult<PagedList<T>>>()?.Data ?? PagedList.Empty<T>();
         {
             return s =>
             {
@@ -141,8 +144,7 @@ namespace WindNight.Extension
         //}
 
 
-        public static T DeserializeResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string url,
-            T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
+        public static T DeserializeResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string url, T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
         {
             try
             {
@@ -182,15 +184,13 @@ namespace WindNight.Extension
         }
 
 
-        public static T DeserializeResponse<T>(this IRestResponse response, string url,
-            Func<IRestResponse, bool> errStatusFunc = null)
+        public static T DeserializeResponse<T>(this IRestResponse response, string url, Func<IRestResponse, bool> errStatusFunc = null)
         {
             return response.DeserializeResponse<T>(DefaultConvertFunc<T>(), url, errStatusFunc: errStatusFunc);
         }
 
 
-        public static IPagedList<T> DeserializeResponse2PageList<T>(this IRestResponse response, string url,
-            Func<IRestResponse, bool> errStatusFunc = null)
+        public static IPagedList<T> DeserializeResponse2PageList<T>(this IRestResponse response, string url, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var defaultValue = PagedList.Empty<T>();
             try
@@ -227,15 +227,13 @@ namespace WindNight.Extension
         }
 
 
-        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response, string url,
-            Func<IRestResponse, bool> errStatusFunc = null)
+        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response, string url, Func<IRestResponse, bool> errStatusFunc = null)
         {
             return response.DeserializePageListResponse(DefaultPagedConvertFunc<T>(), url, errStatusFunc);
         }
 
 
-        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response,
-            Func<string, IPagedList<T>> convertFunc, string url, Func<IRestResponse, bool> errStatusFunc = null)
+        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response, Func<string, IPagedList<T>> convertFunc, string url, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var defaultValue = PagedList.Empty<T>();
             try
@@ -275,8 +273,7 @@ namespace WindNight.Extension
             return defaultValue;
         }
 
-        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response, string url,
-            Func<IRestResponse, bool> errStatusFunc = null)
+        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response, string url, Func<IRestResponse, bool> errStatusFunc = null)
         {
             return response.DeserializeListResponse(DefaultEnumerableResConvertFunc<T>(), url, errStatusFunc);
         }
@@ -290,8 +287,7 @@ namespace WindNight.Extension
 #endif
         }
 
-        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response,
-            Func<string, IEnumerable<T>> convertFunc, string url, Func<IRestResponse, bool> errStatusFunc = null)
+        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response, Func<string, IEnumerable<T>> convertFunc, string url, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var defaultValue = EmptyArray<T>();
             try
@@ -330,14 +326,12 @@ namespace WindNight.Extension
             return defaultValue;
         }
 
-        public static T DeserializeResResponse<T>(this IRestResponse response, string url, T defaultValue = default,
-            Func<IRestResponse, bool> errStatusFunc = null)
+        public static T DeserializeResResponse<T>(this IRestResponse response, string url, T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
         {
             return response.DeserializeResResponse(DefaultResConvertFunc<T>(), url, defaultValue, errStatusFunc);
         }
 
-        public static T DeserializeResResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string url,
-            T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
+        public static T DeserializeResResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string url, T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
         {
             try
             {
@@ -382,7 +376,10 @@ namespace WindNight.Extension
                 get
                 {
                     var config = Ioc.Instance.CurrentConfigService; // Ioc.GetService<IConfigService>();
-                    if (config == null) return false;
+                    if (config == null)
+                    {
+                        return false;
+                    }
                     return config.GetAppSettingValue("OpenDebug", false, false);
                 }
             }

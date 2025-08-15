@@ -1,4 +1,4 @@
-﻿namespace WindNight.Core.Abstractions
+namespace WindNight.Core.Abstractions
 {
     public enum OperatorSysEnum
     {

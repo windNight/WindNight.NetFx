@@ -11,11 +11,10 @@ namespace WindNight.Extension.Logger.DcLog
     internal class DcLogger : ILogger
     {
         private readonly IDcLoggerProcessor _messageQueue;
-        private static Version _version => new AssemblyName(typeof(DcLogger).Assembly.FullName).Version;
-        private static DateTime _compileTime => File.GetLastWriteTime(typeof(DcLogger).Assembly.Location);
+        public static string CurrentVersion => BuildInfo.BuildVersion;
 
-        public static string CurrentVersion => _version.ToString();
-        public static DateTime CurrentCompileTime => _compileTime;
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
+        public static string DcLoggerPluginVersion => $"{nameof(DcLogger)}/{CurrentVersion} {CurrentCompileTime}";
 
         private readonly string _name;
         internal DcLogOptions _options;
@@ -74,7 +73,7 @@ namespace WindNight.Extension.Logger.DcLog
                         Level = stateEntry.Level.ToString(),
                         LevelType = (int)stateEntry.Level,
                         NodeCode = HardInfo.NodeCode ?? "",
-                        LogPluginVersion = $"{nameof(DcLogger)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
+                        LogPluginVersion = DcLoggerPluginVersion,
 
                     };
                     if (exception != null)
@@ -118,7 +117,7 @@ namespace WindNight.Extension.Logger.DcLog
                 LevelType = (int)logLevel,
                 LogTs = logTimestamps,
                 NodeCode = HardInfo.NodeCode ?? "",
-                LogPluginVersion = $"{nameof(DcLogger)}/{CurrentVersion} {CurrentCompileTime:yyyy-MM-dd HH:mm:ss}",
+                LogPluginVersion = DcLoggerPluginVersion,
             };
 
             if (TryGetJObject(state, out var jo))

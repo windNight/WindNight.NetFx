@@ -12,20 +12,26 @@ using Schedule.Model.Enums;
 
 namespace Schedule
 {
+
     public abstract partial class BaseJob : IJob
     {
+
+        protected static string CurrentPluginVersion => BuildInfo.BuildVersion;
+
+        protected static string CurrentPluginCompileTime => BuildInfo.BuildTime;
 
         /// <summary>
         ///     重写后必须返回正确的值 业务代码执行结果 true|false
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public abstract Task<bool> ExecuteWithResultAsync(IJobExecutionContext context);
+        public abstract Task<JobBusinessStateEnum> ExecuteWithResultAsync(IJobExecutionContext context);
 
         /// <summary> </summary>
         protected virtual string JobId { get; private set; } = string.Empty;
 
         protected virtual string JobCode { get; private set; } = string.Empty;
+
         protected virtual string JobName { get; private set; } = string.Empty;
 
         public abstract string CurrentJobCode { get; }
@@ -48,42 +54,66 @@ namespace Schedule
 
         public virtual async Task Execute(IJobExecutionContext context)
         {
-            CurrentJobContext = context;
-            JobId = context.GetJobDbId();
-            JobCode = context.GetJobCode();
-            JobName = context.GetJobName();
-            var jobInfo = context.GetJobBaseInfo();
-            if (jobInfo == null || jobInfo.JobExecTs < HardInfo.Now.AddMinutes(-2).ConvertToUnixTime())
+            JobBaseInfo jobInfo = null;
+            try
             {
-                jobInfo = new JobBaseInfo
+
+                CurrentJobContext = context;
+                JobId = context.GetJobDbId();
+                JobCode = context.GetJobCode();
+                JobName = context.GetJobName();
+                jobInfo = context.GetJobBaseInfo();
+                var limitTs = HardInfo.Now.AddMinutes(-2).ConvertToUnixTime();
+                if (jobInfo == null || jobInfo.JobExecTs < limitTs)
                 {
-                    JobId = JobId,
-                    JobCode = JobCode,
-                    JobName = JobName,
-                    JobExecTs = HardInfo.NowUnixTime,
-                    ExecTag = "BaseJob.Execute",
-                };
-                context.JobDetail.SetJobBaseInfo(jobInfo);
-                JobContext.SetCurrentJobBaseInfo(jobInfo);
+                    jobInfo = context.Parse2JobBaseInfo();
+                    //   new JobBaseInfo
+                    // {
+                    //  JobId = JobId,
+                    //  JobCode = JobCode,
+                    // JobName = JobName,
+                    jobInfo.JobExecTs = HardInfo.NowUnixTime;
+                    jobInfo.ExecTag = "BaseJob.Execute";
+                    //  };
+
+                    context.JobDetail.SetJobBaseInfo(jobInfo);
+
+                    JobContext.SetCurrentJobBaseInfo(jobInfo);
+
+                    JobLogHelper.Warn($"未知异常 在Execute执行 Parse2JobBaseInfo {jobInfo.ToString(true)}", actionName: $"BaseJob.{nameof(Execute)}");
+
+                }
+
+                var job = context.JobDetail;
+                var state = JobBusinessStateEnum.Processing;
+                job.SetJobBusinessState(state);
+
+                state = await ExecuteWithResultAsync(context);
+
+                // state = rlt ? JobBusinessStateEnum.Success : JobBusinessStateEnum.Fail;
+                var bizContent = context.GetBizContent();
+
+                if (state != JobBusinessStateEnum.Success && bizContent.IsNullOrEmpty())
+                {
+                    var msg = $"[BaseJob] 未知原因 ExecuteWithResult 返回({state.ToString()}) ，且无业务异常信息!";
+
+                    JobLogHelper.Warn($"{jobInfo}->{msg}", actionName: $"BaseJob.{nameof(Execute)}");
+
+                    job.SetBizContent(msg);
+
+                }
+
+                job.SetJobBusinessState(state);
 
             }
-
-
-            var job = context.JobDetail;
-            var state = JobBusinessStateEnum.Processing;
-            job.SetJobBusinessState(state);
-
-            var rlt = await ExecuteWithResultAsync(context);
-
-            state = rlt ? JobBusinessStateEnum.Success : JobBusinessStateEnum.Fail;
-            var bizContent = context.GetBizContent();
-            if (!rlt && bizContent.IsNullOrEmpty())
+            catch (Exception ex)
             {
-                job.SetBizContent($"[BaseJob] 未知原因 ExecuteWithResult 返回({rlt}) ，无业务异常信息!");
+                JobLogHelper.Error($"{jobInfo?.ToString(true)} BaseJob.Execute Handler Error {ex.Message}", ex, "BaseExecute");
             }
 
-            job.SetJobBusinessState(state);
         }
+
+
     }
 
     public abstract partial class BaseJob

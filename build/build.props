@@ -1,0 +1,114 @@
+<Project>
+ 
+	<ItemGroup>
+		<None Remove="*.bat" />
+		<None Remove="*.cmd" />
+	</ItemGroup>
+
+	<Target Name="GenerateBuildInfo" BeforeTargets="CoreCompile">
+
+		<PropertyGroup>
+			<ForceBuildInfoRegeneration Condition="'$(ForceBuildInfoRegeneration)' == ''">true</ForceBuildInfoRegeneration>
+			<BuildInfoFile>$(IntermediateOutputPath)BuildInfo.cs</BuildInfoFile>
+
+			<BuildMachineName Condition="'$(BuildMachineName)' == ''">$([System.Environment]::MachineName)</BuildMachineName>
+			<BuildUserName Condition="'$(BuildUserName)' == ''">$([System.Environment]::UserName)</BuildUserName>
+			<BuildOSVersion Condition="'$(BuildOSVersion)' == ''">$([System.Environment]::OSVersion)</BuildOSVersion>
+			<BuildProcessorCount Condition="'$(BuildProcessorCount)' == ''">$([System.Environment]::ProcessorCount)</BuildProcessorCount>
+			<BuildIs64BitOS Condition="'$(BuildIs64BitOS)' == ''">$([System.Environment]::Is64BitOperatingSystem)</BuildIs64BitOS>
+			<BuildRuntimeVersion Condition="'$(BuildRuntimeVersion)' == ''">$([System.Environment]::Version)</BuildRuntimeVersion>
+			<BuildSystemDirectory Condition="'$(BuildSystemDirectory)' == ''">$([System.Environment]::SystemDirectory)</BuildSystemDirectory>
+			<!--<BuildPathEnv Condition="'$(BuildPathEnv)' == ''">$([System.Environment]::GetEnvironmentVariable('PATH'))</BuildPathEnv>-->
+			<BuildTimestamp Condition="'$(BuildTimestamp)' == ''">$([System.DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds())</BuildTimestamp>
+			<BuildConfiguration Condition="'$(BuildConfiguration)' == ''">$(Configuration)</BuildConfiguration>
+			<BuildVersion Condition="'$(BuildVersion)' == ''">$(Version)</BuildVersion>
+
+			<!--<BuildVersion Condition="'$(BuildAssemblyVersion)' == ''">$(BuildAssemblyInformationalVersion)</BuildVersion>
+			<BuildVersion Condition="'$(BuildFileVersion)' == ''">$(FileVersion)</BuildVersion>-->
+
+			<BuildTargetFramework Condition="'$(BuildTargetFramework)' == ''">$(TargetFramework)</BuildTargetFramework>
+			<BuildPlatform Condition="'$(BuildPlatform)' == ''">$(Platform)</BuildPlatform>
+			<BuildProjectName Condition="'$(BuildProjectName)' == ''">$(MSBuildProjectName)</BuildProjectName>
+			<RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">$(RuntimeIdentifier)</RuntimeIdentifier>
+
+		</PropertyGroup>
+
+		<!--%3B see from https://learn.microsoft.com/zh-cn/visualstudio/msbuild/msbuild-special-characters?view=vs-2022#special-characters -->
+		<PropertyGroup>
+			<BuildInfoContent>
+				internal static class BuildInfo {
+				public const string MachineName = "$(BuildMachineName)" %3B
+				public const string UserName = "$(BuildUserName)" %3B
+				public const string OSVersion = "$(BuildOSVersion)" %3B
+				public const int ProcessorCount = $(BuildProcessorCount) %3B
+				public const bool Is64BitOS = $(BuildIs64BitOS.ToLower()) %3B
+				public const string RuntimeVersion = "$(BuildRuntimeVersion)" %3B
+				public const string SystemDirectory = @"$(BuildSystemDirectory)" %3B
+
+				public const long BuildTs = $(BuildTimestamp) %3B
+				public static string BuildTime => BuildTs.ConvertToTimeFormatUseUnix(); %3B
+
+				public const string BuildConfiguration = "$(BuildConfiguration)" %3B
+				public const string BuildVersion = "$(BuildVersion)" %3B
+
+				<!--public const string BuildAssemblyVersion = "$(BuildAssemblyVersion)" %3B
+				public const string BuildFileVersion = "$(BuildFileVersion)" %3B-->
+
+				public const string BuildTargetFramework = "$(BuildTargetFramework)" %3B
+				public const string BuildPlatform = "$(BuildPlatform)" %3B
+				public const string BuildProjectName = "$(BuildProjectName)" %3B
+				public const string RuntimeIdentifier = "$(RuntimeIdentifier)" %3B
+
+				public static IReadOnlyDictionary&lt;string, object&gt; BuildInfoDict = new Dictionary&lt;string, object&gt;
+				{
+				{ "MachineName", MachineName },
+				{ "UserName", UserName},
+				{ "OSVersion", OSVersion },
+				{ "ProcessorCount", ProcessorCount },
+				{ "Is64BitOS", Is64BitOS },
+				{ "RuntimeVersion",RuntimeVersion },
+				{ "BuildTs", BuildTs },
+				{ "BuildTime", BuildTime },
+				{ "BuildConfiguration", BuildConfiguration },
+				{ "BuildVersion", BuildVersion },
+
+				<!--{ "BuildAssemblyVersion", BuildAssemblyVersion },
+				{ "BuildFileVersion", BuildFileVersion },-->
+
+				{ "BuildTargetFramework", BuildTargetFramework },
+				{ "BuildPlatform", BuildPlatform },
+				{ "BuildProjectName", BuildProjectName },
+				{ "RuntimeIdentifier", RuntimeIdentifier },
+
+				}%3B
+
+				}
+			</BuildInfoContent>
+		</PropertyGroup>
+
+		<WriteLinesToFile
+			File="$(BuildInfoFile)"
+			Lines="$(BuildInfoContent)"
+			Overwrite="true"
+			Condition="!Exists('$(BuildInfoFile)') Or '$(ForceBuildInfoRegeneration)' == 'true'" />
+
+
+
+		<!-- Include the generated file in compilation, only if it exists -->
+		<ItemGroup>
+			<Compile Include="$(BuildInfoFile)" Condition="Exists('$(BuildInfoFile)')">
+				<Link>BuildInfo.cs</Link>
+			</Compile>
+		</ItemGroup>
+
+		<!-- Log the machine name for debugging -->
+		<Message Text="Build Info - Machine: $(BuildMachineName), User: $(BuildUserName), OS: $(BuildOSVersion), Processors: $(BuildProcessorCount), 64BitOS: $(BuildIs64BitOS), Runtime: $(BuildRuntimeVersion)" Importance="high"  Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
+
+		<!--<Message Text="编译时主机名：$(BuildMachineName)" Importance="high" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />-->
+
+		<!-- Optional: Handle errors if file creation fails -->
+		<Error Condition="!Exists('$(BuildInfoFile)') And '$(ForceBuildInfoRegeneration)' != 'true'" Text="Failed to generate BuildInfo.cs. Check write permissions or path: $(BuildInfoFile)" />
+	</Target>
+
+
+</Project>

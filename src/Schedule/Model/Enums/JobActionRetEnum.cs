@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Schedule.Model.Enums
 {
@@ -13,7 +13,9 @@ namespace Schedule.Model.Enums
         Failed = 20,
 
         /// <summary> 操作不支持  </summary>
-        Conflict = 30
+        Conflict = 30,
+        /// <summary> 缺少配置项或者配置项不合法  </summary>
+        NoConfig = 90,
     }
 }
 

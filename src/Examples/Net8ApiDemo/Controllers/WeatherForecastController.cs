@@ -3,9 +3,11 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography.Extensions;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.WnExtensions.Controllers;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
+using WindNight.Core.Abstractions;
 using WindNight.Core.Attributes.Abstractions;
 using WindNight.Extension;
 using WindNight.Extension.Logger.DcLog.Extensions;
@@ -15,7 +17,7 @@ namespace Net8ApiDemo.Controllers
 {
     [ApiController]
     [Route("api/test")]
-    public class WeatherForecastController : ControllerBase
+    public partial class WeatherForecastController : DefaultApiControllerBase
     {
         private static readonly string[] Summaries = new[]
         {
@@ -317,17 +319,37 @@ namespace Net8ApiDemo.Controllers
         }
     }
 
+    public partial class WeatherForecastController
+    {
+        [HttpGet("/api/monitor/baseinfo")]
+        [NonAuth, SysApi]
+        public virtual ISvrMonitorInfo GetBaseInfo()
+        {
+            if (!IsAuthType1())
+            {
+                return null;
+            }
+            var svrInfo = DefaultSvrMonitorInfo.GenSvrMonitorInfo(SvrMonitorTypeEnum.Query);
+            svrInfo.ClientIp = Request.HttpContext.GetClientIp();
+            svrInfo.ServerIp = GetHttpServerIp();
+
+            return svrInfo;
+
+        }
+    }
 
     public class SelfLogReport
     {
         public JObject LogData { get; set; }
         public string TraceId { get; set; } = "";
+        public string ReqTraceId { get; set; } = "";
     }
 
     /// <summary> </summary>
     public class TIn
     {
         /// <summary>  KL1 </summary>
+        public string ReqTraceId { get; set; }
         public string KL1 { get; set; }
 
         /// <summary> kl1 </summary>

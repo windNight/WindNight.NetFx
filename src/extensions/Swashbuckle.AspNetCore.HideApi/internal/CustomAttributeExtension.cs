@@ -93,7 +93,7 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
         public static TAttr GetAttributeOnControllerAndAction<TAttr>(this ApiDescription apiDesc)
             where TAttr : Attribute, IAttribute
         {
-            return apiDesc.GetAttributesOnControllerAndAction<TAttr>()?.LastOrDefault() ?? null;
+            return apiDesc.GetAttributesOnControllerAndAction<TAttr>()?.FirstOrDefault() ?? null;
         }
 
 

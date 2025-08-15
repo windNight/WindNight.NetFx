@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace WindNight.Core.Extension
 {
-    public static class DictionaryExtensions
+    public static partial class DictionaryExtensions
     {
         /// <summary> </summary>
         /// <param name="dict"></param>
@@ -104,18 +104,37 @@ namespace WindNight.Core.Extension
         }
 
         /// <summary> </summary>
+        /// <param name="dict"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static object SafeGetValue(this IReadOnlyDictionary<string, object?> dict, string key)
+        {
+            return dict.SafeGetValue(key, null);
+        }
+
+        /// <summary> </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="T"></typeparam>
         /// <param name="dict"></param>
         /// <param name="key"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public static T SafeGetValue<TKey, T>(this IReadOnlyDictionary<TKey, T> dict, TKey key,
-            T defaultValue = default)
+        public static T SafeGetValue<TKey, T>(this IReadOnlyDictionary<TKey, T> dict, TKey key, T defaultValue = default)
         {
-            if (dict == null) return defaultValue;
-            if (key == null) return defaultValue;
+            if (dict == null)
+            {
+                return defaultValue;
+            }
+
+            if (key == null)
+            {
+                return defaultValue;
+            }
             return dict.ContainsKey(key) ? dict[key] : defaultValue;
         }
+
     }
+
+
+
 }

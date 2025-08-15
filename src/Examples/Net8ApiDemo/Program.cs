@@ -13,12 +13,8 @@ namespace Net8ApiDemo
 
         public static void Main(string[] args)
         {
-            var buildType = "";
-#if DEBUG
-            buildType = "Debug";
-#else
-            buildType = "Release";
-#endif
+
+            var buildType = DefaultSvrExt.QueryBuildType();
             Init(CreateHostBuilder, buildType, () =>
             {
 
@@ -60,7 +56,7 @@ namespace Net8ApiDemo
                     configureServicesDelegate: (context, services) =>
                     {
                         ConfigItems.Init(configuration: context.Configuration, sleepTimeInMs: 10000000);
-                        HardInfo.FillBuildExtDict(BuildInfo.BuildInfoDict);
+                        //  HardInfo.FillBuildExtDict(BuildInfo.BuildInfoDict);
                     })
 
                 ;
