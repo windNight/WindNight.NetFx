@@ -57,9 +57,12 @@ namespace Schedule
         public static JobMeta FetchJobConfig(this IJobExecutionContext context)
         {
             var jobCode = context.GetJobCode();
-
+            if (jobCode.IsNullOrEmpty())
+            {
+                return null;
+            }
             var jobConfig = ScheduleModConfig.Instance.Jobs.FirstOrDefault(m =>
-                     string.Equals(m.JobCode, jobCode, StringComparison.OrdinalIgnoreCase));
+                jobCode.Equals(m.JobCode, StringComparison.OrdinalIgnoreCase));
 
             return jobConfig;
 

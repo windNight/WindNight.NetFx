@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
+using WindNight.Core.Enums.Extension;
 using WindNight.Core.Extension;
 
 namespace WindNight.Core.ConfigCenter.Extensions
@@ -25,6 +27,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
 
     public partial class DefaultConfigItemBase
     {
+        protected const string EmptyString = ConstantKeys.EmptyString;
         protected const string ZeroString = ConstantKeys.ZeroString;
         protected const int ZeroInt = ConstantKeys.ZeroInt;
         protected const long ZeroInt64 = ConstantKeys.ZeroInt64;
@@ -41,7 +44,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
         {
             if (defaultValue == null)
             {
-                defaultValue = Enumerable.Empty<string>();
+                defaultValue = HardInfo.EmptyList<string>();
             }
 
             return GetAppSettingList(configKey, m => m, defaultValue, isThrow, needDistinct);
@@ -52,7 +55,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
         {
             if (defaultValue == null)
             {
-                defaultValue = Enumerable.Empty<int>();
+                defaultValue = HardInfo.EmptyList<int>();
             }
 
             return GetAppSettingList(configKey, m => m.ToInt(), defaultValue, isThrow, needDistinct);
@@ -64,7 +67,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
 
             if (defaultValue == null)
             {
-                defaultValue = Enumerable.Empty<T>();
+                defaultValue = HardInfo.EmptyList<T>();
             }
             if (ConfigService == null && Configuration == null)
             {
@@ -177,7 +180,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
 
         public static string SystemAppId => ConfigService?.SystemAppId ?? Configuration?.GetAppId() ?? "";
         public static string SystemAppCode => ConfigService?.SystemAppCode ?? Configuration?.GetAppCode() ?? "";
-        public static string SystemAppName => ConfigService?.SystemAppCode ?? Configuration?.GetAppName() ?? "";
+        public static string SystemAppName => ConfigService?.SystemAppName ?? Configuration?.GetAppName() ?? "";
 
         public static bool OpenDebug =>
             GetAppSettingValue(nameof(OpenDebug), false, false);
@@ -204,43 +207,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
 
         protected static LogLevels Convert2LogLevel(string level)
         {
-            try
-            {
-                if (level.IsNullOrEmpty())
-                {
-                    return LogLevels.Information;
-                }
-
-                if (level.StartsWith("debug", StringComparison.OrdinalIgnoreCase))
-                {
-                    return LogLevels.Debug;
-                }
-
-                if (level.StartsWith("info", StringComparison.OrdinalIgnoreCase))
-                {
-                    return LogLevels.Information;
-                }
-
-                if (level.StartsWith("warn", StringComparison.OrdinalIgnoreCase))
-                {
-                    return LogLevels.Warning;
-                }
-
-                var flag = Enum.TryParse<LogLevels>(level, true, out var logLevel);
-
-                if (flag)
-                {
-                    return logLevel;
-                }
-
-                return LogLevels.Information;
-
-            }
-            catch (Exception ex)
-            {
-                return LogLevels.Information;
-            }
-
+            return level.Convert2LogLevel();
         }
 
         public static LogLevels GlobalMiniLogLevel
@@ -250,28 +217,29 @@ namespace WindNight.Core.ConfigCenter.Extensions
                 try
                 {
                     var configValue = GlobalMiniLogLevelStr;
-                    if (configValue.StartsWith("debug", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return LogLevels.Debug;
-                    }
-                    if (configValue.StartsWith("info", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return LogLevels.Information;
-                    }
+                    return configValue.Convert2LogLevel();
+                    //if (configValue.StartsWith("debug", StringComparison.OrdinalIgnoreCase))
+                    //{
+                    //    return LogLevels.Debug;
+                    //}
+                    //if (configValue.StartsWith("info", StringComparison.OrdinalIgnoreCase))
+                    //{
+                    //    return LogLevels.Information;
+                    //}
 
-                    if (configValue.StartsWith("warn", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return LogLevels.Warning;
-                    }
+                    //if (configValue.StartsWith("warn", StringComparison.OrdinalIgnoreCase))
+                    //{
+                    //    return LogLevels.Warning;
+                    //}
 
-                    var flag = Enum.TryParse<LogLevels>(configValue, true, out var logLevel);
+                    //var flag = Enum.TryParse<LogLevels>(configValue, true, out var logLevel);
 
-                    if (flag)
-                    {
-                        return logLevel;
-                    }
+                    //if (flag)
+                    //{
+                    //    return logLevel;
+                    //}
 
-                    return LogLevels.Information;
+                    //return LogLevels.Information;
 
                 }
                 catch (Exception ex)
@@ -357,82 +325,19 @@ namespace WindNight.Core.ConfigCenter.Extensions
         public static DomainConfigs DomainConfigs => GetSectionValue<DomainConfigs>() ?? new DomainConfigs();
 
 
-        public static string QueryDomainConfig(string name)
+        public static string QueryDomainConfig(string domainName)
         {
-            var config = DomainConfigs.Items.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-            return config?.Domain ?? "";
+            return DomainConfigs.QueryDomainConfig(domainName);
         }
 
-        public static DomainConfigDto QueryDomainInfoConfig(string name)
+        public static DomainConfigDto QueryDomainInfoConfig(string domainName)
         {
-            var config = DomainConfigs.Items.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-            return config;
+            return DomainConfigs.QueryDomainInfoConfig(domainName);
         }
 
 
     }
 
-    public class DomainConfigs
-    {
-        public List<DomainConfigDto> Items { get; set; } = new List<DomainConfigDto>();
-    }
-
-    public partial class DomainConfigDto
-    {
-        public string Name { get; set; } = "";
-
-        public string Domain { get; set; } = "";
-
-        public string Remark { get; set; } = "";
-
-        public Dictionary<string, string> Extension { get; set; } = new Dictionary<string, string>();
-        //public IEnumerable<KV<object>> Extension { get; set; } = Array.Empty<KV<object>>();
-
-
-    }
-
-
-    public partial class DomainConfigDto
-    {
-
-        public string GetValueInExtension(string key, string defaultValue = "")
-        {
-            var extInfo = Extension.SafeGetValue(key, null);
-
-            if (extInfo != null)
-            {
-                return extInfo;
-            }
-
-            return defaultValue;
-        }
-
-        public int GetValueInExtension(string key, int defaultValue = 0)
-        {
-            var configValue = GetValueInExtension(key, null);
-            if (configValue == null)
-            {
-                return defaultValue;
-
-            }
-
-            return configValue.ToInt(defaultValue);
-        }
-
-        public bool GetValueInExtension(string key, bool defaultValue = false)
-        {
-            var configValue = GetValueInExtension(key, "");
-            if (configValue.IsNullOrEmpty())
-            {
-                return defaultValue;
-            }
-
-            return configValue.ToBoolean(defaultValue);
-        }
-
-
-
-    }
 
 
 

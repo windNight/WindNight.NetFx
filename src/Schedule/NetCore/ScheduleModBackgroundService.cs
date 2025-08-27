@@ -1,12 +1,8 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
-using Quartz;
 using Schedule.Abstractions;
 using Schedule.Func;
 using Schedule.Model.Enums;
-using WindNight.Linq.Extensions.Expressions;
 
 namespace Schedule
 {
@@ -40,10 +36,9 @@ namespace Schedule
             }
 
             await base.StopAsync(cancellationToken);
-
         }
 
-        async Task CheckBeforeCrashedAsync()
+        private async Task CheckBeforeCrashedAsync()
         {
             try
             {
@@ -59,20 +54,13 @@ namespace Schedule
                 foreach (var context in allJobs)
                 {
                     var jobInfo = context?.GetJobBaseInfo();
-                    var jobId = jobInfo?.JobId;
-                    jobCtrl?.CompleteJobSafety(jobId, JobRunStateEnum.Crashed, $"App Crashed {now}");
+                    //var jobId = jobInfo?.JobId;
+                    jobCtrl?.CompleteJobSafety(jobInfo, JobRunStateEnum.Crashed, $"App Crashed {now}");
                 }
-
-
             }
             catch
             {
-
             }
-
         }
-
-
-
     }
 }

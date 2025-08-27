@@ -36,7 +36,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
             }
             catch (Exception ex)
             {
-                return Enumerable.Empty<TAttr>();
+                return HardInfo.EmptyList<TAttr>();
             }
         }
 
@@ -82,7 +82,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
             }
             catch (Exception ex)
             {
-                return Enumerable.Empty<TAttr>();
+                return HardInfo.EmptyList<TAttr>();
             }
         }
 
@@ -128,6 +128,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         {
             return apiDesc.GetAttribute<SysApiAttribute>();
         }
+
         public static NonAuthAttribute GetNonAuthAttr(this ApiDescription apiDesc)
         {
             return apiDesc.GetAttribute<NonAuthAttribute>();
@@ -177,8 +178,6 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         {
             return apiDesc.GetAttribute<ClearResultAttribute>();
         }
-
-
 
         public static HiddenApiAttribute GetHiddenApiAttr(this ActionDescriptor apiDesc)
         {
@@ -310,6 +309,30 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         }
 
         #endregion // end ActionDescriptor
+
+
+        public static bool NeedNonAuth(this ActionDescriptor apiDesc, bool defaultValue = false)
+        {
+            return apiDesc.GetAttributes<NonAuthAttribute>().Any(m => m.NoAuth);
+        }
+
+        public static bool ScheduleJobCanSkip(this ActionDescriptor apiDesc, bool defaultValue = false)
+        {
+            return apiDesc.GetAttributes<ScheduleJobCanSkipAttribute>().Any(m => m.CanSkip);
+        }
+
+        public static bool NeedNonAuth(this ApiDescription apiDesc, bool defaultValue = false)
+        {
+            return apiDesc.GetAttributes<NonAuthAttribute>().Any(m => m.NoAuth);
+        }
+
+        public static bool ScheduleJobCanSkip(this ApiDescription apiDesc, bool defaultValue = false)
+        {
+            return apiDesc.GetAttributes<ScheduleJobCanSkipAttribute>().Any(m => m.CanSkip);
+        }
+
+
+
     }
 
 

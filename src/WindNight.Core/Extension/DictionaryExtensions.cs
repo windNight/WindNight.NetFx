@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-
 namespace WindNight.Core.Extension
 {
-    public static partial class DictionaryExtensions
+    public static class DictionaryExtensions
     {
         /// <summary> </summary>
         /// <param name="dict"></param>
@@ -119,7 +117,8 @@ namespace WindNight.Core.Extension
         /// <param name="key"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public static T SafeGetValue<TKey, T>(this IReadOnlyDictionary<TKey, T> dict, TKey key, T defaultValue = default)
+        public static T SafeGetValue<TKey, T>(this IReadOnlyDictionary<TKey, T> dict, TKey key,
+            T defaultValue = default)
         {
             if (dict == null)
             {
@@ -130,11 +129,8 @@ namespace WindNight.Core.Extension
             {
                 return defaultValue;
             }
+            //  return dict.GetValueOrDefault(key, defaultValue);
             return dict.ContainsKey(key) ? dict[key] : defaultValue;
         }
-
     }
-
-
-
 }

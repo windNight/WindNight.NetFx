@@ -1,4 +1,5 @@
-﻿using WindNight.Core.Abstractions;
+using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 
 namespace WindNight.Extension.Logger.DcLog.Abstractions
 {

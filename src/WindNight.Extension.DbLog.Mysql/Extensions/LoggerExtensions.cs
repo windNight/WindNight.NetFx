@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
+using WindNight.Core.Enums.Extension;
 using WindNight.Extension.Logger.DbLog.Abstractions;
 using IpHelper = WindNight.Extension.Logger.DbLog.@internal.HttpContextExtension;
 
@@ -16,7 +18,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="millisecond"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         public static void ApiUrlCall(this ILogger logger, string url, string msg, long millisecond,
             string serverIp = "",
             string clientIp = "", string serialNumber = "")
@@ -33,7 +35,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="exception"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         public static void ApiUrlException(this ILogger logger, string url, string msg, Exception exception,
             string serverIp = "",
             string clientIp = "", string serialNumber = "")
@@ -50,7 +52,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         public static void Debug(this ILogger logger, string msg, long millisecond = 0, string url = "",
             string serverIp = "",
             string clientIp = "", string serialNumber = "")
@@ -67,7 +69,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         public static void Info(this ILogger logger, string msg, long millisecond = 0, string url = "",
             string serverIp = "",
             string clientIp = "", string serialNumber = "")
@@ -85,7 +87,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         public static void Warn(this ILogger logger, string msg, Exception exception = null, long millisecond = 0,
             string url = "",
             string serverIp = "", string clientIp = "", string serialNumber = "")
@@ -103,7 +105,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         public static void Error(this ILogger logger, string msg, Exception exception, long millisecond = 0,
             string url = "",
             string serverIp = "", string clientIp = "", string serialNumber = "")
@@ -121,7 +123,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         public static void Fatal(this ILogger logger, string msg, Exception exception, long millisecond = 0,
             string url = "",
             string serverIp = "", string clientIp = "", string serialNumber = "")
@@ -206,7 +208,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     LogTs = HardInfo.NowUnixTime,
                 };
 
-                logger.Log(logLevel.SwitchLogLevel(), new EventId(), state, exception, MessageFormatter);
+                logger.Log(logLevel.Switch2LogLevel(), new EventId(), state, exception, MessageFormatter);
             }
             catch (Exception ex)
             {
@@ -214,41 +216,6 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
             }
         }
 
-        private static LogLevel SwitchLogLevel(this LogLevels logLevel)
-        {
-            var level = LogLevel.Debug;
-            switch (logLevel)
-            {
-                case LogLevels.Trace:
-                    level = LogLevel.Trace;
-                    break;
-                case LogLevels.None:
-                case LogLevels.Debug:
-                    break;
-                case LogLevels.Warning:
-                    level = LogLevel.Warning;
-                    break;
-                case LogLevels.Error:
-                    level = LogLevel.Error;
-                    break;
-                case LogLevels.Critical:
-                    level = LogLevel.Critical;
-                    break;
-                case LogLevels.ApiUrlException:
-                    level = LogLevel.Error;
-                    break;
-                case LogLevels.ApiUrl:
-                case LogLevels.Information:
-                case LogLevels.Report:
-                case LogLevels.SysRegister:
-                case LogLevels.SysOffline:
-                default:
-                    level = LogLevel.Information;
-                    break;
-            }
-
-            return level;
-        }
 
         /// <summary>
         /// </summary>
@@ -261,7 +228,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         public static void LogEvent(this ILogger logger, string eventName, string msg,
             LogLevels logLevel, Exception exception = null,
             long millisecond = 0, string url = "", string serverIp = "", string clientIp = "", string serialNumber = ""
@@ -284,7 +251,7 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     LogTs = HardInfo.NowUnixTime,
                 };
 
-                logger.Log(logLevel.SwitchLogLevel(), new EventId(), state, exception, MessageFormatter);
+                logger.Log(logLevel.Switch2LogLevel(), new EventId(), state, exception, MessageFormatter);
             }
             catch (Exception ex)
             {

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using WindNight.Core.Abstractions;
 using WindNight.Core.ConfigCenter.Extensions;
+using WindNight.Core.Enums.Abstractions;
 
 namespace Schedule.@internal
 {

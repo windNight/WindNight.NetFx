@@ -10,6 +10,7 @@
             <!--net7.0;-->
             net8.0;
             net9.0;
+            net10.0;
         </TargetFrameworks>
         <Description> </Description>
         <PackageReleaseNotes> </PackageReleaseNotes>
@@ -32,10 +33,20 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
+            <Version>10.0.0-preview.7.25380.108</Version>
+        </PackageReference>
+    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\extensions\Swashbuckle.AspNetCore.HideApi\Swashbuckle.AspNetCore.HideApi.csproj" />
         <ProjectReference Include="..\WindNight.Config\WindNight.Config.csproj" />
         <ProjectReference Include="..\WindNight.Extension\WindNight.Extension.csproj" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <Folder Include="Abstractions\Attributes\" />
     </ItemGroup>
 </Project>

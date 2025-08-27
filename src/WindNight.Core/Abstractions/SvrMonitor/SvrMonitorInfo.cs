@@ -22,9 +22,10 @@ namespace WindNight.Core.Abstractions
 
         public static ISvrMonitorInfo GenSvrMonitorInfo(SvrMonitorTypeEnum monitorType)
         {
-            var enSvrMonitorInfo = HardInfo.SvrMonitorInfo;
-            enSvrMonitorInfo.MonitorInfoType = (int)monitorType;
-            return enSvrMonitorInfo;
+            var svrMonitorInfo = GenDefault;
+            svrMonitorInfo.MonitorInfoType = (int)monitorType;
+
+            return svrMonitorInfo;
         }
 
 
@@ -33,7 +34,7 @@ namespace WindNight.Core.Abstractions
             var info = new DefaultSvrMonitorInfo
             {
                 RegisteredTs = HardInfo.NowUnixTime,
-                ServerIp = HardInfo.NodeIpAddress,
+                ServerIp = HardInfo.NodeIp,
 
             };
 
@@ -45,11 +46,17 @@ namespace WindNight.Core.Abstractions
         {
             get
             {
-                var model = HardInfo.SvrMonitorInfo;
-                model.QueryDateTime = HardInfo.Now.FormatDateTimeFullString();
-                model.ServerIp = HardInfo.NodeIpAddress;
-
-                return model;
+                try
+                {
+                    var model = HardInfo.SvrMonitorInfo;
+                    model.QueryDateTime = HardInfo.NowFullString;
+                    model.ServerIp = HardInfo.NodeIp;
+                    return model;
+                }
+                catch
+                {
+                    return HardInfo.SvrMonitorInfo;
+                }
 
             }
         }

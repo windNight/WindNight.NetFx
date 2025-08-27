@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 using WindNight.Core.ExceptionExt;
 
 namespace WindNight.LogExtension

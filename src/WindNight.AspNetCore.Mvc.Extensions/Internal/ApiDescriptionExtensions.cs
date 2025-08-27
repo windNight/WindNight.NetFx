@@ -31,7 +31,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
             {
                 return methodInfo.GetCustomAttributes(true).Union(methodInfo.DeclaringType.GetCustomAttributes(true));
             }
-            return Enumerable.Empty<object>();
+            return HardInfo.EmptyList<object>();
         }
 
         [Obsolete("Use TryGetMethodInfo() and CustomAttributes() instead")]
@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
             }
             else
             {
-                customAttributes = Enumerable.Empty<object>();
+                customAttributes = HardInfo.EmptyList<object>();
             }
         }
 

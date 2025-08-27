@@ -22,5 +22,8 @@ namespace System.Collections.Generic
         bool HasNextPage { get; }
 
         bool IsEmpty();
+
+
+
     }
 }

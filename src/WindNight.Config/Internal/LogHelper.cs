@@ -1,13 +1,6 @@
-using System;
-using System.IO;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
-using Newtonsoft.Json.Extension;
-using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 using WindNight.Core.ExceptionExt;
-using WindNight.Core.SysLogCenter.Extensions;
-using Microsoft.Extensions.Logging;
-
 #if !NET45
 using WindNight.Config.@internal;
 #endif
@@ -26,7 +19,6 @@ namespace WindNight.ConfigCenter.Extension.@internal
 
         protected static bool CanLog(LogLevels level)
         {
-
             if (level == LogLevels.None)
             {
                 return false;
@@ -45,6 +37,7 @@ namespace WindNight.ConfigCenter.Extension.@internal
             return true;
         }
     }
+
     internal partial class LogHelper
     {
         internal static void Debug(string msg, long millisecond = 0, string url = "", string serverIp = "",
@@ -61,14 +54,16 @@ namespace WindNight.ConfigCenter.Extension.@internal
                 appendMessage: appendMessage, traceId: traceId);
         }
 
-        internal static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "", string serverIp = "",
+        internal static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "",
+            string serverIp = "",
             string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             Add(msg, LogLevels.Warning, exception, millisecond: millisecond, url: url, serverIp: serverIp,
                 clientIp: clientIp, appendMessage: appendMessage, traceId: traceId);
         }
 
-        internal static void Error(string msg, Exception exception, long millisecond = 0, string url = "", string serverIp = "",
+        internal static void Error(string msg, Exception exception, long millisecond = 0, string url = "",
+            string serverIp = "",
             string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             Add(msg, LogLevels.Error, exception, millisecond: millisecond, url: url, serverIp: serverIp,
@@ -95,12 +90,16 @@ namespace WindNight.ConfigCenter.Extension.@internal
         /// <param name="appendMessage"></param>
         public static void Add(string msg, LogLevels level, Exception? errorStack = null, bool isTimeout = false,
             long millisecond = 0,
-            string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false, string traceId = "")
+            string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false,
+            string traceId = "")
         {
             try
             {
-#if !NET45 
-                if (!ConfigItems.OpenConfigLogs) return;
+#if !NET45
+                if (!ConfigItems.OpenConfigLogs)
+                {
+                    return;
+                }
 #endif
                 var canLog = CanLog(level);
                 if (!canLog)
@@ -112,7 +111,8 @@ namespace WindNight.ConfigCenter.Extension.@internal
                 var logService = Ioc.Instance.CurrentLogService;
                 if (logService != null)
                 {
-                    logService.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
+                    logService.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage,
+                        traceId);
                 }
                 else
                 {
@@ -120,26 +120,33 @@ namespace WindNight.ConfigCenter.Extension.@internal
                     {
                         msg = $"{msg} {Environment.NewLine} {errorStack.GetMessage()}";
                     }
+
                     DoConsoleLog(level, msg);
                 }
             }
             catch (Exception ex)
             {
-                DoConsoleLog(LogLevels.Error, $"AddLog 日志异常 ", ex);
+                DoConsoleLog(LogLevels.Error, "AddLog 日志异常 ", ex);
             }
         }
 
-        static void DoConsoleLog(LogLevels logLevel, string message, Exception? exception = null)
+        private static void DoConsoleLog(LogLevels logLevel, string message, Exception? exception = null)
         {
             if (ConfigItems.LogOnConsole)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                if (logLevel > LogLevels.Information) Console.ForegroundColor = ConsoleColor.Red;
+                if (logLevel > LogLevels.Information)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+
                 if (exception != null)
                 {
                     message = $"{message} {Environment.NewLine} {exception.GetMessage()}";
                 }
-                Console.WriteLine($"=={HardInfo.NowString}==ConsoleLog:{Environment.NewLine}Ioc.GetService<ILogService>() Is null.{Environment.NewLine} can not log info{message}");
+
+                Console.WriteLine(
+                    $"=={HardInfo.NowString}==ConsoleLog:{Environment.NewLine}Ioc.GetService<ILogService>() Is null.{Environment.NewLine} can not log info{message}");
                 Console.ResetColor();
             }
         }

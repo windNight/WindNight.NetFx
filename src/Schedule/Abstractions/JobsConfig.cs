@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Schedule.Model;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 using WindNight.Linq.Extensions.Expressions;
 
 namespace Schedule
@@ -13,7 +14,7 @@ namespace Schedule
         public List<JobMeta> Items { get; set; } = new List<JobMeta>();
 
 
-        public string MiniLogLevel { get; set; } = LogLevels.Debug.ToString();
+        public string MiniLogLevel { get; set; } = nameof(LogLevels.Debug);
 
 
         /// <summary> </summary>

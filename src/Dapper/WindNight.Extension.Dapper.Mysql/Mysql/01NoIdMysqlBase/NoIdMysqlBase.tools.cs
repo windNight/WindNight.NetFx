@@ -15,16 +15,16 @@ namespace WindNight.Extension.Dapper.Mysql
 
         protected abstract string GetConnStr();
 
-        protected virtual IEnumerable<TT> EmptyListT<TT>() => Array.Empty<TT>();
-        protected virtual IEnumerable<TT> EmptyEList<TT>() => Array.Empty<TT>();
+        protected virtual IEnumerable<TT> EmptyListT<TT>() => HardInfo.EmptyList<TT>();
+        protected virtual IEnumerable<TT> EmptyEList<TT>() => HardInfo.EmptyList<TT>();
 
-        protected virtual IPagedList<TT> EmptyPagedListT<TT>() => PagedList.Empty<TT>();
+        protected virtual IPagedList<TT> EmptyPagedListT<TT>() => HardInfo.EmptyPagedList<TT>();
 
-        protected virtual IPagedList<TT> EmptyPagedEList<TT>() => PagedList.Empty<TT>();
+        protected virtual IPagedList<TT> EmptyPagedEList<TT>() => HardInfo.EmptyPagedList<TT>();
 
-        protected virtual IEnumerable<TEntity> EmptyList => Array.Empty<TEntity>();
+        protected virtual IEnumerable<TEntity> EmptyList => HardInfo.EmptyList<TEntity>();
 
-        protected virtual IPagedList<TEntity> EmptyPagedList => PagedList.Empty<TEntity>();
+        protected virtual IPagedList<TEntity> EmptyPagedList => HardInfo.EmptyPagedList<TEntity>();
 
 
         ///// <summary>

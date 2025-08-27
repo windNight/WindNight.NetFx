@@ -26,7 +26,7 @@ namespace WindNight.Core.Abstractions
 
         public virtual IEnumerable<string> NodeIpList { get; protected set; } = HardInfo.NodeIpList;
 
-        public virtual string NodeIpAddress { get; protected set; } = HardInfo.NodeIpAddress;
+        public virtual string NodeIpAddress { get; protected set; } = HardInfo.NodeIp;
 
         public virtual string EnvironmentName { get; protected set; } = HardInfo.EnvironmentName;
 
@@ -46,9 +46,7 @@ namespace WindNight.Core.Abstractions
 
         public new static SvrHostBaseInfo Gen()
         {
-
             return Gen(MainAssembly);
-
         }
 
         public static SvrHostBaseInfo Gen(Assembly assembly)

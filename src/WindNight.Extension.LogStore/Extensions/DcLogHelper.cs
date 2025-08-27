@@ -1,9 +1,12 @@
+using System.Diagnostics;
 using System.Reflection;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
+using WindNight.Core;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
+using WindNight.Core.Enums.Extension;
 using WindNight.Extension.Logger.DcLog.Abstractions;
-using IpHelper = WindNight.Extension.Logger.DcLog.@internal.HttpContextExtension;
 
 namespace WindNight.Extension.Logger.DcLog.Extensions
 {
@@ -27,14 +30,14 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// <param name="url"></param>
         /// <param name="msg"></param>
         /// <param name="millisecond">耗时日志</param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void ApiUrlCall(string url, string msg, long millisecond, string serialNumber = "",
+        public static void ApiUrlCall(string url, string msg, long millisecond, string traceId = "",
             string serverIp = "",
             string clientIp = "")
         {
-            Add(msg, LogLevels.ApiUrl, serialNumber: serialNumber, millisecond: millisecond, url: url,
+            Add(msg, LogLevels.ApiUrl, traceId: traceId, millisecond: millisecond, url: url,
                 serverIp: serverIp, clientIp: clientIp
             );
         }
@@ -44,44 +47,44 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// <param name="url"></param>
         /// <param name="msg"></param>
         /// <param name="exception"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void ApiUrlException(string url, string msg, Exception exception, string serialNumber = "",
+        public static void ApiUrlException(string url, string msg, Exception exception, string traceId = "",
             string serverIp = "", long millisecond = 0,
             string clientIp = "")
         {
-            Add(msg, LogLevels.ApiUrlException, exception, serialNumber, url: url, serverIp: serverIp,
+            Add(msg, LogLevels.ApiUrlException, exception, traceId, url: url, serverIp: serverIp,
                 clientIp: clientIp, millisecond: millisecond);
         }
 
         /// <summary>
         /// </summary>
         /// <param name="msg"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Debug(string msg, string serialNumber = "", string url = "", string serverIp = "",
+        public static void Debug(string msg, string traceId = "", string url = "", string serverIp = "",
             long millisecond = 0,
             string clientIp = "")
         {
-            Add(msg, LogLevels.Debug, serialNumber: serialNumber, url: url, serverIp: serverIp, clientIp: clientIp,
+            Add(msg, LogLevels.Debug, traceId: traceId, url: url, serverIp: serverIp, clientIp: clientIp,
                 millisecond: millisecond);
         }
 
         /// <summary>
         /// </summary>
         /// <param name="msg"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Info(string msg, string serialNumber = "", string url = "", string serverIp = "",
+        public static void Info(string msg, string traceId = "", string url = "", string serverIp = "",
             long millisecond = 0,
             string clientIp = "")
         {
-            Add(msg, LogLevels.Information, serialNumber: serialNumber, url: url, serverIp: serverIp,
+            Add(msg, LogLevels.Information, traceId: traceId, url: url, serverIp: serverIp,
                 clientIp: clientIp, millisecond: millisecond);
         }
 
@@ -89,16 +92,16 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="exception"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         /// <param name="millisecond"></param>
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Warn(string msg, Exception exception = null, string serialNumber = "", string url = "",
+        public static void Warn(string msg, Exception exception = null, string traceId = "", string url = "",
             long millisecond = 0,
             string serverIp = "", string clientIp = "")
         {
-            Add(msg, LogLevels.Warning, exception, serialNumber, url: url, serverIp: serverIp,
+            Add(msg, LogLevels.Warning, exception, traceId, url: url, serverIp: serverIp,
                 clientIp: clientIp, millisecond: millisecond);
         }
 
@@ -106,16 +109,16 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="exception"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Error(string msg, Exception exception, string serialNumber = "", string url = "",
+        public static void Error(string msg, Exception exception, string traceId = "", string url = "",
             long millisecond = 0,
             string serverIp = "",
             string clientIp = "")
         {
-            Add(msg, LogLevels.Error, exception, serialNumber, url: url, serverIp: serverIp,
+            Add(msg, LogLevels.Error, exception, traceId, url: url, serverIp: serverIp,
                 clientIp: clientIp, millisecond: millisecond);
         }
 
@@ -123,15 +126,15 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="exception"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Fatal(string msg, Exception exception, string serialNumber = "", string url = "",
+        public static void Fatal(string msg, Exception exception, string traceId = "", string url = "",
             long millisecond = 0,
             string serverIp = "", string clientIp = "")
         {
-            Add(msg, LogLevels.Critical, exception, serialNumber, url: url, serverIp: serverIp,
+            Add(msg, LogLevels.Critical, exception, traceId, url: url, serverIp: serverIp,
                 clientIp: clientIp, millisecond: millisecond);
         }
 
@@ -187,6 +190,9 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             return sysInfo;
 
         }
+
+        public static string ReqTraceIdKey => ConstantKeys.ReqTraceIdKey;
+
         public static void Report(JObject jo, string traceId = "")
         {
             if (DcLoggerProcessor == null || DcLogOptions == null)
@@ -195,10 +201,11 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             }
 
             var logLevel = LogLevels.Information;
+            var reqTraceId = jo.SafeGetValue(ReqTraceIdKey, "");
 
-            if (!string.IsNullOrEmpty(jo["serialNumber"]?.ToString()))
+            if (!reqTraceId.IsNullOrEmpty())
             {
-                traceId = jo["serialNumber"].ToString();
+                traceId = jo[ReqTraceIdKey].ToString();
             }
 
             var now = HardInfo.Now;
@@ -206,9 +213,10 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             var logTimestamps = now.ConvertToUnixTime();
 
             var logDate = now.ToString("yyyyMMdd");
-            if (!string.IsNullOrEmpty(jo["level"]?.ToString()))
+            var reqLogLevel = jo.SafeGetValue("level", "");
+            if (!reqLogLevel.IsNullOrEmpty())
             {
-                logLevel = Convert2LogLevel(jo["level"].ToString());
+                logLevel = reqLogLevel.Convert2LogLevel();
             }
 
             var logMsg = new SysLogs
@@ -222,13 +230,16 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                 NodeCode = HardInfo.NodeCode ?? "",
                 LogPluginVersion = LogPluginVersion,
             };
-
-            if (string.IsNullOrEmpty(jo["logAppCode"]?.ToString()))
+            var logAppCode = jo.SafeGetValue("logAppCode", "");
+            ;
+            if (logAppCode.IsNullOrEmpty())
             {
                 jo["logAppCode"] = DcLogOptions.LogAppCode;
             }
 
-            if (string.IsNullOrEmpty(jo["logAppName"]?.ToString()))
+            var logAppName = jo.SafeGetValue("logAppName", "");
+
+            if (logAppName.IsNullOrEmpty())
             {
                 jo["logAppName"] = DcLogOptions.LogAppName;
             }
@@ -261,56 +272,19 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         }
 
 
-        private static LogLevels Convert2LogLevel(string level)
-        {
-            try
-            {
-                if (level.IsNullOrEmpty())
-                {
-                    return LogLevels.Information;
-                }
 
-                if (level.StartsWith("debug", StringComparison.OrdinalIgnoreCase))
-                {
-                    return LogLevels.Debug;
-                }
-
-                if (level.StartsWith("info", StringComparison.OrdinalIgnoreCase))
-                {
-                    return LogLevels.Information;
-                }
-
-                if (level.StartsWith("warn", StringComparison.OrdinalIgnoreCase))
-                {
-                    return LogLevels.Warning;
-                }
-
-                var flag = Enum.TryParse<LogLevels>(level, true, out var logLevel);
-
-                if (flag)
-                {
-                    return logLevel;
-                }
-
-                return LogLevels.Information;
-            }
-            catch (Exception ex)
-            {
-                return LogLevels.Information;
-            }
-        }
 
         /// <summary>
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="logLevel"></param>
         /// <param name="exception"></param>
-        /// <param name="serialNumber"></param>
+        /// <param name="traceId"></param>
         /// <param name="millisecond"> 耗时 </param>
         /// <param name="url"></param>
         /// <param name="serverIp"></param>
         /// <param name="clientIp"></param>
-        public static void Add(string msg, LogLevels logLevel, Exception exception = null, string serialNumber = "",
+        public static void Add(string msg, LogLevels logLevel, Exception exception = null, string traceId = "",
             long millisecond = 0, string url = "", string serverIp = "", string clientIp = "")
         {
             try
@@ -331,9 +305,9 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                     return;
                 }
 
-                if (serialNumber.IsNullOrEmpty())
+                if (traceId.IsNullOrEmpty())
                 {
-                    serialNumber = CurrentItem.GetSerialNumber;
+                    traceId = CurrentItem.GetSerialNumber;
                 }
 
                 var messageEntity = new SysLogs
@@ -349,7 +323,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                     RunMs = millisecond,
                     LogTs = HardInfo.NowUnixTime,
                     RequestUrl = url,
-                    SerialNumber = serialNumber,
+                    SerialNumber = traceId,
                     NodeCode = HardInfo.NodeCode ?? "",
                     LogPluginVersion = LogPluginVersion,
                 };

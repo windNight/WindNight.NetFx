@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
 namespace WindNight.LogExtension
@@ -233,7 +235,13 @@ namespace WindNight.LogExtension
         public static void Report(JObject jo, string traceId = "")
         {
             var logInfo = GeneratorLogInfo(jo);
-            if (traceId.IsNullOrEmpty())
+
+            //if (traceId.IsNullOrEmpty())
+            //{
+            //    traceId = jo.SafeGetValue(ReqTraceIdKey, "");
+            //}
+
+            if (!traceId.IsNullOrEmpty())
             {
                 logInfo.SerialNumber = traceId;
             }

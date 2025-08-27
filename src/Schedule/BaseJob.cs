@@ -1,6 +1,3 @@
-using System;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Quartz;
 using Schedule.Abstractions;
@@ -12,20 +9,11 @@ using Schedule.Model.Enums;
 
 namespace Schedule
 {
-
     public abstract partial class BaseJob : IJob
     {
-
         protected static string CurrentPluginVersion => BuildInfo.BuildVersion;
 
         protected static string CurrentPluginCompileTime => BuildInfo.BuildTime;
-
-        /// <summary>
-        ///     重写后必须返回正确的值 业务代码执行结果 true|false
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public abstract Task<JobBusinessStateEnum> ExecuteWithResultAsync(IJobExecutionContext context);
 
         /// <summary> </summary>
         protected virtual string JobId { get; private set; } = string.Empty;
@@ -40,24 +28,26 @@ namespace Schedule
 
         protected virtual IJobExecutionContext CurrentJobContext { get; private set; }
 
+        /// <summary>
+        ///     重写后必须返回正确的值 业务代码执行结果 true|false
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public abstract Task<JobBusinessStateEnum> ExecuteWithResultAsync(IJobExecutionContext context);
+
         protected virtual void SetCurrentJobContext(IJobExecutionContext context)
         {
             CurrentJobContext = context;
         }
-
-
-
     }
 
     public abstract partial class BaseJob
     {
-
         public virtual async Task Execute(IJobExecutionContext context)
         {
             JobBaseInfo jobInfo = null;
             try
             {
-
                 CurrentJobContext = context;
                 JobId = context.GetJobDbId();
                 JobCode = context.GetJobCode();
@@ -80,8 +70,8 @@ namespace Schedule
 
                     JobContext.SetCurrentJobBaseInfo(jobInfo);
 
-                    JobLogHelper.Warn($"未知异常 在Execute执行 Parse2JobBaseInfo {jobInfo.ToString(true)}", actionName: $"BaseJob.{nameof(Execute)}");
-
+                    JobLogHelper.Warn($"未知异常 在Execute执行 Parse2JobBaseInfo {jobInfo.ToString(true)}",
+                        actionName: $"BaseJob.{nameof(Execute)}");
                 }
 
                 var job = context.JobDetail;
@@ -100,25 +90,20 @@ namespace Schedule
                     JobLogHelper.Warn($"{jobInfo}->{msg}", actionName: $"BaseJob.{nameof(Execute)}");
 
                     job.SetBizContent(msg);
-
                 }
 
                 job.SetJobBusinessState(state);
-
             }
             catch (Exception ex)
             {
-                JobLogHelper.Error($"{jobInfo?.ToString(true)} BaseJob.Execute Handler Error {ex.Message}", ex, "BaseExecute");
+                JobLogHelper.Error($"{jobInfo?.ToString(true)} BaseJob.Execute Handler Error {ex.Message}", ex,
+                    "BaseExecute");
             }
-
         }
-
-
     }
 
     public abstract partial class BaseJob
     {
-
         public virtual async Task<bool> RunTestAtStartAsync(int delayS = 2)
         {
             return await Task.FromResult(true);
@@ -128,29 +113,23 @@ namespace Schedule
         {
             return true;
         }
-
     }
 
     public abstract partial class BaseJob
     {
+        protected static IScheduleNotice _scheduleNotice => Ioc.GetService<IScheduleNotice>();
+
         protected virtual void ConsoleWriteLine(string msg, bool isForce = true)
         {
             //var stringBuilder = new StringBuilder(format.Length + args.Length * 8);
             //stringBuilder.AppendFormat(null, format, args);
             //var msg = stringBuilder.ToString();
             msg.Log2Console(isForce: true);
-
         }
-        protected static IScheduleNotice _scheduleNotice => Ioc.GetService<IScheduleNotice>();
 
         protected virtual async Task DoNoticeAsync(IJobExecutionContext context, string message, string extendInfo = "")
         {
             await context.DoNoticeAsync(message, extendInfo);
         }
-
-
-
     }
-
-
 }

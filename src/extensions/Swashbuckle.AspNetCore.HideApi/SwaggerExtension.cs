@@ -18,6 +18,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using WindNight.Core.Attributes.Abstractions;
+using WindNight.Linq.Extensions.Expressions;
 using JsonNamingPolicy = System.Text.Json.Extension.JsonNamingPolicy;
 
 namespace Swashbuckle.AspNetCore.Extensions
@@ -200,7 +201,7 @@ namespace Swashbuckle.AspNetCore.Extensions
                 signKeyDict = config.GetSignDict();
             }
 
-            if (!signKeyDict.IsNullOrEmpty())
+            if (signKeyDict.IsNotNullOrEmpty())
             {
                 var securityRequirements = new OpenApiSecurityRequirement();
                 foreach (var item in signKeyDict)
@@ -230,7 +231,7 @@ namespace Swashbuckle.AspNetCore.Extensions
                     }
                 }
 
-                if (!securityRequirements.IsNullOrEmpty())
+                if (securityRequirements.IsNotNullOrEmpty())
                 {
                     c.AddSecurityRequirement(securityRequirements);
                 }
@@ -257,60 +258,66 @@ namespace Swashbuckle.AspNetCore.Extensions
 
             app.Use(async (context, next) =>
             {
-                if (context.Request.Path.StartsWithSegments("/swagger"))
+                try
                 {
-                    // 获取客户端IP地址 
-                    var remoteIp = context.Request.HttpContext.QueryDefaultClient();
-                    if (!remoteIp.IpValid())
+                    if (context.Request.Path.StartsWithSegments("/swagger"))
                     {
-                        context.Response.StatusCode = 404;
-                        return;
-                    }
-
-                    if (ConfigItems.IsOnline && !ConfigItems.SwaggerOnlineDebug)
-                    {
-                        context.Response.StatusCode = 404;
-                        return;
-                    }
-
-                    if (ConfigItems.HiddenSwagger)
-                    {
-                        context.Response.StatusCode = 404;
-                        return;
-                    }
-                }
-
-                // 检查请求路径是否匹配指定路由
-                if (context.Request.Path.Equals("/api/internal/swaggerconfigs", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (!ConfigItems.OpenSwaggerDebug)
-                    {
-                        context.Response.StatusCode = 404;
-                        return;
-                    }
-
-                    var responseData = new
-                    {
-                        Data = new
+                        // 获取客户端IP地址 
+                        var remoteIp = context.Request.HttpContext.QueryDefaultClient();
+                        if (!remoteIp.IpValid())
                         {
-                            SwaggerConfig = ConfigItems.SwaggerConfigs,
-                        },
-                        Message = "",
-                        Code = 0,
-                    };
+                            context.Response.StatusCode = 404;
+                            return;
+                        }
 
-                    var options = new JsonSerializerOptions
+                        if (ConfigItems.IsOnline && !ConfigItems.SwaggerOnlineDebug)
+                        {
+                            context.Response.StatusCode = 404;
+                            return;
+                        }
+
+                        if (ConfigItems.HiddenSwagger)
+                        {
+                            context.Response.StatusCode = 404;
+                            return;
+                        }
+                    }
+
+                    // 检查请求路径是否匹配指定路由
+                    if (context.Request.Path.Equals("/api/internal/swaggerconfigs", StringComparison.OrdinalIgnoreCase))
                     {
-                        //  PropertyNamingPolicy = JsonNamingPolicy.PascalCase,
-                    };
+                        if (!ConfigItems.OpenSwaggerDebug)
+                        {
+                            context.Response.StatusCode = 404;
+                            return;
+                        }
 
-                    await context.Response.WriteAsJsonAsync(responseData, options);
-                    //await context.Response.WriteAsJsonAsync(responseData);
-                    return;
+                        var responseData = new
+                        {
+                            Data = new
+                            {
+                                SwaggerConfig = ConfigItems.SwaggerConfigs,
+                            },
+                            Message = "",
+                            Code = 0,
+                        };
+
+                        var options = new JsonSerializerOptions
+                        {
+                            //  PropertyNamingPolicy = JsonNamingPolicy.PascalCase,
+                        };
+
+                        await context.Response.WriteAsJsonAsync(responseData, options);
+                        //await context.Response.WriteAsJsonAsync(responseData);
+                        return;
+                    }
+                    await next();
+
                 }
-                await next();
+                catch
+                {
 
-
+                }
 
             });
 

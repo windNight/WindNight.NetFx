@@ -158,7 +158,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
         static IEnumerable<TAttr> Empty<TAttr>()
  where TAttr : Attribute, IAttribute
         {
-            return Enumerable.Empty<TAttr>();
+            return HardInfo.EmptyList<TAttr>();
         }
 
         /// <summary>

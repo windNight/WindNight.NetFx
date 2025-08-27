@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using Schedule.@internal;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 using WindNight.Core.ExceptionExt;
 using WindNight.Core.SysLogCenter.Extensions;
 using WindNight.Extension;

@@ -1,4 +1,3 @@
-using System;
 using Newtonsoft.Json.Extension;
 using Quartz;
 using Schedule.Abstractions;
@@ -12,7 +11,10 @@ namespace Schedule.Func
     {
         public const string BizContentKey = "bizContent";
 
-        static JobDataMap DataMap(this IJobDetail jobDetail) => jobDetail.JobDataMap;
+        private static JobDataMap DataMap(this IJobDetail jobDetail)
+        {
+            return jobDetail.JobDataMap;
+        }
 
 
         /// <summary>
@@ -255,7 +257,8 @@ namespace Schedule.Func
         /// <returns></returns>
         public static bool GetIsDoNotice(this IJobExecutionContext context)
         {
-            return context.JobDetail.JobDataMap.ContainsKey("isDoNotice") && bool.Parse(context.JobDetail.JobDataMap["isDoNotice"].ToString());
+            return context.JobDetail.JobDataMap.ContainsKey("isDoNotice") &&
+                   bool.Parse(context.JobDetail.JobDataMap["isDoNotice"].ToString());
         }
 
         /// <summary>
@@ -273,7 +276,8 @@ namespace Schedule.Func
         /// <returns></returns>
         public static bool GetIsLogJobLC(this IJobExecutionContext context)
         {
-            return context.JobDetail.JobDataMap.ContainsKey("isLogJobLC") && bool.Parse(context.JobDetail.JobDataMap["isLogJobLC"].ToString());
+            return context.JobDetail.JobDataMap.ContainsKey("isLogJobLC") &&
+                   bool.Parse(context.JobDetail.JobDataMap["isLogJobLC"].ToString());
         }
 
         /// <summary>
@@ -290,7 +294,7 @@ namespace Schedule.Func
         }
 
         /// <summary>
-        ///     获取job 被否决的原因 
+        ///     获取job 被否决的原因
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
@@ -300,7 +304,6 @@ namespace Schedule.Func
                 ? context.JobDetail.JobDataMap["vetoedReason"].ToString()
                 : string.Empty;
         }
-
 
 
         public static void SetTempConfig(this IJobExecutionContext context, string key, object value)
@@ -321,11 +324,11 @@ namespace Schedule.Func
             {
                 return context.JobDetail.JobDataMap[key];
             }
+
             return string.Empty;
         }
 
         /// <summary>
-        ///      
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
@@ -349,7 +352,6 @@ namespace Schedule.Func
         }
 
         /// <summary>
-        ///      
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
@@ -376,7 +378,5 @@ namespace Schedule.Func
                 jobDetail.JobDataMap["jobBaseInfo"] = jobInfo.ToJsonStr();
             }
         }
-
-
     }
 }

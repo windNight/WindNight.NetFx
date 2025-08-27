@@ -138,6 +138,11 @@ namespace System.Collections.Generic
             return this.IsNullOrEmpty();
         }
 
+        public bool IsNotEmpty()
+        {
+            return this.IsNotNullOrEmpty() && RecordCount > 0;
+        }
+
     }
 
     internal class PagedList<TSource, TResult> : IPagedList<TResult>

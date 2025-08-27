@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Abstractions.SvrMonitor;
 
@@ -48,7 +49,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> that represents the asynchronous Start operation.</returns>
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            LogHelper.LogRegisterInfo("");
+            // LogHelper.LogRegisterInfo("");
             SvrCenterHelper.PushSvrRegisterInfo();
 
             await base.StartAsync(cancellationToken);
@@ -61,7 +62,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> that represents the asynchronous Stop operation.</returns>
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            LogHelper.LogOfflineInfo("");
+            //   LogHelper.LogOfflineInfo("");
             SvrCenterHelper.PushSvrOfflineInfo();
             await base.StopAsync(cancellationToken);
 
@@ -216,6 +217,11 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             {
                 if (!res.SvrToken.IsNullOrEmpty())
                 {
+                    if (SvrCenterRegisterInfo == null)
+                    {
+                        Registered2SvrCenter(res);
+                        return;
+                    }
                     if (!res.SvrToken.Equals(SvrToken, StringComparison.OrdinalIgnoreCase))
                     {
                         SvrCenterRegisterInfo.UpdateRegisteredRes(res);
@@ -240,9 +246,9 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
     internal class SvrCenterRegisteredInfo : ISvrCenterRegisteredInfo
     {
-        public string AppId { get; set; }
-        public string AppName { get; set; }
-        public string AppCode { get; set; }
+        public string AppId { get; set; } = string.Empty;
+        public string AppName { get; set; } = string.Empty;
+        public string AppCode { get; set; } = string.Empty;
         public string SvrToken => RegisteredRes?.SvrToken ?? "";
         public long SvrTokenExpireTs => RegisteredRes?.SvrTokenExpireTs ?? 0;
 
@@ -266,11 +272,9 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             {
                 try
                 {
-
-
+                    var svrInfo = HardInfo.GenSvrMonitorInfo(SvrMonitorTypeEnum.Register);
                     if (_svrCenterMonitorApp != null)
                     {
-                        var svrInfo = HardInfo.GenSvrMonitorInfo(SvrMonitorTypeEnum.Register);
                         var res = _svrCenterMonitorApp.PushSvrRegisterInfo(svrInfo);
 
                         var flag = res?.Success ?? false;
@@ -279,10 +283,16 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                             SvrCenterContextHelper.Instance.Registered2SvrCenter(res);
                         }
                     }
+                    else
+                    {
+                        LogHelper.Warn($" ISvrCenterMonitorApp NOT Impl  SvrRegisterInfo is {svrInfo.ToJsonStr()}");
+
+                    }
                 }
                 catch (Exception ex)
                 {
 
+                    LogHelper.Error($"PushSvrRegisterInfo handler Error {ex.Message}", ex);
                 }
             });
 
@@ -295,11 +305,15 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             {
                 try
                 {
+                    var svrInfo = HardInfo.GenSvrMonitorInfo(SvrMonitorTypeEnum.Offline);
                     if (_svrCenterMonitorApp != null)
                     {
 
-                        var svrInfo = HardInfo.GenSvrMonitorInfo(SvrMonitorTypeEnum.Offline);
                         var res = _svrCenterMonitorApp.PushSvrOfflineInfo(svrInfo);
+                    }
+                    else
+                    {
+                        LogHelper.Warn($" ISvrCenterMonitorApp NOT Impl SvrOfflineInfo is {svrInfo.ToJsonStr()}");
                     }
                     //return res.Success;
                 }

@@ -15,6 +15,7 @@ namespace WindNight.ConfigCenter.Extension
     /// <summary>
     ///  只给 执行 init 的实例使用 
     /// </summary>
+
     public partial class ConfigItemsBase
     {
         protected const string ZeroString = ConstantKeys.ZeroString;
@@ -350,5 +351,39 @@ namespace WindNight.ConfigCenter.Extension
 
 
 #endif
+
+
+
     }
+
+
+
+#if NET45LATER
+
+    public partial class ConfigItemsBase
+    {
+
+
+        public static DomainConfigs DomainConfigs => GetSectionValue<DomainConfigs>() ?? new DomainConfigs();
+
+
+        public static string QueryDomainConfig(string domainName)
+        {
+            var config = QueryDomainInfoConfig(domainName);
+            return config?.Domain ?? "";
+        }
+
+        public static DomainConfigDto QueryDomainInfoConfig(string domainName)
+        {
+            var config = DomainConfigs.Items.FirstOrDefault(m => m.Name.Equals(domainName, StringComparison.OrdinalIgnoreCase));
+            return config;
+        }
+
+
+
+    }
+
+#endif
+
+
 }

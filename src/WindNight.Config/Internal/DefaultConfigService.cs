@@ -31,7 +31,7 @@ namespace WindNight.Config.@internal
             CheckConfiguration(isThrow);
             if (defaultValue == null)
             {
-                defaultValue = Enumerable.Empty<string>();
+                defaultValue = HardInfo.EmptyList<string>();
             }
             return Configuration?.GetAppSettingList(configKey, defaultValue, isThrow, needDistinct) ?? defaultValue;
         }
@@ -41,7 +41,7 @@ namespace WindNight.Config.@internal
             CheckConfiguration(isThrow);
             if (defaultValue == null)
             {
-                defaultValue = Enumerable.Empty<int>();
+                defaultValue = HardInfo.EmptyList<int>();
             }
             return Configuration?.GetAppSettingList(configKey, defaultValue, isThrow, needDistinct) ?? defaultValue;
         }
@@ -51,7 +51,7 @@ namespace WindNight.Config.@internal
             CheckConfiguration(isThrow);
             if (defaultValue == null)
             {
-                defaultValue = Enumerable.Empty<T>();
+                defaultValue = HardInfo.EmptyList<T>();
             }
             return Configuration?.GetAppSettingList<T>(configKey, convert, defaultValue, isThrow, needDistinct) ?? defaultValue;
         }

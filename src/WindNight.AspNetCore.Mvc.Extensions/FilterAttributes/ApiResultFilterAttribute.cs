@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using WindNight.AspNetCore.Mvc.Extensions;
 using WindNight.Core;
 using WindNight.Core.Attributes.Abstractions;
@@ -20,17 +18,21 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 
         protected virtual void FixResultBeforeResultExecuting(ResultExecutingContext context)
         {
-
             //var car = context.ActionDescriptor.GetMethodAttributes<ClearResultAttribute>().FirstOrDefault();
 
             var clsAttr = context.ActionDescriptor.GetAttributeOnAction<ClearResultAttribute>();
 
             var noClear = clsAttr?.IsClear ?? false;
-            if (noClear) return;
+            if (noClear)
+            {
+                return;
+            }
+
             if (!(context.Result is ObjectResult objectResult) || objectResult.Value is ResponseResult)
             {
                 return;
             }
+
             if (objectResult.Value is null)
             {
                 context.Result = new ObjectResult(new ResponseResult<object>().NotFound());
@@ -47,7 +49,6 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 {
                     context.Result = new ObjectResult(new ResponseResult<object>().SystemError(ex.Message));
                 }
-
             }
         }
 

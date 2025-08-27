@@ -82,7 +82,7 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
         static IEnumerable<TAttr> Empty<TAttr>()
             where TAttr : Attribute, IAttribute
         {
-            return Enumerable.Empty<TAttr>();
+            return HardInfo.EmptyList<TAttr>();
         }
 
         /// <summary>

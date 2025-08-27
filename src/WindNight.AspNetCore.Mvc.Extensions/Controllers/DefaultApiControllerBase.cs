@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.AspNetCore.Mvc.Extensions;
 using WindNight.Core;
+using WindNight.Core.Abstractions;
 using WindNight.Core.Extension;
 using WindNight.Extension;
 
@@ -9,6 +12,9 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 {
     public class DefaultApiControllerBase : ControllerBase
     {
+        protected static ISysApiAuthCheck SysApiAuthCheckImpl => Ioc.GetService<ISysApiAuthCheck>();
+
+        protected virtual bool OpenDebug => ConfigItems.OpenDebug;
 
         protected virtual string SysAppId => HardInfo.AppId;
 
@@ -39,6 +45,25 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
         protected virtual bool IsAuthType1(bool ignoreIp = true)
         {
+
+            if (SysApiAuthCheckImpl != null)
+            {
+                if (SysApiAuthCheckImpl.OpenSysApiAuthCheck)
+                {
+                    var isValid = SysApiAuthCheckImpl.SysApiAuth();
+                    if (!isValid)
+                    {
+                        Response.StatusCode = 404; //new ObjectResult(ResponseResult.GenNotFoundRes(null));
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+
+            }
+
             if (ignoreIp && HttpClientIpIsPrivate())
             {
                 return true;
@@ -47,6 +72,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             var ak = GetAccessToken();
 
             var appToken = GetAppTokenValue();
+
             if (ak.IsNullOrEmpty(true) && appToken.IsNullOrEmpty(true))
             {
                 return false;

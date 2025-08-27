@@ -5,21 +5,25 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text.Extension;
-using Microsoft.Extensions.DependencyInjection.WnExtension;
-using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Abstractions.Ex;
 using WindNight.Core.ConfigCenter.Extensions;
 using WindNight.Core.Extension;
-using WindNight.Core.@internal;
 using WindNight.Linq.Extensions.Expressions;
 
 namespace System
 {
     public partial class HardInfo
     {
+
+        public static IEnumerable<T> EmptyList<T>() => Enumerable.Empty<T>();
+
+        public static T[] ArrayList<T>() => Array.Empty<T>();
+
+        public static IPagedList<T> EmptyPagedList<T>() => PagedList.Empty<T>();
+
+
+
         public static DateTime MaxDate => DateTime.MaxValue;
         public static DateTime MinDate => DateTime.MinValue;
 
@@ -85,6 +89,10 @@ namespace System
     /// <summary>硬件信息</summary>
     public partial class HardInfo
     {
+        public static string CurrentVersion => BuildInfo.BuildVersion;
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
+
+
         private const string DefaultIp = "0.0.0.0";
 
 
@@ -111,15 +119,22 @@ namespace System
         }
 
         /// <summary>
-        /// 默认的IP
+        ///  默认的IP List 
         /// </summary>
         public static string NodeIpAddress { get; private set; } = "";
+        /// <summary>
+        ///  默认的单个Ip
+        /// </summary>
+        public static string NodeIp => NodeIpList?.FirstOrDefault() ?? "";
 
         public static IEnumerable<string> NodeIpList => GetLocalIps();
 
         public static string AppId => DefaultConfigItemBase.SystemAppId;
+
         public static string AppCode => DefaultConfigItemBase.SystemAppCode;
+
         public static string AppName => DefaultConfigItemBase.SystemAppName;
+
         public static string BuildType => QuerySvrHostInfoImpl?.QueryBuildType() ?? "";
 
         public static bool IsUnix => OperatorSys == OperatorSysEnum.Unix;
@@ -362,133 +377,6 @@ namespace System
         }
 
 
-
-    }
-
-    public partial class HardInfo
-    {
-        public static IHostEnvironment HostEnv => Ioc.GetService<IHostEnvironment>();
-        public static string EnvironmentName => HostEnv?.EnvironmentName ?? "";
-        public static string ApplicationName => HostEnv?.ApplicationName ?? "";
-        public static string ContentRootPath => HostEnv?.ContentRootPath ?? "";
-
-        public static IQuerySvrHostInfo QuerySvrHostInfoImpl => Ioc.GetService<IQuerySvrHostInfo>();
-
-        public static string QueryBuildType() => QuerySvrHostInfoImpl?.QueryBuildType() ?? "";
-
-        public static long QuerySvrRegisteredTs() => SvrMonitorInfo?.RegisteredTs ?? 0L;
-
-        public static long QueryBuildTs() => QuerySvrBuildInfo().QueryBuildInfoItem("BuildTs", 0L);
-
-        public static string QueryBuildDateTime() => QuerySvrBuildInfo().QueryBuildInfoItem("BuildTime", "");
-
-        public static string QueryBuildVersion() => QuerySvrBuildInfo().QueryBuildInfoItem("BuildVersion", "");
-
-        public static string QueryBuildUserName() => QuerySvrBuildInfo().QueryBuildInfoItem("UserName", "");
-
-        public static string QueryBuildMachineName() => QuerySvrBuildInfo().QueryBuildInfoItem("MachineName", "");
-
-        public static string QueryBuildProjectName() => QuerySvrBuildInfo().QueryBuildInfoItem("BuildProjectName", "");
-
-        public static int QueryRuntimeProcessId() => QuerySvrRuntimeInfo().ProcessId;
-
-        public static string QueryRunMachineUserName() => QuerySvrRuntimeInfo()?.RunMachineUserName ?? "";
-
-        public static string QueryRunMachineName()
-        {
-            try
-            {
-                //var implName = QuerySvrHostInfoImpl?.QueryBuildMachineName() ?? "";
-                //if (!implName.IsNullOrEmpty())
-                //{
-                //    return implName;
-                //}
-                var implName = QuerySvrRuntimeInfo()?.RunMachineName ?? "";
-                if (!implName.IsNullOrEmpty())
-                {
-                    return implName;
-                }
-                return Environment.MachineName;
-            }
-            catch (Exception ex)
-            {
-                return "";
-            }
-
-        }
-
-
-        public static ISvrMonitorInfo SvrMonitorInfo { get; private set; }
-
-        /// <summary>
-        ///  服务基础信息相关  AppId, AppCode, AppName 等
-        /// </summary>
-        public static IAppBaseInfo QueryAppBaseInfo() => DefaultAppBaseInfo.Gen();
-
-        public static ISvrRuntimeInfo QuerySvrRuntimeInfo() => SvrRuntimeInfo.Gen();
-
-        /// <summary>
-        ///  包含服务基础信息外 包含服务的主程序的相关信息
-        /// </summary>
-        public static ISvrHostInfo QuerySvrHostInfo() => QuerySvrHostInfoImpl?.QuerySvrHostInfo() ?? SvrHostBaseInfo.Gen();
-
-        public static ISvrBuildInfo QuerySvrBuildInfo() => QuerySvrHostInfoImpl?.QuerySvrBuildInfo() ?? new SvrBuildInfoDto();
-        public static ISvrMonitorInfo GenSvrMonitorInfo(SvrMonitorTypeEnum monitorType) => DefaultSvrMonitorInfo.GenSvrMonitorInfo(monitorType);
-
-        public static object Obj()
-        {
-            var obj = new
-            {
-                AppId,
-                AppCode,
-                AppName,
-                RegisteredTs = QuerySvrRegisteredTs(),
-                BuildType = QueryBuildType() ?? "",
-                BuildMachine = QueryBuildMachineName() ?? "",
-                ApiVersion = SvrMonitorInfo?.SvrHostInfo?.MainAssemblyInfo?.AssemblyVersion ?? "",
-                BuildVersion = QueryBuildVersion() ?? "",
-                BuildTime = QueryBuildDateTime() ?? "",
-                PId = SvrMonitorInfo?.SvrRuntimeInfo?.ProcessId ?? -1,
-                SvrHostInfo = SvrMonitorInfo?.SvrHostInfo,
-                SvrBuildInfo = SvrMonitorInfo?.SvrBuildInfo,
-
-            };
-
-            return obj;
-        }
-
-        //{
-        //    return new
-        //    {
-        //        NodeCode,
-        //        NodeIpAddress,
-        //        EnvironmentName,
-        //        ApplicationName,
-        //        SvrHostInfo,
-        //        OperatorSys = OperatorSys.ToString(),
-        //    };
-        //}
-
-        public new static string ToString() => Obj().ToJsonStr();
-
-        public static string ToString(Formatting formatting) => Obj().ToJsonStr(formatting);
-
-        //public static bool FillBuildExtDict(IReadOnlyDictionary<string, object> dict)
-        //{
-
-        //    return AppRegisteredInfo.FillBuildExtDict(dict);
-
-        //}
-
-        public static ISvrRegisterInfo TryGetAppRegInfo(string buildType)
-        {
-            var sysInfo = SvrMonitorInfo;
-
-            //   sysInfo.ResetBuildType(buildType);
-
-            return sysInfo;
-
-        }
 
     }
 

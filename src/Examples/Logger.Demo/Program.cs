@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 using WindNight.Extension.Logger.DbLog.Extensions;
 using WindNight.Extension.Logger.DcLog;
 using WindNight.Extension.Logger.DcLog.Extensions;

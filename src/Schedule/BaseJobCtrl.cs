@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Quartz;
 using Quartz.Impl.Matchers;
 using Schedule.Abstractions;
@@ -39,25 +36,7 @@ namespace Schedule
             catch
             {
                 return false;
-
             }
-        }
-
-
-        IJobDetail BuildJobDetail(JobMeta jobParam, JobKey jobKey, bool onceJob = false)
-        {
-            var job = JobBuilder.Create<T>().WithIdentity(jobKey).Build();
-
-            job.SetJobName(jobParam.JobName);
-            job.SetJobCode(jobParam.JobCode);
-            job.SetOnceJobFlag(onceJob);
-            job.SetDepJobs(jobParam.DepJobs);
-            job.SetJobRunParams(jobParam.RunParams);
-            job.SetAutoClose(jobParam.AutoClose);
-            job.SetIsDoNotice(jobParam.IsDoNotice);
-            job.SetIsLogJobLC(jobParam.IsLogJobLC);
-
-            return job;
         }
 
         /// <summary>
@@ -134,6 +113,7 @@ namespace Schedule
                 {
                     jobListener.SetName(UtilsFunc.GenListenerName(jobParam.JobName));
                 }
+
                 ScheduleModConfig.Instance.DefaultScheduler.ListenerManager.AddJobListener(jobListener,
                     KeyMatcher<JobKey>.KeyEquals(jobkey));
 
@@ -249,7 +229,6 @@ namespace Schedule
 
             if (jobMeta == null)
             {
-
                 throw new ArgumentNullException("JobCode", $"JobCode({jobCode}) 缺少配置项");
             }
 
@@ -273,13 +252,29 @@ namespace Schedule
                 IsDoNotice = jobMeta.IsDoNotice,
                 IsLogJobLC = jobMeta.IsLogJobLC,
                 CanRunTest = jobMeta.CanRunTest,
-
             };
         }
 
         public virtual JobKey GetJobKey()
         {
             return JobKey.Create(JobCode, $"{JobCode}_group");
+        }
+
+
+        private IJobDetail BuildJobDetail(JobMeta jobParam, JobKey jobKey, bool onceJob = false)
+        {
+            var job = JobBuilder.Create<T>().WithIdentity(jobKey).Build();
+
+            job.SetJobName(jobParam.JobName);
+            job.SetJobCode(jobParam.JobCode);
+            job.SetOnceJobFlag(onceJob);
+            job.SetDepJobs(jobParam.DepJobs);
+            job.SetJobRunParams(jobParam.RunParams);
+            job.SetAutoClose(jobParam.AutoClose);
+            job.SetIsDoNotice(jobParam.IsDoNotice);
+            job.SetIsLogJobLC(jobParam.IsLogJobLC);
+
+            return job;
         }
 
         public virtual TriggerKey GetTriggerKey()
@@ -302,6 +297,7 @@ namespace Schedule
             }
 
             if (startTime != default)
+            {
                 return TriggerBuilder.Create()
                     .WithIdentity(triggerKey)
                     .StartNow()
@@ -309,9 +305,12 @@ namespace Schedule
                         CronScheduleBuilder.DailyAtHourAndMinute(startTime.Hour,
                             startTime.Minute)) //未指定错过执行时间的处理方式，要求job里面的逻辑支持可重入
                     .Build();
+            }
+
             if (interval != 0)
-                //pause后重新resume,执行类似misfire job的原因
-                //http://stackoverflow.com/questions/1933676/quartz-java-resuming-a-job-excecutes-it-many-times
+            //pause后重新resume,执行类似misfire job的原因
+            //http://stackoverflow.com/questions/1933676/quartz-java-resuming-a-job-excecutes-it-many-times
+            {
                 return TriggerBuilder.Create()
                     .WithIdentity(triggerKey)
                     .WithSimpleSchedule(x => x
@@ -321,12 +320,16 @@ namespace Schedule
                     )
                     .StartNow()
                     .Build();
+            }
+
             if (!cronExpression.IsNullOrEmpty())
+            {
                 return TriggerBuilder.Create()
                     .WithIdentity(triggerKey)
                     .StartNow()
                     .WithCronSchedule(cronExpression)
                     .Build();
+            }
 
             return null;
         }

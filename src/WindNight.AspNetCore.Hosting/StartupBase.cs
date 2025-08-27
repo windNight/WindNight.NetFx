@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Extensions;
 using Swashbuckle.AspNetCore.Swagger;
@@ -19,6 +19,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using WindNight.Core.Abstractions;
 using WindNight.Core.ConfigCenter.Extensions;
+using WindNight.Extensions.Hosting;
 using WindNight.Linq.Extensions.Expressions;
 
 namespace Microsoft.AspNetCore.Hosting.WnExtensions
@@ -212,8 +213,12 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
         protected virtual void UseSysConfigure(IApplicationBuilder app)
         {
             var env = Ioc.GetService<IWebHostEnvironment>();
-            if (env.IsDevelopment())
+
+            if (env.IsEnvName("dev"))
             {
+                //}
+                //if (env.IsDevelopment())
+                //{
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -304,21 +309,22 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             // var prefix = $"{appName}({appCode}) ";
             // var title = $"{prefix}{NamespaceName}";
 
-
-            services.AddResponseCompression(options =>
+            if (OpenGZip)
             {
-                options.Providers.Add<GzipCompressionProvider>();
 
-                var mimeTypes = ResponseCompressionDefaults.MimeTypes;
-
-                if (!GzipMimeTypes.IsNullOrEmpty())
+                services.AddResponseCompression(options =>
                 {
-                    mimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(GzipMimeTypes).Distinct();
-                }
+                    options.Providers.Add<GzipCompressionProvider>();
 
-                options.MimeTypes = mimeTypes;
+                    var mimeTypes = ResponseCompressionDefaults.MimeTypes;
 
-            });
+                    if (!GzipMimeTypes.IsNullOrEmpty())
+                    {
+                        mimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(GzipMimeTypes).Distinct();
+                    }
+                    options.MimeTypes = mimeTypes;
+                });
+            }
 
             Ioc.Instance.InitServiceProvider(services);
 

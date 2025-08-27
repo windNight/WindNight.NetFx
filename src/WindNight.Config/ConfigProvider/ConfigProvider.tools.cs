@@ -50,11 +50,13 @@ namespace WindNight.ConfigCenter.Extension
 
         IEnumerable<T> Empty<T>()
         {
-#if NET45LATER
-            return Array.Empty<T>();
-#else
-            return new List<T>();
-#endif
+
+            return HardInfo.EmptyList<T>();
+            //#if NET45LATER
+            //            return Array.Empty<T>();
+            //#else
+            //            return new List<T>();
+            //#endif
         }
 
 

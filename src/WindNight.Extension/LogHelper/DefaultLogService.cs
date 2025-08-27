@@ -1,6 +1,7 @@
 using System;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 
 namespace WindNight.LogExtension
 {

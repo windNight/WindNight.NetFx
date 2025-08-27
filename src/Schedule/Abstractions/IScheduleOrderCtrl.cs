@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Schedule.Model.Enums;
@@ -27,7 +27,10 @@ namespace Schedule.Abstractions
         /// <param name="runParams"></param>
         /// <param name="onceJob"></param>
         /// <returns></returns>
+        [Obsolete("请使用 IJobBaseInfo")]
         Task StartJobSafety(string jobId, string jobName, string jobCode, string runParams, bool onceJob = false);
+
+        Task StartJobSafety(IJobBaseInfo jobInfo, string runParams, bool onceJob = false);
 
 
         /// <summary>
@@ -37,6 +40,12 @@ namespace Schedule.Abstractions
         /// <param name="jobRunState"></param>
         /// <param name="bizContent"></param>
         /// <returns></returns>
+        [Obsolete("请使用 IJobBaseInfo")]
         Task<bool> CompleteJobSafety(string jobId, JobRunStateEnum jobRunState, string bizContent = "");
+
+        Task<bool> CompleteJobSafety(IJobBaseInfo jobInfo, JobRunStateEnum jobRunState, string bizContent = "");
+
+
+
     }
 }

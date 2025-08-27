@@ -1,6 +1,8 @@
 using System;
 using Newtonsoft.Json.Extension;
+using WindNight.Core;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 
 namespace WindNight.LogExtension
 {
@@ -34,7 +36,7 @@ namespace WindNight.LogExtension
         internal class ThreadContext
         {
             /// <summary> 业务序列号  </summary>
-            internal const string SERIZLNUMBER = "serialnumber";
+            internal const string SERIZLNUMBER = ConstantKeys.ReqTraceIdKey;
 
             /// <summary>  IP  </summary>
             internal const string CLIENTIP = "___clientip_____";

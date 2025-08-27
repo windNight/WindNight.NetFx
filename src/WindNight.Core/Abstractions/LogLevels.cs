@@ -1,4 +1,8 @@
-namespace WindNight.Core.Abstractions
+
+using Microsoft.Extensions.Logging;
+using WindNight.Core.@internal;
+
+namespace WindNight.Core.Enums.Abstractions
 {
     /// <summary>
     ///     Defines logging severity levels.
@@ -64,5 +68,124 @@ namespace WindNight.Core.Abstractions
 
         /// <summary>  </summary>
         SysOffline = 41,
+    }
+}
+
+
+namespace WindNight.Core.Enums.Extension
+{
+    using WindNight.Core.Enums.Abstractions;
+
+    public static class EnumExt
+    {
+
+        static LogLevels MiniLogLevel => ConfigItems.GlobalMiniLogLevel;
+        static bool OpenDebug => ConfigItems.OpenDebug;
+
+        public static LogLevels Convert2LogLevel(this string level)
+        {
+            try
+            {
+                if (level.IsNullOrEmpty())
+                {
+                    return LogLevels.Information;
+                }
+
+                if (level.StartsWith("debug", StringComparison.OrdinalIgnoreCase))
+                {
+                    return LogLevels.Debug;
+                }
+
+                if (level.StartsWith("info", StringComparison.OrdinalIgnoreCase))
+                {
+                    return LogLevels.Information;
+                }
+
+                if (level.StartsWith("warn", StringComparison.OrdinalIgnoreCase))
+                {
+                    return LogLevels.Warning;
+                }
+
+                var flag = Enum.TryParse<LogLevels>(level, true, out var logLevel);
+
+                if (flag)
+                {
+                    return logLevel;
+                }
+
+                return LogLevels.Information;
+            }
+            catch (Exception ex)
+            {
+                return LogLevels.Information;
+            }
+        }
+
+        public static LogLevel Switch2LogLevel(this LogLevels logLevel)
+        {
+            var level = LogLevel.Debug;
+            switch (logLevel)
+            {
+                case LogLevels.Trace:
+                    level = LogLevel.Trace;
+                    break;
+                case LogLevels.None:
+                case LogLevels.Debug:
+                    break;
+                case LogLevels.Warning:
+                    level = LogLevel.Warning;
+                    break;
+                case LogLevels.Error:
+                    level = LogLevel.Error;
+                    break;
+                case LogLevels.Critical:
+                    level = LogLevel.Critical;
+                    break;
+                case LogLevels.ApiUrlException:
+                    level = LogLevel.Error;
+                    break;
+                case LogLevels.ApiUrl:
+                case LogLevels.Information:
+                case LogLevels.Report:
+                case LogLevels.SysRegister:
+                case LogLevels.SysOffline:
+                default:
+                    level = LogLevel.Information;
+                    break;
+            }
+
+            return level;
+        }
+
+
+
+        public static bool CanLog(this LogLevels level)
+        {
+            if (level == LogLevels.None)
+            {
+                return false;
+            }
+
+            if (level == LogLevels.Debug && !OpenDebug)
+            {
+                return false;
+            }
+
+            if (level < MiniLogLevel)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
+
+
+
+
+
+
+
     }
 }

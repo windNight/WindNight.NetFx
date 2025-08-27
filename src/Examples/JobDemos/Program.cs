@@ -20,6 +20,7 @@ using Schedule.Model;
 using Schedule.Model.Enums;
 using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 
 namespace JobDemos
 {
@@ -162,6 +163,7 @@ namespace JobDemos
             return await Task.FromResult(JobRunStateEnum.Ok);
         }
 
+        [Obsolete("请使用 IJobBaseInfo")]
         public async Task StartJobSafety(string jobId, string jobName, string jobCode, string runParams, bool onceJob)
         {
             $"jobId({jobId}):jobName({jobName}):jobCode({jobCode}):runParams({runParams}):onceJob({onceJob})".Log2Console();
@@ -169,7 +171,15 @@ namespace JobDemos
             await Task.CompletedTask;
         }
 
+        public async Task StartJobSafety(IJobBaseInfo jobInfo, string runParams, bool onceJob = false)
+        {
+            $"jobInfo({jobInfo}):runParams({runParams}):onceJob({onceJob})".Log2Console();
 
+            await Task.CompletedTask;
+        }
+
+
+        [Obsolete("请使用 IJobBaseInfo")]
         public async Task<bool> CompleteJobSafety(string jobId, JobRunStateEnum jobRunState, string bizContent = "")
         {
             $"jobId({jobId}):jobRunState({jobRunState}):bizContent({bizContent})".Log2Console();
@@ -177,7 +187,12 @@ namespace JobDemos
             return await Task.FromResult(true);
         }
 
+        public async Task<bool> CompleteJobSafety(IJobBaseInfo jobInfo, JobRunStateEnum jobRunState, string bizContent = "")
+        {
+            $"jobInfo({jobInfo}):jobRunState({jobRunState}):bizContent({bizContent})".Log2Console();
 
+            return await Task.FromResult(true);
+        }
     }
 
 

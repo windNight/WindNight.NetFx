@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using RestSharp;
+using WindNight.Core;
 using WindNight.Core.Extension;
 
 namespace WindNight.Extension
@@ -13,19 +10,14 @@ namespace WindNight.Extension
             Dictionary<string, string> headerDict = null)
         {
             var userAgent = headerDict.SafeGetValue(UserAgentKey) ?? null;
-            var client = new RestClient(domain)
-            {
-                Proxy = null,
-                Timeout = timeOut,
-                UserAgent = userAgent,
-            };
+            var client = new RestClient(domain) { Proxy = null, Timeout = timeOut, UserAgent = userAgent };
 
 
             return client;
         }
 
-        private const string UserAgentKey = "User-Agent";
-        private const string PluginInfoKey = "Plugin-HttpHelper";
+        private const string UserAgentKey = ConstantKeys.USER_AGENT_KEY;
+        private const string PluginInfoKey = ConstantKeys.Http_Plugin_Key;
 
         public static void AppendHttpHeader(this RestRequest request, Dictionary<string, string> headerDict = null)
         {
@@ -143,10 +135,7 @@ namespace WindNight.Extension
         }
 
 
-        private static IRestResponse ExecuteHttpClient(string domain,
-            IRestRequest request,
-            Dictionary<string, string> headerDict = null,
-            int timeOut = 1000 * 60 * 20)
+        private static IRestResponse ExecuteHttpClient(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, int timeOut = 1000 * 60 * 20)
         {
             var client = GenRestClient(domain, timeOut, headerDict);
 
@@ -154,12 +143,7 @@ namespace WindNight.Extension
             return response;
         }
 
-        private static T ExecuteHttpClient<T>(string domain,
-            IRestRequest request,
-            Dictionary<string, string> headerDict = null,
-            int timeOut = 1000 * 60 * 20
-            , Func<string, T> convertFunc = null,
-            Func<IRestResponse, bool> errStatusFunc = null)
+        private static T ExecuteHttpClient<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var response = ExecuteHttpClient(domain, request, headerDict, timeOut);
             return DeserializeResponse<T>(response, convertFunc, domain, errStatusFunc: errStatusFunc);
@@ -177,11 +161,7 @@ namespace WindNight.Extension
         }
 
 
-        private static async Task<T> ExecuteHttpClientAsync<T>(string domain, IRestRequest request,
-            Dictionary<string, string> headerDict = null, Func<string, T> convertFunc = null,
-            CancellationToken token = default,
-            int timeOut = 1000 * 60 * 20,
-            Func<IRestResponse, bool> errStatusFunc = null)
+        private static async Task<T> ExecuteHttpClientAsync<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, Func<string, T> convertFunc = null, CancellationToken token = default, int timeOut = 1000 * 60 * 20, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var response = await ExecuteHttpClientAsync(domain, request, headerDict, token, timeOut);
 
@@ -216,11 +196,7 @@ namespace WindNight.Extension
 #endif
 
 
-        private static IPagedList<T> ExecuteHttpClient2<T>(string domain,
-            IRestRequest request,
-            Dictionary<string, string> headerDict = null,
-            int timeOut = 1000 * 60 * 20,
-            Func<IRestResponse, bool> errStatusFunc = null)
+        private static IPagedList<T> ExecuteHttpClient2<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, int timeOut = 1000 * 60 * 20, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var response = ExecuteHttpClient(domain, request, headerDict, timeOut);
 
@@ -237,23 +213,14 @@ namespace WindNight.Extension
         }
 
 
-        private static T ExecuteHttpClient3<T>(string domain,
-            IRestRequest request,
-            Dictionary<string, string> headerDict = null,
-            int timeOut = 1000 * 60 * 20,
-            Func<IRestResponse, bool> errStatusFunc = null)
+        private static T ExecuteHttpClient3<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, int timeOut = 1000 * 60 * 20, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var response = ExecuteHttpClient(domain, request, headerDict, timeOut);
 
             return response.DeserializeResResponse<T>(domain, errStatusFunc: errStatusFunc);
         }
 
-        private static async Task<T> ExecuteHttpClientAsync3<T>(string domain,
-            IRestRequest request,
-            Dictionary<string, string> headerDict = null,
-            CancellationToken token = default,
-            int timeOut = 1000 * 60 * 20,
-            Func<IRestResponse, bool> errStatusFunc = null)
+        private static async Task<T> ExecuteHttpClientAsync3<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, CancellationToken token = default, int timeOut = 1000 * 60 * 20, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var response = await ExecuteHttpClientAsync(domain, request, headerDict, token, timeOut);
 
@@ -271,9 +238,7 @@ namespace WindNight.Extension
             return response.DeserializeListResponse<T>(domain, errStatusFunc);
         }
 
-        private static async Task<IEnumerable<T>> ExecuteHttpClientAsync4<T>(string domain, IRestRequest request,
-            Dictionary<string, string> headerDict = null, CancellationToken token = default,
-            int timeOut = 1000 * 60 * 20, Func<IRestResponse, bool> errStatusFunc = null)
+        private static async Task<IEnumerable<T>> ExecuteHttpClientAsync4<T>(string domain, IRestRequest request, Dictionary<string, string> headerDict = null, CancellationToken token = default, int timeOut = 1000 * 60 * 20, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var response = await ExecuteHttpClientAsync(domain, request, headerDict, token, timeOut);
 

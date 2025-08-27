@@ -11,10 +11,13 @@ namespace System.Attributes
     {
         public virtual void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-
             if (ConfigItems.HiddenSwagger) // When clear swaggerDoc.Paths
             {
-                if (context.ApiDescriptions == null) return;
+                if (context.ApiDescriptions == null)
+                {
+                    return;
+                }
+
                 try
                 {
                     swaggerDoc.Components.SecuritySchemes.Clear();
@@ -26,14 +29,11 @@ namespace System.Attributes
 
                     swaggerDoc.Components.Schemas.Clear();
                     swaggerDoc.Annotations?.Clear();
-
-
                 }
                 catch
                 {
                 }
             }
         }
-
     }
 }

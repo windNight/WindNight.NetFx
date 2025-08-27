@@ -33,7 +33,7 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
             }
             catch (Exception ex)
             {
-                return Enumerable.Empty<TAttr>();
+                return HardInfo.EmptyList<TAttr>();
             }
         }
 

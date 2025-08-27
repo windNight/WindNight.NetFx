@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.@internal;
-
 #if NETSTANDARD2_1
 using System.Diagnostics.CodeAnalysis;
 #endif
@@ -31,11 +27,15 @@ namespace Newtonsoft.Json.Extension
         public static T To<T>(this object? obj, Formatting formatting = Formatting.None,
             JsonSerializerSettings settings = null)
         {
-            if (obj == null) return default;
+            if (obj == null)
+            {
+                return default;
+            }
+
             return obj.ToJsonStr(formatting).To<T>(settings);
         }
 
-#if STD21 
+#if STD21
         [return: MaybeNull]
 #endif
         public static TResult To<TSource, TResult>(this TSource obj, Formatting formatting = Formatting.None,
@@ -43,7 +43,10 @@ namespace Newtonsoft.Json.Extension
             where TSource : class, new()
             where TResult : class, new()
         {
-            if (obj == null) return default;
+            if (obj == null)
+            {
+                return default;
+            }
 
             var model = obj.To<TResult>(formatting, settings);
 
@@ -58,8 +61,16 @@ namespace Newtonsoft.Json.Extension
 
         public static JObject? ToJObject(this object? obj, JsonSerializer? jsonSerializer = null)
         {
-            if (obj == null) return null;
-            if (jsonSerializer == null) jsonSerializer = JsonSerializer.CreateDefault();
+            if (obj == null)
+            {
+                return null;
+            }
+
+            if (jsonSerializer == null)
+            {
+                jsonSerializer = JsonSerializer.CreateDefault();
+            }
+
             try
             {
                 return JObject.FromObject(obj, jsonSerializer);
@@ -86,16 +97,21 @@ namespace Newtonsoft.Json.Extension
 
         public static T To<T>(this string jsonStr, JsonSerializerSettings? settings = null)
         {
-            if (jsonStr.IsNullOrEmpty()) return default;
+            if (jsonStr.IsNullOrEmpty())
+            {
+                return default;
+            }
 
             try
             {
                 if (settings == null)
+                {
                     settings = new JsonSerializerSettings
                     {
                         // JSON反序列化错误处理
                         Error = (se, ev) => { ev.ErrorContext.Handled = true; },
                     };
+                }
                 // settings.Converters.Add(new IPAddressConverter());
                 // settings.Converters.Add(new IPEndPointConverter());
 
@@ -122,16 +138,14 @@ namespace Newtonsoft.Json.Extension
             JsonSerializerSettings? settings = null)
         {
             if (settings == null)
+            {
                 settings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+            }
             //settings.Converters.Add(new IPAddressConverter());
             //settings.Converters.Add(new IPEndPointConverter());
 
             return JsonConvert.SerializeObject(obj, formatting, settings);
         }
-
-
-
-
     }
 
 
@@ -158,10 +172,9 @@ namespace Newtonsoft.Json.Extension
             }
             catch (Exception ex)
             {
-
             }
-            return defaultValue;
 
+            return defaultValue;
         }
 
         public static string SafeGetValue(this JObject jo, string key, string defaultValue = "")
@@ -171,10 +184,9 @@ namespace Newtonsoft.Json.Extension
             {
                 return value.ToString();
             }
+
             return defaultValue;
         }
-
-
 
 
         public static int SafeGetValue(this JObject jo, string key, int defaultValue = 0)
@@ -184,15 +196,48 @@ namespace Newtonsoft.Json.Extension
             {
                 return value.ToInt();
             }
+
+            return defaultValue;
+        }
+
+
+        public static long SafeGetValue(this JObject jo, string key, long defaultValue = 0L)
+        {
+            var value = jo.SafeGetValueBase(key);
+            if (value != null)
+            {
+                return value.ToLong();
+            }
+
+            return defaultValue;
+        }
+
+        public static bool SafeGetValue(this JObject jo, string key, bool defaultValue = false)
+        {
+            var value = jo.SafeGetValueBase(key);
+            if (value != null)
+            {
+                return value.ToBoolean();
+            }
+
+            return defaultValue;
+        }
+
+        public static decimal SafeGetValue(this JObject jo, string key, decimal defaultValue = 0m)
+        {
+            var value = jo.SafeGetValueBase(key);
+            if (value != null)
+            {
+                return value.ToDecimal();
+            }
+
             return defaultValue;
         }
 
 
 
 
-
     }
-
 }
 
 
@@ -201,14 +246,12 @@ namespace System.Text.Json.Extension
     /// <summary> </summary>
     public static class MJsonExtensions
     {
-
     }
 
-    public abstract class JsonNamingPolicy : System.Text.Json.JsonNamingPolicy
+    public abstract class JsonNamingPolicy : Json.JsonNamingPolicy
     {
         /// <summary>Gets the naming policy for PascalCase.</summary>
         public static JsonNamingPolicy PascalCase { get; } = new PascalCaseJsonNamingPolicy();
-
     }
 
     public class PascalCaseJsonNamingPolicy : JsonNamingPolicy
@@ -216,7 +259,9 @@ namespace System.Text.Json.Extension
         public override string ConvertName(string name)
         {
             if (name.IsNullOrEmpty())
+            {
                 return name;
+            }
 
             // 将名称按分隔符（如下划线、连字符）或大小写变化拆分成单词
             var words = SplitIntoWords(name);
@@ -236,10 +281,7 @@ namespace System.Text.Json.Extension
                 return word;
             }
 
-            return $"{word[0].ToUpper()}{word.Substring(1)}";//.ToLower();
+            return $"{word[0].ToUpper()}{word.Substring(1)}"; //.ToLower();
         }
-
     }
-
-
 }

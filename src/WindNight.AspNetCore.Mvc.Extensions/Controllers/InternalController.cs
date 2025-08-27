@@ -1,9 +1,12 @@
 using System;
 using System.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
@@ -15,13 +18,14 @@ using WindNight.AspNetCore.Mvc.Extensions.FilterAttributes;
 using WindNight.Core;
 using WindNight.Core.Attributes.Abstractions;
 using WindNight.Extension;
+using WindNight.Linq.Extensions.Expressions;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 {
 
     [Route("api/internal")]
-    [SysApi(10)]
+    [SysApi(50)]
     [NonAuth]
     [SysApiAuthActionFilter]
     public class InternalController : DefaultApiControllerBase // Controller
@@ -33,16 +37,37 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
         }
 
+        //protected override bool IsAuthType1(bool ignoreIp = true)
+        //{
+
+        //    if (ignoreIp && HttpClientIpIsPrivate())
+        //    {
+        //        return true;
+        //    }
+
+        //    var ak = GetAccessToken();
+
+        //    var appToken = GetAppTokenValue();
+        //    if (ak.IsNullOrEmpty(true) && appToken.IsNullOrEmpty(true))
+        //    {
+        //        return false;
+        //    }
+
+        //    if (!ConfigItems.OpenInternalApi)
+        //    {
+        //        return false;
+        //    }
+
+        //    return true;
+
+        //}
 
         [HttpGet("config")]
         public object GetConfigs()
         {
             if (!IsAuthType1())
             {
-                if (!ConfigItems.OpenInternalApi)
-                {
-                    return false;
-                }
+                return NotFound();
             }
 
             return new
@@ -66,10 +91,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             if (!IsAuthType1())
             {
-                if (!ConfigItems.OpenInternalApi)
-                {
-                    return false;
-                }
+                return NotFound();
             }
 
             var _config = Ioc.GetService<IConfiguration>();
@@ -81,10 +103,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             if (!IsAuthType1())
             {
-                if (!ConfigItems.OpenInternalApi)
-                {
-                    return false;
-                }
+                return NotFound();
             }
 
             return new
@@ -105,10 +124,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             if (!IsAuthType1())
             {
-                if (!ConfigItems.OpenInternalApi)
-                {
-                    return false;
-                }
+                return NotFound();
             }
 
             return new
@@ -123,10 +139,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             if (!IsAuthType1())
             {
-                if (!ConfigItems.OpenInternalApi)
-                {
-                    return false;
-                }
+                return NotFound();
             }
 
             return new
@@ -141,10 +154,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             if (!IsAuthType1())
             {
-                if (!ConfigItems.OpenInternalApi)
-                {
-                    return false;
-                }
+                return NotFound();
             }
 
             return new
@@ -226,10 +236,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             if (!IsAuthType1())
             {
-                if (!ConfigItems.OpenInternalApi)
-                {
-                    return false;
-                }
+                return NotFound();
             }
 
             return new
@@ -247,10 +254,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             if (!IsAuthType1())
             {
-                if (!ConfigItems.OpenInternalApi)
-                {
-                    return false;
-                }
+                return NotFound();
             }
 
             Environment.Exit(-1);
@@ -259,6 +263,137 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
         }
 
+
+        [HttpGet("svr/kill/pid")]
+        [SysApi(100)]
+        public object KillSvr(int pId)
+        {
+            if (!IsAuthType1())
+            {
+                return NotFound();
+            }
+
+            KillProcess(pId);
+            return -1;
+        }
+
+        [HttpGet("svr/kill/pname")]
+        [SysApi(100)]
+        public object KillSvr(string pName)
+        {
+            if (!IsAuthType1())
+            {
+                return NotFound();
+            }
+
+            KillProcess(pName);
+            return -1;
+        }
+
+
+        private void KillProcess(int pId)
+        {
+
+            try
+            {
+                if (pId == Environment.ProcessId)
+                {
+                    // 如果是当前进程，则不允许杀掉。使用另一个自杀的方法
+                    throw new InvalidOperationException("Cannot terminate the calling process or its process tree.");
+
+                    return;
+                }
+
+                var pInfo = Process.GetProcessById(pId);
+                if (pInfo == null)
+                {
+                    return;
+
+                }
+
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "taskkill",
+                    Arguments = $"/PID {pId} /T /F", // /T terminates the tree, /F forces termination
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardError = true,
+                };
+
+                using (var process = Process.Start(startInfo))
+                {
+                    process.WaitForExit();
+                    if (process.ExitCode != 0)
+                    {
+                        string error = process.StandardError.ReadToEnd();
+                        var msg = $"Failed to terminate process tree for PID {pId}: {error}";
+                        LogHelper.Warn(msg);
+                    }
+                }
+            }
+            catch (Win32Exception ex)
+            {
+
+            }
+            catch (InvalidOperationException ex)
+            {
+
+            }
+
+
+
+        }
+
+
+        private void KillProcess(string pName)
+        {
+            try
+            {
+                var processList = Process.GetProcessesByName(pName);
+                if (processList.IsNullOrEmpty())
+                {
+                    return;
+                }
+
+                if (processList.Any(m => m.Id == Environment.ProcessId))
+                {
+                    // 如果是当前进程，则不允许杀掉。使用另一个自杀的方法
+                    return;
+                }
+
+
+                foreach (var process in processList)
+                {
+                    try
+                    {
+                        if (process.Id == Environment.ProcessId)
+                        {
+                            // 如果是当前进程，则不允许杀掉。使用另一个自杀的方法
+                            continue;
+                        }
+
+
+                        // 杀掉这个进程。
+                        process.Kill(true);
+
+                        process.WaitForExit();
+                    }
+                    catch (Win32Exception ex)
+                    {
+
+                    }
+                    catch (InvalidOperationException)
+                    {
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
 
     }
 }

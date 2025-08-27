@@ -1,10 +1,12 @@
-﻿namespace Microsoft.AspNetCore.Mvc.WnExtensions
+using WindNight.Core;
+
+namespace Microsoft.AspNetCore.Mvc.WnExtensions
 {
     /// <summary> 管理线程临时参数 </summary>
     public class WebConst
     {
         /// <summary> 业务序列号  </summary>
-        public const string SERIZLNUMBER = "serialnumber";
+        public const string SERIZLNUMBER = ConstantKeys.ReqTraceIdKey;
 
         public const string HEARDER = "___header_______";
         public const string REQUESTPATH = "___request_path_";

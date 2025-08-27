@@ -1,9 +1,9 @@
-using System;
-using System.IO;
 using System.Text.Extension;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
-using WindNight.Core.Abstractions;
+using WindNight.Core;
+using WindNight.Core.Enums.Abstractions;
+using WindNight.Core.Enums.Extension;
 using WindNight.Core.ExceptionExt;
 using WindNight.Extension;
 using IpHelper = WindNight.Extension.HttpContextExtension;
@@ -12,9 +12,12 @@ namespace WindNight.LogExtension
 {
     public static partial class LogHelper
     {
+        public static string ReqTraceIdKey => ConstantKeys.ReqTraceIdKey;
+
         public static void Add(string msg, LogLevels logLevel, Exception? errorStack = null, bool isTimeout = false,
             long millisecond = 0, // [Maxlength(255)]
-            string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false, string traceId = "")
+            string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false,
+            string traceId = "")
         {
             try
             {
@@ -23,6 +26,7 @@ namespace WindNight.LogExtension
                 {
                     return;
                 }
+
                 var logInfo = GeneratorLogInfo(msg, logLevel, errorStack, millisecond, url, serverIp, clientIp,
                     appendMessage, traceId);
 
@@ -57,19 +61,23 @@ namespace WindNight.LogExtension
             return logInfo;
         }
 
-
         private static LogInfo GeneratorLogInfo(JObject jo)
         {
             var logLevel = LogLevels.Information;
             var traceId = GuidHelper.GenerateOrderNumber();
-            if (!string.IsNullOrEmpty(jo["serialNumber"]?.ToString()))
+            var reqTraceId = jo.SafeGetValue(ReqTraceIdKey, "");
+
+            if (!reqTraceId.IsNullOrEmpty())
             {
-                traceId = jo["serialNumber"].ToString();
+                traceId = reqTraceId;
             }
-            if (!string.IsNullOrEmpty(jo["level"]?.ToString()))
+
+            var reqLogLevel = jo.SafeGetValue("level", "");
+            if (!reqLogLevel.IsNullOrEmpty())
             {
-                logLevel = Convert2LogLevel(jo["level"].ToString());
+                logLevel = reqLogLevel.Convert2LogLevel();
             }
+
             var now = HardInfo.Now;
             var logTimestamps = now.ConvertToUnixTime();
 
@@ -82,55 +90,16 @@ namespace WindNight.LogExtension
             };
             logMsg.Content = jo.ToJsonStr();
             return logMsg;
-
-
         }
-        static LogLevels Convert2LogLevel(string level)
+
+
+        private static string FixLogMessage(string msg)
         {
-            try
-            {
-                if (level.IsNullOrEmpty())
-                {
-                    return LogLevels.Information;
-                }
-
-                if (level.StartsWith("debug", StringComparison.OrdinalIgnoreCase))
-                {
-                    return LogLevels.Debug;
-                }
-
-                if (level.StartsWith("info", StringComparison.OrdinalIgnoreCase))
-                {
-                    return LogLevels.Information;
-                }
-
-                if (level.StartsWith("warn", StringComparison.OrdinalIgnoreCase))
-                {
-                    return LogLevels.Warning;
-                }
-
-                var flag = Enum.TryParse<LogLevels>(level, true, out var logLevel);
-
-                if (flag)
-                {
-                    return logLevel;
-                }
-
-                return LogLevels.Information;
-
-            }
-            catch (Exception ex)
-            {
-                return LogLevels.Information;
-            }
-
+            return ConfigItems.SystemAppName.Concat($" TraceId:[{CurrentItem.GetSerialNumber}]:", msg);
         }
 
 
-        static string FixLogMessage(string msg) => ConfigItems.SystemAppName.Concat($" TraceId:[{CurrentItem.GetSerialNumber}]:", msg);
-
-
-        static void DoConsoleLog(LogLevels logLevel, string message, Exception? exception = null)
+        private static void DoConsoleLog(LogLevels logLevel, string message, Exception? exception = null)
         {
             if (ConfigItems.LogOnConsole)
             {
@@ -139,17 +108,19 @@ namespace WindNight.LogExtension
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                 }
+
                 if (exception != null)
                 {
                     message = $"{message} {Environment.NewLine} {exception.GetMessage()}";
                 }
+
                 Console.WriteLine($"=={HardInfo.NowString}==ConsoleLog:{Environment.NewLine}{message}");
                 Console.ResetColor();
             }
         }
 
 
-        static void DoConsoleLog(string message)
+        private static void DoConsoleLog(string message)
         {
             if (ConfigItems.LogOnConsole)
             {
@@ -159,7 +130,7 @@ namespace WindNight.LogExtension
             }
         }
 
-        static void FixLogInfo(LogInfo logInfo, bool appendMessage)
+        private static void FixLogInfo(LogInfo logInfo, bool appendMessage)
         {
             if (CurrentItem.Items != null)
             {
@@ -193,13 +164,13 @@ namespace WindNight.LogExtension
                 {
                     logInfo.RequestUrl = CurrentItem.GetItem<string>(ThreadContext.REQUESTPATH);
                 }
+
                 if (appendMessage || ConfigItems.IsAppendLogMessage)
                 {
                     var msg = logInfo.Content;
                     msg = msg?.AppendLogMessage();
                     logInfo.Content = msg;
                 }
-
             }
 
             if (logInfo.ServerIp.IsNullOrEmpty())
@@ -216,10 +187,9 @@ namespace WindNight.LogExtension
             {
                 logInfo.RequestUrl = IpHelper.GetCurrentUrl();
             }
-
         }
 
-        static string AppendLogMessage(this string msg)
+        private static string AppendLogMessage(this string msg)
         {
             return string.Concat(msg ?? "", "【请求中间信息】：", CurrentItem.ToString());
         }
@@ -242,6 +212,7 @@ namespace WindNight.LogExtension
                     {
                         File.Create(filePath).Close();
                     }
+
                     using (var streamWriter = new StreamWriter(filePath, true))
                     {
                         try
@@ -250,7 +221,6 @@ namespace WindNight.LogExtension
                         }
                         catch
                         {
-
                         }
                         finally
                         {

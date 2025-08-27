@@ -1,13 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using WindNight.Core;
-using WindNight.Core.Abstractions;
 using WindNight.Core.ExceptionExt;
 using WindNight.Core.@internal;
 using WindNight.Linq.Extensions.Expressions;
@@ -16,6 +12,12 @@ namespace System
 {
     public static partial class StringExtension
     {
+        public static bool IsNotNullOrEmpty(this string sourceString, bool ignoreWhiteSpace = false)
+        {
+            return !sourceString.IsNullOrEmpty(ignoreWhiteSpace);
+        }
+
+
         /// <summary>
         /// </summary>
         /// <param name="sourceString"></param>
@@ -53,7 +55,7 @@ namespace System
 
         /// <summary>
         /// </summary>
-        /// <param name="ss"></param> 
+        /// <param name="ss"></param>
         /// <returns></returns>
         public static string Concat(this IEnumerable<string> ss)
         {
@@ -66,13 +68,18 @@ namespace System
         /// <returns></returns>
         public static string[] Split(this string value, params string[] separators)
         {
-            if (value.IsNullOrEmpty()) return Array.Empty<string>();
-            if (separators.IsNullOrEmpty() || separators.Length < 1 || (separators.Length == 1 && separators[0].IsNullOrEmpty()))
+            if (value.IsNullOrEmpty())
             {
-                separators = new[] { ",", ";" };// default separators
+                return HardInfo.ArrayList<string>();
             }
-            return value.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
+            if (separators.IsNullOrEmpty() || separators.Length < 1 ||
+                (separators.Length == 1 && separators[0].IsNullOrEmpty()))
+            {
+                separators = new[] { ",", ";" }; // default separators
+            }
+
+            return value.Split(separators, StringSplitOptions.RemoveEmptyEntries);
         }
 
 
@@ -86,7 +93,6 @@ namespace System
             var ss = value.Split(separators);
             var res = ss.Select(m => m.ToInt());
             return res;
-
         }
 
         /// <summary>把一个列表组合成为一个字符串，默认逗号分隔</summary>
@@ -104,9 +110,11 @@ namespace System
                     {
                         sb.Append(separator);
                     }
+
                     sb.Append(item + "");
                 }
             }
+
             return sb.ToString();
         }
 
@@ -119,20 +127,21 @@ namespace System
         {
             try
             {
-                if (isForce || ConfigItems.LogOnConsole && !message.IsNullOrEmpty())
+                if (isForce || (ConfigItems.LogOnConsole && !message.IsNullOrEmpty()))
                 {
                     if (exception != null)
                     {
                         message = $"{message} {Environment.NewLine} {exception.GetMessage()}";
                     }
+
                     Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine($"=={HardInfo.NowString}==ConsoleLog:{Environment.NewLine}{message}{Environment.NewLine}");
+                    Console.WriteLine(
+                        $"=={HardInfo.NowString}==ConsoleLog:{Environment.NewLine}{message}{Environment.NewLine}");
                     Console.ResetColor();
                 }
             }
             catch (Exception ex)
             {
-
             }
         }
 
@@ -140,13 +149,14 @@ namespace System
         {
             obj.ToJsonStr().Log2Console(exception);
         }
-
-
     }
 
     /// <summary> </summary>
     public static partial class StringExtension
     {
+        private static readonly string[] TrueStrings = ConstantKeys.TrueStrings; // { "1", bool.TrueString, "T", };
+        private static readonly string[] FalseStrings = ConstantKeys.FalseStrings; // = { "0", bool.FalseString, "F", };
+
         /// <summary>
         /// </summary>
         /// <param name="obj"></param>
@@ -159,6 +169,7 @@ namespace System
             {
                 return defaultValue;
             }
+
             return int.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -174,6 +185,7 @@ namespace System
             {
                 return defaultValue;
             }
+
             return int.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -188,6 +200,7 @@ namespace System
             {
                 return defaultValue;
             }
+
             return long.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -199,6 +212,7 @@ namespace System
             {
                 return defaultValue;
             }
+
             return long.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -214,6 +228,7 @@ namespace System
             {
                 return defaultValue;
             }
+
             return decimal.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -224,6 +239,7 @@ namespace System
             {
                 return defaultValue;
             }
+
             return decimal.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -238,6 +254,7 @@ namespace System
             {
                 return defaultValue;
             }
+
             return double.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
@@ -248,15 +265,12 @@ namespace System
             {
                 return defaultValue;
             }
+
             return double.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
         }
 
-        private static readonly string[] TrueStrings = ConstantKeys.TrueStrings;// { "1", bool.TrueString, "T", };
-        static readonly string[] FalseStrings = ConstantKeys.FalseStrings; // = { "0", bool.FalseString, "F", };
-
         public static bool ToBoolean(this object obj, bool defaultValue = false, bool isThrow = false)
         {
-
             var sourceString = obj?.ToString() ?? "";
             if (sourceString.IsNullOrEmpty())
             {
@@ -276,7 +290,6 @@ namespace System
 
 
             return defaultValue;
-
         }
 
         /// <summary>
@@ -305,6 +318,7 @@ namespace System
             {
                 return sourceString;
             }
+
             return WebUtility.UrlEncode(sourceString) ?? string.Empty;
         }
 
@@ -314,26 +328,32 @@ namespace System
             {
                 return sourceString;
             }
+
             return WebUtility.UrlDecode(sourceString);
         }
-
     }
 
     public static partial class StringExtension
     {
-
         public static char ToUpper(this char c)
         {
             return char.ToUpper(c);
         }
+
         public static char ToLower(this char c)
         {
             return char.ToLower(c);
         }
 
-        public static bool IsLatin1(this char ch) => ch <= 'ÿ';
+        public static bool IsLatin1(this char ch)
+        {
+            return ch <= 'ÿ';
+        }
 
-        public static bool IsAscii(this char ch) => ch <= '\u007F';
+        public static bool IsAscii(this char ch)
+        {
+            return ch <= '\u007F';
+        }
 
         public static bool IsDigit(this char c)
         {
@@ -344,22 +364,27 @@ namespace System
         {
             return char.IsLetter(c);
         }
+
         public static bool IsWhiteSpace(this char c)
         {
             return char.IsWhiteSpace(c);
         }
+
         public static bool IsPunctuation(this char c)
         {
             return char.IsPunctuation(c);
         }
+
         public static bool IsUpper(this char c)
         {
             return char.IsUpper(c);
         }
+
         public static bool IsLower(this char c)
         {
             return char.IsLower(c);
         }
+
         public static bool IsInRange(this UnicodeCategory c, UnicodeCategory min, UnicodeCategory max)
         {
             return (uint)(c - min) <= (uint)(max - min);
@@ -367,7 +392,7 @@ namespace System
 
         public static bool IsInRange(this char c, char min, char max)
         {
-            return (uint)c - (uint)min <= (uint)max - (uint)min;
+            return c - (uint)min <= max - (uint)min;
         }
 
         public static bool TryParse(this string? s, out char result)
@@ -380,5 +405,4 @@ namespace System
             return char.Parse(s);
         }
     }
-
 }

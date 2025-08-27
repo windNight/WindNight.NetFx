@@ -9,6 +9,7 @@ namespace WindNight.Core
         public const string AppIdKey = "AppId";
         public const string AppCodeKey = "AppCode";
         public const string AppNameKey = "AppName";
+        public const string EnvNameKey = "EnvName";
         public const string AppSecretKey = "AppSecret";
         public const string TimestampKey = "Timestamp";
         public const string AppTokenKey = "AppToken";
@@ -24,6 +25,7 @@ namespace WindNight.Core
         public const string ReqTraceIdKey = "ReqTraceId";
 
 
+        public const string Http_Plugin_Key = "Plugin-HttpHelper";
 
         public const string SvrCenterDomainConfigKey = "SvrCenter";
 
@@ -36,9 +38,9 @@ namespace WindNight.Core
 
         public const bool ObsoleteFalse = false;
 
-        public static readonly string[] TrueStrings = { "是", "1", bool.TrueString.ToUpper(), "T", "YES" };
+        public static readonly string[] TrueStrings = { "是", "1", bool.TrueString.ToUpper(), "T", "YES", "Y" };
 
-        public static readonly string[] FalseStrings = { "否", "0", bool.FalseString.ToUpper(), "F", "NO" };
+        public static readonly string[] FalseStrings = { "否", "0", bool.FalseString.ToUpper(), "F", "NO", "N" };
 
         public const string ZeroString = "0";
 

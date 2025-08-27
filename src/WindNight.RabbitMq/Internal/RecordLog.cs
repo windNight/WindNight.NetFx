@@ -1,6 +1,4 @@
-using System;
-using System.IO;
-using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 
 namespace WindNight.RabbitMq.@internal
 {
@@ -44,9 +42,14 @@ namespace WindNight.RabbitMq.@internal
                 var filename = path + "/" + (dt.Year * 10000 + dt.Month * 100 + dt.Day) + ".txt";
 
                 if (!Directory.Exists(path))
+                {
                     Directory.CreateDirectory(path);
+                }
+
                 if (!File.Exists(filename))
+                {
                     File.Create(filename).Close();
+                }
 
                 using (var sw = new StreamWriter(filename, true))
                 {

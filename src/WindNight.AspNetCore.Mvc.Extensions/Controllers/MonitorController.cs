@@ -90,10 +90,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
             if (!IsAuthType1())
             {
-                return false;
+                return NotFound();
             }
             //  var svrInfo = DefaultSvrHostInfo.GenDefault;
-            var svrInfo = DefaultSvrMonitorInfo.GenSvrMonitorInfo(SvrMonitorTypeEnum.Query);
+            var svrInfo = HardInfo.GenSvrMonitorInfo(SvrMonitorTypeEnum.Query);
             svrInfo.QueryDateTime = HardInfo.NowFullString;
             var serIp = svrInfo.ServerIp;
             if (serIp.IsNullOrEmpty() || IPHelper.IsDefaultIp(serIp))
@@ -112,7 +112,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             if (!IsAuthType1())
             {
-                return false;
+                return NotFound();
             }
 
             var buildInfo = HardInfo.QuerySvrBuildInfo();

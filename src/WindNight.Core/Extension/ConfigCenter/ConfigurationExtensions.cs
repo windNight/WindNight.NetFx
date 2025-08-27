@@ -12,6 +12,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
         private const string AppIdKey = ConstantKeys.AppIdKey;
         private const string AppCodeKey = ConstantKeys.AppCodeKey;
         private const string AppNameKey = ConstantKeys.AppNameKey;
+        private const string EnvNameKey = ConstantKeys.EnvNameKey;
         private const string AppSecretKey = ConstantKeys.AppSecretKey;
 
 
@@ -34,6 +35,11 @@ namespace WindNight.Core.ConfigCenter.Extensions
             return configuration.GetAppSettingValue(AppNameKey, defaultValue);
         }
 
+        public static string GetEnvName(this IConfiguration configuration, string defaultValue = "")
+        {
+            return configuration.GetAppSettingValue(EnvNameKey, defaultValue);
+        }
+
         public static string GetAppSecret(this IConfiguration configuration, string defaultValue = "")
         {
             return configuration.GetAppSettingValue(AppSecretKey, defaultValue);
@@ -49,7 +55,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
         {
             if (defaultValue == null)
             {
-                defaultValue = Enumerable.Empty<string>();
+                defaultValue = HardInfo.EmptyList<string>();
             }
 
             return configuration.GetAppSettingList(configKey, m => m, defaultValue, isThrow, needDistinct);
@@ -61,7 +67,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
         {
             if (defaultValue == null)
             {
-                defaultValue = Enumerable.Empty<int>();
+                defaultValue = HardInfo.EmptyList<int>();
             }
 
             return configuration.GetAppSettingList(configKey, m => m.ToInt(), defaultValue, isThrow, needDistinct);
@@ -73,7 +79,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
         {
             if (defaultValue == null)
             {
-                defaultValue = Enumerable.Empty<T>();
+                defaultValue = HardInfo.EmptyList<T>();
             }
 
             try

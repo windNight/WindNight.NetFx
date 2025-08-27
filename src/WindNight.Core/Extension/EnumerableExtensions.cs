@@ -1,8 +1,5 @@
-using System;
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using WindNight.Core.Abstractions;
 
 namespace WindNight.Linq.Extensions.Expressions
@@ -11,6 +8,10 @@ namespace WindNight.Linq.Extensions.Expressions
     /// </summary>
     public static class EnumerableExtensions
     {
+        public static bool IsNotNullOrEmpty<T>(this IPagedList<T>? items, bool ignoreNullItem = false)
+        {
+            return !items.IsNullOrEmpty(ignoreNullItem);
+        }
 
         public static bool IsNullOrEmpty<T>(this IPagedList<T>? items, bool ignoreNullItem = false)
         {
@@ -22,22 +23,31 @@ namespace WindNight.Linq.Extensions.Expressions
             return items == null || items.RecordCount == 0 || items.List.IsNullOrEmpty();
         }
 
+
+        public static bool IsNotNullOrEmpty<T>(this IEnumerable<T>? items, bool ignoreNullItem = false)
+        {
+            return !items.IsNullOrEmpty(ignoreNullItem);
+        }
+
         public static bool IsNullOrEmpty<T>(this IEnumerable<T>? items, bool ignoreNullItem = false)
         {
             if (ignoreNullItem)
             {
                 return items == null || !items.Any() || items.Count(m => m != null) == 0;
             }
+
             return items == null || !items.Any();
         }
 
         public static IEnumerable<T> EmptyArray<T>()
         {
-#if NET45
-            return new List<T>();
-#else
-            return Array.Empty<T>();
-#endif
+            return HardInfo.EmptyList<T>();
+
+            //#if NET45
+            //            return new List<T>();
+            //#else
+            //            return Array.Empty<T>();
+            //#endif
         }
 
 
@@ -111,8 +121,6 @@ namespace WindNight.Linq.Extensions.Expressions
             {
                 bag.Add(item);
             }
-
-
         }
 
         /// <summary>
@@ -141,7 +149,10 @@ namespace WindNight.Linq.Extensions.Expressions
         public static List<T> ListToTree<T>(this List<T> list)
             where T : ITreeObject<T>, new()
         {
-            if (list.IsNullOrEmpty()) return new List<T>();
+            if (list.IsNullOrEmpty())
+            {
+                return new List<T>();
+            }
 
             // list 去重
             var lookup = list.DistinctByItem(m => m.Id).ToDictionary(n => n.Id, n => n);
@@ -170,7 +181,10 @@ namespace WindNight.Linq.Extensions.Expressions
 
         public static IEnumerable<int> ToIntList(this string s, char separator = ',', bool needDistinct = true)
         {
-            if (s.IsNullOrEmpty()) return EmptyArray<int>();
+            if (s.IsNullOrEmpty())
+            {
+                return EmptyArray<int>();
+            }
 
             var list = s.Split(separator).Select(m => m.ToInt());
 
@@ -185,7 +199,10 @@ namespace WindNight.Linq.Extensions.Expressions
 
         public static IEnumerable<long> ToLongList(this string s, char separator = ',', bool needDistinct = true)
         {
-            if (s.IsNullOrEmpty()) return EmptyArray<long>();
+            if (s.IsNullOrEmpty())
+            {
+                return EmptyArray<long>();
+            }
 
 
             var list = s.Split(separator).Select(m => m.ToLong());
@@ -200,7 +217,10 @@ namespace WindNight.Linq.Extensions.Expressions
 
         public static IEnumerable<string> StringToList(this string s, char separator = ',', bool needDistinct = true)
         {
-            if (s.IsNullOrEmpty()) return EmptyArray<string>();
+            if (s.IsNullOrEmpty())
+            {
+                return EmptyArray<string>();
+            }
 
             var list = s.Split(separator);
             // list 去重
@@ -211,7 +231,6 @@ namespace WindNight.Linq.Extensions.Expressions
 
             return list;
         }
-
     }
 
     /// <summary>
@@ -264,9 +283,15 @@ namespace WindNight.Linq.Extensions.Expressions
             var leftProp = expr.Invoke(left);
             var rightProp = expr.Invoke(right);
             if (leftProp == null && rightProp == null)
+            {
                 return true;
+            }
+
             if ((leftProp == null) ^ (rightProp == null)) //逻辑或位 XOR(异或)。 通常可以将此运算符与整数类型和 enum 类型一起使用
+            {
                 return false;
+            }
+
             // 解引用可能出现空引用。
             return leftProp.Equals(rightProp);
             // 解引用可能出现空引用。

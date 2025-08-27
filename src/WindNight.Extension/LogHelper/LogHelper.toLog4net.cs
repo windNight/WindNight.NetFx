@@ -7,6 +7,7 @@ using log4net.Config;
 using log4net.Core;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Enums.Abstractions;
 
 namespace WindNight.LogExtension
 {
@@ -162,7 +163,7 @@ namespace WindNight.LogExtension
 				<param name=""ConversionPattern"" value=""[时间]:%d%n[%thread] %-5[级别]:%p%n[内容]:%m%n%n"" />
 			</layout>
 			<filter type='log4net.Filter.LevelRangeFilter'>
-				<param name='LevelMin' value='DEBUG' />
+				<param name='LevelMin' value='INFO' />
 				<param name='LevelMax' value='FATAL' />
 			</filter>
 		</appender>
