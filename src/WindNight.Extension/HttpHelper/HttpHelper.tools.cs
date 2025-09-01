@@ -144,7 +144,7 @@ namespace WindNight.Extension
         //    return _ => _.To<T>();
         //}
 
-        static string GenReqUrl(this IRestResponse response, string domain)
+        public static string GenReqUrl(this IRestResponse response, string domain)
         {
             try
             {
