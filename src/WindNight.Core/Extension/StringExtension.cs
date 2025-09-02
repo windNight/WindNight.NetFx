@@ -127,7 +127,7 @@ namespace System
         {
             try
             {
-                if (isForce || (ConfigItems.LogOnConsole && !message.IsNullOrEmpty()))
+                if (isForce || (ConfigItems.LogOnConsole && message.IsNotNullOrEmpty()))
                 {
                     if (exception != null)
                     {

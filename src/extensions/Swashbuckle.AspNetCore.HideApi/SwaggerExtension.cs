@@ -95,7 +95,7 @@ namespace Swashbuckle.AspNetCore.Extensions
                 };
 
 
-                if (!apiDes.IsNullOrEmpty())
+                if (apiDes.IsNotNullOrEmpty())
                 {
                     openApiInfo.Description = @$"<details>
 <summary>
@@ -208,7 +208,7 @@ namespace Swashbuckle.AspNetCore.Extensions
                 {
                     var name = item.Key;
                     var des = item.Value;
-                    if (!name.IsNullOrEmpty())
+                    if (name.IsNotNullOrEmpty())
                     {
                         // 添加自定义请求头
                         c.AddSecurityDefinition(name, new OpenApiSecurityScheme

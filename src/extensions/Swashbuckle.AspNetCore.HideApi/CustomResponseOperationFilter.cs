@@ -4,6 +4,7 @@ using System.ComponentModel;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Extensions.@internal;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace Swashbuckle.AspNetCore.HideApi
 {
@@ -24,12 +25,12 @@ namespace Swashbuckle.AspNetCore.HideApi
             {
                 try
                 {
-                    if (!DefaultResDict.IsNullOrEmpty())
+                    if (DefaultResDict.IsNotNullOrEmpty())
                     {
                         return DefaultResDict;
                     }
 
-                    if (!_resDict.IsNullOrEmpty())
+                    if (_resDict.IsNotNullOrEmpty())
                     {
                         return _resDict;
                     }

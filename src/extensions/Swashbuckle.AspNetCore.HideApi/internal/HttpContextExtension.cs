@@ -33,7 +33,7 @@ namespace Swashbuckle.AspNetCore.HideApi.@internal
             if (httpRequest.Headers.TryGetValue(headerName, out var requestHeader))
             {
                 var header = requestHeader.FirstOrDefault();
-                if (!header.IsNullOrEmpty())
+                if (header.IsNotNullOrEmpty())
                 {
                     return header.Trim();
                 }
