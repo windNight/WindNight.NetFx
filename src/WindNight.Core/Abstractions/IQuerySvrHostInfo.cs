@@ -23,7 +23,7 @@ namespace WindNight.Core.Abstractions
         string QueryBuildType();
 
         string QueryBuildMachineName();
-
+        bool IsTestEnv(bool defaultValue = true);
     }
 
 }

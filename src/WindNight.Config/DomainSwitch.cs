@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -13,7 +9,7 @@ namespace WindNight.ConfigCenter.Extension
         Unknown = 0,
         Root = 1,
         SiteHost = 2,
-        ServiceUrl = 3
+        ServiceUrl = 3,
     }
 
     internal class DomainSwitch
@@ -60,7 +56,10 @@ namespace WindNight.ConfigCenter.Extension
         {
             var xmlNode = GetInstance().SelectSingleNode(node);
             if (xmlNode != null)
+            {
                 return xmlNode.InnerText;
+            }
+
             return string.Empty;
         }
 
@@ -68,7 +67,10 @@ namespace WindNight.ConfigCenter.Extension
         private static string GetSolution()
         {
             if (ConfigSolution != string.Empty)
+            {
                 return ConfigSolution;
+            }
+
             return GetInstance().SelectSingleNode(nameof(DomainSwitch))?.ChildNodes[0]?.Name ?? "";
         }
 
@@ -81,23 +83,37 @@ namespace WindNight.ConfigCenter.Extension
 
         public static string GetCurrDomain()
         {
-            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["Domain"]?.Value?.ToLower() ?? "";
+            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["Domain"]?.Value
+                ?.ToLower() ?? "";
         }
 
         public static string GetSetDomain()
         {
-            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["SetDomain"]?.Value?.ToLower() ?? "";
+            return GetInstance().SelectSingleNode("DomainSwitch/" + GetSolution())?.Attributes?["SetDomain"]?.Value
+                ?.ToLower() ?? "";
         }
 
         public static string GetAllDomain()
         {
-            if (!IsExistDomainSwitchConfig) return "";
+            if (!IsExistDomainSwitchConfig)
+            {
+                return "";
+            }
+
             var stringBuilder = new StringBuilder();
             var domainSwitch = GetInstance().SelectSingleNode(nameof(DomainSwitch));
-            if (domainSwitch == null) return string.Empty;
+            if (domainSwitch == null)
+            {
+                return string.Empty;
+            }
+
             foreach (XmlNode childNode in domainSwitch.ChildNodes)
             {
-                if (childNode == null) continue;
+                if (childNode == null)
+                {
+                    continue;
+                }
+
                 if (stringBuilder.Length == 0)
                 {
                     stringBuilder.Append(childNode.Attributes?["Domain"]?.Value?.ToLowerInvariant() ?? "");
@@ -115,14 +131,24 @@ namespace WindNight.ConfigCenter.Extension
         public static Dictionary<string, string> GetAllDomainDict()
         {
             var dict = new Dictionary<string, string>();
-            if (!IsExistDomainSwitchConfig) return dict;
+            if (!IsExistDomainSwitchConfig)
+            {
+                return dict;
+            }
 
             var domainSwitch = GetInstance().SelectSingleNode(nameof(DomainSwitch));
-            if (domainSwitch == null) return dict;
+            if (domainSwitch == null)
+            {
+                return dict;
+            }
+
             foreach (XmlNode childNode in domainSwitch.ChildNodes)
             {
                 var node = childNode?.Attributes?["Domain"];
-                if (node == null) continue;
+                if (node == null)
+                {
+                    continue;
+                }
 
                 dict.Add(node.Name, node.Value.ToLowerInvariant());
             }
@@ -147,26 +173,49 @@ namespace WindNight.ConfigCenter.Extension
         public static Dictionary<string, string> GetAllSiteHosts()
         {
             var dict = new Dictionary<string, string>();
-            if (!IsExistDomainSwitchConfig) return dict;
+            if (!IsExistDomainSwitchConfig)
+            {
+                return dict;
+            }
+
             var nodeChildren = GetNodeChildren(SiteHostNodeKey);
             if (nodeChildren == null)
+            {
                 return dict;
+            }
+
             foreach (XmlNode xmlNode in nodeChildren)
+            {
                 if (xmlNode.NodeType == XmlNodeType.Element)
+                {
                     dict.Add($"{DomainSwitchNodeType.SiteHost}:{xmlNode.Name}", xmlNode.InnerText);
+                }
+            }
+
             return dict;
         }
 
         public static Dictionary<string, string> GetAllServiceUrls()
         {
             var dict = new Dictionary<string, string>();
-            if (!IsExistDomainSwitchConfig) return dict;
+            if (!IsExistDomainSwitchConfig)
+            {
+                return dict;
+            }
+
             var nodeChildren = GetNodeChildren(ServiceUrlNodeKey);
             if (nodeChildren == null)
+            {
                 return dict;
+            }
+
             foreach (XmlNode xmlNode in nodeChildren)
+            {
                 if (xmlNode.NodeType == XmlNodeType.Element)
+                {
                     dict.Add($"{DomainSwitchNodeType.ServiceUrl}:{xmlNode.Name}", xmlNode.InnerText);
+                }
+            }
 
             return dict;
         }

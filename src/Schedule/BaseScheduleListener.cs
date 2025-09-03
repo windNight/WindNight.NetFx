@@ -4,7 +4,9 @@ using Quartz;
 using Schedule.Abstractions;
 using Schedule.Ctrl;
 using Schedule.Func;
+using Schedule.@internal;
 using Schedule.Model.Enums;
+using WindNight.Core.Abstractions;
 using WindNight.Extension;
 
 namespace Schedule
@@ -12,42 +14,6 @@ namespace Schedule
     public class BaseScheduleListener<T> : IScheduleListener where T : IJob
     {
         protected readonly IScheduleNotice _scheduleNotice;
-
-        //protected IJobExecutionContext _jobExecutionContext;
-
-        //public JobBusinessStateEnum JobStatus { get; protected set; } = JobBusinessStateEnum.Unknown;
-
-        //public bool JobIsRunning()
-        //{
-        //    return JobStatus == JobBusinessStateEnum.Processing;
-        //}
-
-        //internal void InitJobStatus()
-        //{
-        //    $"Job({JobBaseInfo}) JobStatus->Init".Log2Console();
-        //    JobStatus = JobBusinessStateEnum.Unknown;
-        //}
-
-        //void JobDoing()
-        //{
-        //    $"Job({JobBaseInfo}) Doing".Log2Console();
-
-        //    JobStatus = JobBusinessStateEnum.Processing;
-        //}
-
-        //void JobVetoed()
-        //{
-        //    $"Job({JobBaseInfo}) Vetoed".Log2Console();
-        //    JobStatus = JobBusinessStateEnum.Vetoed;
-        //}
-
-        //void SetBizJobStatus(JobBusinessStateEnum bizStatus)
-        //{
-        //    $"Job({JobBaseInfo}) JobStatus->{bizStatus}".Log2Console();
-        //    JobStatus = bizStatus;
-        //}
-
-        //public IJobExecutionContext GetCurrentJobContext() => _jobExecutionContext;
 
         /// <summary>
         ///     监听器名称
@@ -253,17 +219,18 @@ namespace Schedule
             Debug(nameof(ITriggerListener), nameof(TriggerComplete));
             var beginTicks = context.GetJobBeginDateTimeTicks();
             var milliseconds = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - beginTicks).TotalMilliseconds;
-
-            if (milliseconds > 5 * 1000)
+            var limitWarnTs = context.GetJobWarnTs();// 秒
+            var bizContent = context.GetBizContent();
+            if (milliseconds > limitWarnTs * 1000)
             {
-                JobLogHelper.Warn($"{JobInfo} 耗时{milliseconds} ms ", null, nameof(TriggerComplete), milliseconds);
+                JobLogHelper.Warn($" TriggerComplete {JobInfo} 耗时{milliseconds / 1000:0.00} s  {(bizContent.IsNotNullOrEmpty() ? "" : $"bizContent is {bizContent}")}", null, nameof(TriggerComplete), milliseconds);
             }
-            else if (milliseconds > 0)
+            else if (milliseconds > 120 * 1000)
             {
                 var isLogJobLC = context.GetIsLogJobLC();
                 if (isLogJobLC)
                 {
-                    JobLogHelper.Info($"{JobInfo} 耗时{milliseconds} ms ", nameof(TriggerComplete), milliseconds);
+                    JobLogHelper.Info($" TriggerComplete {JobInfo} 耗时{milliseconds} ms  {(bizContent.IsNotNullOrEmpty() ? "" : $"bizContent is {bizContent}")}", nameof(TriggerComplete), milliseconds);
                 }
             }
 
@@ -277,12 +244,11 @@ namespace Schedule
                 bizStatsStr = $"<font color=#20CE43>{bizState}</font>";
             }
 
-            if (bizState == JobBusinessStateEnum.Fail)
+            if (bizState == JobBusinessStateEnum.Failed)
             {
                 bizStatsStr = $"<font color=#FF0000>{bizState}</font>";
             }
 
-            var bizContent = context.GetBizContent();
 
             await DoNoticeAsync($"耗时 {milliseconds} ms. 任务状态为 {bizStatsStr}", bizContent);
 
@@ -500,7 +466,7 @@ namespace Schedule
                             break;
                         case JobBusinessStateEnum.Success:
                             break;
-                        case JobBusinessStateEnum.Fail:
+                        case JobBusinessStateEnum.Failed:
                             bizContent = context.GetBizContent();
                             jobRunState = JobRunStateEnum.BusinessError;
                             break;
@@ -521,13 +487,13 @@ namespace Schedule
                 if (isLogJobLC)
                 {
                     var msg =
-                        $"{JobInfo} end time:{HardInfo.Now:yyyy-MM-dd HH:mm:sss}, jobRunState:{jobRunState},autoClose:{autoClose}, runParams:{runParams}";
+                        $"{JobInfo} end time:{HardInfo.Now:yyyy-MM-dd HH:mm:sss}, jobRunState:{jobRunState},autoClose:{autoClose}, runParams:{runParams} ";
                     JobLogHelper.Info(msg, nameof(JobWasExecuted));
                 }
 
                 // DoJobLog 
                 var ctrl = Ioc.GetService<IScheduleOrderCtrl>();
-                if (ctrl != null && isLogJobLC)
+                if (ctrl != null && context.GetIsStoreJobLC())
                 {
                     await ctrl.CompleteJobSafety(JobBaseInfo, jobRunState, bizContent ?? string.Empty);
                 }

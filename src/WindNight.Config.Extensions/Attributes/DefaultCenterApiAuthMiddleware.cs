@@ -41,7 +41,7 @@ namespace Net8ApiDemo
 
 
                 var remoteIp = context.Request.HttpContext.GetClientIp();
-                if (!remoteIp.IsPrivateOrLoopback())
+                if (!remoteIp.IsInternalIp())
                 {
                     var ak = GetAccessToken(context);
                     var token = GetAppTokenValue(context);

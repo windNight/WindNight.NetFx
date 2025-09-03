@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Schedule.Model.Enums;
+using WindNight.Core.Abstractions;
 
 namespace Schedule.Abstractions
 {

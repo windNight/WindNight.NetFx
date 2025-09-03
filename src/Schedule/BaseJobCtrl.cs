@@ -273,6 +273,8 @@ namespace Schedule
             job.SetAutoClose(jobParam.AutoClose);
             job.SetIsDoNotice(jobParam.IsDoNotice);
             job.SetIsLogJobLC(jobParam.IsLogJobLC);
+            job.SetIsStoreJobLC(jobParam.IsStoreJobLC);
+            job.SetJobWarnTs(jobParam.JobWarnTs);
 
             return job;
         }
@@ -322,7 +324,7 @@ namespace Schedule
                     .Build();
             }
 
-            if (!cronExpression.IsNullOrEmpty())
+            if (cronExpression.IsNotNullOrEmpty())
             {
                 return TriggerBuilder.Create()
                     .WithIdentity(triggerKey)

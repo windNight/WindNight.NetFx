@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using WindNight.Config.@internal;
 
 namespace WindNight.ConfigCenter.Extension
@@ -26,7 +23,7 @@ namespace WindNight.ConfigCenter.Extension
                         FileName = fileName,
                         LastModifyTime = ConfigProvider.Instance.ConfigUpdateTime[fileName],
                         FileContent = fileContent,
-                        Path = key
+                        Path = key,
                     });
                 }
 
@@ -98,10 +95,14 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="defaultValue"></param>
         public static string GetJsonConfig(string fileName, string defaultValue = "")
         {
-            if (fileName.IsNullOrEmpty()) return defaultValue;
+            if (fileName.IsNullOrEmpty())
+            {
+                return defaultValue;
+            }
+
             var key = FixDictKey(ConfigType.JsonConfig, fileName);
             var configValue = GetFromConfigurationDict(key, defaultValue);
-            if (!configValue.IsNullOrEmpty())
+            if (configValue.IsNotNullOrEmpty())
             {
                 return configValue;
             }
@@ -109,9 +110,14 @@ namespace WindNight.ConfigCenter.Extension
             var loadRlt = ConfigProvider.Instance.LoadConfigFile(configValue);
 
             if (loadRlt.Item1 == 0)
+            {
                 configValue = loadRlt.Item3;
+            }
             else
+            {
                 configValue = defaultValue;
+            }
+
             return configValue;
         }
 

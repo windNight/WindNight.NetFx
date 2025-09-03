@@ -1,7 +1,4 @@
-using System;
-using System.IO;
 using System.Security.Cryptography.Extensions;
-using System.Threading;
 using System.Xml;
 using Newtonsoft.Json.Extension;
 using WindNight.RabbitMq.Abstractions;
@@ -53,7 +50,11 @@ namespace WindNight.RabbitMq.@internal
         /// <param name="exchangeName">交换机</param>
         public DefaultMessageWrapper(string exchangeName)
         {
-            if (exchangeName.IsNullOrEmpty()) throw new ArgumentNullException("主题名称不能为空");
+            if (exchangeName.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException("主题名称不能为空");
+            }
+
             _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, TMP_MSG);
             _filePath = Path.Combine(_filePath, exchangeName);
 
@@ -70,6 +71,7 @@ namespace WindNight.RabbitMq.@internal
             loopFlushThread = new Thread(p =>
             {
                 while (true)
+                {
                     try
                     {
                         Thread.Sleep(30000);
@@ -87,6 +89,7 @@ namespace WindNight.RabbitMq.@internal
                     catch
                     {
                     }
+                }
             });
             loopFlushThread.Start(this);
         }
@@ -103,8 +106,16 @@ namespace WindNight.RabbitMq.@internal
             if (!File.Exists(_filePath))
             {
                 var directory = Path.GetDirectoryName(_filePath);
-                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
-                if (File.Exists(_filePath)) return;
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                if (File.Exists(_filePath))
+                {
+                    return;
+                }
+
                 using (var sw = File.CreateText(_filePath))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
@@ -120,15 +131,25 @@ namespace WindNight.RabbitMq.@internal
         /// </summary>
         private void WriteFile()
         {
-            if (queueList.Count == 0) return;
+            if (queueList.Count == 0)
+            {
+                return;
+            }
 
             var doc = new XmlDocument();
-            if (!Exist()) CreateFile();
+            if (!Exist())
+            {
+                CreateFile();
+            }
+
             doc.Load(_filePath);
             var root = doc.DocumentElement.SelectSingleNode("//Root");
             while (queueList.TryDequeue(out var msgLocal))
             {
-                if (msgLocal.IsEncrypt) msgLocal.Message = msgLocal.Message.Base64Encrypt();
+                if (msgLocal.IsEncrypt)
+                {
+                    msgLocal.Message = msgLocal.Message.Base64Encrypt();
+                }
 
                 var node = doc.CreateElement("item");
                 node.InnerText = msgLocal.ToJsonStr();
@@ -147,7 +168,9 @@ namespace WindNight.RabbitMq.@internal
         private void ReadAll()
         {
             if (queueList.Count > 0)
+            {
                 return;
+            }
 
             lock (lockObj)
             {
@@ -157,7 +180,9 @@ namespace WindNight.RabbitMq.@internal
                     ReadFromFile();
 
                     if (queueList.Count == 0)
+                    {
                         lastReadEmptyTime = now;
+                    }
                 }
             }
         }
@@ -168,7 +193,9 @@ namespace WindNight.RabbitMq.@internal
         private void ReadFromFile()
         {
             if (!File.Exists(_filePath))
+            {
                 return;
+            }
 
             var doc = new XmlDocument();
             doc.Load(_filePath);
@@ -176,7 +203,10 @@ namespace WindNight.RabbitMq.@internal
             foreach (XmlNode node in nodes)
             {
                 var msgLocal = node.InnerText.Trim().To<MessageLocal>();
-                if (msgLocal.IsEncrypt) msgLocal.Message = msgLocal.Message.Base64Decrypt();
+                if (msgLocal.IsEncrypt)
+                {
+                    msgLocal.Message = msgLocal.Message.Base64Decrypt();
+                }
 
                 queueList.Enqueue(msgLocal);
             }
@@ -200,7 +230,9 @@ namespace WindNight.RabbitMq.@internal
             {
                 queueList.Enqueue(msgLocal);
                 if (queueList.Count >= 300)
+                {
                     WriteFile();
+                }
             }
         }
 
@@ -215,7 +247,9 @@ namespace WindNight.RabbitMq.@internal
                 ReadAll();
                 MessageLocal msgLocal;
                 if (!queueList.TryDequeue(out msgLocal))
+                {
                     return null;
+                }
 
                 return msgLocal;
             }

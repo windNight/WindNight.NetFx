@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Extension;
 using Xunit;
@@ -32,7 +32,6 @@ namespace WindNight.Core.Tests.Extension
             var rlt = data.Round(0);
             Assert.True(expectData == rlt, $"Round({data})  =>{rlt} !=expectData({expectData})");
             Output($"decimal.Round({data})  =>{rlt},expected is {expectData}");
-
         }
 
         [Theory(DisplayName = "DecimalFloorTest")]
@@ -44,7 +43,6 @@ namespace WindNight.Core.Tests.Extension
             var rlt = data.Floor();
             Assert.True(expectData == rlt, $"Floor({data})  =>{rlt} !=expectData({expectData})");
             Output($"decimal.Floor({data})  =>{rlt},expected is {expectData}");
-
         }
 
 
@@ -57,9 +55,7 @@ namespace WindNight.Core.Tests.Extension
             var rlt = data.Truncate();
             Assert.True(expectData == rlt, $"Truncate({data})  =>{rlt} !=expectData({expectData})");
             Output($"decimal.Truncate({data})  =>{rlt},expected is {expectData}");
-
         }
-
 
 
         [Theory(DisplayName = "DoubleCeilingTest")]
@@ -71,7 +67,6 @@ namespace WindNight.Core.Tests.Extension
             var rlt = data.Ceiling();
             Assert.True(expectData == rlt, $"Ceiling({data})  =>{rlt} !=expectData({expectData})");
             Output($"double.Ceiling({data})  =>{rlt},expected is {expectData}");
-
         }
 
         [Theory(DisplayName = "DoubleRoundTest")]
@@ -83,7 +78,6 @@ namespace WindNight.Core.Tests.Extension
             var rlt = data.Round(0);
             Assert.True(expectData == rlt, $"Round({data})  =>{rlt} !=expectData({expectData})");
             Output($"double.Round({data})  =>{rlt},expected is {expectData}");
-
         }
 
         [Theory(DisplayName = "DoubleFloorTest")]
@@ -119,8 +113,8 @@ namespace WindNight.Core.Tests.Extension
                 $"calcFloor({roomNo})  =>{calcRes.floor} !=expectData({expectFloor})");
             Assert.True(calcRes.roomNumber == expectNo,
                 $"calcFloor({roomNo})  =>{calcRes.roomNumber} !=expectData({expectNo})");
-
         }
+
         [Theory(DisplayName = "CalcRoomNo2")]
         [InlineData("101", 201, 0, 0, 102)]
         [InlineData("1001", 1101, 901, 0, 1002)]
@@ -146,7 +140,6 @@ namespace WindNight.Core.Tests.Extension
             Assert.True(calcU == expectu, $"CalcUnderRoomNo({roomNo})  =>{calcU} !=expectData({expectu})");
             Assert.True(calcL == expectl, $"CalcLeftRoomNo({roomNo})  =>{calcL} !=expectData({expectl})");
             Assert.True(calcR == expectr, $"CalcRightRoomNo({roomNo})  =>{calcR} !=expectData({expectr})");
-
         }
 
         [Theory(DisplayName = "CalcRoomNo3")]
@@ -160,10 +153,10 @@ namespace WindNight.Core.Tests.Extension
         public void CalcRoomNo3(string roomNo, int expecta, int expectu, int expectl, int expectr)
         {
             var calcModel = RoomModelHelper.ParserRoomModel(roomNo);
-            var calcA = calcModel.AboveRoomModel.RoomNo;// RoomNoParser.CalcAboveRoomNo(roomNo);
-            var calcU = calcModel.UnderRoomModel.RoomNo;// RoomNoParser.CalcUnderRoomNo(roomNo);
-            var calcL = calcModel.LeftRoomModel.RoomNo;//RoomNoParser.CalcLeftRoomNo(roomNo);
-            var calcR = calcModel.RightRoomModel.RoomNo;// RoomNoParser.CalcRightRoomNo(roomNo);
+            var calcA = calcModel.AboveRoomModel.RoomNo; // RoomNoParser.CalcAboveRoomNo(roomNo);
+            var calcU = calcModel.UnderRoomModel.RoomNo; // RoomNoParser.CalcUnderRoomNo(roomNo);
+            var calcL = calcModel.LeftRoomModel.RoomNo; //RoomNoParser.CalcLeftRoomNo(roomNo);
+            var calcR = calcModel.RightRoomModel.RoomNo; // RoomNoParser.CalcRightRoomNo(roomNo);
 
             Output($"ParserRoomModel({roomNo})  =>{calcModel.ToJsonStr()}");
             Output($"AboveRoomModel({roomNo})  =>{calcA},expected is {expecta}");
@@ -176,7 +169,6 @@ namespace WindNight.Core.Tests.Extension
             Assert.True(calcU == expectu, $"UnderRoomModel({roomNo})  =>{calcU} !=expectData({expectu})");
             Assert.True(calcL == expectl, $"LeftRoomModel({roomNo})  =>{calcL} !=expectData({expectl})");
             Assert.True(calcR == expectr, $"RightRoomModel({roomNo})  =>{calcR} !=expectData({expectr})");
-
         }
 
 
@@ -191,10 +183,10 @@ namespace WindNight.Core.Tests.Extension
         public void CalcRoomNo4(int roomNo, int expecta, int expectu, int expectl, int expectr)
         {
             var calcModel = RoomModelHelper.ParserRoomModel(roomNo);
-            var calcA = calcModel.AboveRoomModel.RoomNo;// RoomNoParser.CalcAboveRoomNo(roomNo);
-            var calcU = calcModel.UnderRoomModel.RoomNo;// RoomNoParser.CalcUnderRoomNo(roomNo);
-            var calcL = calcModel.LeftRoomModel.RoomNo;//RoomNoParser.CalcLeftRoomNo(roomNo);
-            var calcR = calcModel.RightRoomModel.RoomNo;// RoomNoParser.CalcRightRoomNo(roomNo);
+            var calcA = calcModel.AboveRoomModel.RoomNo; // RoomNoParser.CalcAboveRoomNo(roomNo);
+            var calcU = calcModel.UnderRoomModel.RoomNo; // RoomNoParser.CalcUnderRoomNo(roomNo);
+            var calcL = calcModel.LeftRoomModel.RoomNo; //RoomNoParser.CalcLeftRoomNo(roomNo);
+            var calcR = calcModel.RightRoomModel.RoomNo; // RoomNoParser.CalcRightRoomNo(roomNo);
 
             Output($"ParserRoomModel({roomNo})  =>{calcModel.ToJsonStr()}");
             Output($"AboveRoomModel({roomNo})  =>{calcA},expected is {expecta}");
@@ -207,9 +199,7 @@ namespace WindNight.Core.Tests.Extension
             Assert.True(calcU == expectu, $"UnderRoomModel({roomNo})  =>{calcU} !=expectData({expectu})");
             Assert.True(calcL == expectl, $"LeftRoomModel({roomNo})  =>{calcL} !=expectData({expectl})");
             Assert.True(calcR == expectr, $"RightRoomModel({roomNo})  =>{calcR} !=expectData({expectr})");
-
         }
-
     }
 
     public static class RoomNoParser
@@ -218,17 +208,19 @@ namespace WindNight.Core.Tests.Extension
         public static (int floor, int roomNumber) ParseRoomNo(string roomNumber)
         {
             var totalLength = roomNumber.Length;
-            var floor = roomNumber.Substring(0, totalLength - 2).ToInt(-99);// int.Parse(roomNumber.Substring(0, totalLength - 2));
-            var roomNumberCode = roomNumber.Substring(totalLength - 2).ToInt(-99);// int.Parse(roomNumber.Substring(totalLength - 2));
+            var floor = roomNumber.Substring(0, totalLength - 2)
+                .ToInt(-99); // int.Parse(roomNumber.Substring(0, totalLength - 2));
+            var roomNumberCode =
+                roomNumber.Substring(totalLength - 2).ToInt(-99); // int.Parse(roomNumber.Substring(totalLength - 2));
             return (floor, roomNumberCode);
         }
 
         // 确保房号始终以两位数表示房间序号
         public static string PadRoomNo(string roomNumber)
         {
-            int totalLength = roomNumber.Length;
+            var totalLength = roomNumber.Length;
             // TODO 暂时不考虑 百层楼以上的情况
-            if (totalLength < 3 || (totalLength - 2) > 2) // 检查房号长度是否合理
+            if (totalLength < 3 || totalLength - 2 > 2) // 检查房号长度是否合理
             {
                 return "";
                 // throw new ArgumentException("Invalid room number format.");
@@ -241,13 +233,18 @@ namespace WindNight.Core.Tests.Extension
         public static int CalcAboveRoomNo(string roomNumber)
         {
             roomNumber = PadRoomNo(roomNumber);
-            if (roomNumber.IsNullOrEmpty()) return 0;
+            if (roomNumber.IsNullOrEmpty())
+            {
+                return 0;
+            }
+
             var (floor, roomNumberCode) = ParseRoomNo(roomNumber);
             if (floor <= 0 || roomNumberCode <= 0)
             {
                 return 0;
             }
-            var roomNo = $"{floor + 1}{roomNumberCode:D2}";//(floor + 1).ToString() + roomNumberCode.ToString("D2");
+
+            var roomNo = $"{floor + 1}{roomNumberCode:D2}"; //(floor + 1).ToString() + roomNumberCode.ToString("D2");
 
             return roomNo.ToInt(-1);
         }
@@ -256,14 +253,18 @@ namespace WindNight.Core.Tests.Extension
         public static int CalcUnderRoomNo(string roomNumber)
         {
             roomNumber = PadRoomNo(roomNumber);
-            if (roomNumber.IsNullOrEmpty()) return 0;
+            if (roomNumber.IsNullOrEmpty())
+            {
+                return 0;
+            }
+
             var (floor, roomNumberCode) = ParseRoomNo(roomNumber);
             if (floor <= 1 || roomNumberCode <= 0)
             {
                 return 0;
             }
 
-            var roomNo = $"{floor - 1}{roomNumberCode:D2}";// (floor - 1).ToString() + roomNumberCode.ToString("D2");
+            var roomNo = $"{floor - 1}{roomNumberCode:D2}"; // (floor - 1).ToString() + roomNumberCode.ToString("D2");
             return roomNo.ToInt(-1);
         }
 
@@ -271,7 +272,11 @@ namespace WindNight.Core.Tests.Extension
         public static int CalcLeftRoomNo(string roomNumber)
         {
             roomNumber = PadRoomNo(roomNumber);
-            if (roomNumber.IsNullOrEmpty()) return 0;
+            if (roomNumber.IsNullOrEmpty())
+            {
+                return 0;
+            }
+
             var (floor, roomNumberCode) = ParseRoomNo(roomNumber);
             if (floor <= 0 || roomNumberCode <= 1)
             {
@@ -281,46 +286,51 @@ namespace WindNight.Core.Tests.Extension
             if (roomNumberCode > 0) // 避免房间序号为负数
             {
                 //   var roomNo = floor.ToString() + (roomNumberCode - 1).ToString("D2");
-                var roomNo = $"{floor}{roomNumberCode - 1:D2}";// floor.ToString() + (roomNumberCode - 1).ToString("D2");
+                var roomNo =
+                    $"{floor}{roomNumberCode - 1:D2}"; // floor.ToString() + (roomNumberCode - 1).ToString("D2");
                 return roomNo.ToInt(-1);
             }
-            else
-            {
-                return 0;
-                // throw new InvalidOperationException("Room number cannot be on the left side.");
-            }
+
+            return 0;
+            // throw new InvalidOperationException("Room number cannot be on the left side.");
         }
 
         // 计算楼右边的房号
         public static int CalcRightRoomNo(string roomNumber)
         {
             roomNumber = PadRoomNo(roomNumber);
-            if (roomNumber.IsNullOrEmpty()) return 0;
+            if (roomNumber.IsNullOrEmpty())
+            {
+                return 0;
+            }
+
             var (floor, roomNumberCode) = ParseRoomNo(roomNumber);
             if (floor <= 0 || roomNumberCode <= 0)
             {
                 return 0;
             }
 
-            var roomNo = $"{floor}{roomNumberCode + 1:D2}";// floor.ToString() + (roomNumberCode + 1).ToString("D2");
+            var roomNo = $"{floor}{roomNumberCode + 1:D2}"; // floor.ToString() + (roomNumberCode + 1).ToString("D2");
             return roomNo.ToInt(-1);
         }
-
     }
 
 
     public interface IRoomModel
     {
         int RoomNo { get; set; }
+
         /// <summary> 楼上房间 房号 </summary>
         IRoomModel AboveRoomModel { get; set; }
+
         /// <summary> 楼下房间 房号</summary>
         IRoomModel UnderRoomModel { get; set; }
+
         /// <summary> 左边房间 房号 </summary>
         IRoomModel LeftRoomModel { get; set; }
+
         /// <summary> 右边房间 房号</summary>
         IRoomModel RightRoomModel { get; set; }
-
     }
 
     public class RoomModel : IRoomModel
@@ -354,13 +364,15 @@ namespace WindNight.Core.Tests.Extension
 
         /// <summary> 楼上房间 房号 </summary>
         public IRoomModel AboveRoomModel { get; set; }
+
         /// <summary> 楼下房间 房号</summary>
         public IRoomModel UnderRoomModel { get; set; }
+
         /// <summary> 左边房间 房号 </summary>
         public IRoomModel LeftRoomModel { get; set; }
+
         /// <summary> 右边房间 房号</summary>
         public IRoomModel RightRoomModel { get; set; }
-
     }
 
     public static class RoomModelHelper
@@ -383,8 +395,6 @@ namespace WindNight.Core.Tests.Extension
             model.LeftRoomModel = new RoomModel(calcL);
             model.RightRoomModel = new RoomModel(calcR);
             return model;
-
         }
     }
-
 }

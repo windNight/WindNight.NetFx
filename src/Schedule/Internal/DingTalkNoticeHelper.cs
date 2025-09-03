@@ -9,13 +9,14 @@ using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Extension;
 using Schedule.Abstractions;
+using WindNight.Core.Abstractions;
 using WindNight.Extension;
 
 namespace Schedule.@internal
 {
     internal static class DingTalkNoticeHelper
     {
-        internal static async Task DoNoticeAsync(JobBaseInfo jobBaseInfo, string message)
+        internal static async Task DoNoticeAsync(IJobBaseInfo jobBaseInfo, string message)
         {
             var noticeDingConfig = ConfigItems.JobsConfig?.NoticeDingConfig;
             if (noticeDingConfig == null)
@@ -26,7 +27,7 @@ namespace Schedule.@internal
                     NoticeDingSignKey = ConfigItems.NoticeDingSignKey,
                     NoticeDingPhones = ConfigItems.DingtalkPhones,
                     NoticeDingAtAll = ConfigItems.DingtalkAtAll,
-                    NoticeDingIsOpen = !ConfigItems.DingtalkToken.IsNullOrEmpty(),
+                    NoticeDingIsOpen = ConfigItems.DingtalkToken.IsNotNullOrEmpty(),
                 };
             }
 
@@ -49,7 +50,7 @@ namespace Schedule.@internal
 
             var requestUri = $"https://oapi.dingtalk.com/robot/send?access_token={token}";
             var signKey = noticeDingConfig?.NoticeDingSignKey ?? "";
-            if (!signKey.IsNullOrEmpty())
+            if (signKey.IsNotNullOrEmpty())
             {
                 var ts = HardInfo.NowUnixTime;
                 var sign = EncryptHelper.CalcDingTalkSign(ts, signKey);
@@ -86,7 +87,7 @@ namespace Schedule.@internal
 
         }
 
-        private static string GetNoticeContent(JobBaseInfo jobBaseInfo, string message)
+        private static string GetNoticeContent(IJobBaseInfo jobBaseInfo, string message)
         {
             var env = Ioc.GetService<IHostEnvironment>();
             var environmentName = env?.EnvironmentName;
@@ -104,7 +105,7 @@ namespace Schedule.@internal
             return content;
         }
 
-        private static object GetDingTalkPostData(JobBaseInfo jobBaseInfo, string message,
+        private static object GetDingTalkPostData(IJobBaseInfo jobBaseInfo, string message,
             NoticeDingConfig noticeDingConfig)
         {
             var atMobiles = string.Empty;

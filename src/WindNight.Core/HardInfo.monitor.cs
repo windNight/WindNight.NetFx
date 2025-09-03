@@ -27,6 +27,8 @@ namespace System
 
         public static bool IsEnvName(string envName) => HostEnv.IsEnvName(envName);
 
+        public static bool IsTestEnv(bool defaultValue = true) => QuerySvrHostInfoImpl?.IsTestEnv(defaultValue) ?? defaultValue;
+
         public static IQuerySvrHostInfo QuerySvrHostInfoImpl => Ioc.GetService<IQuerySvrHostInfo>();
 
         public static string QueryBuildType() => QuerySvrHostInfoImpl?.QueryBuildType() ?? "";
@@ -54,7 +56,7 @@ namespace System
             try
             {
                 var implName = QuerySvrRuntimeInfo()?.RunMachineName ?? "";
-                if (!implName.IsNullOrEmpty())
+                if (implName.IsNotNullOrEmpty())
                 {
                     return implName;
                 }

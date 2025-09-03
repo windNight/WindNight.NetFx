@@ -9,6 +9,7 @@ using Swashbuckle.AspNetCore.Extensions.@internal;
 using Swashbuckle.AspNetCore.HideApi.@internal;
 using WindNight.Core;
 using WindNight.Core.Attributes.Abstractions;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace Swashbuckle.AspNetCore.HideApi.Middleware
 {
@@ -101,12 +102,12 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
             {
                 try
                 {
-                    if (!DefaultSignDict.IsNullOrEmpty())
+                    if (DefaultSignDict.IsNotNullOrEmpty())
                     {
                         return DefaultSignDict;
                     }
 
-                    if (!_signKeyDict.IsNullOrEmpty())
+                    if (_signKeyDict.IsNotNullOrEmpty())
                     {
                         return _signKeyDict;
                     }
@@ -360,7 +361,7 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
             if (httpRequest.Headers.TryGetValue(headerName, out var requestHeader))
             {
                 var header = requestHeader.FirstOrDefault();
-                if (!header.IsNullOrEmpty())
+                if (header.IsNotNullOrEmpty())
                 {
                     return header.Trim();
                 }

@@ -219,7 +219,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 reqTraceId = QueryTraceIdFromActionArguments(context);
             }
 
-            var _ = CurrentItem.AddSerialNumber(reqTraceId, !reqTraceId.IsNullOrEmpty());
+            var _ = CurrentItem.AddSerialNumber(reqTraceId, reqTraceId.IsNotNullOrEmpty());
 
             AppendCommonContext(context);
             AppendHeaderInfo(context.HttpContext);

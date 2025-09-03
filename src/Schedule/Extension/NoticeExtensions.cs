@@ -19,7 +19,7 @@ namespace Schedule.Extension
             if (_scheduleNotice != null)
             {
                 var msgSb = new StringBuilder(message);
-                if (!extendInfo.IsNullOrEmpty())
+                if (extendInfo.IsNotNullOrEmpty())
                 {
                     msgSb.AppendLine($"\n\n {extendInfo}");
                 }

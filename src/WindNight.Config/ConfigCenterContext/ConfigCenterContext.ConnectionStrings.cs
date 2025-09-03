@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace WindNight.ConfigCenter.Extension
 {
     internal partial class ConfigCenterContext
@@ -21,12 +17,13 @@ namespace WindNight.ConfigCenter.Extension
                     {
                         continue;
                     }
+
                     var keysp = key.Split(':');
                     list.Add(new ConnectionStringInfo
                     {
                         Path = key,
                         Value = CurrentConfiguration[key],
-                        Key = keysp[Math.Max(0, keysp.Length - 1)]
+                        Key = keysp[Math.Max(0, keysp.Length - 1)],
                     });
                 }
 
@@ -42,7 +39,10 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="dict"></param>
         public static void SetConnectionStrings(Dictionary<string, string> dict)
         {
-            foreach (var item in dict) SetConnectionString(item.Key, item.Value);
+            foreach (var item in dict)
+            {
+                SetConnectionString(item.Key, item.Value);
+            }
         }
 
         /// <summary>
@@ -63,7 +63,11 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="defaultValue"></param>
         public static string GetConnectionString(string configKey, string defaultValue = "")
         {
-            if (configKey.IsNullOrEmpty()) return defaultValue;
+            if (configKey.IsNullOrEmpty())
+            {
+                return defaultValue;
+            }
+
             var key = FixDictKey(ConfigType.ConnectionStrings, configKey);
             return GetFromConfigurationDict(key, defaultValue);
         }

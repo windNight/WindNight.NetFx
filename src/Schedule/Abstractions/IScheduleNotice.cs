@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
+using WindNight.Core.Abstractions;
 
 namespace Schedule.Abstractions
 {
@@ -6,7 +7,7 @@ namespace Schedule.Abstractions
     /// </summary>
     public interface IScheduleNotice
     {
-        void DoNotice(JobBaseInfo jobBaseInfo, string message);
-        Task DoNoticeAsync(JobBaseInfo jobBaseInfo, string message);
+        void DoNotice(IJobBaseInfo jobBaseInfo, string message);
+        Task DoNoticeAsync(IJobBaseInfo jobBaseInfo, string message);
     }
 }

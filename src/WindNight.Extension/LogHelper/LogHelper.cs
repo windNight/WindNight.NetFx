@@ -241,7 +241,7 @@ namespace WindNight.LogExtension
             //    traceId = jo.SafeGetValue(ReqTraceIdKey, "");
             //}
 
-            if (!traceId.IsNullOrEmpty())
+            if (traceId.IsNotNullOrEmpty())
             {
                 logInfo.SerialNumber = traceId;
             }

@@ -248,7 +248,7 @@ namespace WindNight.Extension
         {
             try
             {
-                if (!traceId.IsNullOrEmpty() && isForce)
+                if (traceId.IsNotNullOrEmpty() && isForce)
                 {
                     isForce = true;
                 }
@@ -330,7 +330,7 @@ namespace WindNight.Extension
         public static bool ContainKey(string key)
         {
             bool flag = false;
-            if (!key.IsNullOrEmpty() && Items != null)
+            if (key.IsNotNullOrEmpty() && Items != null)
             {
 #if NET45
                 flag = Items.Contains(key);

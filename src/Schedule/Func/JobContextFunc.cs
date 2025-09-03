@@ -24,7 +24,7 @@ namespace Schedule.Func
         /// <param name="origName"></param>
         public static void SetJobCode(this IJobDetail jobDetail, string origName)
         {
-            if (!origName.IsNullOrEmpty())
+            if (origName.IsNotNullOrEmpty())
             {
                 jobDetail.JobDataMap["jobCode"] = origName;
             }
@@ -49,7 +49,7 @@ namespace Schedule.Func
         /// <param name="name"></param>
         public static void SetJobName(this IJobDetail jobDetail, string name)
         {
-            if (!name.IsNullOrEmpty())
+            if (name.IsNotNullOrEmpty())
             {
                 jobDetail.JobDataMap["jobName"] = name;
             }
@@ -74,7 +74,7 @@ namespace Schedule.Func
         /// <param name="runParams"></param>
         public static void SetJobRunParams(this IJobDetail jobDetail, string runParams)
         {
-            if (!runParams.IsNullOrEmpty())
+            if (runParams.IsNotNullOrEmpty())
             {
                 jobDetail.JobDataMap["runParams"] = runParams;
             }
@@ -142,7 +142,7 @@ namespace Schedule.Func
         /// <param name="depJobs"></param>
         public static void SetDepJobs(this IJobDetail jobDetail, string depJobs)
         {
-            if (!depJobs.IsNullOrEmpty())
+            if (depJobs.IsNotNullOrEmpty())
             {
                 jobDetail.JobDataMap.Add("depJobs", depJobs);
             }
@@ -167,7 +167,7 @@ namespace Schedule.Func
         /// <param name="jobDbId"></param>
         public static void SetJobDbId(this IJobDetail jobDetail, string jobDbId)
         {
-            if (!jobDbId.IsNullOrEmpty())
+            if (jobDbId.IsNotNullOrEmpty())
             {
                 jobDetail.JobDataMap.Add("jobId", jobDbId);
             }
@@ -279,6 +279,49 @@ namespace Schedule.Func
             return context.JobDetail.JobDataMap.ContainsKey("isLogJobLC") &&
                    bool.Parse(context.JobDetail.JobDataMap["isLogJobLC"].ToString());
         }
+        /// <summary>
+        /// </summary>
+        /// <param name="jobDetail"></param>
+        /// <param name="isLogJobLC"></param>
+        public static void SetIsStoreJobLC(this IJobDetail jobDetail, bool isLogJobLC)
+        {
+            jobDetail.JobDataMap["isStoreJobLC"] = isLogJobLC;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static bool GetIsStoreJobLC(this IJobExecutionContext context)
+        {
+            return context.JobDetail.JobDataMap.ContainsKey("isStoreJobLC") &&
+                 context.JobDetail.JobDataMap["isStoreJobLC"].ToString().ToBoolean();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="jobDetail"></param>
+        /// <param name="isLogJobLC"></param>
+        public static void SetJobWarnTs(this IJobDetail jobDetail, long jobWarnTs)
+        {
+            jobDetail.JobDataMap["jobWarnTs"] = jobWarnTs;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static long GetJobWarnTs(this IJobExecutionContext context, long defaultValue = 300L)
+        {
+
+            if (context.JobDetail.JobDataMap.ContainsKey("jobWarnTs"))
+            {
+                return context.JobDetail.JobDataMap["jobWarnTs"].ToLong(defaultValue);
+            }
+
+            return defaultValue;
+        }
+
 
         /// <summary>
         ///     设置 job 被否决的原因
@@ -287,7 +330,7 @@ namespace Schedule.Func
         /// <param name="reason"></param>
         public static void SetVotedReason(this IJobDetail jobDetail, string reason)
         {
-            if (!reason.IsNullOrEmpty())
+            if (reason.IsNotNullOrEmpty())
             {
                 jobDetail.JobDataMap.Add("vetoedReason", reason);
             }
@@ -345,7 +388,7 @@ namespace Schedule.Func
         /// <param name="bizContent"></param>
         public static void SetBizContent(this IJobDetail jobDetail, string bizContent)
         {
-            if (!bizContent.IsNullOrEmpty())
+            if (bizContent.IsNotNullOrEmpty())
             {
                 jobDetail.JobDataMap[BizContentKey] = bizContent;
             }
@@ -358,7 +401,7 @@ namespace Schedule.Func
         public static JobBaseInfo GetJobBaseInfo(this IJobExecutionContext context)
         {
             var jobBaseInfo = context.JobDetail.JobDataMap.SafeGetValue("jobBaseInfo")?.ToString() ?? "";
-            if (!jobBaseInfo.IsNullOrEmpty())
+            if (jobBaseInfo.IsNotNullOrEmpty())
             {
                 return jobBaseInfo.To<JobBaseInfo>();
             }
@@ -373,7 +416,7 @@ namespace Schedule.Func
         /// <param name="jobInfo"></param>
         public static void SetJobBaseInfo(this IJobDetail jobDetail, JobBaseInfo jobInfo)
         {
-            if (jobInfo != null && !jobInfo.JobId.IsNullOrEmpty() && jobInfo.JobExecTs > 0)
+            if (jobInfo != null && jobInfo.JobId.IsNotNullOrEmpty() && jobInfo.JobExecTs > 0)
             {
                 jobDetail.JobDataMap["jobBaseInfo"] = jobInfo.ToJsonStr();
             }

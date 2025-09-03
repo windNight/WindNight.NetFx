@@ -40,7 +40,7 @@ namespace WindNight.Extension.Dapper.Mysql
             var pageInfo = pageQueryBase.GenQueryPageInfoForDto<T>(tableName);
 
             pageInfo.SqlWhere = whereSql;
-            if (!orderby.IsNullOrEmpty())
+            if (orderby.IsNotNullOrEmpty())
             {
                 pageInfo.OrderField = orderby;
 
@@ -60,7 +60,7 @@ namespace WindNight.Extension.Dapper.Mysql
             var pageInfo = pageQueryBase.GenQueryPageInfoForDto<T>(tableName);
 
             pageInfo.SqlWhere = whereSql;
-            if (!orderby.IsNullOrEmpty())
+            if (orderby.IsNotNullOrEmpty())
             {
                 pageInfo.OrderField = orderby;
 
@@ -146,7 +146,7 @@ namespace WindNight.Extension.Dapper.Mysql
             var pageInfo = pageQueryBase.GenQueryPageInfo<TEntity>(tableNameToLower, tableNameAppendPlural);
 
             pageInfo.SqlWhere = whereSql;
-            if (!orderby.IsNullOrEmpty())
+            if (orderby.IsNotNullOrEmpty())
             {
                 pageInfo.OrderField = orderby;
 
@@ -161,7 +161,7 @@ namespace WindNight.Extension.Dapper.Mysql
             var pageInfo = pageQueryBase.GenQueryPageInfo<TEntity>(tableNameToLower, tableNameAppendPlural);
 
             pageInfo.SqlWhere = whereSql;
-            if (!orderby.IsNullOrEmpty())
+            if (orderby.IsNotNullOrEmpty())
             {
                 pageInfo.OrderField = orderby;
 

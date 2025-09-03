@@ -48,7 +48,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
             var message = formatter(state, exception);
 
             var now = HardInfo.Now;
-            if (!string.IsNullOrEmpty(message) || exception != null)
+            if (message.IsNotNullOrEmpty() || exception != null)
             {
                 if (state is StateDataEntry stateEntry)
                 {

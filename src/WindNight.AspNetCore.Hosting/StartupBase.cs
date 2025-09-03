@@ -102,7 +102,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 ```
 ";
 
-                    if (!ToAppendDescription.IsNullOrEmpty())
+                    if (ToAppendDescription.IsNotNullOrEmpty())
                     {
                         apiDes =
 @$"{apiDes}
@@ -318,7 +318,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
                     var mimeTypes = ResponseCompressionDefaults.MimeTypes;
 
-                    if (!GzipMimeTypes.IsNullOrEmpty())
+                    if (GzipMimeTypes.IsNotNullOrEmpty())
                     {
                         mimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(GzipMimeTypes).Distinct();
                     }

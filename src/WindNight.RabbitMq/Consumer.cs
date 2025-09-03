@@ -1,5 +1,3 @@
-using System;
-using System.Threading;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using WindNight.RabbitMq.Abstractions;
@@ -44,10 +42,15 @@ namespace WindNight.RabbitMq
             get
             {
                 if (model == null)
+                {
                     lock (lockObj)
                     {
-                        if (model == null) CreateModel();
+                        if (model == null)
+                        {
+                            CreateModel();
+                        }
                     }
+                }
 
                 return model;
             }
@@ -60,7 +63,10 @@ namespace WindNight.RabbitMq
         {
             get
             {
-                if (!model.IsOpen) return false;
+                if (!model.IsOpen)
+                {
+                    return false;
+                }
 
                 return true;
             }

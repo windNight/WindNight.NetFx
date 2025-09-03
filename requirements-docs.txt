@@ -1,0 +1,20 @@
+# MkDocs Documentation Requirements
+# Core MkDocs
+mkdocs>=1.5.0
+
+# Material theme
+mkdocs-material>=9.0.0
+
+# Plugins
+mkdocs-minify-plugin>=0.7.0
+mkdocs-git-revision-date-localized-plugin>=1.2.0
+mkdocs-git-committers-plugin-2>=1.2.0
+
+# Extensions (included with mkdocs-material)
+# The following are included with mkdocs-material but listed for completeness:
+# - pymdownx extensions are bundled with mkdocs-material
+# - pygments for syntax highlighting
+# - markdown extensions
+
+# Optional: Version management
+mike>=1.1.0

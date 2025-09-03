@@ -77,12 +77,31 @@ namespace WindNight.AspNetCore.Hosting
 
         private static ILogService _logService => Ioc.GetService<ILogService>();
 
-        static void UnobservedTaskHandler(object sender, UnobservedTaskExceptionEventArgs e) => _logService?.Fatal("UnobservedTaskException", (Exception)e.Exception);
+        static void UnobservedTaskHandler(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            try
+            {
+                _logService?.Error("DefaultProgramBase.UnobservedTaskException", (Exception)e.Exception);
+                e.SetObserved();
+            }
+            catch
+            {
 
-        static void UnhandledExceptionEventHandler(object sender, UnhandledExceptionEventArgs e) => _logService?.Fatal("UnhandledException", e.ExceptionObject as Exception);
+            }
 
+        }
 
+        static void UnhandledExceptionEventHandler(object sender, UnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                _logService?.Fatal("DefaultProgramBase.UnhandledException", e.ExceptionObject as Exception);
+            }
+            catch
+            {
 
+            }
+        }
     }
 
 

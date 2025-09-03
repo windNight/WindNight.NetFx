@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.Core.@internal;
 
@@ -22,7 +20,8 @@ namespace WindNight.Core.Tools
                 {
                     return false;
                 }
-                var configValue = configService.GetAppSettingValue(TimeWatcherIsOpenKey, false, false);
+
+                var configValue = configService.GetAppSettingValue(TimeWatcherIsOpenKey, false);
                 return configValue;
             }
         }
@@ -38,8 +37,9 @@ namespace WindNight.Core.Tools
                     {
                         return DefaultWarnMiSeconds;
                     }
+
                     var configValue =
-                        configService.GetAppSettingValue("TimeWatcherWarnMiSeconds", DefaultWarnMiSeconds, false);
+                        configService.GetAppSettingValue("TimeWatcherWarnMiSeconds", DefaultWarnMiSeconds);
                     return configValue;
                 }
                 catch
@@ -58,7 +58,8 @@ namespace WindNight.Core.Tools
                 {
                     return false;
                 }
-                var configValue = configService.GetAppSettingValue("DebugIsOpen", false, false);
+
+                var configValue = configService.GetAppSettingValue("DebugIsOpen", false);
                 return configValue;
             }
         }
@@ -78,7 +79,8 @@ namespace WindNight.Core.Tools
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
         /// <returns></returns>
-        public static T TimeWatcher<T>(Func<T> func, out long realTs, string watcherName = "", bool appendMessage = false, int warnMiSeconds = 200)
+        public static T TimeWatcher<T>(Func<T> func, out long realTs, string watcherName = "",
+            bool appendMessage = false, int warnMiSeconds = 200)
         {
             return DoWatcherFunc(func, watcherName, appendMessage, warnMiSeconds, false, out realTs);
         }
@@ -92,7 +94,8 @@ namespace WindNight.Core.Tools
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
         /// <returns></returns>
-        public static T TimeWatcher<T>(Func<T> func, string watcherName = "", bool appendMessage = false, int warnMiSeconds = 200)
+        public static T TimeWatcher<T>(Func<T> func, string watcherName = "", bool appendMessage = false,
+            int warnMiSeconds = 200)
         {
             return TimeWatcher(func, out var realTs, watcherName, appendMessage, warnMiSeconds);
         }
@@ -107,7 +110,8 @@ namespace WindNight.Core.Tools
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
         /// <returns></returns>
-        public static T TimeWatcherUnsafe<T>(Func<T> func, out long realTs, string watcherName = "", bool appendMessage = false, int warnMiSeconds = 200)
+        public static T TimeWatcherUnsafe<T>(Func<T> func, out long realTs, string watcherName = "",
+            bool appendMessage = false, int warnMiSeconds = 200)
         {
             return DoWatcherFunc(func, watcherName, appendMessage, warnMiSeconds, true, out realTs);
         }
@@ -121,7 +125,8 @@ namespace WindNight.Core.Tools
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
         /// <returns></returns>
-        public static T TimeWatcherUnsafe<T>(Func<T> func, string watcherName = "", bool appendMessage = false, int warnMiSeconds = 200)
+        public static T TimeWatcherUnsafe<T>(Func<T> func, string watcherName = "", bool appendMessage = false,
+            int warnMiSeconds = 200)
         {
             return TimeWatcherUnsafe(func, out var realTs, watcherName, appendMessage, warnMiSeconds);
         }
@@ -134,7 +139,8 @@ namespace WindNight.Core.Tools
         /// <param name="watcherName"></param>
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
-        public static void TimeWatcher(Action action, string watcherName = "", bool appendMessage = false, int warnMiSeconds = 200)
+        public static void TimeWatcher(Action action, string watcherName = "", bool appendMessage = false,
+            int warnMiSeconds = 200)
         {
             TimeWatcher(action, out var realTs, watcherName, appendMessage, warnMiSeconds);
         }
@@ -147,7 +153,8 @@ namespace WindNight.Core.Tools
         /// <param name="watcherName"></param>
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
-        public static void TimeWatcher(Action action, out long realTs, string watcherName = "", bool appendMessage = false, int warnMiSeconds = 200)
+        public static void TimeWatcher(Action action, out long realTs, string watcherName = "",
+            bool appendMessage = false, int warnMiSeconds = 200)
         {
             DoWatcherAction(action, watcherName, appendMessage, warnMiSeconds, false, out realTs);
         }
@@ -160,7 +167,8 @@ namespace WindNight.Core.Tools
         /// <param name="watcherName"></param>
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
-        public static void TimeWatcherUnsafe(Action action, out long realTs, string watcherName = "", bool appendMessage = false, int warnMiSeconds = 200)
+        public static void TimeWatcherUnsafe(Action action, out long realTs, string watcherName = "",
+            bool appendMessage = false, int warnMiSeconds = 200)
         {
             DoWatcherAction(action, watcherName, appendMessage, warnMiSeconds, true, out realTs);
         }
@@ -172,12 +180,14 @@ namespace WindNight.Core.Tools
         /// <param name="watcherName"></param>
         /// <param name="appendMessage"></param>
         /// <param name="warnMiSeconds"></param>
-        public static void TimeWatcherUnsafe(Action action, string watcherName = "", bool appendMessage = false, int warnMiSeconds = 200)
+        public static void TimeWatcherUnsafe(Action action, string watcherName = "", bool appendMessage = false,
+            int warnMiSeconds = 200)
         {
             TimeWatcherUnsafe(action, out var realTs, watcherName, appendMessage, warnMiSeconds);
         }
 
-        private static void DoWatcherAction(Action action, string watcherName, bool appendMessage, int warnMiSeconds, bool isThrow, out long realTs)
+        private static void DoWatcherAction(Action action, string watcherName, bool appendMessage, int warnMiSeconds,
+            bool isThrow, out long realTs)
         {
             var ticks = HardInfo.Now.Ticks;
             try
@@ -203,7 +213,11 @@ namespace WindNight.Core.Tools
             }
             finally
             {
-                if (watcherName.IsNullOrEmpty()) watcherName = nameof(action);
+                if (watcherName.IsNullOrEmpty())
+                {
+                    watcherName = nameof(action);
+                }
+
                 realTs = (long)TimeSpan.FromTicks(HardInfo.Now.Ticks - ticks).TotalMilliseconds;
                 var fwarnMiS = FixWarnMiSeconds(warnMiSeconds);
                 if (realTs > fwarnMiS)
@@ -223,7 +237,11 @@ namespace WindNight.Core.Tools
             T rlt;
             var ticks = HardInfo.Now.Ticks;
             // TODO Try to get real name of this func
-            if (watcherName.IsNullOrEmpty()) watcherName = nameof(func);
+            if (watcherName.IsNullOrEmpty())
+            {
+                watcherName = nameof(func);
+            }
+
             try
             {
                 rlt = func.Invoke();
@@ -268,7 +286,11 @@ namespace WindNight.Core.Tools
             T rlt;
             var ticks = HardInfo.Now.Ticks;
             // TODO Try to get real name of this func
-            if (watcherName.IsNullOrEmpty()) watcherName = nameof(func);
+            if (watcherName.IsNullOrEmpty())
+            {
+                watcherName = nameof(func);
+            }
+
             try
             {
                 rlt = await func.Invoke();

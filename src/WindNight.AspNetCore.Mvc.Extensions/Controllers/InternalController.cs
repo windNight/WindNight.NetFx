@@ -204,7 +204,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                                 {
                                     continue;
                                 }
-                                if (!key.IsNullOrEmpty() && !result.ContainsKey(key))
+                                if (key.IsNotNullOrEmpty() && !result.ContainsKey(key))
                                 {
                                     var value = assemblyName.Version.ToString();
                                     result.Add(key, value);

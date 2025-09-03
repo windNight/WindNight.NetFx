@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
+using WindNight.Core.ExceptionExt;
 using WindNight.Extension;
 using WindNight.LogExtension;
 
@@ -341,12 +342,29 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
 
         public static void UnobservedTaskHandler(object sender, UnobservedTaskExceptionEventArgs e)
         {
-            Ioc.Instance.CurrentLogService?.Fatal("UnobservedTaskException", e.Exception);
+            try
+            {
+                var ex = e.Exception;
+                Ioc.Instance.CurrentLogService?.Error($"ProgramBase.UnobservedTaskException {ex.GetMessage()}", ex);
+                e.SetObserved();
+            }
+            catch
+            {
+
+            }
         }
 
         public static void UnhandledExceptionEventHandler(object sender, UnhandledExceptionEventArgs e)
         {
-            Ioc.Instance.CurrentLogService?.Fatal("UnhandledException", e.ExceptionObject as Exception);
+            try
+            {
+                Ioc.Instance.CurrentLogService?.Fatal("ProgramBase.UnhandledException", e.ExceptionObject as Exception);
+            }
+            catch
+            {
+
+            }
+
         }
 
         /// <summary>
@@ -387,7 +405,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
                     .AddJsonFile("appsettings.json", false, true)
                     .AddEnvironmentVariables();
                 var envName = hostingContext.HostingEnvironment.EnvironmentName;
-                if (!envName.IsNullOrEmpty() && !hostingContext.HostingEnvironment.IsProduction())
+                if (envName.IsNotNullOrEmpty() && !hostingContext.HostingEnvironment.IsProduction())
                 {
                     configBuilder.AddJsonFile($"appsettings.{envName}.json", true, true);
                 }

@@ -1,18 +1,10 @@
-﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
 using System.Security.Cryptography.Extensions;
-using System.Threading;
 using Newtonsoft.Json.Extension;
 using WindNight.Config.@internal;
 using WindNight.ConfigCenter.Extension.@internal;
 using WindNight.Core;
 using WindNight.Linq.Extensions.Expressions;
-
-
 #if !NET45
 using Microsoft.Extensions.Configuration.Extensions;
 
@@ -22,15 +14,75 @@ namespace WindNight.ConfigCenter.Extension
 {
     internal partial class ConfigProvider
     {
+        private static Thread _thread;
 
         private bool _isStop;
 
         /// <summary>
-        ///  毫秒数
+        ///     毫秒数
         /// </summary>
         private int SleepTime { get; set; } = 5 * 1000;
 
-        private static Thread _thread;
+        public JsonFileConfigInfo ReadConfigFileDirect(string fileName)
+        {
+            if (!CheckFileExtension(fileName))
+            {
+                return null;
+            }
+
+            var filePath = Path.Combine(ConfigPath, fileName);
+
+            if (!File.Exists(filePath))
+            {
+                return new JsonFileConfigInfo
+                {
+                    Path = filePath,
+                    FileContent = string.Empty,
+                    FileName = fileName,
+                    LastModifyTime = default,
+                };
+            }
+
+            var text = ReadAllText(filePath);
+            var lastModifyTime = GetLastWriteTime(filePath);
+
+            return new JsonFileConfigInfo
+            {
+                Path = filePath,
+                FileContent = text,
+                FileName = fileName,
+                LastModifyTime = lastModifyTime,
+            };
+        }
+
+
+        public FileConfigInfo ReadSelfConfigFileDirect(string fileDir, string fileName)
+        {
+            // var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileDir, fileName);
+            var filePath = Path.Combine(Environment.CurrentDirectory, FixDirPath(fileDir), fileName);
+
+            if (!File.Exists(filePath))
+            {
+                return new FileConfigInfo
+                {
+                    Path = filePath,
+                    FileContent = string.Empty,
+                    FileName = fileName,
+                    LastModifyTime = default,
+                };
+            }
+
+            var text = ReadAllText(filePath);
+            var lastModifyTime = GetLastWriteTime(filePath);
+
+            return new FileConfigInfo
+            {
+                Path = filePath,
+                FileContent = text,
+                FileName = fileName,
+                LastModifyTime = lastModifyTime,
+            };
+        }
 
         #region Private
 
@@ -41,12 +93,7 @@ namespace WindNight.ConfigCenter.Extension
         {
             try
             {
-                _thread = new Thread(HeartRun)
-                {
-                    Name = $"KeepAliveThread:ConfigProvider",
-                    IsBackground = true,
-
-                };
+                _thread = new Thread(HeartRun) { Name = "KeepAliveThread:ConfigProvider", IsBackground = true };
                 _thread.Start();
             }
             catch (Exception ex)
@@ -67,7 +114,10 @@ namespace WindNight.ConfigCenter.Extension
             while (true)
             {
                 if (_isStop)
+                {
                     break;
+                }
+
                 Thread.Sleep(SleepTime);
                 var flag = false;
                 var isContinue = false;
@@ -93,8 +143,9 @@ namespace WindNight.ConfigCenter.Extension
                 {
                     // 成功后重置
                     if (flag)
+                    {
                         loopStartTimeTicks = DateTime.Now.Ticks;
-
+                    }
                 }
             }
         }
@@ -116,7 +167,7 @@ namespace WindNight.ConfigCenter.Extension
             LoadAllConnectionStrings();
         }
 
-        bool ConfigFileChanged(string fileName)
+        private bool ConfigFileChanged(string fileName)
         {
             if (!CheckConfigFileIsValid(fileName))
             {
@@ -124,7 +175,8 @@ namespace WindNight.ConfigCenter.Extension
             }
 
             var filePath = Path.Combine(ConfigPath, fileName);
-            if (configUpdateTime.TryGetValue(fileName, out var lastModifyTime) && lastModifyTime == Directory.GetLastWriteTime(filePath))
+            if (configUpdateTime.TryGetValue(fileName, out var lastModifyTime) &&
+                lastModifyTime == Directory.GetLastWriteTime(filePath))
             {
                 return false;
             }
@@ -138,6 +190,7 @@ namespace WindNight.ConfigCenter.Extension
             {
                 return new Tuple<int, string, string>(0, "刷新成功", "");
             }
+
             if (!ConfigFileChanged(configName))
             {
                 return new Tuple<int, string, string>(0, "刷新成功", "");
@@ -150,7 +203,7 @@ namespace WindNight.ConfigCenter.Extension
             }
 
             var content = config.FileContent;
-            if (!content.IsNullOrEmpty())
+            if (content.IsNotNullOrEmpty())
             {
                 ConfigCenterContext.SetConfig(configName, content);
                 configUpdateTime[configName] = config.LastModifyTime;
@@ -159,7 +212,6 @@ namespace WindNight.ConfigCenter.Extension
 
                 _updateFlagDict.AddOrUpdate(tagName, k => content.Md5Encrypt(),
                     (t, l) => content.Md5Encrypt());
-
             }
 
 
@@ -167,7 +219,7 @@ namespace WindNight.ConfigCenter.Extension
         }
 
 
-        string FixDefaultConfigFilePath(string fileName)
+        private string FixDefaultConfigFilePath(string fileName)
         {
             return Path.Combine(ConfigPath, fileName);
         }
@@ -176,15 +228,13 @@ namespace WindNight.ConfigCenter.Extension
         {
             return CheckFileExtension(fileName) && File.Exists(FixDefaultConfigFilePath(fileName));
         }
+
         private static List<string> ValidExtensions => new List<string> { ".json", ".config", ".xml" };
 
         private bool CheckFileExtension(string filePath)
         {
             return ValidExtensions.Contains(Path.GetExtension(filePath));
         }
-
-
-
 
 
         private Tuple<int, string, string> LoadAllConfig()
@@ -202,9 +252,16 @@ namespace WindNight.ConfigCenter.Extension
 
                 try
                 {
-                    if (fileName.IsNullOrEmpty()) continue;
+                    if (fileName.IsNullOrEmpty())
+                    {
+                        continue;
+                    }
+
                     if (configUpdateTime.TryGetValue(fileName, out var lastModifyTime) &&
-                        lastModifyTime == Directory.GetLastWriteTime(file)) continue;
+                        lastModifyTime == Directory.GetLastWriteTime(file))
+                    {
+                        continue;
+                    }
 
                     var text = File.ReadAllText(file);
                     dict.Add(fileName, text);
@@ -218,7 +275,7 @@ namespace WindNight.ConfigCenter.Extension
                 }
             }
 
-            if (!dict.IsNullOrEmpty())
+            if (dict.IsNotNullOrEmpty())
             {
                 ConfigCenterContext.SetConfigList(dict);
             }
@@ -267,9 +324,9 @@ namespace WindNight.ConfigCenter.Extension
                     }
                     else if (item.Value is IList)
                     {
-                        var asList = AnalyzeAppSettings(item);// item.Value.To<List<AppSettingInfo>>();
+                        var asList = AnalyzeAppSettings(item); // item.Value.To<List<AppSettingInfo>>();
 
-                        if (!asList.IsNullOrEmpty())
+                        if (asList.IsNotNullOrEmpty())
                         {
                             LogHelper.Debug($"AnalyzeAppSettings({item.Key})->{item.ToJsonStr()}");
                             asList.ForEach(m =>
@@ -279,29 +336,34 @@ namespace WindNight.ConfigCenter.Extension
                                 {
                                     key = m.Path.Replace($"{nameof(ConfigType.AppSettings)}:", "");
                                 }
+
                                 dict.Add(key, m.Value);
                             });
                         }
-
                     }
                     else
                     {
                         var aS = item.Value.To<AppSettingInfo>();
                         if (aS != null)
+                        {
                             dict.Add(aS.Key, aS.Value);
+                        }
                     }
                 }
 #endif
-                if (!dict.IsNullOrEmpty())
+                if (dict.IsNotNullOrEmpty())
                 {
                     var configMd5 = dict.ToJsonStr().Md5Encrypt();
                     if (_updateFlagDict.TryGetValue(nameof(ConfigType.AppSettings), out var lastMd5) &&
-                        string.Equals(configMd5, lastMd5, StringComparison.OrdinalIgnoreCase)) return;
+                        string.Equals(configMd5, lastMd5, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return;
+                    }
+
                     ConfigCenterContext.SetAppSettings(dict);
                     _updateFlagDict.TryAdd(nameof(ConfigType.AppSettings), configMd5);
                     configUpdateTime[nameof(ConfigType.AppSettings)] = HardInfo.Now;
                 }
-
             }
             catch (Exception ex)
             {
@@ -334,22 +396,30 @@ namespace WindNight.ConfigCenter.Extension
                     else if (item.Value is IList)
                     {
                         var asList = item.Value.To<List<ConnectionStringInfo>>();
-                        if (!asList.IsNullOrEmpty())
+                        if (asList.IsNotNullOrEmpty())
+                        {
                             asList.ForEach(m => dict.Add(m.Key, m.Value));
+                        }
                     }
                     else
                     {
                         var aS = item.Value.To<ConnectionStringInfo>();
                         if (aS != null)
+                        {
                             dict.Add(aS.Key, aS.Value);
+                        }
                     }
                 }
 #endif
-                if (!dict.IsNullOrEmpty())
+                if (dict.IsNotNullOrEmpty())
                 {
                     var configMd5 = dict.ToJsonStr().Md5Encrypt();
                     if (_updateFlagDict.TryGetValue(nameof(ConfigType.ConnectionStrings), out var lastMd5) &&
-                        string.Equals(configMd5, lastMd5, StringComparison.OrdinalIgnoreCase)) return;
+                        string.Equals(configMd5, lastMd5, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return;
+                    }
+
                     ConfigCenterContext.SetConnectionStrings(dict);
                     _updateFlagDict.TryAdd(nameof(ConfigType.ConnectionStrings), configMd5);
                     configUpdateTime[nameof(ConfigType.ConnectionStrings)] = HardInfo.Now;
@@ -362,7 +432,7 @@ namespace WindNight.ConfigCenter.Extension
         }
 
 
-        List<AppSettingInfo> AnalyzeAppSettings(ConfigBaseInfo2 config, bool loop = false)
+        private List<AppSettingInfo> AnalyzeAppSettings(ConfigBaseInfo2 config, bool loop = false)
         {
             var list = new List<AppSettingInfo>();
             if (config.Value is IList<ConfigBaseInfo2> configList)
@@ -399,72 +469,6 @@ namespace WindNight.ConfigCenter.Extension
             return list;
         }
 
-
         #endregion //end Private
-
-        public JsonFileConfigInfo ReadConfigFileDirect(string fileName)
-        {
-            if (!CheckFileExtension(fileName))
-            {
-                return null;
-            }
-
-            var filePath = Path.Combine(ConfigPath, fileName);
-
-            if (!File.Exists(filePath))
-            {
-                return new JsonFileConfigInfo
-                {
-                    Path = filePath,
-                    FileContent = string.Empty,
-                    FileName = fileName,
-                    LastModifyTime = default,
-                };
-            }
-            var text = ReadAllText(filePath);
-            var lastModifyTime = GetLastWriteTime(filePath);
-
-            return new JsonFileConfigInfo
-            {
-                Path = filePath,
-                FileContent = text,
-                FileName = fileName,
-                LastModifyTime = lastModifyTime,
-            };
-
-        }
-
-
-
-        public FileConfigInfo ReadSelfConfigFileDirect(string fileDir, string fileName)
-        {
-            // var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileDir, fileName);
-            var filePath = Path.Combine(Environment.CurrentDirectory, FixDirPath(fileDir), fileName);
-
-            if (!File.Exists(filePath))
-            {
-                return new FileConfigInfo
-                {
-                    Path = filePath,
-                    FileContent = string.Empty,
-                    FileName = fileName,
-                    LastModifyTime = default,
-                };
-            }
-            var text = ReadAllText(filePath);
-            var lastModifyTime = GetLastWriteTime(filePath);
-
-            return new FileConfigInfo
-            {
-                Path = filePath,
-                FileContent = text,
-                FileName = fileName,
-                LastModifyTime = lastModifyTime,
-            };
-
-        }
-
-
-
     }
 }

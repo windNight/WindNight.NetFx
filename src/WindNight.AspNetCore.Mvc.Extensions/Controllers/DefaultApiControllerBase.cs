@@ -100,7 +100,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         protected virtual string QueryHeaderValue(string key, string defaultValue = "")
         {
             var value = Request.QueryHeaderValue(key, defaultValue);
-            if (!value.IsNullOrEmpty())
+            if (value.IsNotNullOrEmpty())
             {
                 value = value.UrlDecode();
             }

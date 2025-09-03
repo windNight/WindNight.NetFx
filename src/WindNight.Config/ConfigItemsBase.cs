@@ -1,6 +1,4 @@
-using System;
 using System.Globalization;
-using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
@@ -9,13 +7,11 @@ using WindNight.Core;
 using WindNight.Core.Abstractions;
 using WindNight.Core.ConfigCenter.Extensions;
 
-
 namespace WindNight.ConfigCenter.Extension
 {
     /// <summary>
-    ///  只给 执行 init 的实例使用 
+    ///     只给 执行 init 的实例使用
     /// </summary>
-
     public partial class ConfigItemsBase
     {
         protected const string ZeroString = ConstantKeys.ZeroString;
@@ -103,7 +99,11 @@ namespace WindNight.ConfigCenter.Extension
         private static string ReadFromConfig(Func<string, string, string> func, string configKey,
             string defaultValue = "", bool isThrow = false)
         {
-            if (configKey.IsNullOrEmpty()) return defaultValue;
+            if (configKey.IsNullOrEmpty())
+            {
+                return defaultValue;
+            }
+
             var configValue = string.Empty;
             try
             {
@@ -113,10 +113,15 @@ namespace WindNight.ConfigCenter.Extension
             {
                 LogHelper.Warn($"Read config({configKey}) handler error {ex.Message}", ex);
                 if (isThrow)
+                {
                     throw;
+                }
             }
 
-            if (configValue.IsNullOrEmpty() && !defaultValue.IsNullOrEmpty()) configValue = defaultValue;
+            if (configValue.IsNullOrEmpty() && defaultValue.IsNotNullOrEmpty())
+            {
+                configValue = defaultValue;
+            }
 
             return configValue;
         }
@@ -125,7 +130,11 @@ namespace WindNight.ConfigCenter.Extension
             DomainSwitchNodeType nodeType = DomainSwitchNodeType.Unknown, string defaultValue = "",
             bool isThrow = false)
         {
-            if (nodeName.IsNullOrEmpty() || nodeType == DomainSwitchNodeType.Unknown) return defaultValue;
+            if (nodeName.IsNullOrEmpty() || nodeType == DomainSwitchNodeType.Unknown)
+            {
+                return defaultValue;
+            }
+
             var configValue = string.Empty;
             try
             {
@@ -135,10 +144,15 @@ namespace WindNight.ConfigCenter.Extension
             {
                 LogHelper.Warn($"Read DomainConfig({nodeName}) handler error {ex.Message}", ex);
                 if (isThrow)
+                {
                     throw;
+                }
             }
 
-            if (configValue.IsNullOrEmpty() && !defaultValue.IsNullOrEmpty()) configValue = defaultValue;
+            if (configValue.IsNullOrEmpty() && defaultValue.IsNotNullOrEmpty())
+            {
+                configValue = defaultValue;
+            }
 
             return configValue;
         }
@@ -158,7 +172,10 @@ namespace WindNight.ConfigCenter.Extension
         protected static decimal GetAppSetting(string configKey, decimal defaultValue = 0M, bool isThrow = false)
         {
             var configValue = GetAppSetting(configKey, defaultValue.ToString(CultureInfo.InvariantCulture), isThrow);
-            if (decimal.TryParse(configValue, out var value)) return value;
+            if (decimal.TryParse(configValue, out var value))
+            {
+                return value;
+            }
 
             return defaultValue;
         }
@@ -166,7 +183,10 @@ namespace WindNight.ConfigCenter.Extension
         protected static int GetAppSetting(string configKey, int defaultValue = 0, bool isThrow = false)
         {
             var configValue = GetAppSetting(configKey, defaultValue.ToString(), isThrow);
-            if (int.TryParse(configValue, out var value)) return value;
+            if (int.TryParse(configValue, out var value))
+            {
+                return value;
+            }
 
             return defaultValue;
         }
@@ -174,7 +194,10 @@ namespace WindNight.ConfigCenter.Extension
         protected static long GetAppSetting(string configKey, long defaultValue = 0, bool isThrow = false)
         {
             var configValue = GetAppSetting(configKey, defaultValue.ToString(), isThrow);
-            if (long.TryParse(configValue, out var value)) return value;
+            if (long.TryParse(configValue, out var value))
+            {
+                return value;
+            }
 
             return defaultValue;
         }
@@ -182,7 +205,11 @@ namespace WindNight.ConfigCenter.Extension
         protected static bool GetAppSetting(string configKey, bool defaultValue = false, bool isThrow = false)
         {
             var configValue = GetAppSetting(configKey, "", isThrow);
-            if (configValue.IsNullOrEmpty()) return defaultValue;
+            if (configValue.IsNullOrEmpty())
+            {
+                return defaultValue;
+            }
+
             configValue = configValue.ToUpper();
 
             if (TrueStrings.Contains(configValue, StringComparer.OrdinalIgnoreCase))
@@ -215,7 +242,9 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="isThrow"></param>
         /// <returns></returns>
         protected static string GetConfigValue(string configKey, bool isThrow = true)
-            => GetAppSetting(configKey, "", isThrow);
+        {
+            return GetAppSetting(configKey, "", isThrow);
+        }
 
         /// <summary>
         /// </summary>
@@ -224,7 +253,9 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="isThrow"></param>
         /// <returns></returns>
         protected static string GetConfigValue(string configKey, string defaultValue = "", bool isThrow = true)
-            => GetAppSetting(configKey, defaultValue, isThrow);
+        {
+            return GetAppSetting(configKey, defaultValue, isThrow);
+        }
 
         /// <summary>
         /// </summary>
@@ -233,7 +264,9 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="isThrow"></param>
         /// <returns></returns>
         protected static int GetConfigValue(string configKey, int defaultValue = 0, bool isThrow = true)
-            => GetAppSetting(configKey, defaultValue.ToString(), isThrow).ToInt(defaultValue);
+        {
+            return GetAppSetting(configKey, defaultValue.ToString(), isThrow).ToInt(defaultValue);
+        }
 
         /// <summary>
         /// </summary>
@@ -242,7 +275,9 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="isThrow"></param>
         /// <returns></returns>
         protected static long GetConfigValue(string configKey, long defaultValue = 0L, bool isThrow = true)
-            => GetAppSetting(configKey, defaultValue.ToString(), isThrow).ToLong(defaultValue);
+        {
+            return GetAppSetting(configKey, defaultValue.ToString(), isThrow).ToLong(defaultValue);
+        }
 
         /// <summary>
         /// </summary>
@@ -250,9 +285,11 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="defaultValue"></param>
         /// <param name="isThrow"></param>
         /// <returns></returns>
-        protected static decimal GetConfigValue(string configKey, decimal defaultValue = 0M, bool isThrow = true) =>
-            GetAppSetting(configKey, defaultValue.ToString(), isThrow)
+        protected static decimal GetConfigValue(string configKey, decimal defaultValue = 0M, bool isThrow = true)
+        {
+            return GetAppSetting(configKey, defaultValue.ToString(), isThrow)
                 .ToDecimal(defaultValue);
+        }
 
         /// <summary>
         /// </summary>
@@ -261,7 +298,9 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="isThrow"></param>
         /// <returns></returns>
         protected static bool GetConfigValue(string configKey, bool defaultValue, bool isThrow)
-            => GetAppSetting(configKey, defaultValue, isThrow);
+        {
+            return GetAppSetting(configKey, defaultValue, isThrow);
+        }
 
         #endregion //end AppSetting
 
@@ -278,7 +317,11 @@ namespace WindNight.ConfigCenter.Extension
             var configValue = GetJsonConfig(fileKey, defaultValue, isThrow);
 
             // 可能的 null 引用返回。
-            if (configValue.IsNullOrEmpty()) return default;
+            if (configValue.IsNullOrEmpty())
+            {
+                return default;
+            }
+
             return configValue.To<T>();
             // 可能的 null 引用返回。
         }
@@ -311,7 +354,11 @@ namespace WindNight.ConfigCenter.Extension
         public static T GetSectionValue<T>(string sectionKey = "", T defaultValue = default, bool isThrow = false)
             where T : class, new()
         {
-            if (defaultValue == null) defaultValue = new T();
+            if (defaultValue == null)
+            {
+                defaultValue = new T();
+            }
+
             try
             {
                 if (sectionKey.IsNullOrEmpty())
@@ -325,7 +372,9 @@ namespace WindNight.ConfigCenter.Extension
             {
                 LogHelper.Warn($"GetSection({sectionKey}) handler error {ex.Message}", ex);
                 if (isThrow)
+                {
                     throw;
+                }
             }
 
             return defaultValue;
@@ -333,7 +382,11 @@ namespace WindNight.ConfigCenter.Extension
 
         public static T GetSectionConfigValue<T>(string sectionKey, T defaultValue = default, bool isThrow = false)
         {
-            if (defaultValue == null) defaultValue = default;
+            if (defaultValue == null)
+            {
+                defaultValue = default;
+            }
+
             try
             {
                 var config = Ioc.GetService<IConfiguration>();
@@ -343,7 +396,9 @@ namespace WindNight.ConfigCenter.Extension
             {
                 LogHelper.Warn($"GetSection({sectionKey}) handler error {ex.Message}", ex);
                 if (isThrow)
+                {
                     throw;
+                }
             }
 
             return defaultValue;
@@ -351,19 +406,13 @@ namespace WindNight.ConfigCenter.Extension
 
 
 #endif
-
-
-
     }
-
 
 
 #if NET45LATER
 
     public partial class ConfigItemsBase
     {
-
-
         public static DomainConfigs DomainConfigs => GetSectionValue<DomainConfigs>() ?? new DomainConfigs();
 
 
@@ -375,15 +424,11 @@ namespace WindNight.ConfigCenter.Extension
 
         public static DomainConfigDto QueryDomainInfoConfig(string domainName)
         {
-            var config = DomainConfigs.Items.FirstOrDefault(m => m.Name.Equals(domainName, StringComparison.OrdinalIgnoreCase));
+            var config =
+                DomainConfigs.Items.FirstOrDefault(m => m.Name.Equals(domainName, StringComparison.OrdinalIgnoreCase));
             return config;
         }
-
-
-
     }
 
 #endif
-
-
 }

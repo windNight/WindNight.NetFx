@@ -62,7 +62,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                     //{
                     //    mvcOption.Invoke(options);
                     //}
-                    if (!actionFilters.IsNullOrEmpty())
+                    if (actionFilters.IsNotNullOrEmpty())
                     {
                         foreach (var actionFilter in actionFilters.Distinct())
                         {

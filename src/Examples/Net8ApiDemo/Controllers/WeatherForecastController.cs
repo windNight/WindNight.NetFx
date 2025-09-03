@@ -9,6 +9,7 @@ using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Attributes.Abstractions;
+using WindNight.Core.Tools;
 using WindNight.Extension;
 using WindNight.Extension.Logger.DcLog.Extensions;
 using WindNight.LogExtension;
@@ -47,7 +48,7 @@ namespace Net8ApiDemo.Controllers
             if (httpRequest.Headers.TryGetValue(headerName, out var requestHeader))
             {
                 var header = requestHeader.FirstOrDefault();
-                if (!header.IsNullOrEmpty())
+                if (header.IsNotNullOrEmpty())
                 {
                     return header.Trim();
                 }
@@ -182,13 +183,39 @@ namespace Net8ApiDemo.Controllers
             return new { allHeaderData, signData, rangeData };
         }
 
+        [HttpGet("tt/task")]
+        [NonAuth]
+        public object TestTask([FromQuery] TIn req = null)
+        {
+            var signData = new Dictionary<string, string>();
+
+            foreach (var item in SignDict)
+            {
+                var data = GetHeaderData(Request, item.Key);
+                signData.Add(item.Key, data);
+            }
+
+            var rangeData = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)],
+            })
+                .ToArray();
+            var allHeaderData = GetAllHeaderData(Request);
+            SafeTask.Run(() => throw new InvalidOperationException("Test error"), "").ConfigureAwait(false);
+            SafeTask.Run(() => throw new InvalidOperationException("Test error"), "");
+
+            return new { allHeaderData, signData, rangeData };
+        }
+
         [HttpGet("loghelper")]
         public object TestLogHelper()
         {
             var testMsg =
-                "sql执行报错   MySql.Data.MySqlClient.MySqlException (0x80004005): Unknown column 'CommunityId' in 'field list'\n   at MySql.Data.MySqlClient.MySqlStream.ReadPacketAsync(Boolean execAsync)\n   at MySql.Data.MySqlClient.NativeDriver.GetResultAsync(Int32 affectedRow, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.GetResultAsync(Int32 statementId, Int32 affectedRows, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.NextResultAsync(Int32 statementId, Boolean force, Boolean execAsync)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQueryAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()\n   at Dapper.SqlMapper.ExecuteCommand(IDbConnection cnn, CommandDefinition& command, Action`2 paramReader) in /_/Dapper/SqlMapper.cs:line 2994\n   at Dapper.SqlMapper.ExecuteImpl(IDbConnection cnn, CommandDefinition& command) in /_/Dapper/SqlMapper.cs:line 685\n   at Dapper.SqlMapper.Execute(IDbConnection cnn, String sql, Object param, IDbTransaction transaction, Nullable`1 commandTimeout, Nullable`1 commandType) in /_/Dapper/SqlMapper.cs:line 556\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.Execute(String connStr, String sql, Object param, Action`2 execErrorHandler)\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.SqlTimer[T](Func`5 sqlFunc, String connectString, String sql, Object param, String actionName, Int64 warnMs, Action`2 execErrorHandler, Boolean isDebug)\n\nMySql.Data.MySqlClient.MySqlException (0x80004005): Unknown column 'CommunityId' in 'field list'\n   at MySql.Data.MySqlClient.MySqlStream.ReadPacketAsync(Boolean execAsync)\n   at MySql.Data.MySqlClient.NativeDriver.GetResultAsync(Int32 affectedRow, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.GetResultAsync(Int32 statementId, Int32 affectedRows, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.NextResultAsync(Int32 statementId, Boolean force, Boolean execAsync)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQueryAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()\n   at Dapper.SqlMapper.ExecuteCommand(IDbConnection cnn, CommandDefinition& command, Action`2 paramReader) in /_/Dapper/SqlMapper.cs:line 2994\n   at Dapper.SqlMapper.ExecuteImpl(IDbConnection cnn, CommandDefinition& command) in /_/Dapper/SqlMapper.cs:line 685\n   at Dapper.SqlMapper.Execute(IDbConnection cnn, String sql, Object param, IDbTransaction transaction, Nullable`1 commandTimeout, Nullable`1 commandType) in /_/Dapper/SqlMapper.cs:line 556\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.Execute(String connStr, String sql, Object param, Action`2 execErrorHandler)\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.SqlTimer[T](Func`5 sqlFunc, String connectString, String sql, Object param, String actionName, Int64 warnMs, Action`2 execErrorHandler, Boolean isDebug)";
+                "sql执行报错   MySql.Data.MySqlClient.MySqlException (0x80004005): Unknown column 'xxxxId' in 'field list'\n   at MySql.Data.MySqlClient.MySqlStream.ReadPacketAsync(Boolean execAsync)\n   at MySql.Data.MySqlClient.NativeDriver.GetResultAsync(Int32 affectedRow, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.GetResultAsync(Int32 statementId, Int32 affectedRows, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.NextResultAsync(Int32 statementId, Boolean force, Boolean execAsync)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQueryAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()\n   at Dapper.SqlMapper.ExecuteCommand(IDbConnection cnn, CommandDefinition& command, Action`2 paramReader) in /_/Dapper/SqlMapper.cs:line 2994\n   at Dapper.SqlMapper.ExecuteImpl(IDbConnection cnn, CommandDefinition& command) in /_/Dapper/SqlMapper.cs:line 685\n   at Dapper.SqlMapper.Execute(IDbConnection cnn, String sql, Object param, IDbTransaction transaction, Nullable`1 commandTimeout, Nullable`1 commandType) in /_/Dapper/SqlMapper.cs:line 556\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.Execute(String connStr, String sql, Object param, Action`2 execErrorHandler)\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.SqlTimer[T](Func`5 sqlFunc, String connectString, String sql, Object param, String actionName, Int64 warnMs, Action`2 execErrorHandler, Boolean isDebug)\n\nMySql.Data.MySqlClient.MySqlException (0x80004005): Unknown column 'CommunityId' in 'field list'\n   at MySql.Data.MySqlClient.MySqlStream.ReadPacketAsync(Boolean execAsync)\n   at MySql.Data.MySqlClient.NativeDriver.GetResultAsync(Int32 affectedRow, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.GetResultAsync(Int32 statementId, Int32 affectedRows, Int64 insertedId, Boolean execAsync)\n   at MySql.Data.MySqlClient.Driver.NextResultAsync(Int32 statementId, Boolean force, Boolean execAsync)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResultAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQueryAsync(Boolean execAsync, CancellationToken cancellationToken)\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()\n   at Dapper.SqlMapper.ExecuteCommand(IDbConnection cnn, CommandDefinition& command, Action`2 paramReader) in /_/Dapper/SqlMapper.cs:line 2994\n   at Dapper.SqlMapper.ExecuteImpl(IDbConnection cnn, CommandDefinition& command) in /_/Dapper/SqlMapper.cs:line 685\n   at Dapper.SqlMapper.Execute(IDbConnection cnn, String sql, Object param, IDbTransaction transaction, Nullable`1 commandTimeout, Nullable`1 commandType) in /_/Dapper/SqlMapper.cs:line 556\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.Execute(String connStr, String sql, Object param, Action`2 execErrorHandler)\n   at WindNight.Extension.Dapper.Mysql.MySqlBase.SqlTimer[T](Func`5 sqlFunc, String connectString, String sql, Object param, String actionName, Int64 warnMs, Action`2 execErrorHandler, Boolean isDebug)";
 
-            var ex = new MySqlException(" (0x80004005): Unknown column 'CommunityId' in 'field list'");
+            var ex = new MySqlException(" (0x80004005): Unknown column 'xxxxId' in 'field list'");
             DcLogHelper.Error(testMsg, ex);
 
             return true;

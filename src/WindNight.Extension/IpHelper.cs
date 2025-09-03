@@ -1,14 +1,3 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Threading;
-using WindNight.Core.Abstractions;
-using WindNight.Core.Extension;
-using WindNight.Linq.Extensions.Expressions;
-
 #if NETFRAMEWORK
 using System.Web;
 using System.Runtime.Remoting.Messaging;
@@ -16,6 +5,8 @@ using System.Runtime.Remoting.Messaging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 #endif
+using WindNight.Core.Extension;
+
 namespace WindNight.Extension
 {
     public class IPHelper
@@ -27,7 +18,7 @@ namespace WindNight.Extension
 
         public static List<string> LocalServerIps = HardInfo.GetLocalIps().ToList();
         public static string LocalServerIp = HardInfo.GetLocalIp().IpV6ToIpV4() ?? "";
-        public static string LocalServerIpsString = LocalServerIps.Join(",");
+        public static string LocalServerIpsString = LocalServerIps.Join();
 
         public static string GetLocalServerIp()
         {
@@ -146,9 +137,6 @@ namespace WindNight.Extension
         }
 
 
-
-
-
         public static HttpContext? GetHttpContext()
         {
             HttpContext? context = null;
@@ -164,13 +152,12 @@ namespace WindNight.Extension
 
         #region =====Private =====
 
-
         private static Dictionary<string, string> GetHeaderDict(HttpContext context)
         {
             var headerDict = new Dictionary<string, string>();
 #if !NETFRAMEWORK
 
-            var validIPKeys = new[] { "X-Real-IP", "HTTP_X_REAL_IP", "x-forwarded-for", "REMOTE_ADDR", };
+            var validIPKeys = new[] { "X-Real-IP", "HTTP_X_REAL_IP", "x-forwarded-for", "REMOTE_ADDR" };
             foreach (var item in context.Request.Headers.Where(m => validIPKeys.Contains(m.Key)))
             {
                 headerDict.Add(item.Key, item.Value);
@@ -199,15 +186,16 @@ namespace WindNight.Extension
             var ip = string.Empty;
             var timKey = new[]
             {
-                "HTTP_X_REAL_IP",
-                "X-Real-IP",
-                "x-forwarded-for",
-                "HTTP_X_FORWARDED_FOR",
-                "REMOTE_ADDR",
+                "HTTP_X_REAL_IP", "X-Real-IP", "x-forwarded-for", "HTTP_X_FORWARDED_FOR", "REMOTE_ADDR",
             };
             foreach (var key in timKey)
-                if (headerDict.TryGetValue(key, out ip) && !ip.IsNullOrEmpty())
+            {
+                if (headerDict.TryGetValue(key, out ip) && ip.IsNotNullOrEmpty())
+                {
                     break;
+                }
+            }
+
             return ip;
         }
 

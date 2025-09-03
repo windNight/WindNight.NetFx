@@ -1,7 +1,4 @@
-using System.IO;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
-using System.Web;
 using WindNight.Core.@internal;
 
 namespace System.Security.Cryptography.Extensions
@@ -9,6 +6,8 @@ namespace System.Security.Cryptography.Extensions
     /// <summary>  </summary>
     public static class EncryptHelper
     {
+        private const long ThresholdSizeBytes = 10_485_760; // 10 MB threshold
+
         /// <summary>
         ///     Base64加密
         /// </summary>
@@ -21,6 +20,7 @@ namespace System.Security.Cryptography.Extensions
             {
                 return str;
             }
+
             try
             {
                 return str.ToBytes().ToBase64String();
@@ -44,6 +44,7 @@ namespace System.Security.Cryptography.Extensions
             {
                 return str;
             }
+
             try
             {
                 return BytesExtension.FromBase64String(str).ToGetString(encoding);
@@ -64,7 +65,11 @@ namespace System.Security.Cryptography.Extensions
         [Obsolete("Please Use Base64Encrypt", true)]
         public static string ToBase64String(this string str, Encoding encoding = null)
         {
-            if (str.IsNullOrEmpty()) return str;
+            if (str.IsNullOrEmpty())
+            {
+                return str;
+            }
+
             try
             {
                 return str.ToBytes().ToBase64String();
@@ -85,7 +90,11 @@ namespace System.Security.Cryptography.Extensions
         [Obsolete("Please Use Base64Decrypt", true)]
         public static string FromBase64String(this string str, Encoding encoding = null)
         {
-            if (str.IsNullOrEmpty()) return str;
+            if (str.IsNullOrEmpty())
+            {
+                return str;
+            }
+
             try
             {
                 return BytesExtension.FromBase64String(str).ToGetString(encoding);
@@ -108,6 +117,7 @@ namespace System.Security.Cryptography.Extensions
             {
                 encoding = Encoding.UTF8;
             }
+
             var bs = encoding.GetBytes(text);
             return bs.Md5Encrypt();
         }
@@ -122,7 +132,6 @@ namespace System.Security.Cryptography.Extensions
 
             using (var md5 = new MD5CryptoServiceProvider())
             {
-
                 var bs2 = md5.ComputeHash(bs);
                 var s = new StringBuilder();
 
@@ -139,22 +148,20 @@ namespace System.Security.Cryptography.Extensions
 
         public static string Md5Encrypt(this Stream stream)
         {
-
             var result = "";
 
             if (stream == null)
+            {
                 throw new ArgumentNullException(nameof(stream));
+            }
 
             using (var md5 = new MD5CryptoServiceProvider())
             {
-
                 // Save the current stream position and reset it afterward
-                long originalPosition = stream.Position;
+                var originalPosition = stream.Position;
                 stream.Position = 0;
                 try
                 {
-
-
                     var bs = md5.ComputeHash(stream);
                     var s = new StringBuilder();
 
@@ -174,7 +181,7 @@ namespace System.Security.Cryptography.Extensions
 
             return result.ToLower();
         }
-        private const long ThresholdSizeBytes = 10_485_760; // 10 MB threshold
+
         public static string Md5EncryptForBigFile(this Stream stream)
         {
             if (stream == null)
@@ -184,21 +191,20 @@ namespace System.Security.Cryptography.Extensions
 
             using (var md5 = MD5.Create())
             {
-                long originalPosition = stream.Position;
+                var originalPosition = stream.Position;
                 stream.Position = 0;
 
                 try
                 {
-
-
-                    byte[] buffer = new byte[8192]; // 8KB buffer
+                    var buffer = new byte[8192]; // 8KB buffer
                     int bytesRead;
                     while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
                     {
                         md5.TransformBlock(buffer, 0, bytesRead, buffer, 0);
                     }
+
                     md5.TransformFinalBlock(buffer, 0, 0);
-                    byte[] hash = md5.Hash;
+                    var hash = md5.Hash;
                     var sb = new StringBuilder();
 
                     foreach (var b in hash)
@@ -300,6 +306,7 @@ namespace System.Security.Cryptography.Extensions
                 {
                     encoding = Encoding.UTF8;
                 }
+
                 return encoding.GetString(desDecryBytes);
             }
             catch (Exception ex)
@@ -322,11 +329,13 @@ namespace System.Security.Cryptography.Extensions
                 {
                     hexString += " ";
                 }
+
                 var returnBytes = new byte[hexString.Length / 2];
                 for (var i = 0; i < returnBytes.Length; i++)
                 {
                     returnBytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
                 }
+
                 return returnBytes;
             }
             catch (Exception ex)
@@ -345,12 +354,10 @@ namespace System.Security.Cryptography.Extensions
         }
 
 
-
         public static string CalcDingTalkSign(long ts, string signKey)
         {
             try
             {
-
                 var stringToSign = $"{ts}\n{signKey}"; //ts + "\n" + signKey;
                 var hmacsha256 = DoHmacSha256Sign(stringToSign, signKey);
                 var sign = hmacsha256.UrlEncode();
@@ -362,7 +369,6 @@ namespace System.Security.Cryptography.Extensions
                 LogHelper.Error($"MakeDingTalkSign Handler Error {ex.Message}", ex);
                 return "";
             }
-
         }
 
         public static string DoHmacSha256Sign(this string text, string signKey, Encoding encoding = null)
@@ -377,6 +383,7 @@ namespace System.Security.Cryptography.Extensions
             var hashBytes = hmacsha256.ComputeHash(dataBuffer);
             return hashBytes.ToBase64String();
         }
+
         public static string DoHmacSha384Sign(this string text, string signKey, Encoding encoding = null)
         {
             if (encoding == null)
@@ -389,6 +396,7 @@ namespace System.Security.Cryptography.Extensions
             var hashBytes = hmacsha256.ComputeHash(dataBuffer);
             return hashBytes.ToBase64String();
         }
+
         public static string DoHmacSha512Sign(this string text, string signKey, Encoding encoding = null)
         {
             if (encoding == null)
@@ -401,6 +409,7 @@ namespace System.Security.Cryptography.Extensions
             var hashBytes = hmacsha256.ComputeHash(dataBuffer);
             return hashBytes.ToBase64String();
         }
+
         public static string DoHmacMD5Sign(this string text, string signKey, Encoding encoding = null)
         {
             if (encoding == null)
@@ -413,12 +422,14 @@ namespace System.Security.Cryptography.Extensions
             var hashBytes = hmacsha256.ComputeHash(dataBuffer);
             return hashBytes.ToBase64String();
         }
+
         public static string DoHmacSha1Sign(this string text, string signKey, Encoding encoding = null)
         {
             if (encoding == null)
             {
                 encoding = Encoding.UTF8;
             }
+
             var hmacsha1 = new HMACSHA1(signKey.ToBytes(encoding));
             var dataBuffer = text.ToBytes(encoding);
             var hashBytes = hmacsha1.ComputeHash(dataBuffer);
@@ -445,6 +456,5 @@ namespace System.Security.Cryptography.Extensions
         //    }
 
         //}
-
     }
 }

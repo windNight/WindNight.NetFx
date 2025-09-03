@@ -1,30 +1,11 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Cryptography.Extensions;
-using System.Threading;
-
-using Newtonsoft.Json.Extension;
-using WindNight.Config.@internal;
-using WindNight.ConfigCenter.Extension.@internal;
-using WindNight.Core;
-using WindNight.Linq.Extensions.Expressions;
-
 #if NET45
 using System.Configuration;
-
 #else
-
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Extensions;
-using Newtonsoft.Json.Linq;
-using System.Collections;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
-
 #endif
+using System.Collections.Concurrent;
+using WindNight.ConfigCenter.Extension.@internal;
 
 namespace WindNight.ConfigCenter.Extension
 {
@@ -33,25 +14,8 @@ namespace WindNight.ConfigCenter.Extension
     /// </summary>
     internal partial class ConfigProvider
     {
-#if !NET45
-        private static IConfiguration? _configuration;
-
-        //public void SetConfiguration()
-        //{
-        //    _configuration = Ioc.GetService<IConfiguration>();
-        //}
-
-        public void SetConfiguration(IConfiguration configuration = null)
-        {
-            _configuration = configuration ?? Ioc.GetService<IConfiguration>();
-        }
-
-#endif
-
         private static readonly object LockJson = new object();
         //private static readonly object LockDW = new object();
-
-
 
 
         private static ConcurrentDictionary<string, DateTime> configUpdateTime { get; set; } =
@@ -64,7 +28,6 @@ namespace WindNight.ConfigCenter.Extension
 
         private static string ConfigPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config");
 
-      
 
         public Dictionary<string, DateTime> ConfigUpdateTime => configUpdateTime.ToDictionary(m => m.Key, p => p.Value);
 
@@ -103,8 +66,6 @@ namespace WindNight.ConfigCenter.Extension
         }
 
 
-
-
         /// <summary>
         ///     加载配置
         /// </summary>
@@ -114,7 +75,11 @@ namespace WindNight.ConfigCenter.Extension
             {
                 try
                 {
-                    if (!configName.IsNullOrEmpty()) return LoadConfigByFileName(configName);
+                    if (configName.IsNotNullOrEmpty())
+                    {
+                        return LoadConfigByFileName(configName);
+                    }
+
                     return LoadAllConfig();
                 }
                 catch (Exception ex)
@@ -124,6 +89,20 @@ namespace WindNight.ConfigCenter.Extension
                 }
             }
         }
+#if !NET45
+        private static IConfiguration? _configuration;
+
+        //public void SetConfiguration()
+        //{
+        //    _configuration = Ioc.GetService<IConfiguration>();
+        //}
+
+        public void SetConfiguration(IConfiguration configuration = null)
+        {
+            _configuration = configuration ?? Ioc.GetService<IConfiguration>();
+        }
+
+#endif
 
 
         ///// <summary>
@@ -159,10 +138,5 @@ namespace WindNight.ConfigCenter.Extension
         //        }
         //    }
         //}
-
-
-
-
-
     }
 }

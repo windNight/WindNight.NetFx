@@ -18,14 +18,14 @@ namespace WindNight.Core
 
         public const string AuthorizationTypeKey = "Bearer";
 
-        public const string USER_AGENT_KEY = "User-Agent";
+        public const string UserAgentKey = "User-Agent";
 
         public const string AppEnvNameKey = "EnvName";
 
         public const string ReqTraceIdKey = "ReqTraceId";
 
 
-        public const string Http_Plugin_Key = "Plugin-HttpHelper";
+        public const string HttpPluginKey = "Plugin-HttpHelper";
 
         public const string SvrCenterDomainConfigKey = "SvrCenter";
 
@@ -38,9 +38,6 @@ namespace WindNight.Core
 
         public const bool ObsoleteFalse = false;
 
-        public static readonly string[] TrueStrings = { "是", "1", bool.TrueString.ToUpper(), "T", "YES", "Y" };
-
-        public static readonly string[] FalseStrings = { "否", "0", bool.FalseString.ToUpper(), "F", "NO", "N" };
 
         public const string ZeroString = "0";
 
@@ -52,6 +49,9 @@ namespace WindNight.Core
 
         public const decimal ZeroDecimal = 0m;
 
+        public static readonly string[] TrueStrings = { "是", "1", bool.TrueString.ToUpper(), "T", "YES", "Y" };
+
+        public static readonly string[] FalseStrings = { "否", "0", bool.FalseString.ToUpper(), "F", "NO", "N" };
 
 
     }

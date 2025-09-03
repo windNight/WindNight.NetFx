@@ -215,7 +215,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             }
             if (res.Success)
             {
-                if (!res.SvrToken.IsNullOrEmpty())
+                if (res.SvrToken.IsNotNullOrEmpty())
                 {
                     if (SvrCenterRegisterInfo == null)
                     {

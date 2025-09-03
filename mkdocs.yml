@@ -1,0 +1,181 @@
+site_name: WindNight.NetFx
+site_description: A comprehensive .NET library ecosystem providing foundational components for building scalable applications
+site_url: https://windnight.github.io/WindNight.NetFx
+repo_url: https://github.com/windNight/WindNight.NetFx
+repo_name: windNight/WindNight.NetFx
+
+# Build directories
+site_dir: site
+docs_dir: docs
+
+# Theme configuration
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: white
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: black
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - search.highlight
+    - content.code.copy
+
+# Navigation structure
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Overview: getting-started/overview.md
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quick-start.md
+  - Core Libraries:
+    - WindNight.Core: core-libraries/core.md
+    - WindNight.Extension: core-libraries/extension.md
+    - WindNight.Config: core-libraries/config.md
+  - ASP.NET Core:
+    - Hosting: aspnetcore/hosting.md
+    - MVC Extensions: aspnetcore/mvc-extensions.md
+    - gRPC Hosting: aspnetcore/grpc-hosting.md
+    - gRPC HTTP API: aspnetcore/grpc-http-api.md
+    - gRPC Swagger: aspnetcore/grpc-swagger.md
+  - Data Access:
+    - Overview: data-access/overview.md
+    - Database Abstractions: data-access/abstractions.md
+    - Dapper Extensions: data-access/dapper.md
+    - SQL Server: data-access/mssql.md
+    - MySQL: data-access/mysql.md
+    - Repository Patterns: data-access/repository-patterns.md
+  - Infrastructure:
+    - RabbitMQ: infrastructure/rabbitmq.md
+    - Background Services: infrastructure/background-services.md
+    - Job Scheduling: infrastructure/job-scheduling.md
+  - Logging:
+    - Overview: logging/overview.md
+    - Log Helper: logging/log-helper.md
+    - Database Logging: logging/database-logging.md
+    - Log Store: logging/log-store.md
+  - Extensions:
+    - Swagger Extensions: extensions/swagger.md
+    - Data Source Test Tool: extensions/data-source-test-tool.md
+    - ReSharper Emoji Plugin: extensions/resharper-emoji.md
+  - Examples:
+    - Console Applications: examples/console.md
+    - Web API: examples/web-api.md
+    - gRPC Services: examples/grpc.md
+    - RabbitMQ: examples/rabbitmq.md
+    - Job Scheduling: examples/job-scheduling.md
+  - API Reference:
+    - Core API: api/core.md
+    - Extension API: api/extension.md
+    - Configuration API: api/config.md
+    - Data Access API: api/data-access.md
+    - Web API: api/web.md
+  - Contributing:
+    - Development Setup: contributing/setup.md
+    - Build System: contributing/build.md
+    - Testing: contributing/testing.md
+    - Coding Standards: contributing/standards.md
+  - Changelog: changelog.md
+
+# Extensions
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: windNight
+      repo: WindNight.NetFx
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - includes/mkdocs.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+  - git-committers:
+      repository: windNight/WindNight.NetFx
+      branch: master
+
+# Additional configuration
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/windNight/WindNight.NetFx
+    - icon: fontawesome/solid/cube
+      link: https://www.nuget.org/profiles/windnight
+      name: NuGet Packages
+
+# Copyright
+copyright: Copyright &copy; 2024 windNight. Built with Material for MkDocs.
+
+# Watch additional files
+watch:
+  - README-NuGet.md
+  - ReadMe.md
+  - CLAUDE.md
+
+# Extra CSS and JavaScript
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

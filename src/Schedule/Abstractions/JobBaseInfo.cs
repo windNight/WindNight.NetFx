@@ -1,17 +1,8 @@
 using System;
+using WindNight.Core.Abstractions;
 
 namespace Schedule.Abstractions
 {
-
-    public interface IJobBaseInfo
-    {
-        string JobId { get; set; }
-        string JobName { get; set; }
-        string JobCode { get; set; }
-        long JobExecTs { get; set; }
-        string ExecTag { get; set; }
-        string ToString(bool needAppend);
-    }
 
     public class JobBaseInfo : IJobBaseInfo
     {

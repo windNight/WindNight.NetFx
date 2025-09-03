@@ -16,7 +16,7 @@ namespace WindNight.Core.Abstractions
 
         public virtual void SetSvrBuildInfoDict(IReadOnlyDictionary<string, object> dict)
         {
-            if (!dict.IsNullOrEmpty())
+            if (dict.IsNotNullOrEmpty())
             {
                 SvrBuildInfoDict = dict;
             }

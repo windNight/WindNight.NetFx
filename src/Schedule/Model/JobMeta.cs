@@ -86,9 +86,19 @@ namespace Schedule.Model
         public bool IsDoNotice { set; get; } = true;
 
         /// <summary>
-        ///  是否记录job的生命周期 默认true
+        ///  是否日志记录job的生命周期 默认true
         /// </summary>
         public bool IsLogJobLC { set; get; } = true;
+
+        /// <summary>
+        ///   是否持久化记录job的生命周期 默认true
+        /// </summary>
+        public bool IsStoreJobLC { set; get; } = true;
+
+        /// <summary>
+        ///  耗时  n 秒后 报警 默认 300秒    
+        /// </summary>
+        public long JobWarnTs { set; get; } = 300L;
 
         /// <summary>
         ///  是否可以进行冒烟测试,默认 false, 只是个标记 如果需要执行冒烟测试 测试内容由业务方实现

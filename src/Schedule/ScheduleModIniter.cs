@@ -147,7 +147,7 @@ namespace Schedule
 
                 var msg1 = $"成功创建Job[{todoJobs.Count}]个：[{todoJobs.Select(m => m.ReadJobParam().ToString()).Join(" , ")}]";
                 JobLogHelper.Info(msg1, nameof(Init));
-                if (!skipJobs.IsNullOrEmpty())
+                if (skipJobs.IsNotNullOrEmpty())
                 {
                     var msg2 = $"跳过创建Job[{skipJobs.Count}]个：{skipJobs.Select(m => m.JobCode).Join(" | ")}";
                     JobLogHelper.Warn(msg2, actionName: nameof(Init));
@@ -237,7 +237,7 @@ namespace Schedule
 
                 var msg1 = $"成功创建Job[{todoJobs.Count}]个：[{todoJobs.Select(m => m.ReadJobParam().ToString()).Join(" , ")}]";
                 JobLogHelper.Info(msg1, nameof(Init));
-                if (!skipJobs.IsNullOrEmpty())
+                if (skipJobs.IsNotNullOrEmpty())
                 {
                     var msg2 = $"跳过创建Job[{skipJobs.Count}]个：{skipJobs.Select(m => m.JobCode).Join(" | ")}";
                     JobLogHelper.Warn(msg2, actionName: nameof(Init));

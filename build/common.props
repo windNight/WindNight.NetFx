@@ -1,6 +1,7 @@
 <Project>
 	<Import Project="version.props" />
 	<Import Project="build.props" />
+
 	<PropertyGroup>
 		<Authors> windnight</Authors>
 		<Product> </Product>
@@ -31,7 +32,7 @@
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 		<PackageIconUrl>https://avatars0.githubusercontent.com/u/11327494?s=200&amp;v=4</PackageIconUrl>
 		<!--<PackageIcon>https://avatars0.githubusercontent.com/u/11327494?s=200&amp;v=4</PackageIcon>-->
- 
+
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Nullable>enable</Nullable>
 		<LangVersion>preview</LangVersion>
@@ -56,9 +57,12 @@
 			<PackagePath>lib\$(TargetFramework)</PackagePath>
 		</Content>
 	</ItemGroup>
+
+
 	<ItemGroup>
 		<Content Remove="bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml" />
 	</ItemGroup>
+
 	<!-- 其他非 Debug 配置的设置 -->
 
 	<!--

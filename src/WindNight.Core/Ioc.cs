@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using WindNight.Core.Abstractions;
@@ -81,7 +78,11 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         /// <returns> A service object of type T or null if there is no such service. </returns>
         public static T GetService<T>(string? name = null)
         {
-            if (Instance.ServiceProvider == null) return default;
+            if (Instance.ServiceProvider == null)
+            {
+                return default;
+            }
+
             return Instance.ServiceProvider.GetService<T>(name);
         }
 
@@ -97,7 +98,11 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         /// <returns> A service object of type T or null if there is no such service. </returns>
         public static IEnumerable<T> GetServices<T>()
         {
-            if (Instance.ServiceProvider == null) return default;
+            if (Instance.ServiceProvider == null)
+            {
+                return default;
+            }
+
             return Instance.ServiceProvider.GetServices<T>();
         }
 
@@ -105,7 +110,6 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         {
             return !GetServices<T>().IsNullOrEmpty();
         }
-
 
 
 #endif
@@ -136,9 +140,12 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         /// <returns> A service object of type T or null if there is no such service. </returns>
         public static T GetService<T>(this IServiceProvider? serviceProvider, string? name)
         {
-            if (serviceProvider == null) return default;
+            if (serviceProvider == null)
+            {
+                return default;
+            }
 #if NETSTANDARD
-            if (!name.IsNullOrEmpty())
+            if (name.IsNotNullOrEmpty())
             {
                 var impls = serviceProvider.GetServices<T>();
                 foreach (var impl in impls)

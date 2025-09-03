@@ -54,7 +54,7 @@ namespace WindNight.Extension.Logger.DcLog
             var message = formatter(state, exception);
 
             var now = HardInfo.Now;
-            if (!message.IsNullOrEmpty() || exception != null)
+            if (message.IsNotNullOrEmpty() || exception != null)
             {
                 if (state is StateDataEntry stateEntry)
                 {

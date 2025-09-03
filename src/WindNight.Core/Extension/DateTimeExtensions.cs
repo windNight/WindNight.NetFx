@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 
 namespace System
 {
@@ -98,8 +96,10 @@ namespace System
         /// <param name="unixTime"></param>
         /// <param name="milliseconds"></param>
         /// <returns></returns>
-        public static int ConvertToTimeIntUseUnix(this long unixTime, bool milliseconds = true) =>
-            unixTime.ConvertToTimeUseUnix(milliseconds).ToDateInt();
+        public static int ConvertToTimeIntUseUnix(this long unixTime, bool milliseconds = true)
+        {
+            return unixTime.ConvertToTimeUseUnix(milliseconds).ToDateInt();
+        }
 
         /// <summary>
         ///     格式为 20150115的数字转成时间为 2015-01-15
@@ -130,13 +130,21 @@ namespace System
         {
             if (dateStr.Length != 8)
             {
-                if (DateTime.TryParse(dateStr, out var dateTime)) return dateTime;
+                if (DateTime.TryParse(dateStr, out var dateTime))
+                {
+                    return dateTime;
+                }
+
                 return null;
             }
 
             var newstr = dateStr.Insert(4, linkCode).Insert(7, linkCode);
             DateTime date;
-            if (DateTime.TryParse(newstr, out date)) return date;
+            if (DateTime.TryParse(newstr, out date))
+            {
+                return date;
+            }
+
             return null;
         }
 
@@ -167,12 +175,20 @@ namespace System
         {
             if (dateStr.Length != 8)
             {
-                if (DateTime.TryParse(dateStr, out var dateTime)) return dateTime;
+                if (DateTime.TryParse(dateStr, out var dateTime))
+                {
+                    return dateTime;
+                }
+
                 return DefaultDateTime;
             }
 
             var newsStr = TryToDateString(dateStr, linkCode);
-            if (DateTime.TryParse(newsStr, out var date)) return date;
+            if (DateTime.TryParse(newsStr, out var date))
+            {
+                return date;
+            }
+
             return defaultValue ?? DefaultDateTime;
         }
 
@@ -184,9 +200,21 @@ namespace System
         /// <returns></returns>
         public static string TryToDateString(this string dateStr, string linkCode = "-")
         {
-            if (dateStr.IsNullOrEmpty()) throw new ArgumentNullException(nameof(dateStr));
-            if (dateStr.Length < 8) dateStr = dateStr.PadRight(8, '0');
-            if (dateStr.Length > 8) dateStr = dateStr.Substring(0, 8);
+            if (dateStr.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(dateStr));
+            }
+
+            if (dateStr.Length < 8)
+            {
+                dateStr = dateStr.PadRight(8, '0');
+            }
+
+            if (dateStr.Length > 8)
+            {
+                dateStr = dateStr.Substring(0, 8);
+            }
+
             var newstr = dateStr.Insert(4, linkCode).Insert(7, linkCode);
             return newstr;
         }
@@ -197,8 +225,10 @@ namespace System
         /// <param name="dateInt"></param>
         /// <param name="linkCode"></param>
         /// <returns></returns>
-        public static string TryToDateString(this int dateInt, string linkCode = "-") =>
-            dateInt.ToString().TryToDateString(linkCode);
+        public static string TryToDateString(this int dateInt, string linkCode = "-")
+        {
+            return dateInt.ToString().TryToDateString(linkCode);
+        }
 
 
         /// <summary>
@@ -294,7 +324,10 @@ namespace System
             CalcCurrentYearWeekRange(this DateTime date, int year = 0)
         {
             if (year == 0)
+            {
                 year = date.Year;
+            }
+
             DateTime beginDate = new(year, 1, 1);
             var endDate = new DateTime(year + 1, 1, 1).AddDays(-1);
 
@@ -317,7 +350,10 @@ namespace System
             CalcDateRangeByWeek(this DateTime date, int week, int year = 0)
         {
             if (year == 0)
+            {
                 year = date.Year;
+            }
+
             DateTime firstDayOfYear = new(year, 1, 1);
 
             var dt = firstDayOfYear.AddDays((week - 1) * 7);
@@ -383,7 +419,10 @@ namespace System
         public static DateTime LastDayOfWeek(this DateTime date)
         {
             if (date.DayOfWeek == DayOfWeek.Sunday)
+            {
                 return date.Date;
+            }
+
             return date.Date.AddDays(7 - (int)date.DayOfWeek);
         }
 
@@ -540,8 +579,16 @@ namespace System
             }
 
             List<T> list = new();
-            if (beginDate > endDate) return list;
-            if (func == null) return list;
+            if (beginDate > endDate)
+            {
+                return list;
+            }
+
+            if (func == null)
+            {
+                return list;
+            }
+
             for (var i = beginDate; i < endDate; i = i.AddDays(1))
             {
                 var m = func.Invoke(i);
@@ -564,8 +611,16 @@ namespace System
 
             endDate = endDate.FirstDayOfMonth();
             List<T> list = new();
-            if (beginDate > endDate) return list;
-            if (func == null) return list;
+            if (beginDate > endDate)
+            {
+                return list;
+            }
+
+            if (func == null)
+            {
+                return list;
+            }
+
             for (var i = beginDate; i < endDate; i = i.AddMonths(1))
             {
                 var m = func.Invoke(i);
@@ -579,7 +634,11 @@ namespace System
             bool withLastDay = false, Func<DateTime, T> func = null)
         {
             var beginDate = beginDateInt.TryToDateTime();
-            if (beginDate == DefaultDateTime) return new List<T>();
+            if (beginDate == DefaultDateTime)
+            {
+                return new List<T>();
+            }
+
             return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, func);
         }
 
@@ -587,7 +646,10 @@ namespace System
             bool withLastDay = false, Func<DateTime, T> func = null)
         {
             var beginDate = beginDateInt.TryToDateTime();
-            if (beginDate == DefaultDateTime) return new List<T>();
+            if (beginDate == DefaultDateTime)
+            {
+                return new List<T>();
+            }
 
             var endDate = endDateInt == 0 ? HardInfo.Now.Date : endDateInt.TryToDateTime();
             if (endDate == DefaultDateTime)

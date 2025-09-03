@@ -206,7 +206,7 @@ namespace WindNight.RabbitMq
             ulong deliveryTag, string routingKey)
         {
             var doAck = true;
-            if (!string.IsNullOrEmpty(message))
+            if (!message.IsNotNullOrEmpty())
             {
                 try
                 {

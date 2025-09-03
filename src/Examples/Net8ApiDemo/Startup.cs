@@ -518,7 +518,10 @@ RunMachineName: {Environment.MachineName} <br/>
         }
 
 
-
+        public bool IsTestEnv(bool defaultValue = true)
+        {
+            return true;
+        }
 
 
     }

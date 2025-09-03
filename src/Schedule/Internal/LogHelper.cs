@@ -113,7 +113,7 @@ namespace Schedule.@internal
                 {
                     return;
                 }
-                if (!JobContext.JobId.IsNullOrEmpty() && CurrentItem.GetSerialNumber != JobContext.JobId)
+                if (JobContext.JobId.IsNotNullOrEmpty() && CurrentItem.GetSerialNumber != JobContext.JobId)
                 {
                     CurrentItem.AddSerialNumber(JobContext.JobId, true);
                 }

@@ -11,7 +11,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
     public static class HttpRequestExtension
     {
 
-        public static string GetUserAgentValue(this HttpRequest httpRequest) => httpRequest.QueryHeaderValue(ConstantKeys.USER_AGENT_KEY);
+        public static string GetUserAgentValue(this HttpRequest httpRequest) => httpRequest.QueryHeaderValue(ConstantKeys.UserAgentKey);
 
         public static string GetAppTokenValue(this HttpRequest httpRequest) => httpRequest.QueryHeaderValue(ConstantKeys.AppTokenKey);
 
@@ -65,7 +65,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
             if (httpRequest.Headers.TryGetValue(headerName, out var requestHeader))
             {
                 var header = requestHeader.FirstOrDefault();
-                if (!header.IsNullOrEmpty())
+                if (header.IsNotNullOrEmpty())
                 {
                     return header.Trim();
                 }

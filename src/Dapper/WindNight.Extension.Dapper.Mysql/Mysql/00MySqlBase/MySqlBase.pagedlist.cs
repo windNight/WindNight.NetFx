@@ -124,7 +124,7 @@ namespace WindNight.Extension.Dapper.Mysql
         protected virtual string GeneratorQueryCountSql(IQueryPageInfo sqlPageInfo)
         {
             var countSql = new StringBuilder($"SELECT COUNT(1) FROM {sqlPageInfo.TableName}");
-            if (!sqlPageInfo.SqlWhere.IsNullOrEmpty())
+            if (sqlPageInfo.SqlWhere.IsNotNullOrEmpty())
             {
                 countSql.Append($" WHERE {sqlPageInfo.SqlWhere}");
             }
@@ -135,12 +135,12 @@ namespace WindNight.Extension.Dapper.Mysql
         {
             var querySql = new StringBuilder($"SELECT {sqlPageInfo.Fields} FROM {sqlPageInfo.TableName}");
 
-            if (!sqlPageInfo.SqlWhere.IsNullOrEmpty())
+            if (sqlPageInfo.SqlWhere.IsNotNullOrEmpty())
             {
                 querySql.Append($" WHERE {sqlPageInfo.SqlWhere}");
             }
 
-            if (!sqlPageInfo.OrderField.IsNullOrEmpty())
+            if (sqlPageInfo.OrderField.IsNotNullOrEmpty())
             {
                 querySql.Append($" ORDER BY {sqlPageInfo.OrderField}");
             }

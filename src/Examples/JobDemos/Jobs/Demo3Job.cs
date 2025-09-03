@@ -36,7 +36,7 @@ namespace JobDemos.Jobs.Demo3
             // Console.WriteLine($"{HardInfo.Now:yyyy-MM-dd HH:mm:sss} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()}{Environment.NewLine}");
             $"End {HardInfo.NowString} I'm {jobBaseInfo.ToString(true)} {obj.ToJsonStr()}".Log2Console();
 
-            return await Task.FromResult(JobBusinessStateEnum.Fail);
+            return await Task.FromResult(JobBusinessStateEnum.Failed);
 
         }
     }

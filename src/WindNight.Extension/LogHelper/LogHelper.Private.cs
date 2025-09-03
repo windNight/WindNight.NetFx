@@ -73,7 +73,7 @@ namespace WindNight.LogExtension
             }
 
             var reqLogLevel = jo.SafeGetValue("level", "");
-            if (!reqLogLevel.IsNullOrEmpty())
+            if (reqLogLevel.IsNotNullOrEmpty())
             {
                 logLevel = reqLogLevel.Convert2LogLevel();
             }
@@ -137,7 +137,7 @@ namespace WindNight.LogExtension
                 if (logInfo.ServerIp.IsNullOrEmpty())
                 {
                     var ip = CurrentItem.GetItem<string>(ThreadContext.SERVERIP);
-                    if (!ip.IsNullOrEmpty()) //截取中间部分 用于显示端口
+                    if (ip.IsNotNullOrEmpty()) //截取中间部分 用于显示端口
                     {
                         // if (ip.Length > 32 && !is2Es) ip = ip.Replace(ip.Substring(5, 13), "***");
                     }

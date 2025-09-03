@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace WindNight.ConfigCenter.Extension
 {
     internal partial class ConfigCenterContext
@@ -28,7 +24,7 @@ namespace WindNight.ConfigCenter.Extension
                     {
                         Path = key,
                         Value = CurrentConfiguration[key],
-                        Key = keysp[Math.Max(0, keysp.Length - 1)]
+                        Key = keysp[Math.Max(0, keysp.Length - 1)],
                     });
                 }
 
@@ -45,7 +41,10 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="dict"></param>
         public static void SetAppSettings(Dictionary<string, string> dict)
         {
-            foreach (var item in dict) SetAppSetting(item.Key, item.Value);
+            foreach (var item in dict)
+            {
+                SetAppSetting(item.Key, item.Value);
+            }
         }
 
         /// <summary>
@@ -66,7 +65,11 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="defaultValue"></param>
         public static string GetAppSetting(string configKey, string defaultValue = "")
         {
-            if (configKey.IsNullOrEmpty()) return defaultValue;
+            if (configKey.IsNullOrEmpty())
+            {
+                return defaultValue;
+            }
+
             var key = FixDictKey(ConfigType.AppSettings, configKey);
             return GetFromConfigurationDict(key, defaultValue);
         }

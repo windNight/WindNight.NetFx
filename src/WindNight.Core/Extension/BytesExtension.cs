@@ -1,7 +1,5 @@
 using System.Globalization;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using WindNight.Linq.Extensions.Expressions;
 
 namespace System.Text
@@ -25,7 +23,11 @@ namespace System.Text
         /// </returns>
         public static string ToGetString(this byte[] bytes, Encoding? encoding = null)
         {
-            if (encoding == null) encoding = Encoding.UTF8;
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
+
             return encoding.GetString(bytes);
         }
 
@@ -49,6 +51,7 @@ namespace System.Text
             {
                 encoding = Encoding.UTF8;
             }
+
             return encoding.GetBytes(text);
         }
 
@@ -85,6 +88,7 @@ namespace System.Text
             {
                 return string.Empty;
             }
+
             try
             {
                 return Convert.ToBase64String(bytes);
@@ -111,7 +115,10 @@ namespace System.Text
             {
                 var bytesRead = compressedzipStream.Read(block, 0, block.Length);
                 if (bytesRead <= 0)
+                {
                     break;
+                }
+
                 outBuffer.Write(block, 0, bytesRead);
             }
 
@@ -141,10 +148,17 @@ namespace System.Text
         /// <returns>原始未压缩字符串</returns>
         public static string GZipDecompressString(this string zippedString, Encoding? encoding = null)
         {
-            if (zippedString.IsNullOrEmpty() || zippedString.Length == 0) return "";
+            if (zippedString.IsNullOrEmpty() || zippedString.Length == 0)
+            {
+                return "";
+            }
 
             var zippedData = Convert.FromBase64String(zippedString);
-            if (encoding == null) encoding = Encoding.UTF8;
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
+
             return DoDecompress(zippedData).ToGetString(encoding);
         }
 
@@ -168,7 +182,11 @@ namespace System.Text
 
         public static string ToHexString(this byte[] bytes, int startIndex, int length, string splitStr)
         {
-            if (bytes == null || bytes.Length == 0 || length == 0) return string.Empty;
+            if (bytes == null || bytes.Length == 0 || length == 0)
+            {
+                return string.Empty;
+            }
+
             var sb = new StringBuilder();
             for (var i = startIndex; i < bytes.Length && i < startIndex + length; i++)
             {
@@ -214,7 +232,11 @@ namespace System.Text
         {
             try
             {
-                if (hexStr.IsNullOrEmpty()) return null;
+                if (hexStr.IsNullOrEmpty())
+                {
+                    return null;
+                }
+
                 var len = hexStr.Length;
                 var bytes = new byte[len / 2];
                 if (len / 2 != 0)

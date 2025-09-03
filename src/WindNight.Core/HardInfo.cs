@@ -13,6 +13,9 @@ using WindNight.Linq.Extensions.Expressions;
 
 namespace System
 {
+
+
+
     public partial class HardInfo
     {
 
@@ -197,7 +200,7 @@ namespace System
 
             try
             {
-                if (!NodeIpAddress.IsNullOrEmpty())
+                if (NodeIpAddress.IsNotNullOrEmpty())
                 {
                     return NodeIpAddress.Split(',');
                 }
@@ -265,10 +268,10 @@ namespace System
         public static IEnumerable<string> GetLocalIps()
         {
             // 优先检查是否有预配置的IP地址
-            if (!NodeIpAddress.IsNullOrEmpty(true))
+            if (NodeIpAddress.IsNotNullOrEmpty(true))
             {
                 var ips = NodeIpAddress.Split(',').Where(ip => !IsNullOrEmptyIp(ip));
-                if (!ips.IsNullOrEmpty(true))
+                if (ips.IsNotNullOrEmpty(true))
                 {
                     return ips;
                 }

@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace WindNight.ConfigCenter.Extension
 {
     internal partial class ConfigCenterContext
@@ -25,7 +21,7 @@ namespace WindNight.ConfigCenter.Extension
                         FileName = fileName,
                         LastModifyTime = ConfigProvider.Instance.ConfigUpdateTime[fileName],
                         FileContent = fileContent,
-                        Path = key
+                        Path = key,
                     });
                 }
 
@@ -63,17 +59,29 @@ namespace WindNight.ConfigCenter.Extension
         /// <param name="defaultValue"></param>
         public static string GetXmlConfig(string fileName, string defaultValue = "")
         {
-            if (fileName.IsNullOrEmpty()) return defaultValue;
+            if (fileName.IsNullOrEmpty())
+            {
+                return defaultValue;
+            }
+
             var key = FixDictKey(ConfigType.XmlConfig, fileName);
             var configValue = GetFromConfigurationDict(key, defaultValue);
-            if (!configValue.IsNullOrEmpty()) return configValue;
+            if (configValue.IsNotNullOrEmpty())
+            {
+                return configValue;
+            }
 
             var loadRlt = ConfigProvider.Instance.LoadConfigFile(configValue);
 
             if (loadRlt.Item1 == 0)
+            {
                 configValue = loadRlt.Item3;
+            }
             else
+            {
                 configValue = defaultValue;
+            }
+
             return configValue;
         }
 
