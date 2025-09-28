@@ -16,11 +16,16 @@ namespace System.Text.Extension
         /// </summary>
         /// <returns></returns>
         public static string GenerateOrderNumber()
-        {
-            var strDateTimeNumber = HardInfo.Now.ToString("yyyyMMddHHmmssms");
+        { 
+            var strDateTimeNumber = HardInfo.Now.ToString("yyyyMMddHHmmssfff");
             //  var strDateTimeNumber = HardInfo.Now.ToString("yyyyMMddHHmmsszzz");
             var strRandomResult = RandomHelper.NextRandom(1000, 1).ToString("D3");
-            return string.Concat(strDateTimeNumber, strRandomResult);
+            return strDateTimeNumber.Concat(strRandomResult);
         }
+
+
+        public static string GenTraceId() => GenerateOrderNumber();
+
+
     }
 }

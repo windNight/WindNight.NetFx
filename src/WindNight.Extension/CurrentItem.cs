@@ -1,32 +1,26 @@
-using System;
-using System.Collections.Concurrent;
-using System.Text.Extension;
-using Newtonsoft.Json.Extension;
-using WindNight.Extension.@internal;
-using WindNight.Core.Abstractions;
-using WindNight.LogExtension;
-
-
-
 #if NET45
 using System.Collections;
 using HttpContext = WindNight.Extension.HttpContextExtension;
 #else
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
-using System.Threading;
 using WindNight.Core.Extension;
 #endif
-
+using System.Collections.Concurrent;
+using System.Text.Extension;
+using Microsoft.AspNetCore.Mvc.WnExtensions;
+using Newtonsoft.Json.Extension;
+using WindNight.Core.Abstractions;
+using WindNight.Extension.@internal;
+using WindNight.Linq.Extensions.Expressions;
+using WindNight.LogExtension;
+using WindNight.Core;
 
 
 namespace WindNight.Extension
 {
-
     public class DefaultCurrentContext : ICurrentContext
     {
-
         public string SerialNumber => CurrentItem.GetSerialNumber;
 
         public
@@ -34,9 +28,9 @@ namespace WindNight.Extension
             IDictionary
 #else
 
-                    IDictionary<object, object>
+            IDictionary<object, object>
 #endif
-                  CurrentItems => CurrentItem.Items;
+            CurrentItems => CurrentItem.Items;
 
         public T GetItem<T>(string key)
         {
@@ -46,9 +40,8 @@ namespace WindNight.Extension
         private const string SERIZLNUMBER = Consts.SERIZLNUMBER;
 
         /// <summary>
-        /// 
         /// </summary>
-        /// <param name="key"> SERIZLNUMBER 新版本不支持 外部维护 统一使用 <see cref="SerialNumber"/></param>
+        /// <param name="key"> SERIZLNUMBER 新版本不支持 外部维护 统一使用 <see cref="SerialNumber" /></param>
         /// <param name="value"></param>
         public void AddItem(string key, object value)
         {
@@ -56,6 +49,7 @@ namespace WindNight.Extension
             {
                 return;
             }
+
             CurrentItem.AddItem(key, value);
         }
 
@@ -65,6 +59,7 @@ namespace WindNight.Extension
             {
                 return;
             }
+
             CurrentItem.AddItemIfNotExits(key, value);
         }
 
@@ -88,13 +83,10 @@ namespace WindNight.Extension
             {
                 return default;
             }
-
         }
 
 #endif
-
     }
-
 
 
     // 建议在web项目中使用
@@ -105,9 +97,12 @@ namespace WindNight.Extension
 #if !NET45
 
         private bool UseAsyncLocal = false;
-        private static readonly AsyncLocal<ConcurrentDictionary<object, object>> ItemsAsyncLocal = new AsyncLocal<ConcurrentDictionary<object, object>>();
 
-        public static ConcurrentDictionary<object, object> CurrentItemsAsyncLocal => ItemsAsyncLocal.Value ?? new ConcurrentDictionary<object, object>();
+        private static readonly AsyncLocal<ConcurrentDictionary<object, object>> ItemsAsyncLocal =
+            new AsyncLocal<ConcurrentDictionary<object, object>>();
+
+        public static ConcurrentDictionary<object, object> CurrentItemsAsyncLocal =>
+            ItemsAsyncLocal.Value ?? new ConcurrentDictionary<object, object>();
 
         public static object GetItemsFromAsyncLocal(object key, object defaultValue = null)
         {
@@ -130,20 +125,20 @@ namespace WindNight.Extension
                 {
                     return null;
                 }
+
                 if (!ItemsAsyncLocal.Value.ContainsKey(key))
                 {
                     ItemsAsyncLocal.Value.TryAdd(key, setValue);
                     return setValue;
                 }
-                else if (ItemsAsyncLocal.Value.ContainsKey(key) && isForce)
+
+                if (ItemsAsyncLocal.Value.ContainsKey(key) && isForce)
                 {
                     ItemsAsyncLocal.Value[key] = setValue;
                     return setValue;
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
             catch (Exception ex)
             {
@@ -152,7 +147,7 @@ namespace WindNight.Extension
         }
 
 
-        bool ClearItemsAsyncLocal()
+        private bool ClearItemsAsyncLocal()
         {
             try
             {
@@ -162,9 +157,7 @@ namespace WindNight.Extension
             catch (Exception ex)
             {
                 return false;
-
             }
-
         }
 #endif
 
@@ -172,11 +165,9 @@ namespace WindNight.Extension
 #if NET45
             IDictionary
 #else
-
             IDictionary<object, object>
 #endif
             _items;
-
 
 
         /// <summary>
@@ -190,17 +181,19 @@ namespace WindNight.Extension
 
             IDictionary<object, object>
 #endif
-        Items
+            Items
         {
             get
             {
                 try
                 {
 #if NET45
-                    return HttpContext.GetHttpContext()?.Items ?? (_items ??= new ConcurrentDictionary<object, object>());
+                    return HttpContext.GetHttpContext()?.Items ?? (_items ??=
+ new ConcurrentDictionary<object, object>());
 #else
 
-                    return Ioc.GetService<IHttpContextAccessor>()?.HttpContext?.Items ?? (_items ??= CurrentItemsAsyncLocal);
+                    return Ioc.GetService<IHttpContextAccessor>()?.HttpContext?.Items ??
+                           (_items ??= CurrentItemsAsyncLocal);
 #endif
                 }
                 catch
@@ -212,7 +205,6 @@ namespace WindNight.Extension
 #else
                     return CurrentItemsAsyncLocal;
 #endif
-
                 }
             }
         }
@@ -242,9 +234,12 @@ namespace WindNight.Extension
         //            }
         //        }
 
-        public static string AddSerialNumber(string traceId, bool isForce = false) => GetSerialNumberInternal(traceId, isForce);
+        public static string AddSerialNumber(string traceId, bool isForce = false)
+        {
+            return GetSerialNumberInternal(traceId, isForce);
+        }
 
-        static string GetSerialNumberInternal(string traceId = "", bool isForce = false)
+        private static string GetSerialNumberInternal(string traceId = "", bool isForce = false)
         {
             try
             {
@@ -252,6 +247,7 @@ namespace WindNight.Extension
                 {
                     isForce = true;
                 }
+
                 var orderNumber = GetItem<string>(Consts.SERIZLNUMBER);
                 if (isForce || orderNumber.IsNullOrEmpty())
                 {
@@ -270,12 +266,12 @@ namespace WindNight.Extension
                                 {
                                     traceId = GuidHelper.GenerateOrderNumber();
                                 }
+
                                 Items[Consts.SERIZLNUMBER] = traceId;
                             }
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -285,7 +281,7 @@ namespace WindNight.Extension
             return GetTraceIdFromItems();
         }
 
-        static string GetTraceIdFromItems()
+        private static string GetTraceIdFromItems()
         {
             return GetItem<string>(Consts.SERIZLNUMBER);
         }
@@ -313,11 +309,14 @@ namespace WindNight.Extension
         /// <returns></returns>
         public static T GetItem<T>(string key)
         {
-            T obj = default(T);
+            var obj = default(T);
             try
             {
                 if (!ContainKey(key))
+                {
                     return obj;
+                }
+
                 return Items[key].To<T>();
             }
             catch (Exception ex)
@@ -327,9 +326,23 @@ namespace WindNight.Extension
             }
         }
 
+        public static IReadOnlyDictionary<object, object> FilterKeys(IEnumerable<string> keys)
+        {
+            keys = keys.Distinct();
+            var dict =
+                Items.Where(m => !keys.Contains(m.Key))
+                    .ToDictionary(
+                        k => k.Key,
+                        v => v.Value
+                        );
+
+            return dict;
+
+        }
+
         public static bool ContainKey(string key)
         {
-            bool flag = false;
+            var flag = false;
             if (key.IsNotNullOrEmpty() && Items != null)
             {
 #if NET45
@@ -398,7 +411,7 @@ namespace WindNight.Extension
 
                 Items.Add(key, value);
 #if !NET45
-                SetItems2AsyncLocal(key, value, false);
+                SetItems2AsyncLocal(key, value);
 #endif
             }
             catch
@@ -410,21 +423,36 @@ namespace WindNight.Extension
         {
             try
             {
-                if (Items == null || Items.Count == 0)
+                if (Items.IsNullOrEmpty())
                 {
                     return "";
                 }
-                if (ContainKey("MS_HttpRequestMessage"))
+
+                var invalidKeys = new[]
                 {
-                    Items.Remove("MS_HttpRequestMessage");
-                }
-                return Items?.ToJsonStr();
+                    "__AuthorizationMiddlewareWithEndpointInvoked",
+                    "__CorsMiddlewareWithEndpointInvoked",
+                    "MS_HttpRequestMessage",
+                    "Authorization",
+                    "authorization",
+                    WebConst.HEARDER,
+                    WebConst.ACCESSTOKEN,
+                    ConstantKeys.AppTokenKey
+                };
+
+                var dict = FilterKeys(invalidKeys);
+
+                //if (ContainKey("MS_HttpRequestMessage"))
+                //{
+                //    Items.Remove("MS_HttpRequestMessage");
+                //}
+
+                return dict?.ToJsonStr();
             }
             catch
             {
                 return "";
             }
-
         }
     }
 }

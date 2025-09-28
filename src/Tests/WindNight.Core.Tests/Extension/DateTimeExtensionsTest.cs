@@ -138,6 +138,7 @@ namespace WindNight.Core.Tests
         [Theory(DisplayName = "GeneratorDateMonthListTest")]
         [InlineData("2023-01-01", "2023-12-01", 12, 202301, 202312)]
         [InlineData("2023-01-01", "2024-12-01", 24, 202301, 202412)]
+        [InlineData("2025-07-01", "2025-09-01", 3, 202507, 202509)]
         public void GeneratorDateMonthListTest(DateTime beginDate, DateTime endDate, int expectCount, int expectBeginMonth, int expectEndMonth)
         {
             var execList = beginDate.GeneratorDateMonthList(endDate, withLastDay: true);

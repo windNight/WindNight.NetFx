@@ -38,6 +38,18 @@
         <FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</FileVersion>
     </PropertyGroup>
 
+
+    <ItemGroup>
+      <Content Remove="appsettings.json" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <None Include="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\..\Dapper\WindNight.Extension.Dapper.Mysql\WindNight.Extension.Dapper.Mysql.csproj" />
         <ProjectReference Include="..\..\WindNight.AspNetCore.Hosting\WindNight.AspNetCore.Hosting.csproj" />

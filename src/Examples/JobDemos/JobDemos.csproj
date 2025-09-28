@@ -27,4 +27,10 @@
         <!--<PackageReference Include="WindNight.Schedule" Version="1.1.0-beta.25032402" />-->
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

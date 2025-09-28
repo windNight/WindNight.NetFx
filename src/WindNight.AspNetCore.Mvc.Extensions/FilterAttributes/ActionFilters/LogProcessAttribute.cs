@@ -35,15 +35,14 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 }
                 else
                 {
-                    CurrentItem.AddItem(header.Key.ToLower(), header.Value.ToString());
+                    CurrentItem.AddItem($"header:{header.Key.ToLower()}", header.Value.ToString());
                 }
             }
         }
 
 
         string QueryTraceIdFromActionArguments(ActionExecutingContext context)
-        {
-
+        { 
             try
             {
 
@@ -105,7 +104,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                         {
                             if (argument.Value is string)
                             {
-                                CurrentItem.AddItem($"{argument.Key.ToLower()}", argument.Value?.ToString());
+                                CurrentItem.AddItem($"params:{argument.Key.ToLower()}", argument.Value?.ToString());
                             }
                         }
                         else
@@ -113,11 +112,11 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 
                             if (argument.Value == null || argument.Value.GetType().IsValueType || argument.Value is string)
                             {
-                                CurrentItem.AddItem($"{argument.Key.ToLower()}", argument.Value?.ToString());
+                                CurrentItem.AddItem($"params:{argument.Key.ToLower()}", argument.Value?.ToString());
                             }
                             else if (argument.Value is IList)
                             {
-                                CurrentItem.AddItem("list", argument.Value.ToJsonStr());
+                                CurrentItem.AddItem("params:list", argument.Value.ToJsonStr());
                             }
                             else
                             {
@@ -134,7 +133,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                                     }
                                     else
                                     {
-                                        CurrentItem.AddItem($"object:{each.Key.ToLower()}", each.Value.ToString());
+                                        CurrentItem.AddItem($"params:jobject:{each.Key.ToLower()}", each.Value.ToString());
                                     }
                                 }
                             }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using WindNight.AspNetCore.Mvc.Extensions;
 using WindNight.Core;
 using WindNight.Core.Attributes.Abstractions;
@@ -19,37 +20,62 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
         protected virtual void FixResultBeforeResultExecuting(ResultExecutingContext context)
         {
             //var car = context.ActionDescriptor.GetMethodAttributes<ClearResultAttribute>().FirstOrDefault();
-
-            var clsAttr = context.ActionDescriptor.GetAttributeOnAction<ClearResultAttribute>();
-
-            var noClear = clsAttr?.IsClear ?? false;
-            if (noClear)
+            try
             {
-                return;
-            }
 
-            if (!(context.Result is ObjectResult objectResult) || objectResult.Value is ResponseResult)
-            {
-                return;
-            }
 
-            if (objectResult.Value is null)
-            {
-                context.Result = new ObjectResult(new ResponseResult<object>().NotFound());
-            }
-            else
-            {
-                try
+                var clsAttr = context.ActionDescriptor.GetAttributeOnAction<ClearResultAttribute>();
+
+                var noClear = clsAttr?.IsClear ?? false;
+                if (noClear)
                 {
-                    var apiResult = Activator.CreateInstance(
-                        typeof(ResponseResult<>).MakeGenericType(objectResult.DeclaredType), objectResult.Value);
-                    context.Result = new ObjectResult(apiResult);
+                    return;
                 }
-                catch (Exception ex)
+
+                if (context.HttpContext.Response.StatusCode != 200)
                 {
-                    context.Result = new ObjectResult(new ResponseResult<object>().SystemError(ex.Message));
+                    return;
                 }
+
+                if (!(context.Result is ObjectResult objectResult) || (objectResult != null && objectResult.Value != null && objectResult.Value is ResponseResult))
+                {
+                    return;
+                }
+
+
+
+                if (objectResult == null || objectResult.Value == null)
+                {
+                    context.Result = new ObjectResult(new ResponseResult<object>().NotFound());
+                }
+                else
+                {
+                    try
+                    {
+                        var apiResult = Activator.CreateInstance(
+                            typeof(ResponseResult<>).MakeGenericType(objectResult.DeclaredType), objectResult.Value);
+                        context.Result = new ObjectResult(apiResult);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        LogHelper.Error($"api[{context?.HttpContext?.Request?.Path ?? ""}] Result Check Handler Error {ex.Message}", ex);
+                        context.Result = new ObjectResult(new ResponseResult<object>().SystemError("系统错误"));
+                    }
+                }
+
+
             }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"api[{context?.HttpContext?.Request?.Path ?? ""}] FixResultBeforeResultExecuting Handler Error {ex.Message}", ex);
+                context.Result = new ObjectResult(new ResponseResult<object>().SystemError("系统错误"));
+            }
+
+             
+
+
+
         }
 
         #region override ResultFilterAttribute

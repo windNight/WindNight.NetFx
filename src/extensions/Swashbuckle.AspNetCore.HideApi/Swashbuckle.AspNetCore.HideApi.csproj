@@ -29,8 +29,8 @@
 
     <ItemGroup> 
 
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.3" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.4" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.4" />
 
     </ItemGroup>
 

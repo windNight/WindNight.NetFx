@@ -25,4 +25,10 @@
 	  <ProjectReference Include="..\..\..\WindNight.Extension.DbLog.Mysql\WindNight.Extension.DbLog.Mysql.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="appsettings.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

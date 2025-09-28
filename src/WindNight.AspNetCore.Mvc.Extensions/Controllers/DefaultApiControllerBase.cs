@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using WindNight.AspNetCore.Mvc.Extensions;
-using WindNight.Core;
+using Microsoft.AspNetCore.Mvc;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Extension;
 using WindNight.Extension;

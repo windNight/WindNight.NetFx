@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.HttpResults;
+using System.Threading.Tasks; 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
@@ -73,6 +72,8 @@ namespace WindNight.AspNetCore.Mvc.Extensions.FilterAttributes
                         var isValid = SysApiAuthCheckImpl.SysApiAuth();
                         if (!isValid)
                         {
+
+                            context.HttpContext.Response.StatusCode = 404;
                             context.Result = new NotFoundResult(); //new ObjectResult(ResponseResult.GenNotFoundRes(null));
                             return;
                         }
@@ -83,6 +84,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions.FilterAttributes
                     var ipCheck = ReqClientIpCheck(context);
                     if (!ipCheck)
                     {
+                        context.HttpContext.Response.StatusCode = 404;
                         context.Result = new NotFoundResult(); // new ObjectResult(ResponseResult.GenNotFoundRes(null));
                         return;
                     }
