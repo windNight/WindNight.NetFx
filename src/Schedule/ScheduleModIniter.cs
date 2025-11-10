@@ -123,29 +123,35 @@ namespace Schedule
             {
                 //加载配置文件，并且运行状态为open的任务
                 var allJobs = Ioc.GetServices<IJobCtrl>().ToList();
-                var skipJobs = allJobs.Where(m => m.JobCanSkip()).ToList();
-                var todoJobs = allJobs.Where(m => !m.JobCanSkip()).ToList();
+                var skipJobs = new List<IJobCtrl>(); // allJobs.Where(m => m.JobCanSkip()).ToList();
+                var todoJobs = new List<JobMeta>(); //allJobs.Where(m => !m.JobCanSkip()).ToList();
 
-                ScheduleModConfig.Instance.Jobs = new List<JobMeta>(todoJobs.Count());
+                ScheduleModConfig.Instance.Jobs = new List<JobMeta>();
 
-                foreach (var job in todoJobs)
+                foreach (var job in allJobs)
                 {
 
                     var jobParam = job.ReadJobParam();
-                    if (jobParam == null)
-                    {
-                        skipJobs.Add(job);
-                        continue;
-                    }
 
+                    if (jobParam.IsNullOrEmpty())
+                    {
+                        if (job.JobCanSkip())
+                        {
+                            skipJobs.Add(job);
+                            continue;
+                        }
+                        throw new ArgumentNullException("JobCode", $"JobCode({job.JobCode}) 缺少配置项");
+
+                    }
                     ScheduleModConfig.Instance.Jobs.Add(jobParam);
                     if (jobParam.State.Equals(JobStateEnum.Open) || jobParam.State.Equals(JobStateEnum.Pause))
                     {
                         job.StartJob(jobParam);
                     }
+                    todoJobs.Add(jobParam);
                 }
 
-                var msg1 = $"成功创建Job[{todoJobs.Count}]个：[{todoJobs.Select(m => m.ReadJobParam().ToString()).Join(" , ")}]";
+                var msg1 = $"预期创建【{allJobs.Count}】个，成功创建Job[{todoJobs.Count}]个：[{todoJobs.Select(m => m.ToString()).Join(",")}]";
                 JobLogHelper.Info(msg1, nameof(Init));
                 if (skipJobs.IsNotNullOrEmpty())
                 {
@@ -206,20 +212,25 @@ namespace Schedule
             {
                 //加载配置文件，并且运行状态为open的任务
                 var allJobs = Ioc.GetServices<IJobCtrl>().ToList();
-                var skipJobs = allJobs.Where(m => m.JobCanSkip()).ToList();
-                var todoJobs = allJobs.Where(m => !m.JobCanSkip()).ToList();
+                var skipJobs = new List<IJobCtrl>(); // allJobs.Where(m => m.JobCanSkip()).ToList();
+                var todoJobs = new List<JobMeta>(); //allJobs.Where(m => !m.JobCanSkip()).ToList();
 
-                ScheduleModConfig.Instance.Jobs = new List<JobMeta>(todoJobs.Count());
+                ScheduleModConfig.Instance.Jobs = new List<JobMeta>();
                 //var sc = new ScheduleCtrl();
                 //var cacheJobs = sc.GetBGJobInfo();
 
-                foreach (var job in todoJobs)
+                foreach (var job in allJobs)
                 {
                     var jobParam = job.ReadJobParam();
-                    if (jobParam == null)
+                    if (jobParam.IsNullOrEmpty())
                     {
-                        skipJobs.Add(job);
-                        continue;
+                        if (job.JobCanSkip())
+                        {
+                            skipJobs.Add(job);
+                            continue;
+                        }
+                        throw new ArgumentNullException("JobCode", $"JobCode({job.JobCode}) 缺少配置项");
+
                     }
 
                     //jobParam = cacheJobs.FirstOrDefault(x => x.JobName.Equals(jobParam.JobName)) == null
@@ -231,11 +242,11 @@ namespace Schedule
                     {
                         await job.StartJobAsync(jobParam);
                     }
-
+                    todoJobs.Add(jobParam);
                 }
 
 
-                var msg1 = $"成功创建Job[{todoJobs.Count}]个：[{todoJobs.Select(m => m.ReadJobParam().ToString()).Join(" , ")}]";
+                var msg1 = $"预期创建【{allJobs.Count}】个，成功创建Job[{todoJobs.Count}]个：[{todoJobs.Select(m => m.ToString()).Join(",")}]";
                 JobLogHelper.Info(msg1, nameof(Init));
                 if (skipJobs.IsNotNullOrEmpty())
                 {

@@ -435,9 +435,12 @@ namespace WindNight.Extension
                     "MS_HttpRequestMessage",
                     "Authorization",
                     "authorization",
+                    "header:authorization",
+                    "header:accesstoken",
+                    "identity@eg",
                     WebConst.HEARDER,
                     WebConst.ACCESSTOKEN,
-                    ConstantKeys.AppTokenKey
+                    ConstantKeys.AppTokenKey,
                 };
 
                 var dict = FilterKeys(invalidKeys);

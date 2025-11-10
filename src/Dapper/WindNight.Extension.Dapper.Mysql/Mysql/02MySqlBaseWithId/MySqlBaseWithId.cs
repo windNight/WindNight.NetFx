@@ -8,10 +8,9 @@ using WindNight.Extension.Db.Extensions;
 namespace WindNight.Extension.Dapper.Mysql
 {
     /// <inheritdoc cref="NoIdMysqlBase" />
-    public abstract partial class MySqlBase<TEntity, TId> : NoIdMysqlBase<TEntity>,
+    public abstract partial class MySqlBase<TEntity, TId> : NoIdMysqlBase<TEntity>
     //IBaseRepositoryServiceWithId<TEntity, TId> 
-    IWriterBaseRepositoryService<TEntity, TId>
-
+   //, IWriterBaseRepositoryService<TEntity, TId>
         where TEntity : class, IEntity, IEntity<TId>, new()
         where TId : IEquatable<TId>, IComparable<TId>
     {
@@ -46,7 +45,7 @@ namespace WindNight.Extension.Dapper.Mysql
             return await DbQueryAsync(QueryDataByIdSql, new { Id = id }, warnMs: warnMs, execErrorHandler: execErrorHandler);
         }
 
-        public virtual TId InsertOne(TEntity entity, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
+        protected virtual TId InsertOneInternal(TEntity entity, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             if (entity == null)
             {
@@ -73,7 +72,7 @@ namespace WindNight.Extension.Dapper.Mysql
             return id;
         }
 
-        public virtual async Task<TId> InsertOneAsync(TEntity entity, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<TId> InsertOneInternalAsync(TEntity entity, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             if (entity == null) return default;
             if (execErrorHandler == null)
@@ -99,13 +98,13 @@ namespace WindNight.Extension.Dapper.Mysql
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual bool DeleteById(TId id, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
+        protected virtual bool DeleteByIdInternal(TId id, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             var flag = DbExecute(DeleteByIdSql, new { Id = id }, execErrorHandler: execErrorHandler);
             return flag > 0;
         }
 
-        public virtual async Task<bool> DeleteByIdAsync(TId id, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
+        protected virtual async Task<bool> DeleteByIdInternalAsync(TId id, long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             var flag = await DbExecuteAsync(DeleteByIdSql, new { Id = id }, warnMs: warnMs, execErrorHandler: execErrorHandler);
             return flag > 0;

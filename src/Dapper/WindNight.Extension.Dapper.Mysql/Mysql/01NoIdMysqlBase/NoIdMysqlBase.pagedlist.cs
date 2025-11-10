@@ -233,7 +233,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         #region Obsolete
 
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ", true)]
         protected virtual IPagedList<T> DbPagedEList<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
@@ -261,7 +261,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="parameters"></param>
         /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName" /></param>
         /// <returns></returns>
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ", true)]
         protected virtual async Task<IPagedList<T>> DbPagedEListAsync<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
@@ -288,7 +288,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName" /></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ", true)]
         protected virtual IPagedList<TEntity> DbPagedList(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             var pagedInfo = new QueryPageInfo
@@ -314,7 +314,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="parameters"></param>
         /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName" /></param>
         /// <returns></returns>
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ", true)]
         protected virtual async Task<IPagedList<TEntity>> DbPagedListAsync(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             var pagedInfo = new QueryPageInfo

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32328.378
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11111.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindNight.Core", "WindNight.Core\WindNight.Core.csproj", "{0398E4C6-F1F3-40BE-B688-38FAF9992970}"
 EndProject
@@ -12,8 +12,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{A5436B16-87A0-4212-A732-E2AA0DE3BB3D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleExamples_NetCore3_1", "Examples\ConsoleExamples_NetCore3_1\ConsoleExamples_NetCore3_1.csproj", "{59E6325A-7922-4259-AA9A-59CC2869434A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schedule", "Schedule\Schedule.csproj", "{69544F01-F8AA-488A-939F-1C9E13492DC9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobDemos", "Examples\JobDemos\JobDemos.csproj", "{C1061384-7187-4E34-9413-18C103899260}"
 EndProject
@@ -102,6 +100,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastMember", "Dapper\extern
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Swashbuckle.AspNetCore.HideApi", "extensions\Swashbuckle.AspNetCore.HideApi\Swashbuckle.AspNetCore.HideApi.csproj", "{96357651-CF38-B0F0-0509-8E420722A550}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schedule", "Schedule\Schedule.csproj", "{55EE7887-A980-F3EF-79A3-4E7A5BF5436A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,10 +124,6 @@ Global
 		{59E6325A-7922-4259-AA9A-59CC2869434A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59E6325A-7922-4259-AA9A-59CC2869434A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59E6325A-7922-4259-AA9A-59CC2869434A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69544F01-F8AA-488A-939F-1C9E13492DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69544F01-F8AA-488A-939F-1C9E13492DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69544F01-F8AA-488A-939F-1C9E13492DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69544F01-F8AA-488A-939F-1C9E13492DC9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C1061384-7187-4E34-9413-18C103899260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C1061384-7187-4E34-9413-18C103899260}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1061384-7187-4E34-9413-18C103899260}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -244,6 +240,10 @@ Global
 		{96357651-CF38-B0F0-0509-8E420722A550}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96357651-CF38-B0F0-0509-8E420722A550}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96357651-CF38-B0F0-0509-8E420722A550}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55EE7887-A980-F3EF-79A3-4E7A5BF5436A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55EE7887-A980-F3EF-79A3-4E7A5BF5436A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55EE7887-A980-F3EF-79A3-4E7A5BF5436A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55EE7887-A980-F3EF-79A3-4E7A5BF5436A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -118,7 +118,7 @@ namespace Schedule.Ctrl
             var job = Ioc.GetService<IJobCtrl>(name);
 
             var jobParams = job.ReadJobParam();
-            if (jobParams == null)
+            if (jobParams.IsNullOrEmpty())
             {
                 return JobActionRetEnum.NoConfig;
             }

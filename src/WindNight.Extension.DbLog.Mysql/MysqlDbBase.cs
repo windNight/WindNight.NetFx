@@ -29,7 +29,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
             {
                 return true;
             }
-            var rtl = InsertOne(entity);
+            var rtl = InsertOneInternal(entity);
             return rtl > 0;
         }
 
@@ -39,7 +39,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
             {
                 return true;
             }
-            var rtl = await InsertOneAsync(entity);
+            var rtl = await InsertOneInternalAsync(entity);
             return rtl > 0;
         }
 
@@ -50,7 +50,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
             {
                 return true;
             }
-            var rtl = BatchInsertUseValues(entities);
+            var rtl = BatchInsertUseValuesInternal(entities);
             return rtl;
         }
 
@@ -61,7 +61,7 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
             {
                 return true;
             }
-            var rtl = await BatchInsertUseValuesAsync(entities);
+            var rtl = await BatchInsertUseValuesInternalAsync(entities);
             return rtl; ;
         }
 

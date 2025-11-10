@@ -30,8 +30,7 @@ namespace WindNight.Extension.Dapper.Mysql
     public partial class MySqlBase
     {
 
-        protected virtual T DapperExec<T>(string connStr, string sql, Func<IDbConnection, T> func,
-            Action<Exception, string> execErrorHandler = null)
+        protected virtual T DapperExec<T>(string connStr, string sql, Func<IDbConnection, T> func, Action<Exception, string> execErrorHandler = null)
         {
             using (var connection = GetConnection(connStr))
             {

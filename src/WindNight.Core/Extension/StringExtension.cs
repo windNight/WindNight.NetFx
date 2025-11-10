@@ -164,6 +164,7 @@ namespace System
         /// <returns></returns>
         public static int ToInt(this object obj, int defaultValue = 0)
         {
+          
             var sourceString = obj?.ToString() ?? "";
             if (sourceString.IsNullOrEmpty())
             {

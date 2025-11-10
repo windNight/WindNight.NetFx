@@ -27,6 +27,11 @@ namespace WindNight.Core.Extension
             }
         }
 
+        public static int ToInt(this decimal data)
+        {
+            return data.Truncate();
+        }
+
 
         /// <summary>
         ///     向上取整
@@ -162,6 +167,12 @@ namespace WindNight.Core.Extension
             return (int)Math.Truncate(data);
         }
 
+
+        public static int ToInt(this double data)
+        {
+            return data.Truncate();
+        }
+
         #endregion //end Double
 
         #region Float
@@ -234,6 +245,12 @@ namespace WindNight.Core.Extension
         {
             return (int)Math.Truncate(data);
         }
+
+        public static int ToInt(this float data)
+        {
+            return data.Truncate();
+        }
+
 
         #endregion //end Double
     }

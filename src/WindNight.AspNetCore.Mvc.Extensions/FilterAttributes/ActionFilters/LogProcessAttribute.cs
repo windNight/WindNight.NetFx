@@ -17,6 +17,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
     public class LogProcessAttribute : ActionFilterAttribute
     {
         protected const string ACCESSTOKENKEY = "accesstoken";
+        protected const string AUTHKEY = "authorization";
 
         public LogProcessAttribute()
         {
@@ -33,6 +34,10 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 {
                     CurrentItem.AddItem(WebConst.ACCESSTOKEN, header.Value.ToString());
                 }
+                else if (header.Key.ToLower().Contains(AUTHKEY))
+                {
+                    CurrentItem.AddItem(AUTHKEY, header.Value.ToString());
+                }
                 else
                 {
                     CurrentItem.AddItem($"header:{header.Key.ToLower()}", header.Value.ToString());
@@ -42,7 +47,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 
 
         string QueryTraceIdFromActionArguments(ActionExecutingContext context)
-        { 
+        {
             try
             {
 
@@ -130,6 +135,10 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                                     if (each.Key.ToLower().Contains(ACCESSTOKENKEY))
                                     {
                                         CurrentItem.AddItem(WebConst.ACCESSTOKEN, each.Value.ToString());
+                                    }
+                                    else if (each.Key.ToLower().Contains(AUTHKEY))
+                                    {
+                                        CurrentItem.AddItem(AUTHKEY, each.Value.ToString());
                                     }
                                     else
                                     {

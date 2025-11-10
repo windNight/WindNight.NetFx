@@ -259,7 +259,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="parameters"></param>
         /// <param name="queryTableName"></param>
         /// <returns></returns>
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ", true)]
         public virtual IPagedList<TEntity> QueryPagedList(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             return DbPagedList(pageIndex, pageSize, condition, orderBy, parameters, queryTableName, warnMs: warnMs, execErrorHandler: execErrorHandler);
@@ -276,14 +276,14 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="parameters"></param>
         /// <param name="queryTableName"></param>
         /// <returns></returns>
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ", true)]
         public virtual async Task<IPagedList<TEntity>> QueryPagedListAsync(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
         {
             return await DbPagedListAsync(pageIndex, pageSize, condition, orderBy, parameters, queryTableName, warnMs: warnMs, execErrorHandler: execErrorHandler);
         }
 
 
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ",true)]
         public virtual IPagedList<T> QueryPagedEList<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {
@@ -302,7 +302,7 @@ namespace WindNight.Extension.Dapper.Mysql
         /// <param name="parameters"></param>
         /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName"/></param>
         /// <returns></returns>
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ",true)]
         public virtual async Task<IPagedList<T>> QueryPagedEListAsync<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new()
         {

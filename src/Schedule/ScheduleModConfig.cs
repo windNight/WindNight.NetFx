@@ -26,6 +26,13 @@ namespace Schedule
         /// </summary>
         internal List<JobMeta> Jobs { get; set; } = new List<JobMeta>();
 
+
+        public IReadOnlyCollection<JobMeta> GeRegisteredJobs()
+        {
+            return Jobs;
+        }
+
+
         /// <summary>
         ///     default scheduler
         /// </summary>

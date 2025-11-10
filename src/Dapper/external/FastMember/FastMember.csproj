@@ -77,7 +77,7 @@
         <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
 
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="System.Security.Permissions" Version="9.0.9" />
+        <PackageReference Include="System.Security.Permissions" Version="9.0.10" />
     </ItemGroup>
 
 

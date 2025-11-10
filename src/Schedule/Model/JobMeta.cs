@@ -6,6 +6,8 @@ namespace Schedule.Model
 {
     public class JobMeta
     {
+
+        public static JobMeta Empty = new JobMeta();
         /// <summary>
         ///     临时JobId
         /// </summary>
@@ -110,4 +112,18 @@ namespace Schedule.Model
             return this.ToJsonStr();
         }
     }
+
+
+    public static class JobMetaExt
+    {
+        public static bool IsNotNullOrEmpty(this JobMeta m)
+        {
+            return !m.IsNullOrEmpty();
+        }
+        public static bool IsNullOrEmpty(this JobMeta m)
+        {
+            return m == null || m.JobCode.IsNullOrEmpty();
+        }
+    }
+
 }

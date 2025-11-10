@@ -229,6 +229,10 @@ namespace Schedule
 
             if (jobMeta == null)
             {
+                if (JobCanSkip())
+                {
+                    return JobMeta.Empty;
+                }
                 throw new ArgumentNullException("JobCode", $"JobCode({jobCode}) 缺少配置项");
             }
 
@@ -255,7 +259,7 @@ namespace Schedule
             };
         }
 
-        public virtual JobKey GetJobKey()
+        public virtual JobKey  GetJobKey()
         {
             return JobKey.Create(JobCode, $"{JobCode}_group");
         }

@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace WindNight.Core.Tests.Extension
 {
-    public class ValueTypeExtensionTest : TestBase
+    public partial class ValueTypeExtensionTest : TestBase
     {
         public ValueTypeExtensionTest(ITestOutputHelper outputHelper) : base(outputHelper)
         {
@@ -15,7 +15,7 @@ namespace WindNight.Core.Tests.Extension
         [Theory(DisplayName = "DecimalCeilingTest")]
         [InlineData(1.55, 2)]
         [InlineData(-1.45, -1)]
-        [InlineData(10.2, 11)]
+        [InlineData(10.2,11)]
         public void DecimalCeilingTest(decimal data, int expectData)
         {
             var rlt = data.Ceiling();
@@ -24,9 +24,9 @@ namespace WindNight.Core.Tests.Extension
         }
 
         [Theory(DisplayName = "DecimalRoundTest")]
-        [InlineData(1.55, 2)]
-        [InlineData(-1.45, -1)]
-        [InlineData(10.2, 10)]
+        [InlineData(1.55,2)]
+        [InlineData(-1.45,-1)]
+        [InlineData(10.2,10)]
         public void DecimalRoundTest(decimal data, int expectData)
         {
             var rlt = data.Round(0);
@@ -35,9 +35,9 @@ namespace WindNight.Core.Tests.Extension
         }
 
         [Theory(DisplayName = "DecimalFloorTest")]
-        [InlineData(1.55, 1)]
-        [InlineData(-1.45, -2)]
-        [InlineData(10.2, 10)]
+        [InlineData(1.55,1)]
+        [InlineData(-1.45,-2)]
+        [InlineData(10.2,10)]
         public void DecimalFloorTest(decimal data, int expectData)
         {
             var rlt = data.Floor();
@@ -47,9 +47,9 @@ namespace WindNight.Core.Tests.Extension
 
 
         [Theory(DisplayName = "DecimalTruncateTest")]
-        [InlineData(1.55, 1)]
-        [InlineData(-1.45, -1)]
-        [InlineData(10.2, 10)]
+        [InlineData(1.55,1)]
+        [InlineData(-1.45,-1)]
+        [InlineData(10.2,10)]
         public void DecimalTruncateTest(decimal data, int expectData)
         {
             var rlt = data.Truncate();
@@ -59,9 +59,9 @@ namespace WindNight.Core.Tests.Extension
 
 
         [Theory(DisplayName = "DoubleCeilingTest")]
-        [InlineData(1.55, 2)]
-        [InlineData(-1.45, -1)]
-        [InlineData(10.2, 11)]
+        [InlineData(1.55,2)]
+        [InlineData(-1.45,-1)]
+        [InlineData(10.2,11)]
         public void DoubleCeilingTest(double data, int expectData)
         {
             var rlt = data.Ceiling();
@@ -70,9 +70,9 @@ namespace WindNight.Core.Tests.Extension
         }
 
         [Theory(DisplayName = "DoubleRoundTest")]
-        [InlineData(1.55, 2)]
-        [InlineData(-1.45, -1)]
-        [InlineData(10.2, 10)]
+        [InlineData(1.55,2)]
+        [InlineData(-1.45,-1)]
+        [InlineData(10.2,10)]
         public void DoubleRoundTest(double data, int expectData)
         {
             var rlt = data.Round(0);
@@ -81,9 +81,9 @@ namespace WindNight.Core.Tests.Extension
         }
 
         [Theory(DisplayName = "DoubleFloorTest")]
-        [InlineData(1.55, 1)]
-        [InlineData(-1.45, -2)]
-        [InlineData(10.2, 10)]
+        [InlineData(1.55,1)]
+        [InlineData(-1.45,-2)]
+        [InlineData(10.2,10)]
         public void DoubleFloorTest(double data, int expectData)
         {
             var rlt = data.Floor();
@@ -92,15 +92,60 @@ namespace WindNight.Core.Tests.Extension
         }
 
         [Theory(DisplayName = "DoubleTruncateTest")]
-        [InlineData(1.55, 1)]
-        [InlineData(-1.45, -1)]
-        [InlineData(10.2, 10)]
+        [InlineData(1.55,1)]
+        [InlineData(-1.45,-1)]
+        [InlineData(10.2,10)]
         public void DoubleTruncateTest(double data, int expectData)
         {
             var rlt = data.Truncate();
             Assert.True(expectData == rlt, $"Truncate({data})  =>{rlt} !=expectData({expectData})");
             Output($"double.Truncate({data})  =>{rlt},expected is {expectData}");
         }
+
+
+
+
+
+        [Theory(DisplayName = "DoubleToInt")]
+        [InlineData(1.55,1)]
+        [InlineData(-1.45,-1)]
+        [InlineData(10.20,10)]
+        public void DoubleToIntTest(double data, int expectData)
+        {
+            var rlt = data.ToInt();
+            Assert.True(expectData == rlt, $"DoubleToInt({data})  =>{rlt} !=expectData({expectData})");
+            Output($"double.ToInt({data})  =>{rlt},expected is {expectData}");
+        }
+
+
+
+        [Theory(DisplayName = "DecimalToInt")]
+        [InlineData(1.55,1)]
+        [InlineData(-1.45,-1)]
+        [InlineData(10.20,10)]
+        public void DecimalToIntTest(decimal data, int expectData)
+        {
+            var rlt = data.ToInt();
+            Assert.True(expectData == rlt, $"DecimalToInt({data})  =>{rlt} !=expectData({expectData})");
+            Output($"decimal.ToInt({data})  =>{rlt},expected is {expectData}");
+        }
+
+        [Theory(DisplayName = "FloatToInt")]
+        [InlineData(1.55, 1)]
+        [InlineData(-1.45, -1)]
+        [InlineData(10.20, 10)]
+        public void FloatToIntTest(float data, int expectData)
+        {
+            var rlt = data.ToInt();
+            Assert.True(expectData == rlt, $"FloatToInt({data})  =>{rlt} !=expectData({expectData})");
+            Output($"float.ToInt({data})  =>{rlt},expected is {expectData}");
+        }
+
+
+
+    }
+    public partial class ValueTypeExtensionTest
+    {
 
         [Theory(DisplayName = "CalcRoomNo1")]
         [InlineData("101", 1, 1)]

@@ -1,11 +1,10 @@
-using System;
-using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Schedule.Abstractions;
 using Schedule.Ctrl;
 using Schedule.@internal;
+using WindNight.Linq.Extensions.Expressions;
 using static Schedule.@internal.ConfigItems;
 
 namespace Schedule.NetCore
@@ -16,13 +15,16 @@ namespace Schedule.NetCore
         {
             Ioc.Instance.InitServiceProvider(services);
             var jobConfigs = ConfigItems.JobsConfig;
-            if (jobConfigs == null || !jobConfigs.Items.Any())
+            if (jobConfigs == null || jobConfigs.Items.IsNullOrEmpty())
             {
                 //  configuration.GetSectionValue<JobsConfig>(ConfigItemsKey.ScheduleJobNodeName));
-                services.Configure<JobsConfig>(configuration.GetSection(ConfigItems.ConfigItemsKey.ScheduleJobNodeName));
-                jobConfigs = configuration.GetSection(ConfigItems.ConfigItemsKey.ScheduleJobNodeName).Get<JobsConfig>();
-                if (jobConfigs == null || !jobConfigs.Items.Any())
-                    throw new ArgumentNullException($"配置 ScheduleJobs 不能为空！请注册节点【 ScheduleJobs】");
+                services.Configure<JobsConfig>(configuration.GetSection(ConfigItemsKey.ScheduleJobNodeName));
+                jobConfigs = configuration.GetSection(ConfigItemsKey.ScheduleJobNodeName).Get<JobsConfig>();
+                if (jobConfigs == null || jobConfigs.Items.IsNullOrEmpty())
+                {
+                    throw new ArgumentNullException("配置 ScheduleJobs 不能为空！请注册节点【 ScheduleJobs】");
+                }
+
                 SetJobsConfig(jobConfigs);
             }
 
