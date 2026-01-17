@@ -23,6 +23,7 @@ namespace WindNight.LogExtension
 
 
 
+            public static bool OpenDebug => OpenDebugInternal;
 
 
             internal static class ConstKeys

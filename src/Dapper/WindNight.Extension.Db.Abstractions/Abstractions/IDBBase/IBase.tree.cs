@@ -3,22 +3,22 @@ using WindNight.Core.SQL.Abstractions;
 namespace WindNight.Extension.Db.Abstractions
 {
     /// <summary>
-    ///     含Id的树形仓库基类 默认主键是 int
+    ///     含Id的树形仓库基类 默认主键是 int  <see cref="ITreeReaderBaseRepositoryService"/>
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <inheritdoc />
-    [Obsolete("Please Use ITreeReaderBaseRepositoryService ")]
+    [Obsolete("Please Use ITreeReaderBaseRepositoryService ",true)]
     public interface ITreeRepositoryService<TEntity> : ITreeRepositoryService<TEntity, int>
         where TEntity : IEntity, ITreeEntity<int>
     {
     }
 
     /// <summary>
-    ///     含Id的树形仓库基类
+    ///     含Id的树形仓库基类 <see cref="ITreeReaderBaseRepositoryService"/>
     /// </summary>
     /// <typeparam name="TEntity"> inherit from <see cref="IEntity" /> , <see cref="ITreeEntity{TId}" /></typeparam>
     /// <typeparam name="TId"></typeparam>
-    [Obsolete("Please Use ITreeReaderBaseRepositoryService ")]
+    [Obsolete("Please Use ITreeReaderBaseRepositoryService ", true)]
     public interface ITreeRepositoryService<TEntity, TId>
         where TEntity : IEntity, ITreeEntity<TId>
         where TId : IEquatable<TId>, IComparable<TId>

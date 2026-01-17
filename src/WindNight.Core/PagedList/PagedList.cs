@@ -88,8 +88,10 @@ namespace System.Collections.Generic
         internal PagedList(IEnumerable<T> source, int pageIndex, int pageSize, int indexFrom)
         {
             if (indexFrom > pageIndex)
+            {
                 throw new ArgumentException(
                     $"indexFrom: {indexFrom} > pageIndex: {pageIndex}, must indexFrom <= pageIndex");
+            }
 
             if (source is IQueryable<T> querable)
             {
@@ -157,8 +159,10 @@ namespace System.Collections.Generic
             int pageIndex, int pageSize, int indexFrom)
         {
             if (indexFrom > pageIndex)
+            {
                 throw new ArgumentException(
                     $"indexFrom: {indexFrom} > pageIndex: {pageIndex}, must indexFrom <= pageIndex");
+            }
 
             if (source is IQueryable<TSource> querable)
             {

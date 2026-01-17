@@ -25,6 +25,8 @@ namespace WindNight.AspNetCore.Mvc.Extensions
 
         public static string GetReqTraceIdValue(this HttpRequest httpRequest) => httpRequest.QueryHeaderValue(ConstantKeys.ReqTraceIdKey);
 
+        public static string GetReqDeviceCodeValue(this HttpRequest httpRequest) => httpRequest.QueryHeaderValue(ConstantKeys.ReqDeviceCodeKey);
+
         public static string GetAccessTokenValue(this HttpRequest httpRequest)
         {
             var authorizationValue = GetAuthorizationValue(httpRequest);

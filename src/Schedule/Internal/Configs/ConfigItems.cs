@@ -30,6 +30,7 @@ namespace Schedule.@internal
             }
         }
 
+        public static bool OpenDebug => OpenDebugInternal;
 
 
         internal static JobsConfig JobsConfig

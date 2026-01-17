@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.IO;
-using System.Reflection;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
-using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Enums.Abstractions;
@@ -26,7 +19,6 @@ namespace WindNight.Core.SysLogCenter.Extensions
 
         protected static bool CanLog(LogLevels level)
         {
-
             if (level == LogLevels.None)
             {
                 return false;
@@ -44,12 +36,12 @@ namespace WindNight.Core.SysLogCenter.Extensions
 
             return true;
         }
-
-
     }
 
     public partial class DefaultLogHelperBase
     {
+        private static ILogService CurrentLogService => Ioc.Instance.CurrentLogService;
+
         /// <summary>
         /// </summary>
         /// <param name="url"></param>
@@ -98,6 +90,7 @@ namespace WindNight.Core.SysLogCenter.Extensions
                 {
                     buildType = HardInfo.BuildType;
                 }
+
                 CurrentLogService?.Register(buildType, appendMessage, traceId);
             }
             catch (Exception ex)
@@ -111,7 +104,8 @@ namespace WindNight.Core.SysLogCenter.Extensions
         /// <param name="buildType"></param>
         /// <param name="exception"></param>
         /// <param name="appendMessage"></param>
-        public static void LogOfflineInfo(string buildType, Exception exception = null, bool appendMessage = false, string traceId = "")
+        public static void LogOfflineInfo(string buildType, Exception exception = null, bool appendMessage = false,
+            string traceId = "")
         {
             try
             {
@@ -119,10 +113,12 @@ namespace WindNight.Core.SysLogCenter.Extensions
                 {
                     traceId = HardInfo.NodeCode;
                 }
+
                 if (buildType.IsNullOrEmpty())
                 {
                     buildType = HardInfo.BuildType;
                 }
+
                 CurrentLogService?.Offline(buildType, exception, appendMessage, traceId);
             }
             catch (Exception ex)
@@ -131,7 +127,6 @@ namespace WindNight.Core.SysLogCenter.Extensions
             }
         }
 
-        static ILogService CurrentLogService => Ioc.Instance.CurrentLogService;
         /// <summary>
         /// </summary>
         /// <param name="obj"></param>
@@ -147,13 +142,12 @@ namespace WindNight.Core.SysLogCenter.Extensions
                 DoConsoleLog($"Report 日志异常:{ex.GetMessage()}");
             }
         }
-
     }
 
     public partial class DefaultLogHelperBase
     {
         public static void Debug(string msg, long millisecond = 0, string url = "", string serverIp = "",
-              string clientIp = "", bool appendMessage = false, string traceId = "")
+            string clientIp = "", bool appendMessage = false, string traceId = "")
         {
             if (!OpenDebug)
             {
@@ -171,14 +165,16 @@ namespace WindNight.Core.SysLogCenter.Extensions
                 appendMessage: appendMessage, traceId: traceId);
         }
 
-        public static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "", string serverIp = "",
+        public static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "",
+            string serverIp = "",
             string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             Add(msg, LogLevels.Warning, exception, millisecond: millisecond, url: url, serverIp: serverIp,
                 clientIp: clientIp, appendMessage: appendMessage, traceId: traceId);
         }
 
-        public static void Error(string msg, Exception exception, long millisecond = 0, string url = "", string serverIp = "",
+        public static void Error(string msg, Exception exception, long millisecond = 0, string url = "",
+            string serverIp = "",
             string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             Add(msg, LogLevels.Error, exception, millisecond: millisecond, url: url, serverIp: serverIp,
@@ -191,12 +187,10 @@ namespace WindNight.Core.SysLogCenter.Extensions
             Add(msg, LogLevels.Critical, exception, millisecond: millisecond, url: url, serverIp: serverIp,
                 clientIp: clientIp, appendMessage: appendMessage, traceId: traceId);
         }
-
     }
 
     public partial class DefaultLogHelperBase
     {
-
         /// <summary>
         /// </summary>
         /// <param name="msg"></param>
@@ -223,7 +217,8 @@ namespace WindNight.Core.SysLogCenter.Extensions
                 var logService = Ioc.Instance.CurrentLogService;
                 if (logService != null)
                 {
-                    logService?.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
+                    logService?.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage,
+                        traceId);
                 }
                 else
                 {
@@ -238,7 +233,6 @@ namespace WindNight.Core.SysLogCenter.Extensions
 
         protected static void DoConsoleLog(LogLevels logLevel, string message, Exception? exception = null)
         {
-
             if (ConfigItems.LogOnConsole)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -247,6 +241,7 @@ namespace WindNight.Core.SysLogCenter.Extensions
                 {
                     message = $"{message} {Environment.NewLine} {exception.GetMessage()}";
                 }
+
                 Console.WriteLine($"=={HardInfo.NowString}==ConsoleLog:{Environment.NewLine}{message}");
                 Console.ResetColor();
             }
@@ -262,6 +257,7 @@ namespace WindNight.Core.SysLogCenter.Extensions
                 {
                     message = $"{message} {Environment.NewLine} {exception.GetMessage()}";
                 }
+
                 Console.WriteLine($"=={HardInfo.NowString}==ConsoleLog:{Environment.NewLine}{message}");
                 Console.ResetColor();
             }

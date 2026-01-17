@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
+using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DbLog.Abstractions;
 using WindNight.Extension.Logger.DbLog.@internal;
 
@@ -69,6 +70,8 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
                         NodeCode = HardInfo.NodeCode ?? "",
                         LogPluginVersion = DbLoggerPluginVersion,
 
+                        BizSvrKind = HardInfo.QueryBizSvrKind(),
+                        BizSvrType = HardInfo.QueryBizSvrType(),
                     };
                     if (exception != null)
                     {
@@ -111,7 +114,8 @@ namespace WindNight.Extension.Logger.Mysql.DbLog
                 LogTs = logTimestamps,
                 NodeCode = HardInfo.NodeCode ?? "",
                 LogPluginVersion = DbLoggerPluginVersion,
-
+                BizSvrKind = HardInfo.QueryBizSvrKind(),
+                BizSvrType = HardInfo.QueryBizSvrType(),
             };
 
             if (TryGetJObject(state, out var jo))

@@ -53,9 +53,17 @@ namespace Schedule
                 var allJobs = await ScheduleModConfig.Instance.DefaultScheduler.GetCurrentlyExecutingJobs();
                 foreach (var context in allJobs)
                 {
-                    var jobInfo = context?.GetJobBaseInfo();
-                    //var jobId = jobInfo?.JobId;
-                    jobCtrl?.CompleteJobSafety(jobInfo, JobRunStateEnum.Crashed, $"App Crashed {now}");
+                    try
+                    {
+                        var jobInfo = context?.GetJobBaseInfo();
+                        //var jobId = jobInfo?.JobId;
+                        jobCtrl?.CompleteJobSafety(jobInfo, JobRunStateEnum.Crashed, $"App Crashed {now}");
+
+                    }
+                    catch
+                    {
+
+                    }
                 }
             }
             catch

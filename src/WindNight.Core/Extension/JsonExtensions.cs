@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using WindNight.Core.@internal;
+using WindNight.Linq.Extensions.Expressions;
 #if NETSTANDARD2_1
 using System.Diagnostics.CodeAnalysis;
 #endif
@@ -134,8 +135,7 @@ namespace Newtonsoft.Json.Extension
         ///     settings will be used.
         /// </param>
         /// <returns></returns>
-        public static string ToJsonStr(this object? obj, Formatting formatting = Formatting.None,
-            JsonSerializerSettings? settings = null)
+        public static string ToJsonStr(this object? obj, Formatting formatting = Formatting.None, JsonSerializerSettings? settings = null)
         {
             if (settings == null)
             {
@@ -146,6 +146,8 @@ namespace Newtonsoft.Json.Extension
 
             return JsonConvert.SerializeObject(obj, formatting, settings);
         }
+
+
     }
 
 
@@ -154,6 +156,28 @@ namespace Newtonsoft.Json.Extension
         public static bool HasKey(this JObject jo, string key)
         {
             return jo.ContainsKey(key);
+        }
+
+        public static bool IsNullOrEmpty(this JObject? jo, string key)
+        {
+            if (jo == null || !jo.HasValues)
+            {
+                return true;
+            }
+
+            var jValue = jo[key];
+            if (jValue == null || !jValue.HasValues)
+            {
+                return true;
+            }
+
+            if (jValue.ToString().IsNullOrEmpty())
+            {
+                return true;
+            }
+
+            return false;
+
         }
 
         public static JToken SafeGetValueBase(this JObject jo, string key, JToken defaultValue = null)

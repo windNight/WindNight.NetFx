@@ -1,19 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
 {
-
     internal static class ApiDescriptionExtensions
     {
-        public static bool TryGetMethodInfo(
-            this ApiDescription apiDescription,
-            out MethodInfo methodInfo)
+        public static bool TryGetMethodInfo(this ApiDescription apiDescription, out MethodInfo methodInfo)
         {
             if (apiDescription.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
             {
@@ -31,14 +24,12 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
             {
                 return methodInfo.GetCustomAttributes(true).Union(methodInfo.DeclaringType.GetCustomAttributes(true));
             }
+
             return HardInfo.EmptyList<object>();
         }
 
         [Obsolete("Use TryGetMethodInfo() and CustomAttributes() instead")]
-        public static void GetAdditionalMetadata(
-            this ApiDescription apiDescription,
-            out MethodInfo methodInfo,
-            out IEnumerable<object> customAttributes)
+        public static void GetAdditionalMetadata(this ApiDescription apiDescription, out MethodInfo methodInfo, out IEnumerable<object> customAttributes)
         {
             if (apiDescription.TryGetMethodInfo(out methodInfo))
             {
@@ -55,7 +46,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
         {
             var relativePath = apiDescription.RelativePath;
             if (relativePath == null)
+            {
                 return null;
+            }
+
             return relativePath.Split('?').First();
         }
     }

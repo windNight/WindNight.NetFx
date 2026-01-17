@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Extensions.@internal;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -45,6 +46,7 @@ namespace Swashbuckle.AspNetCore.HideApi
             }
         }
 
+    
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             if (CurrentResKeyDict.IsNullOrEmpty())
@@ -94,6 +96,8 @@ namespace Swashbuckle.AspNetCore.HideApi
                 }
             }
         }
+
+      
     }
 
     public enum SwaggerCustomStatusCodeEnum

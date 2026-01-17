@@ -61,8 +61,10 @@ namespace Schedule
             {
                 return null;
             }
-            var jobConfig = ScheduleModConfig.Instance.Jobs.FirstOrDefault(m =>
-                jobCode.Equals(m.JobCode, StringComparison.OrdinalIgnoreCase));
+
+            var jobConfig = ScheduleModConfig.Instance.QueryJobInfoByJobCode(jobCode);
+
+            //Jobs.FirstOrDefault(m =>jobCode.Equals(m.JobCode, StringComparison.OrdinalIgnoreCase));
 
             return jobConfig;
 

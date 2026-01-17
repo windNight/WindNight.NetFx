@@ -5,6 +5,7 @@ using System.Text;
 using Newtonsoft.Json.Extension;
 using WindNight.Core;
 using WindNight.Core.ExceptionExt;
+using WindNight.Core.Extension;
 using WindNight.Core.@internal;
 using WindNight.Linq.Extensions.Expressions;
 
@@ -164,7 +165,39 @@ namespace System
         /// <returns></returns>
         public static int ToInt(this object obj, int defaultValue = 0)
         {
-          
+            if (obj == null)
+            {
+                return defaultValue;
+            }
+
+            var type = obj.GetType();
+            if (type.IsValueType)
+            {
+                try
+                {
+                    if (obj.IsDecimal())
+                    {
+                        return ValueTypeExtension.ToInt((decimal)obj);
+                    }
+
+                    if (obj.IsDouble())
+                    {
+                        return ValueTypeExtension.ToInt((double)obj);
+                    }
+
+                    if (obj.IsFloat())
+                    {
+                        return ValueTypeExtension.ToInt((float)obj);
+                    }
+
+                    return Convert.ToInt32(obj);
+                }
+                catch
+                {
+
+                }
+            }
+
             var sourceString = obj?.ToString() ?? "";
             if (sourceString.IsNullOrEmpty())
             {
@@ -172,6 +205,7 @@ namespace System
             }
 
             return int.TryParse(sourceString, out var rlt) ? rlt : defaultValue;
+
         }
 
 
@@ -208,6 +242,35 @@ namespace System
 
         public static long ToLong(this object obj, long defaultValue = 0)
         {
+
+            var type = obj.GetType();
+            if (type.IsValueType)
+            {
+                try
+                {
+                    if (obj.IsDecimal())
+                    {
+                        return ValueTypeExtension.ToInt((decimal)obj);
+                    }
+
+                    if (obj.IsDouble())
+                    {
+                        return ValueTypeExtension.ToInt((double)obj);
+                    }
+
+                    if (obj.IsFloat())
+                    {
+                        return ValueTypeExtension.ToInt((float)obj);
+                    }
+
+                    return Convert.ToInt64(obj);
+                }
+                catch
+                {
+
+                }
+            }
+
             var sourceString = obj?.ToString() ?? "";
             if (sourceString.IsNullOrEmpty())
             {

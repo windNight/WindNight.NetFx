@@ -10,5 +10,7 @@ namespace WindNight.Config.@internal
         public static bool OpenConfigLogs =>
             GetAppSettingValue(nameof(OpenConfigLogs), false);
 
+        public static bool OpenDebug => OpenDebugInternal;
+
     }
 }

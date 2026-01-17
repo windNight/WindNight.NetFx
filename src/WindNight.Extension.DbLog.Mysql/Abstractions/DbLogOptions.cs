@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,15 +15,15 @@ namespace WindNight.Extension.Logger.DbLog.Abstractions
         public int LogAppId { get; set; }
 
         /// <summary> </summary>
-        public string LogAppCode { get; set; }
+        public string LogAppCode { get; set; } = "";
 
         /// <summary> 项目名称 </summary>
-        public string LogAppName { get; set; }
+        public string LogAppName { get; set; } = "";
 
         /// <summary> DbLog版本号 </summary>
-        public string DbLogVersion { get; set; }
+        public string DbLogVersion { get; set; } = "";
 
-        public string DbConnectString { get; set; }
+        public string DbConnectString { get; set; } = "";
 
         /// <summary> 消息最大的缓存大小 </summary>
         public int QueuedMaxMessageCount { get; set; } = 1024;

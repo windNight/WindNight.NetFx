@@ -182,9 +182,10 @@ namespace WindNight.Core.ConfigCenter.Extensions
         public static string SystemAppCode => ConfigService?.SystemAppCode ?? Configuration?.GetAppCode() ?? "";
         public static string SystemAppName => ConfigService?.SystemAppName ?? Configuration?.GetAppName() ?? "";
 
-        public static bool OpenDebug =>
-            GetAppSettingValue(nameof(OpenDebug), false, false);
+        protected static bool OpenDebugInternal =>
+            GetAppSettingValue("OpenDebug", false, false);
 
+      
         public static bool LogOnConsole
             => GetAppSettingValue(nameof(LogOnConsole), false, false);
         public static bool Log4netOpen
@@ -193,6 +194,7 @@ namespace WindNight.Core.ConfigCenter.Extensions
                 => GetAppSettingValue(nameof(IsValidateInput), false, false);
         public static bool LogProcessOpened
             => GetAppSettingValue(nameof(LogProcessOpened), false, false);
+
         public static bool ApiUrlOpened
                => GetAppSettingValue(nameof(ApiUrlOpened), false, false);
 
@@ -218,28 +220,6 @@ namespace WindNight.Core.ConfigCenter.Extensions
                 {
                     var configValue = GlobalMiniLogLevelStr;
                     return configValue.Convert2LogLevel();
-                    //if (configValue.StartsWith("debug", StringComparison.OrdinalIgnoreCase))
-                    //{
-                    //    return LogLevels.Debug;
-                    //}
-                    //if (configValue.StartsWith("info", StringComparison.OrdinalIgnoreCase))
-                    //{
-                    //    return LogLevels.Information;
-                    //}
-
-                    //if (configValue.StartsWith("warn", StringComparison.OrdinalIgnoreCase))
-                    //{
-                    //    return LogLevels.Warning;
-                    //}
-
-                    //var flag = Enum.TryParse<LogLevels>(configValue, true, out var logLevel);
-
-                    //if (flag)
-                    //{
-                    //    return logLevel;
-                    //}
-
-                    //return LogLevels.Information;
 
                 }
                 catch (Exception ex)

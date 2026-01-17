@@ -7,7 +7,7 @@ namespace WindNight.ConfigCenter.Extension
         private static string JsonConfigPathPrefix => $"{ConfigType.JsonConfig}";
 
 
-        public static List<JsonFileConfigInfo> JsonConfigList
+        public static IEnumerable<JsonFileConfigInfo> JsonConfigList
         {
             get
             {

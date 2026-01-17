@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Newtonsoft.Json.Extension;
+using WindNight.Core.Abstractions;
 using WindNight.Core.Enums.Abstractions;
 using WindNight.Extension.Logger.DbLog.Abstractions;
 using WindNight.Extension.Logger.Mysql.DbLog;
@@ -223,6 +224,9 @@ namespace WindNight.Extension.Logger.DbLog.Extensions
                     SerialNumber = traceId,
                     NodeCode = HardInfo.NodeCode ?? "",
                     LogPluginVersion = LogPluginVersion,
+
+                    BizSvrKind = HardInfo.QueryBizSvrKind(),
+                    BizSvrType = HardInfo.QueryBizSvrType(),
                 };
                 if (exception != null)
                 {

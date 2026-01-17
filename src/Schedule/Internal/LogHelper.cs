@@ -1,20 +1,12 @@
-using System;
-using System.IO;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
-using Newtonsoft.Json.Extension;
-using Schedule.@internal;
-using WindNight.Core.Abstractions;
 using WindNight.Core.Enums.Abstractions;
 using WindNight.Core.ExceptionExt;
-using WindNight.Core.SysLogCenter.Extensions;
 using WindNight.Extension;
 
 namespace Schedule.@internal
 {
     internal partial class LogHelper
     {
-
         public static string CurrentVersion => BuildInfo.BuildVersion;
 
         public static string CurrentCompileTime => BuildInfo.BuildTime;
@@ -24,7 +16,6 @@ namespace Schedule.@internal
 
         protected static bool CanLog(LogLevels level)
         {
-
             if (level == LogLevels.None)
             {
                 return false;
@@ -42,11 +33,10 @@ namespace Schedule.@internal
 
             return true;
         }
-
     }
+
     internal partial class LogHelper
     {
-
         public static void Debug(string msg, long millisecond = 0, string url = "", string serverIp = "",
             string clientIp = "", bool appendMessage = false, string traceId = "")
         {
@@ -66,14 +56,16 @@ namespace Schedule.@internal
                 appendMessage: appendMessage, traceId: traceId);
         }
 
-        public static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "", string serverIp = "",
+        public static void Warn(string msg, Exception exception = null, long millisecond = 0, string url = "",
+            string serverIp = "",
             string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             Add(msg, LogLevels.Warning, exception, millisecond: millisecond, url: url, serverIp: serverIp,
                 clientIp: clientIp, appendMessage: appendMessage, traceId: traceId);
         }
 
-        public static void Error(string msg, Exception exception, long millisecond = 0, string url = "", string serverIp = "",
+        public static void Error(string msg, Exception exception, long millisecond = 0, string url = "",
+            string serverIp = "",
             string clientIp = "", bool appendMessage = true, string traceId = "")
         {
             Add(msg, LogLevels.Error, exception, millisecond: millisecond, url: url, serverIp: serverIp,
@@ -90,7 +82,6 @@ namespace Schedule.@internal
 
     internal partial class LogHelper
     {
-
         /// <summary>
         /// </summary>
         /// <param name="msg"></param>
@@ -104,7 +95,8 @@ namespace Schedule.@internal
         /// <param name="appendMessage"></param>
         private static void Add(string msg, LogLevels level, Exception errorStack = null, bool isTimeout = false,
             long millisecond = 0,
-            string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false, string traceId = "")
+            string url = "", string serverIp = "", string clientIp = "", bool appendMessage = false,
+            string traceId = "")
         {
             try
             {
@@ -113,6 +105,7 @@ namespace Schedule.@internal
                 {
                     return;
                 }
+
                 if (JobContext.JobId.IsNotNullOrEmpty() && CurrentItem.GetSerialNumber != JobContext.JobId)
                 {
                     CurrentItem.AddSerialNumber(JobContext.JobId, true);
@@ -122,10 +115,12 @@ namespace Schedule.@internal
                 {
                     traceId = JobContext.JobId;
                 }
+
                 var logService = Ioc.Instance.CurrentLogService;
                 if (logService != null)
                 {
-                    logService?.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage, traceId: traceId);
+                    logService?.AddLog(level, msg, errorStack, millisecond, url, serverIp, clientIp, appendMessage,
+                        traceId);
                 }
                 else
                 {
@@ -133,6 +128,7 @@ namespace Schedule.@internal
                     {
                         msg = $"{msg} {Environment.NewLine} {errorStack.GetMessage()}";
                     }
+
                     DoConsoleLog(level, msg);
                 }
             }
@@ -151,10 +147,13 @@ namespace Schedule.@internal
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                 }
-                $"【{logLevel.ToString()}】:  Ioc.GetService<ILogService>() Is null.\r\n can not log info: {message}".Log2Console();
+
+                $"【{logLevel.ToString()}】:  Ioc.GetService<ILogService>() Is null.\r\n can not log info: {message}"
+                    .Log2Console();
                 Console.ResetColor();
             }
         }
+
         protected static void DoConsoleLog(string message)
         {
             if (ConfigItems.LogOnConsole)
@@ -164,8 +163,5 @@ namespace Schedule.@internal
                 Console.ResetColor();
             }
         }
-
-
-
     }
 }

@@ -148,7 +148,10 @@ namespace WindNight.Config.@internal
         public virtual T GetFileConfig<T>(string fileName, bool isThrow = true) where T : new()
         {
             var configValue = ConfigCenterContext.GetJsonConfig(fileName);
-            if (configValue.IsNullOrEmpty()) return default;
+            if (configValue.IsNullOrEmpty())
+            {
+                return default;
+            }
 
             return configValue.To<T>();
 

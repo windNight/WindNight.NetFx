@@ -9,12 +9,12 @@ namespace WindNight.Core.SQL
         /// <summary>
         ///     指定当前为第几页
         /// </summary>
-        public virtual int PageIndex { get; set; }
+        public int PageIndex { get; set; } = 1;
 
         /// <summary>
         ///     每页多少条记录
         /// </summary>
-        public virtual int PageSize { get; set; }
+        public int PageSize { get; set; } = 30;
 
         /// <summary> 从第几页开始 默认 1 大部分都是1   </summary>
         [NJsonIgnore, MJsonIgnore]

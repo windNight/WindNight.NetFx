@@ -22,35 +22,43 @@ namespace WindNight.Config.Extensions.Attributes
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var CCAuth = Ioc.GetService<IConfigCenterAuth>();
-            if (CCAuth != null)
+            try
             {
-                var isValid = CCAuth.ConfigCenterApiAuth();
-                if (!isValid)
-                {
 
-                    // context.HttpContext.Response.StatusCode = 404;
-                    context.Result = new ObjectResult(ResponseResult.GenNotFoundRes(null));
-                    return;
+                var CCAuth = Ioc.GetService<IConfigCenterAuth>();
+                if (CCAuth != null)
+                {
+                    var isValid = CCAuth.ConfigCenterApiAuth();
+                    if (!isValid)
+                    {
+
+                        // context.HttpContext.Response.StatusCode = 404;
+                        context.Result = new ObjectResult(ResponseResult.GenNotFoundRes(null));
+                        return;
+
+                    }
 
                 }
 
-            }
-
-            var remoteIp = context.HttpContext.GetClientIp();
-            if (!remoteIp.IsInternalIp())
-            {
-                var ak = GetAccessToken(context.HttpContext);
-                var token = GetAppTokenValue(context.HttpContext);
-                if (ak.IsNullOrEmpty() && token.IsNullOrEmpty())
+                var remoteIp = context.HttpContext.GetClientIp();
+                if (!remoteIp.IsInternalIp())
                 {
-                    // context.HttpContext.Response.StatusCode = 404;
-                    context.Result = new ObjectResult(ResponseResult.GenNotFoundRes(null));
-                    return;
+                    var ak = GetAccessToken(context.HttpContext);
+                    var token = GetAppTokenValue(context.HttpContext);
+                    if (ak.IsNullOrEmpty() && token.IsNullOrEmpty())
+                    {
+                        // context.HttpContext.Response.StatusCode = 404;
+                        context.Result = new ObjectResult(ResponseResult.GenNotFoundRes(null));
+                        return;
 
+                    }
                 }
-            }
 
+            }
+            catch (Exception ex)
+            {
+
+            }
             base.OnActionExecuting(context);
 
 

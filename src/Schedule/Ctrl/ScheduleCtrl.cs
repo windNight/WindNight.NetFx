@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Extension;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Schedule.Abstractions;
 using Schedule.Attributes;
@@ -62,21 +58,8 @@ namespace Schedule.Ctrl
 
             return new JobInfoOutput
             {
-                DataList = allJobInfo,
-                PageCurrent = search.PageCurrent,
-                Total = totalJobsCount,
+                DataList = allJobInfo, PageCurrent = search.PageCurrent, Total = totalJobsCount
             };
-        }
-
-        private List<JobMeta> GetAllJobInfo()
-        {
-            var allJobEnv = __JobEnvManager.ReadAllJobEnv();
-            var allJobInfo = ScheduleModConfig.Instance.Jobs.ToList();
-
-            allJobInfo.RemoveAll(x =>
-                allJobEnv.Select(y => y.JobName).Contains(x.JobName) && x.JobId.IsNullOrEmpty());
-            allJobInfo.AddRange(allJobEnv);
-            return allJobInfo;
         }
 
         /// <summary>
@@ -122,7 +105,8 @@ namespace Schedule.Ctrl
             {
                 return JobActionRetEnum.NoConfig;
             }
-            if (jobParams.SupportOnceJob == false)
+
+            if (!jobParams.SupportOnceJob)
             {
                 return JobActionRetEnum.Conflict;
             }
@@ -149,10 +133,13 @@ namespace Schedule.Ctrl
         {
             var jobParams = ScheduleModConfig.Instance.Jobs == null
                 ? null
-                : ScheduleModConfig.Instance.Jobs.FirstOrDefault(x => x.JobName.Equals(name));
+                : ScheduleModConfig.Instance.QueryJobInfoByJobName(name);
+            // : ScheduleModConfig.Instance.Jobs.FirstOrDefault(x => x.JobName.Equals(name));
             if (jobParams != null)
                 //非单次运行的job不支持停止，只能暂停
+            {
                 return JobActionRetEnum.Conflict;
+            }
 
             __JobEnvManager.DelJobFromEnv(name);
 
@@ -162,7 +149,7 @@ namespace Schedule.Ctrl
             //移除job, trigger listener and job self and its trigger
             return ScheduleModConfig.Instance.DefaultScheduler.ListenerManager.RemoveJobListener(listenerName) &&
                    ScheduleModConfig.Instance.DefaultScheduler.ListenerManager.RemoveTriggerListener(listenerName) &&
-                await ScheduleModConfig.Instance.DefaultScheduler.DeleteJob(jobKey)
+                   await ScheduleModConfig.Instance.DefaultScheduler.DeleteJob(jobKey)
                 ? JobActionRetEnum.Success
                 : JobActionRetEnum.Failed;
         }
@@ -176,10 +163,20 @@ namespace Schedule.Ctrl
         {
             var jobParams = GetAllJobInfo()
                 .FirstOrDefault(x => x.JobName.Equals(name) && x.JobId.IsNullOrEmpty());
-            if (jobParams == null) return JobActionRetEnum.Failed;
+            if (jobParams == null)
+            {
+                return JobActionRetEnum.Failed;
+            }
 
-            if (jobParams.State == JobStateEnum.Closed) return JobActionRetEnum.Conflict;
-            if (jobParams.State == JobStateEnum.Pause) return JobActionRetEnum.Success;
+            if (jobParams.State == JobStateEnum.Closed)
+            {
+                return JobActionRetEnum.Conflict;
+            }
+
+            if (jobParams.State == JobStateEnum.Pause)
+            {
+                return JobActionRetEnum.Success;
+            }
 
             jobParams.State = JobStateEnum.Pause;
             __JobEnvManager.SaveJobEnv(jobParams);
@@ -208,6 +205,7 @@ namespace Schedule.Ctrl
             {
                 return JobActionRetEnum.Conflict;
             }
+
             if (jobParams.State == JobStateEnum.Open)
             {
                 return JobActionRetEnum.Success;
@@ -221,6 +219,7 @@ namespace Schedule.Ctrl
             {
                 return JobActionRetEnum.Failed;
             }
+
             ScheduleModConfig.Instance.DefaultScheduler.ResumeJob(jobCtrl.GetJobKey());
             return JobActionRetEnum.Success;
         }
@@ -230,6 +229,18 @@ namespace Schedule.Ctrl
             var job = Ioc.GetService<IJobCtrl>(name);
             var jobParams = job.ReadJobParam();
             return jobParams?.JobParamsDesc ?? "";
+        }
+
+        private List<JobMeta> GetAllJobInfo()
+        {
+            var allJobEnv = __JobEnvManager.ReadAllJobEnv();
+            var allJobInfo = ScheduleModConfig.Instance.Jobs.ToList();
+
+            allJobInfo.RemoveAll(x => allJobEnv.Select(y => y.JobName).Contains(x.JobName) && x.JobId.IsNullOrEmpty());
+
+            allJobInfo.AddRange(allJobEnv);
+
+            return allJobInfo;
         }
     }
 }

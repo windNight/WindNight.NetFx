@@ -24,7 +24,7 @@ namespace WindNight.Extension.Db.Extensions
         /// <param name="originSqlString"></param>
         /// <param name="isIgnoreCase">参数key 是否区分大小写 默认为 true.</param>
         /// <returns></returns>
-        private static List<string> GetMatchedKeys(this string originSqlString, bool isIgnoreCase = true)
+        private static IEnumerable<string> GetMatchedKeys(this string originSqlString, bool isIgnoreCase = true)
         {
             // TODO 可以优化
             var listStr = new List<string>();

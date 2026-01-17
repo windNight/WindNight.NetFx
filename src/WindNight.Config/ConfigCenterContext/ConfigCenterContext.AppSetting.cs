@@ -5,7 +5,7 @@ namespace WindNight.ConfigCenter.Extension
         private static string AppSettingsPathPrefix => $"{ConfigType.AppSettings}";
 
 
-        public static List<AppSettingInfo> AppSettingList
+        public static IEnumerable<AppSettingInfo> AppSettingList
         {
             get
             {

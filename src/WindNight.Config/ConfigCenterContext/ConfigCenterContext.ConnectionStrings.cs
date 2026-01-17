@@ -5,7 +5,7 @@ namespace WindNight.ConfigCenter.Extension
         private static string ConnectionStringsPathPrefix => $"{ConfigType.ConnectionStrings}";
 
 
-        public static List<ConnectionStringInfo> ConnectionStringList
+        public static IEnumerable<ConnectionStringInfo> ConnectionStringList
         {
             get
             {

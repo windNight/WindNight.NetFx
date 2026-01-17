@@ -156,7 +156,7 @@ namespace WindNight.AspNetCore.Mvc.Extensions
     public static partial class CustomAttributeExtension
     {
         static IEnumerable<TAttr> Empty<TAttr>()
- where TAttr : Attribute, IAttribute
+            where TAttr : Attribute, IAttribute
         {
             return HardInfo.EmptyList<TAttr>();
         }

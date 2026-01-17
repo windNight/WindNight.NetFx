@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -8,63 +8,58 @@ using System.Linq;
 namespace FastMember
 {
     /// <summary>
-    /// Provides a means of reading a sequence of objects as a data-reader, for example
-    /// for use with SqlBulkCopy or other data-base oriented code
+    ///     Provides a means of reading a sequence of objects as a data-reader, for example
+    ///     for use with SqlBulkCopy or other data-base oriented code
     /// </summary>
     public class ObjectReader : DbDataReader
     {
-        private IEnumerator source;
         private readonly TypeAccessor accessor;
-        private readonly string[] memberNames;
-        private readonly Type[] effectiveTypes;
         private readonly BitArray allowNull;
+        private readonly Type[] effectiveTypes;
+        private readonly string[] memberNames;
+        private bool active = true;
+
+        private object current;
+        private IEnumerator source;
 
         /// <summary>
-        /// Creates a new ObjectReader instance for reading the supplied data
-        /// </summary>
-        /// <param name="source">The sequence of objects to represent</param>
-        /// <param name="members">The members that should be exposed to the reader</param>
-        public static ObjectReader Create<T>(IEnumerable<T> source, params string[] members)
-        {
-            return new ObjectReader(typeof(T), source, members);
-        }
-
-        /// <summary>
-        /// Creates a new ObjectReader instance for reading the supplied data
+        ///     Creates a new ObjectReader instance for reading the supplied data
         /// </summary>
         /// <param name="type">The expected Type of the information to be read</param>
         /// <param name="source">The sequence of objects to represent</param>
         /// <param name="members">The members that should be exposed to the reader</param>
         public ObjectReader(Type type, IEnumerable source, params string[] members)
         {
-            if (source == null) throw new ArgumentOutOfRangeException("source");
+            if (source == null)
+            {
+                throw new ArgumentOutOfRangeException("source");
+            }
 
-            
 
-            bool allMembers = members == null || members.Length == 0;
+            var allMembers = members == null || members.Length == 0;
 
-            this.accessor = TypeAccessor.Create(type);
+            accessor = TypeAccessor.Create(type);
             if (accessor.GetMembersSupported)
             {
                 // Sort members by ordinal first and then by name.
-                var typeMembers = this.accessor.GetMembers().OrderBy(p => p.Ordinal).ToList();
+                var typeMembers = accessor.GetMembers().OrderBy(p => p.Ordinal).ToList();
 
                 if (allMembers)
                 {
                     members = new string[typeMembers.Count];
-                    for (int i = 0; i < members.Length; i++)
+                    for (var i = 0; i < members.Length; i++)
                     {
                         members[i] = typeMembers[i].Name;
                     }
                 }
 
                 this.allowNull = new BitArray(members.Length);
-                this.effectiveTypes = new Type[members.Length];
-                for (int i = 0; i < members.Length; i++)
+                effectiveTypes = new Type[members.Length];
+                for (var i = 0; i < members.Length; i++)
                 {
                     Type memberType = null;
-                    bool allowNull = true;
-                    string hunt = members[i];
+                    var allowNull = true;
+                    var hunt = members[i];
                     foreach (var member in typeMembers)
                     {
                         if (member.Name == hunt)
@@ -85,45 +80,67 @@ namespace FastMember
                             }
                         }
                     }
+
                     this.allowNull[i] = allowNull;
-                    this.effectiveTypes[i] = memberType ?? typeof(object);
+                    effectiveTypes[i] = memberType ?? typeof(object);
                 }
             }
             else if (allMembers)
             {
-                throw new InvalidOperationException("Member information is not available for this type; the required members must be specified explicitly");
+                throw new InvalidOperationException(
+                    "Member information is not available for this type; the required members must be specified explicitly");
             }
 
-            this.current = null;
-            this.memberNames = (string[])members.Clone();
+            current = null;
+            memberNames = (string[])members.Clone();
 
             this.source = source.GetEnumerator();
         }
 
-        object current;
 
+        public override int Depth => 0;
 
-        public override int Depth
+        public override bool HasRows => active;
+
+        public override int RecordsAffected => 0;
+
+        public override int FieldCount => memberNames.Length;
+
+        public override bool IsClosed => source == null;
+
+        public override object this[string name] => accessor[current, name] ?? DBNull.Value;
+
+        /// <summary>
+        ///     Gets the value of the current object in the member specified
+        /// </summary>
+        public override object this[int i] => accessor[current, memberNames[i]] ?? DBNull.Value;
+
+        /// <summary>
+        ///     Creates a new ObjectReader instance for reading the supplied data
+        /// </summary>
+        /// <param name="source">The sequence of objects to represent</param>
+        /// <param name="members">The members that should be exposed to the reader</param>
+        public static ObjectReader Create<T>(IEnumerable<T> source, params string[] members)
         {
-            get { return 0; }
+            return new ObjectReader(typeof(T), source, members);
         }
 
         public override DataTable GetSchemaTable()
         {
             // these are the columns used by DataTable load
-            DataTable table = new DataTable
+            var table = new DataTable
             {
                 Columns =
                 {
-                    {"ColumnOrdinal", typeof(int)},
-                    {"ColumnName", typeof(string)},
-                    {"DataType", typeof(Type)},
-                    {"ColumnSize", typeof(int)},
-                    {"AllowDBNull", typeof(bool)}
+                    { "ColumnOrdinal", typeof(int) },
+                    { "ColumnName", typeof(string) },
+                    { "DataType", typeof(Type) },
+                    { "ColumnSize", typeof(int) },
+                    { "AllowDBNull", typeof(bool) }
                 }
             };
-            object[] rowData = new object[5];
-            for (int i = 0; i < memberNames.Length; i++)
+            var rowData = new object[5];
+            for (var i = 0; i < memberNames.Length; i++)
             {
                 rowData[0] = i;
                 rowData[1] = memberNames[i];
@@ -132,26 +149,21 @@ namespace FastMember
                 rowData[4] = allowNull == null ? true : allowNull[i];
                 table.Rows.Add(rowData);
             }
+
             return table;
         }
+
         public override void Close()
         {
             Shutdown();
         }
 
-        public override bool HasRows
-        {
-            get
-            {
-                return active;
-            }
-        }
-        private bool active = true;
         public override bool NextResult()
         {
             active = false;
             return false;
         }
+
         public override bool Read()
         {
             if (active)
@@ -162,18 +174,12 @@ namespace FastMember
                     current = tmp.Current;
                     return true;
                 }
-                else
-                {
-                    active = false;
-                }
+
+                active = false;
             }
+
             current = null;
             return false;
-        }
-
-        public override int RecordsAffected
-        {
-            get { return 0; }
         }
 
         protected override void Dispose(bool disposing)
@@ -181,6 +187,7 @@ namespace FastMember
             base.Dispose(disposing);
             if (disposing) Shutdown();
         }
+
         private void Shutdown()
         {
             active = false;
@@ -188,18 +195,6 @@ namespace FastMember
             var tmp = source as IDisposable;
             source = null;
             if (tmp != null) tmp.Dispose();
-        }
-
-        public override int FieldCount
-        {
-            get { return memberNames.Length; }
-        }
-        public override bool IsClosed
-        {
-            get
-            {
-                return source == null;
-            }
         }
 
         public override bool GetBoolean(int i)
@@ -214,11 +209,14 @@ namespace FastMember
 
         public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
         {
-            byte[] s = (byte[])this[i];
-            int available = s.Length - (int)fieldOffset;
-            if (available <= 0) return 0;
+            var s = (byte[])this[i];
+            var available = s.Length - (int)fieldOffset;
+            if (available <= 0)
+            {
+                return 0;
+            }
 
-            int count = Math.Min(length, available);
+            var count = Math.Min(length, available);
             Buffer.BlockCopy(s, (int)fieldOffset, buffer, bufferoffset, count);
             return count;
         }
@@ -230,11 +228,14 @@ namespace FastMember
 
         public override long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
         {
-            string s = (string)this[i];
-            int available = s.Length - (int)fieldoffset;
-            if (available <= 0) return 0;
+            var s = (string)this[i];
+            var available = s.Length - (int)fieldoffset;
+            if (available <= 0)
+            {
+                return 0;
+            }
 
-            int count = Math.Min(length, available);
+            var count = Math.Min(length, available);
             s.CopyTo((int)fieldoffset, buffer, bufferoffset, count);
             return count;
         }
@@ -314,36 +315,29 @@ namespace FastMember
             return this[i];
         }
 
-        public override IEnumerator GetEnumerator() => new DbEnumerator(this);
+        public override IEnumerator GetEnumerator()
+        {
+            return new DbEnumerator(this);
+        }
 
         public override int GetValues(object[] values)
         {
             // duplicate the key fields on the stack
-            var members = this.memberNames;
+            var members = memberNames;
             var current = this.current;
             var accessor = this.accessor;
 
-            int count = Math.Min(values.Length, members.Length);
-            for (int i = 0; i < count; i++) values[i] = accessor[current, members[i]] ?? DBNull.Value;
+            var count = Math.Min(values.Length, members.Length);
+            for (var i = 0; i < count; i++)
+            {
+                values[i] = accessor[current, members[i]] ?? DBNull.Value;
+            }
             return count;
         }
 
         public override bool IsDBNull(int i)
         {
             return this[i] is DBNull;
-        }
-
-        public override object this[string name]
-        {
-            get { return accessor[current, name] ?? DBNull.Value; }
-
-        }
-        /// <summary>
-        /// Gets the value of the current object in the member specified
-        /// </summary>
-        public override object this[int i]
-        {
-            get { return accessor[current, memberNames[i]] ?? DBNull.Value; }
         }
     }
 }

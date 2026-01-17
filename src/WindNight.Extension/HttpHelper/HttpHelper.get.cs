@@ -24,12 +24,14 @@ namespace WindNight.Extension
             Func<string, T> convertFunc = null,
             Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
         {
-            return TimeWatcherHelper.TimeWatcher(() =>
+            var rlt= TimeWatcherHelper.TimeWatcher(() =>
                 {
                     var request = GenGetRequest(url, headerDict);
 
                     return ExecuteHttpClient(url, request, headerDict, timeOut, convertFunc, errStatusFunc);
-                }, $"HttpGet({url})", warnMiSeconds: warnMiSeconds);
+                }, out long realTs, $"HttpGet({url})", warnMiSeconds: warnMiSeconds);
+
+            return rlt;
         }
 
         /// <summary>

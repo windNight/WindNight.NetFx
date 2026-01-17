@@ -38,8 +38,8 @@
         <VersionMajor>1</VersionMajor>
         <VersionMinor>5</VersionMinor>
         <VersionPatch>0</VersionPatch>
-        <VersionQuality>1</VersionQuality>
-        <VersionTT>-beta.25081301</VersionTT>
+        <VersionQuality>2</VersionQuality>
+        <VersionTT>-beta.6011601</VersionTT>
         <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</VersionPrefix>
         <AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
         <FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</FileVersion>
@@ -77,7 +77,7 @@
         <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
 
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="System.Security.Permissions" Version="9.0.10" />
+        <PackageReference Include="System.Security.Permissions" Version="10.0.2" />
     </ItemGroup>
 
 

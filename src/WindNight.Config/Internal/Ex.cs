@@ -1,9 +1,8 @@
-using System.IO;
 using WindNight.ConfigCenter.Extension;
 
 namespace WindNight.Config.@internal
 {
-    internal static class Ex
+    internal static class FileExtExtension
     {
         public static ConfigType ParserConfigType(this string fileName)
         {
@@ -11,9 +10,8 @@ namespace WindNight.Config.@internal
             return fileExt switch
             {
                 ".json" => ConfigType.JsonConfig,
-                ".xml" => ConfigType.XmlConfig,
-                ".config" => ConfigType.XmlConfig,
-                _ => ConfigType.Unknown,
+                ".xml" or ".config" => ConfigType.XmlConfig,
+                var _ => ConfigType.Unknown,
             };
         }
     }

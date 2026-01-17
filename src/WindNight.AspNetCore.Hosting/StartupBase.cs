@@ -46,9 +46,7 @@ namespace Microsoft.AspNetCore.Hosting.WnExtensions
             {
                 try
                 {
-                    return HardInfo.QueryBuildDateTime().ToDateTime();
-                    //var assembly = Assembly.GetEntryAssembly();
-                    //return System.IO.File.GetLastWriteTime(assembly.Location);
+                    return HardInfo.QueryBuildDateTime().ToDateTime(); 
                 }
                 catch (Exception ex)
                 {

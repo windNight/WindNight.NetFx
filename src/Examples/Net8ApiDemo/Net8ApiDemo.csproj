@@ -31,7 +31,7 @@
         <VersionMajor>1</VersionMajor>
         <VersionMinor>0</VersionMinor>
         <VersionPatch>0</VersionPatch>
-        <VersionQuality>50825</VersionQuality>
+        <VersionQuality>60106</VersionQuality>
         <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</VersionPrefix>
         <Version>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</Version>
         <AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
@@ -175,6 +175,8 @@
         <!--%3B see from https://learn.microsoft.com/zh-cn/visualstudio/msbuild/msbuild-special-characters?view=vs-2022#special-characters -->
         <PropertyGroup>
             <BuildInfoContent>
+                using Newtonsoft.Json.Extension %3B
+                using System.Security.Cryptography.Extensions %3B
                 internal static class BuildInfo {
                 public const string MachineName = "$(BuildMachineName)" %3B
                 public const string UserName = "$(BuildUserName)" %3B
@@ -185,7 +187,7 @@
                 public const string SystemDirectory = @"$(BuildSystemDirectory)" %3B
 
                 public const long BuildTs = $(BuildTimestamp) %3B
-                public static string BuildTime =&gt; BuildTs.ConvertToTimeFormatUseUnix(); %3B
+                public static string BuildTime => BuildTs.ConvertToTimeFormatUseUnix(); %3B
 
                 public const string BuildConfiguration = "$(BuildConfiguration)" %3B
                 public const string BuildVersion = "$(BuildVersion)" %3B
@@ -197,8 +199,9 @@
                 public const string BuildPlatform = "$(BuildPlatform)" %3B
                 public const string BuildProjectName = "$(BuildProjectName)" %3B
                 public const string RuntimeIdentifier = "$(RuntimeIdentifier)" %3B
+                public static string HashCode => BuildInfoDict1.ToJsonStr().Md5Encrypt() %3B
 
-                public static IReadOnlyDictionary&lt;string, object&gt; BuildInfoDict = new Dictionary&lt;string, object&gt;
+                static IReadOnlyDictionary&lt;string, object&gt; BuildInfoDict1 = new Dictionary&lt;string, object&gt;
                 {
                 { "MachineName", MachineName },
                 { "UserName", UserName},
@@ -212,14 +215,24 @@
                 { "BuildVersion", BuildVersion },
 
                 <!--{ "BuildAssemblyVersion", BuildAssemblyVersion },
-				{ "BuildFileVersion", BuildFileVersion },-->
+						{ "BuildFileVersion", BuildFileVersion },-->
 
                 { "BuildTargetFramework", BuildTargetFramework },
                 { "BuildPlatform", BuildPlatform },
                 { "BuildProjectName", BuildProjectName },
                 { "RuntimeIdentifier", RuntimeIdentifier },
 
+
                 }%3B
+
+                public static IReadOnlyDictionary&lt;string, object&gt; BuildInfoDict
+                {
+                get{
+                var dict = BuildInfoDict1.ToDictionary(k => k.Key, v => v.Value); %3B
+                dict.Add("HashCode", HashCode) %3B
+                return dict %3B
+                }
+                }
 
                 }
             </BuildInfoContent>

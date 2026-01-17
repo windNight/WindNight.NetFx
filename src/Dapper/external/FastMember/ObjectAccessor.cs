@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Dynamic;
 
 
@@ -51,9 +51,15 @@ namespace FastMember
         /// </summary>
         public static ObjectAccessor Create(object target, bool allowNonPublicAccessors)
         {
-            if (target == null) throw new ArgumentNullException("target");
+            if (target == null)
+            {
+                throw new ArgumentNullException("target");
+            }
             IDynamicMetaObjectProvider dlr = target as IDynamicMetaObjectProvider;
-            if (dlr != null) return new DynamicWrapper(dlr); // use the DLR
+            if (dlr != null)
+            {
+                return new DynamicWrapper(dlr); // use the DLR
+            }
             return new TypeAccessorWrapper(target, TypeAccessor.Create(target.GetType(), allowNonPublicAccessors));
         }
         sealed class TypeAccessorWrapper : ObjectAccessor

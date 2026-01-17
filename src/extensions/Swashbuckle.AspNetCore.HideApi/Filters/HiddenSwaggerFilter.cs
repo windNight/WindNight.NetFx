@@ -1,3 +1,4 @@
+using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Extensions.@internal;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -21,6 +22,7 @@ namespace System.Attributes
                 try
                 {
                     swaggerDoc.Components.SecuritySchemes.Clear();
+                    //swaggerDoc.Security.Clear();
                     swaggerDoc.SecurityRequirements.Clear();
                     swaggerDoc.Info = null;
                     swaggerDoc.Paths.Clear();

@@ -183,7 +183,7 @@ namespace System
                 return DefaultDateTime;
             }
 
-            var newsStr = TryToDateString(dateStr, linkCode);
+            var newsStr = dateStr.TryToDateString(linkCode);
             if (DateTime.TryParse(newsStr, out var date))
             {
                 return date;
@@ -259,10 +259,12 @@ namespace System
             return dateTime.ToString(format);
         }
 
-        public static string FormatDateTimeFullString(this DateTime dateTime)
+        public static string FormatDateTimeFullString(this DateTime dateTime, string format = "yyyy-MM-dd HH:mm:ss")
         {
-            return dateTime.ToString("yyyy-MM-dd HH:mm:ss");
+            return dateTime.ToString(format);
         }
+
+
 
         /// <summary>
         ///     格式为 2015-01-15的字符串转成时间为 20150115
@@ -434,7 +436,7 @@ namespace System
         /// <returns></returns>
         public static int WeekOfYear(this DateTime date)
         {
-            GregorianCalendar gregorianCalendar = new();
+            var gregorianCalendar = new GregorianCalendar();
 
             //获取指定日期是周数 CalendarWeekRule指定 第一周开始于该年的第一天，DayOfWeek指定每周第一天是星期几　
             var weekOfYear = gregorianCalendar.GetWeekOfYear(date, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
@@ -513,7 +515,7 @@ namespace System
 
             if (beginDate > endDate)
             {
-                return new List<int>();
+                return HardInfo.EmptyList<int>();
             }
 
             var beginYear = beginDate.Year;
@@ -578,7 +580,7 @@ namespace System
                 endDate = endDate.AddDays(1);
             }
 
-            List<T> list = new();
+            var list = new List<T>();
             if (beginDate > endDate)
             {
                 return list;
@@ -610,7 +612,7 @@ namespace System
             }
 
             endDate = endDate.FirstDayOfMonth();
-            List<T> list = new();
+            var list = new List<T>();
             if (beginDate > endDate)
             {
                 return list;
@@ -636,7 +638,7 @@ namespace System
             var beginDate = beginDateInt.TryToDateTime();
             if (beginDate == DefaultDateTime)
             {
-                return new List<T>();
+                return HardInfo.EmptyList<T>();
             }
 
             return beginDate.GeneratorDateSelfList(endDateParam, withLastDay, func);
@@ -648,7 +650,7 @@ namespace System
             var beginDate = beginDateInt.TryToDateTime();
             if (beginDate == DefaultDateTime)
             {
-                return new List<T>();
+                return HardInfo.EmptyList<T>();
             }
 
             var endDate = endDateInt == 0 ? HardInfo.Now.Date : endDateInt.TryToDateTime();

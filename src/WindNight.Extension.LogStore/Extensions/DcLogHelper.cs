@@ -6,6 +6,7 @@ using WindNight.Core;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Enums.Abstractions;
 using WindNight.Core.Enums.Extension;
+using WindNight.Core.ExceptionExt;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 
 namespace WindNight.Extension.Logger.DcLog.Extensions
@@ -146,7 +147,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         /// <param name="appName"></param>
         public static void LogRegisterInfo(string buildType, int appId, string appCode, string appName)
         {
-            var serverIp = HardInfo.NodeIpList;// IpHelper.GetLocalIPs().ToList();
+            var serverIp = HardInfo.NodeIp;// IpHelper.GetLocalIPs().ToList();
             //var sysInfo = new
             //{
             //    SysAppId = appId,
@@ -157,7 +158,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             //};
             var sysInfo = GetSysInfo(buildType);
             var msg = $"register info is {sysInfo.ToJsonStr()}";
-            Add(msg, LogLevels.SysRegister, serverIp: serverIp.FirstOrDefault());
+            Add(msg, LogLevels.SysRegister, serverIp: serverIp);
         }
 
         /// <summary>
@@ -170,7 +171,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
         public static void LogOfflineInfo(string buildType, int appId, string appCode, string appName,
             Exception exception = null)
         {
-            var serverIp = HardInfo.NodeIpList;// IpHelper.GetLocalIPs().ToList();
+            var serverIp = HardInfo.NodeIp;// IpHelper.GetLocalIPs().ToList();
             //var sysInfo = new
             //{
             //    SysAppId = appId,
@@ -181,7 +182,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             //};
             var sysInfo = GetSysInfo(buildType);
             var msg = $"offline info is {sysInfo.ToJsonStr()}";
-            Add(msg, LogLevels.SysOffline, exception, serverIp: serverIp.FirstOrDefault());
+            Add(msg, LogLevels.SysOffline, exception, serverIp: serverIp);
         }
         private static object GetSysInfo(string buildType)
         {
@@ -229,6 +230,9 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                 LogTs = logTimestamps,
                 NodeCode = HardInfo.NodeCode ?? "",
                 LogPluginVersion = LogPluginVersion,
+                BizSvrKind = HardInfo.QueryBizSvrKind(),
+                BizSvrType = HardInfo.QueryBizSvrType(),
+
             };
             var logAppCode = jo.SafeGetValue("logAppCode", "");
             ;
@@ -326,6 +330,9 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                     SerialNumber = traceId,
                     NodeCode = HardInfo.NodeCode ?? "",
                     LogPluginVersion = LogPluginVersion,
+                    BizSvrKind = HardInfo.QueryBizSvrKind(),
+                    BizSvrType = HardInfo.QueryBizSvrType(),
+
                 };
                 if (exception != null)
                 {
@@ -334,6 +341,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                         Message = exception.Message,
                         StackTraceString = exception.StackTrace,
                     };
+               
                     messageEntity.Exceptions = messageEntity.ExceptionObj.ToJsonStr();
                 }
                 else

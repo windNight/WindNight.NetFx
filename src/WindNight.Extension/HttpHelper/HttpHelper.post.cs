@@ -76,16 +76,19 @@ namespace WindNight.Extension
             CancellationToken token = default,
             bool isJsonBody = true, Func<IRestResponse, bool> errStatusFunc = null)
         {
-            return await TimeWatcherHelper.TimeWatcher(async () =>
+            var rlt = await TimeWatcherHelper.TimeWatcher(async () =>
                 {
                     var request = GenPostRequest(url, headerDict, bodyObjects, isJsonBody);
 
 
                     return await ExecuteHttpClientAsync(url, request, timeOut: timeOut, token: token,
                         convertFunc: convertFunc, errStatusFunc: errStatusFunc);
-                },
+                }, out var ttl,
                 $"HttpPostAsync({url}) with params={bodyObjects.ToJsonStr()} , header={headerDict?.ToJsonStr()}",
                 warnMiSeconds: warnMiSeconds);
+
+            return rlt;
+
         }
 
 

@@ -1,4 +1,5 @@
 using WindNight.Core.SQL.Abstractions;
+ 
 
 namespace WindNight.Extension.Db.Abstractions
 {
@@ -7,7 +8,7 @@ namespace WindNight.Extension.Db.Abstractions
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <inheritdoc />
-    [Obsolete("Please Use IWriterBaseRepositoryService ")]
+    [Obsolete("Please Use IWriterBaseRepositoryService ",true)]
     public interface IInsertRepositoryService<TEntity> : IInsertRepositoryService<TEntity, int>
         where TEntity : IEntity
     {
@@ -15,11 +16,11 @@ namespace WindNight.Extension.Db.Abstractions
     }
 
     /// <summary>
-    ///     带Id的 新增仓储基类
+    ///     带Id的 新增仓储基类 <see cref="IWriterBaseRepositoryService"/>
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <typeparam name="TId"></typeparam>
-    [Obsolete("Please Use IWriterBaseRepositoryService ")]
+    [Obsolete("Please Use IWriterBaseRepositoryService ", true)]
     public interface IInsertRepositoryService<TEntity, TId> where TEntity : IEntity
         where TId : IEquatable<TId>, IComparable<TId>
     {

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Text.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Abstractions.Ex;
@@ -14,8 +13,6 @@ using WindNight.Linq.Extensions.Expressions;
 namespace System
 {
 
-
-
     public partial class HardInfo
     {
 
@@ -25,14 +22,16 @@ namespace System
 
         public static IPagedList<T> EmptyPagedList<T>() => PagedList.Empty<T>();
 
-
-
         public static DateTime MaxDate => DateTime.MaxValue;
+
         public static DateTime MinDate => DateTime.MinValue;
 
         public static DateTime Now => DateTime.Now;
+
         public static string NowFullString => DateTime.Now.FormatDateTimeFullString();
+
         public static DateTime Yesterday => Now.AddDays(-1);
+
         public static DateTime Tomorrow => Now.AddDays(1);
 
         public static int WeekOfYear => Now.WeekOfYear();
@@ -65,22 +64,34 @@ namespace System
             }
         }
 
+
         public static DateTime FirstDayOfThisYear => Now.FirstDayOfYear();
 
         public static DateTime LastDayOfThisYear => Now.LastDayOfYear();
 
-        public static int NowDateInt => Now.ToDateInt();
 
         public static int YesterdayDateInt => Yesterday.ToDateInt();
+
         public static int TomorrowDateInt => Tomorrow.ToDateInt();
 
         public static long NowUnixTime => Now.ConvertToUnixTime();
+
+        public static long NowTs => Now.ConvertToUnixTime();
+
+        public static long NowTicks => Now.Ticks;
 
         public static int NowYearInt => Now.Year;
 
         public static string NowString => $"{Now:yyyy-MM-dd HH:mm:ss}";
 
+        public static int NowDateInt => Now.ToDateInt();
+
         public static int NowMonthInt => Now.TryToDateInt("yyyyMM");
+
+        // ReSharper disable once StringLiteralTypo
+        public static int NowHourInt => Now.TryToDateInt("yyyyMMHH");
+
+        public static int NowWeekInt => $"{NowYearInt}{WeekOfYear:00}".ToInt();
 
         public static int LastMonthInt => Now.FirstDayOfMonth().AddMonths(-1).TryToDateInt("yyyyMM");
 
@@ -159,7 +170,7 @@ namespace System
                         PlatformID.Xbox => OperatorSysEnum.XBox,
                         PlatformID.Win32NT or PlatformID.Win32S or PlatformID.Win32Windows or PlatformID.WinCE =>
                             OperatorSysEnum.Windows,
-                        _ => OperatorSysEnum.Windows,
+                        var _ => OperatorSysEnum.Windows,
                     };
                 }
                 catch

@@ -16,7 +16,7 @@ namespace WindNight.Extension
         // private const string LocalServerIpKey = "WindNight:HttpContext:LocalServerIp";
         // private const string LocalServerIpsKey = "WindNight:HttpContext:LocalServerIps";
 
-        public static List<string> LocalServerIps = HardInfo.GetLocalIps().ToList();
+        public static IEnumerable<string> LocalServerIps = HardInfo.GetLocalIps().ToList();
         public static string LocalServerIp = HardInfo.GetLocalIp().IpV6ToIpV4() ?? "";
         public static string LocalServerIpsString = LocalServerIps.Join();
 

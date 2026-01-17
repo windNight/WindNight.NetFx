@@ -48,7 +48,15 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            ValidateInput(context);
+            try
+            {
+
+                ValidateInput(context);
+            }
+            catch (Exception ex)
+            {
+
+            }
             base.OnActionExecuting(context);
         }
 

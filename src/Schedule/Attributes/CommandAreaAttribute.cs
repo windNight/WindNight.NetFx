@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Schedule.Attributes
 {
@@ -16,6 +16,6 @@ namespace Schedule.Attributes
         /// <summary>
         ///     名称
         /// </summary>
-        public string Name { get; }
+        public string Name { get; } 
     }
 }

@@ -46,8 +46,7 @@ namespace WindNight.Extension.Dapper.Abstractions
 
     }
 
-    public interface IWriterBaseRepositoryService<TEntity, TId> : IReaderBaseRepositoryService<TEntity, TId>,
-        IInsertRepositoryService<TEntity, TId>
+    public interface IWriterBaseRepositoryService<TEntity, TId> : IReaderBaseRepositoryService<TEntity, TId> //, IWriterBaseRepositoryService<TEntity, TId>
         where TEntity : IEntity
         where TId : IEquatable<TId>, IComparable<TId>
     {
@@ -66,6 +65,34 @@ namespace WindNight.Extension.Dapper.Abstractions
         /// <returns></returns>
         Task<bool> DeleteByIdAsync(TId id, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
+        ///// <summary>
+        /////     同步 单条数据插入
+        ///// </summary>
+        ///// <param name="entity">need inherit from <see cref="IEntity" /></param>
+        ///// <returns></returns>
+        //TId InsertOne(TEntity entity, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
+
+
+        ///// <summary>
+        /////     异步 单条数据插入
+        ///// </summary>
+        ///// <param name="entity">need inherit from <see cref="IEntity" /></param>
+        ///// <returns></returns>
+        //Task<TId> InsertOneAsync(TEntity entity, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
+
+        ///// <summary>
+        /////     同步 批量插入数据
+        ///// </summary>
+        ///// <param name="insertList">list of <see cref="IEntity" /></param>
+        ///// <returns></returns>
+        //bool BatchInsertUseValues(IList<TEntity> insertList, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
+
+        ///// <summary>
+        /////     异步 批量插入数据
+        ///// </summary>
+        ///// <param name="insertList">list of <see cref="IEntity" /></param>
+        ///// <returns></returns>
+        //Task<bool> BatchInsertUseValuesAsync(IList<TEntity> insertList, long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
 
 

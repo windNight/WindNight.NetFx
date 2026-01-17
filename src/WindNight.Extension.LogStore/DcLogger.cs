@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
+using WindNight.Core.Abstractions;
 using WindNight.Core.ExceptionExt;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 using WindNight.Extension.Logger.DcLog.@internal;
@@ -74,6 +75,8 @@ namespace WindNight.Extension.Logger.DcLog
                         LevelType = (int)stateEntry.Level,
                         NodeCode = HardInfo.NodeCode ?? "",
                         LogPluginVersion = DcLoggerPluginVersion,
+                        BizSvrKind = HardInfo.QueryBizSvrKind(),
+                        BizSvrType = HardInfo.QueryBizSvrType(),
 
                     };
                     if (exception != null)
@@ -118,6 +121,9 @@ namespace WindNight.Extension.Logger.DcLog
                 LogTs = logTimestamps,
                 NodeCode = HardInfo.NodeCode ?? "",
                 LogPluginVersion = DcLoggerPluginVersion,
+
+                BizSvrKind = HardInfo.QueryBizSvrKind(),
+                BizSvrType = HardInfo.QueryBizSvrType(),
             };
 
             if (TryGetJObject(state, out var jo))

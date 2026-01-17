@@ -25,10 +25,14 @@ namespace WindNight.Core
 
         public const string ReqTraceIdKey = "ReqTraceId";
 
+        public const string ReqDeviceCodeKey = "ReqDeviceCode";
+
 
         public const string HttpPluginKey = "Plugin-HttpHelper";
 
         public const string SvrCenterDomainConfigKey = "SvrCenter";
+
+        public const string DataCenterDomainConfigKey = "DataCenter";
 
         public const string ConfigCenterDomainConfigKey = "ConfigCenter";
 

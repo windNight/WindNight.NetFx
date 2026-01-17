@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.WnExtensions.Controllers;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using Newtonsoft.Json.Linq;
+using WindNight.Core;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Attributes.Abstractions;
 using WindNight.Core.Tools;
@@ -260,7 +261,7 @@ namespace Net8ApiDemo.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("list")]
         public IEnumerable<WeatherForecast> GetTTT()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -270,6 +271,33 @@ namespace Net8ApiDemo.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)],
             })
                 .ToArray();
+        }
+
+        [HttpGet("rlt")]
+        public object TestResponseResult()
+        {
+            return new ObjectResult(ResponseResult.GenBadRes<object>(BusinessCode.InValidUserNameOrPwd.Code, BusinessCode.InValidUserNameOrPwd.Message));
+
+        }
+
+        [HttpGet("bizerro")]
+        public object TestBusinessInfo()
+        {
+            throw new BusinessException(100500, "TestBusinessInfo");
+        }
+
+        [HttpGet("pagedlist")]
+        public IPagedList<WeatherForecast> GetTTT22()
+        {
+            var list = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)],
+            })
+                .ToArray();
+
+            return list.OrderBy(m => m.Date).ToPagedList(m => m.ToList(), 1, 20, 1);
         }
 
         public sealed class MySqlException : DbException
@@ -388,4 +416,54 @@ namespace Net8ApiDemo.Controllers
         /// <summary> kL1 </summary>
         public string kL1 { get; set; }
     }
+
+
+    internal static class BusinessCode
+    {
+        public static BusinessInfo InValidUserNameOrPwd = new(100401, "用户名或密码错误！");
+
+        public static BusinessInfo UnAuthorized = new(100402, "请求未授权！");
+
+        public static BusinessInfo UnAuthorizedOperatorCode = new(100403, "请求未授权指定操作！");
+
+
+        public static BusinessInfo InValidUserName = new(100404, "用户名错误！");
+
+        public static BusinessInfo WeiXinLoginFailed = new(100405, "微信登录失败！");
+
+        public static BusinessInfo AlipayLoginFailed = new(100406, "支付宝登录失败！");
+
+        public static BusinessInfo SysAuthFailed = new(100408, "系统间验证失败！");
+        public static BusinessInfo InValidInput = new(200500, "输入参数错误！");
+        public static BusinessInfo DataNotFound = new(200404, "没有数据！");
+
+        public static BusinessInfo ParamIsError = new(400101, "参数异常！");
+        public static BusinessInfo BusinessFailed = new BusinessInfo(400101, "业务失败！");
+
+
+    }
+
+    internal class BusinessInfo
+    {
+        public BusinessInfo()
+        {
+        }
+
+        public BusinessInfo(int code, string message)
+        {
+            Code = code;
+            Message = message;
+        }
+
+        public int Code { get; set; }
+        public string Message { get; set; }
+    }
+
+
+
+
+
+
+
+
 }

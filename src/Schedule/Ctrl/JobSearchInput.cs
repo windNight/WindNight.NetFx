@@ -44,7 +44,7 @@ namespace Schedule.Ctrl
         /// <summary>
         ///     数据列表
         /// </summary>
-        public List<JobMeta> DataList { set; get; }
+        public List<JobMeta> DataList { set; get; }= new List<JobMeta>();
 
         /// <summary>
         ///     当前页

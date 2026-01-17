@@ -96,7 +96,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="parameters"></param>
         /// <param name="queryTableName"></param>
         /// <returns></returns>
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo   ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo   ", true)]
         IPagedList<TEntity> QueryPagedList(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
         /// <summary>
@@ -109,10 +109,10 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="parameters"></param>
         /// <param name="queryTableName"></param>
         /// <returns></returns>
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ", true)]
         Task<IPagedList<TEntity>> QueryPagedListAsync(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null);
 
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ", true)]
         IPagedList<T> QueryPagedEList<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
 
@@ -126,7 +126,7 @@ namespace WindNight.Extension.Db.Abstractions
         /// <param name="parameters"></param>
         /// <param name="queryTableName">查询的表或者临时表 ,NullOrEmpty=><see cref="BaseTableName"/></param>
         /// <returns></returns>
-        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ")]
+        [Obsolete("Please Use IQueryPageBase or IQueryPageInfo ", true)]
         Task<IPagedList<T>> QueryPagedEListAsync<T>(int pageIndex, int pageSize, string condition, string orderBy, IDictionary<string, object> parameters = null, string queryTableName = "", long warnMs = -1L, Action<Exception, string> execErrorHandler = null)
             where T : class, new();
 

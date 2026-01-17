@@ -1,21 +1,20 @@
-﻿using Microsoft.Extensions.DependencyInjection.WnExtension;
-using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Extension;
+using WindNight.Core.Abstractions;
 using WindNight.Extension.Logger.DbLog.Abstractions;
 
 namespace WindNight.Extension.Logger.DbLog
 {
     public class DbLoggerProcessor : IDbLoggerProcessor
     {
-
-
         private const int OpenGZipLimit = 15_00;
         private const string GZipFlagStr = "gzip@";
         private readonly Stopwatch _stopwatch = new Stopwatch();
-        private ISystemLogsProcess _repo => Ioc.GetService<ISystemLogsProcess>();
+
         /// <summary> </summary>
         protected readonly DbLogOptions DbLogOptions;
 
@@ -35,23 +34,34 @@ namespace WindNight.Extension.Logger.DbLog
             Task.Run(BackupThread);
         }
 
+        private ISystemLogsProcess _repo => Ioc.GetService<ISystemLogsProcess>();
+
 
         protected bool IsStop { get; set; }
 
         /// <summary> </summary>
         public virtual void EnqueueMessage(SysLogs message)
         {
-            if (message.Content.ToLower().Contains($"{nameof(SysLogs)}".ToLower())) return;
+            if (message.Content.ToLower().Contains($"{nameof(SysLogs)}".ToLower()))
+            {
+                return;
+            }
+
             if (DbLogOptions.IsOpenDebug)
+            {
                 Console.WriteLine($"EnqueueMessage({message.ToJsonStr()})");
+            }
+
             if (message.LogAppCode.IsNullOrEmpty())
             {
                 message.LogAppCode = "";
             }
+
             if (message.LogAppName.IsNullOrEmpty())
             {
                 message.LogAppName = "";
             }
+
             MessageQueue.Enqueue(message);
         }
 
@@ -67,17 +77,28 @@ namespace WindNight.Extension.Logger.DbLog
         protected virtual void ProcessLogQueueThread()
         {
             if (DbLogOptions.IsConsoleLog)
+            {
                 Console.WriteLine("start processlog to sender");
+            }
+
             Thread.CurrentThread.Name = "DbLoggerProcessor-sender";
             while (true)
             {
-                if (IsStop) break;
+                if (IsStop)
+                {
+                    break;
+                }
+
                 try
                 {
                     if (MessageQueue.TryDequeue(out var message))
+                    {
                         ProcessLog(message);
+                    }
                     else
+                    {
                         Thread.Sleep(100);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -91,7 +112,10 @@ namespace WindNight.Extension.Logger.DbLog
         protected virtual void BackupThread()
         {
             if (DbLogOptions.IsConsoleLog)
+            {
                 Console.WriteLine("start backupThread to sender batch");
+            }
+
             Thread.CurrentThread.Name = "DbLoggerProcessor-backup-sender";
             while (true)
             {
@@ -100,7 +124,10 @@ namespace WindNight.Extension.Logger.DbLog
                     if (MessageQueue.Count > 0)
                     {
                         if (DbLogOptions.IsConsoleLog)
+                        {
                             Console.WriteLine("start backupThread Before Stop to sender batch");
+                        }
+
                         ProcessBackupLogs();
                     }
 
@@ -113,7 +140,10 @@ namespace WindNight.Extension.Logger.DbLog
                         MessageQueue.Count >= DbLogOptions.QueuedMaxMessageCount)
                     {
                         if (DbLogOptions.IsConsoleLog)
+                        {
                             Console.WriteLine("start backupThread to sender batch");
+                        }
+
                         Debug.Assert(MessageQueue.Count >= DbLogOptions.QueuedMaxMessageCount,
                             $"Current Length In Queue is {MessageQueue.Count}");
                         ProcessBackupLogs();
@@ -137,8 +167,12 @@ namespace WindNight.Extension.Logger.DbLog
             MessageQueue.Clear();
 #else
             if (!MessageQueue.IsEmpty)
+            {
                 for (var i = 0; i < MessageQueue.Count; i++)
+                {
                     MessageQueue.TryDequeue(out var msg);
+                }
+            }
 #endif
         }
 
@@ -146,13 +180,19 @@ namespace WindNight.Extension.Logger.DbLog
         {
             var list = messages.ToList();
             if (DbLogOptions.IsOpenDebug)
+            {
                 Console.WriteLine($"ProcessLog({list.ToJsonStr()})");
+            }
+
             _repo?.BatchInsert(list);
         }
 
         private byte[] FixSendContent(byte[] originBytes)
         {
-            if (DbLogOptions.OpenGZip && originBytes.Length > OpenGZipLimit) return MergerGZipFlag(originBytes);
+            if (DbLogOptions.OpenGZip && originBytes.Length > OpenGZipLimit)
+            {
+                return MergerGZipFlag(originBytes);
+            }
 
             return originBytes;
         }
@@ -187,6 +227,5 @@ namespace WindNight.Extension.Logger.DbLog
             ProcessLog(oldQueue);
             oldQueue = null;
         }
-
     }
 }

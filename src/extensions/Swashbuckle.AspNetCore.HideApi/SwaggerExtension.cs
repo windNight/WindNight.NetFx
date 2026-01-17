@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
+using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Extensions.Abstractions;
 using Swashbuckle.AspNetCore.Extensions.@internal;
@@ -72,14 +73,15 @@ namespace Swashbuckle.AspNetCore.Extensions
                 //    return true; // 或者根据条件返回false
                 //});
 
-
+            
                 if (!paramUpperCamelCase)
                 {
                     c.DescribeAllParametersInCamelCase();
                 }
 
 
-                c.SchemaFilter<PascalCaseSchemaFilter>();
+                //c.SchemaFilter<PascalCaseSchemaFilter>();
+
                 //c.SchemaFilter<HiddenSchemasResolver>();
 
                 //c.DocumentFilter<HiddenApiAttribute>();
@@ -218,7 +220,7 @@ namespace Swashbuckle.AspNetCore.Extensions
                             In = ParameterLocation.Header,
                             Type = SecuritySchemeType.ApiKey,
                         });
-
+                    
                         securityRequirements.Add(
                             new OpenApiSecurityScheme
                             {

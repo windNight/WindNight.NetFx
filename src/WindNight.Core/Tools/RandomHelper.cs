@@ -49,11 +49,17 @@ namespace System
             var rand = new Random();
             for (var i = 0; i < CodeCount; i++)
             {
-                if (temp != -1) rand = new Random(temp * i * (int)HardInfo.Now.Ticks);
+                if (temp != -1)
+                {
+                    rand = new Random(temp * i * (int)HardInfo.Now.Ticks);
+                }
 
                 var t = rand.Next(allCharArray.Length - 1);
 
-                while (temp == t) t = rand.Next(allCharArray.Length - 1);
+                while (temp == t)
+                {
+                    t = rand.Next(allCharArray.Length - 1);
+                }
 
                 temp = t;
                 RandomCode += allCharArray[t];
@@ -73,7 +79,9 @@ namespace System
         public static long NextLong(this Random random, long min, long max)
         {
             if (max <= min)
+            {
                 throw new ArgumentOutOfRangeException("max", "max must be > min!");
+            }
 
             //Working with ulong so that modulo works correctly with values > long.MaxValue
             var uRange = (ulong)(max - min);
@@ -119,7 +127,10 @@ namespace System
             var rng = new RNGCryptoServiceProvider();
             rng.GetBytes(randomNumber);
             uint randomResult = 0x0;
-            for (var i = 0; i < length; i++) randomResult |= (uint)randomNumber[i] << ((length - 1 - i) * 8);
+            for (var i = 0; i < length; i++)
+            {
+                randomResult |= (uint)randomNumber[i] << ((length - 1 - i) * 8);
+            }
             return (int)(randomResult % numSeeds) + 1;
         }
 
@@ -156,9 +167,13 @@ namespace System
                 char ch;
                 var num = random.Next();
                 if (num % 2 == 0)
+                {
                     ch = (char)(0x30 + (ushort)(num % 10));
+                }
                 else
+                {
                     ch = (char)(0x41 + (ushort)(num % 0x1a));
+                }
                 str = str + ch;
             }
 

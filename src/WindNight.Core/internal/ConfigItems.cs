@@ -8,7 +8,7 @@ namespace WindNight.Core.@internal
 {
     internal class ConfigItems : DefaultConfigItemBase
     {
-
+        public static bool OpenDebug => OpenDebugInternal;
 
     }
 }

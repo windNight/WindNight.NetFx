@@ -148,7 +148,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         /// <summary>
         /// 
-        /// impl<see cref="ITreeRepositoryService{TEntity, TId}"/>
+        /// impl<see cref="ITreeReaderBaseRepositoryService{TEntity, TId}"/>
         /// </summary>
         /// <param name="parentId"></param>
         /// <param name="rootCondition"></param>

@@ -1,11 +1,4 @@
-#if CORE31LATER
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
-using System.Text.Json.Serialization;
-#endif
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Filters.Extensions;
 using Microsoft.AspNetCore.Mvc.WnExtensions.Controllers;
@@ -13,35 +6,45 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.HideApi.Abstractions;
-using WindNight.Linq.Extensions.Expressions;
 using WindNight.AspNetCore.Mvc.Extensions;
-using System.Text.Json;
-using System.Text;
+using WindNight.Linq.Extensions.Expressions;
+#if CORE31LATER
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
+using System.Text.Json.Serialization;
+#endif
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions
 {
     public static class MvcExtension
     {
-
         /// <summary>
         /// </summary>
         /// <param name="services"></param>
         /// <param name="actionFilters"></param>
         /// <param name="addDefaultFilters"></param>
         /// <param name="mvcJsonOption">
-        ///  used in  <see cref="Microsoft.Extensions.DependencyInjection.MvcJsonMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{MvcJsonOptions})"/>
-        ///   The <see cref="T:Microsoft.AspNetCore.Mvc.MvcJsonOptions" /> which need to be configured.
+        ///     used in
+        ///     <see
+        ///         cref="Microsoft.Extensions.DependencyInjection.MvcJsonMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{MvcJsonOptions})" />
+        ///     The <see cref="T:Microsoft.AspNetCore.Mvc.MvcJsonOptions" /> which need to be configured.
         /// </param>
         /// <param name="jsonOptions">
-        /// used in <see cref="Microsoft.Extensions.DependencyInjection.MvcCoreMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{Microsoft.AspNetCore.Mvc.JsonOptions})"/>
-        /// An <see cref="T:System.Action" /> to configure the <see cref="T:Microsoft.AspNetCore.Mvc.JsonOptions" />
+        ///     used in
+        ///     <see
+        ///         cref="Microsoft.Extensions.DependencyInjection.MvcCoreMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{Microsoft.AspNetCore.Mvc.JsonOptions})" />
+        ///     An <see cref="T:System.Action" /> to configure the <see cref="T:Microsoft.AspNetCore.Mvc.JsonOptions" />
         /// </param>
         /// <param name="mvcJsonOptions">
-        /// used in <see cref="Microsoft.Extensions.DependencyInjection.NewtonsoftJsonMvcBuilderExtensions.AddNewtonsoftJson(IMvcBuilder, Action{MvcNewtonsoftJsonOptions})"/>
-        /// Callback to configure <see cref="T:Microsoft.AspNetCore.Mvc.MvcNewtonsoftJsonOptions" />
+        ///     used in
+        ///     <see
+        ///         cref="Microsoft.Extensions.DependencyInjection.NewtonsoftJsonMvcBuilderExtensions.AddNewtonsoftJson(IMvcBuilder, Action{MvcNewtonsoftJsonOptions})" />
+        ///     Callback to configure <see cref="T:Microsoft.AspNetCore.Mvc.MvcNewtonsoftJsonOptions" />
         /// </param>
         /// <returns></returns>
-        public static IMvcBuilder AddMvcBuilderWithSelfFilters(this IServiceCollection services, IConfiguration configuration, IEnumerable<Type> actionFilters = null, bool addDefaultFilters = true//, Action<MvcOptions> mvcOption = null
+        public static IMvcBuilder AddMvcBuilderWithSelfFilters(this IServiceCollection services,
+            IConfiguration configuration, IEnumerable<Type> actionFilters = null,
+            bool addDefaultFilters = true //, Action<MvcOptions> mvcOption = null
 #if !CORE31LATER
             , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
@@ -49,12 +52,13 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 #endif
         )
         {
-            Type[] defaultFilters = {
-                typeof (LogProcessAttribute),
-                typeof (ApiResultFilterAttribute),
-                typeof (ApiExceptionFilterAttribute),
-                typeof (ValidateInputAttribute),
-            };
+            var defaultFilters = new[]
+            {
+                typeof(LogProcessAttribute),
+                typeof(ApiResultFilterAttribute),
+                typeof(ApiExceptionFilterAttribute),
+                typeof(ValidateInputAttribute),
+              };
 
             return services.AddMvcBuilder(configuration, options =>
                 {
@@ -95,14 +99,11 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                         {
                             options.Filters.Add(typeFilterAttribute);
                         }
-
                     }
-
-
                 }
 
 #if !CORE31LATER
-                ,  mvcJsonOption  
+                ,  mvcJsonOption
 #else
                 , jsonOptions, mvcJsonOptions
 #endif
@@ -113,19 +114,28 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
         /// <summary>
         /// </summary>
-        /// <param name="services"></param> 
-        /// <param name="mvcOption">An <see cref="T:System.Action`1" /> to configure the provided <see cref="T:Microsoft.AspNetCore.Mvc.MvcOptions" />.</param>
+        /// <param name="services"></param>
+        /// <param name="mvcOption">
+        ///     An <see cref="T:System.Action`1" /> to configure the provided
+        ///     <see cref="T:Microsoft.AspNetCore.Mvc.MvcOptions" />.
+        /// </param>
         /// <param name="mvcJsonOption">
-        ///  used in  <see cref="Microsoft.Extensions.DependencyInjection.MvcJsonMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{MvcJsonOptions})"/>
-        ///   The <see cref="T:Microsoft.AspNetCore.Mvc.MvcJsonOptions" /> which need to be configured.
+        ///     used in
+        ///     <see
+        ///         cref="Microsoft.Extensions.DependencyInjection.MvcJsonMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{MvcJsonOptions})" />
+        ///     The <see cref="T:Microsoft.AspNetCore.Mvc.MvcJsonOptions" /> which need to be configured.
         /// </param>
         /// <param name="jsonOptions">
-        /// used in <see cref=" Microsoft.Extensions.DependencyInjection.MvcCoreMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{Microsoft.AspNetCore.Mvc.JsonOptions})"/>
-        /// An <see cref="T:System.Action" /> to configure the <see cref="T:Microsoft.AspNetCore.Mvc.JsonOptions" />
+        ///     used in
+        ///     <see
+        ///         cref=" Microsoft.Extensions.DependencyInjection.MvcCoreMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{Microsoft.AspNetCore.Mvc.JsonOptions})" />
+        ///     An <see cref="T:System.Action" /> to configure the <see cref="T:Microsoft.AspNetCore.Mvc.JsonOptions" />
         /// </param>
         /// <param name="mvcJsonOptions">
-        /// used in <see cref=" Microsoft.Extensions.DependencyInjection.NewtonsoftJsonMvcBuilderExtensions.AddNewtonsoftJson(IMvcBuilder, Action{MvcNewtonsoftJsonOptions})"/>
-        /// Callback to configure <see cref="T:Microsoft.AspNetCore.Mvc.MvcNewtonsoftJsonOptions" />
+        ///     used in
+        ///     <see
+        ///         cref=" Microsoft.Extensions.DependencyInjection.NewtonsoftJsonMvcBuilderExtensions.AddNewtonsoftJson(IMvcBuilder, Action{MvcNewtonsoftJsonOptions})" />
+        ///     Callback to configure <see cref="T:Microsoft.AspNetCore.Mvc.MvcNewtonsoftJsonOptions" />
         /// </param>
         /// <returns></returns>
         public static IMvcBuilder AddMvcBuilder(this IServiceCollection services, IConfiguration configuration,
@@ -135,13 +145,13 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 #else
             , Action<JsonOptions>? jsonOptions = null, Action<MvcNewtonsoftJsonOptions>? mvcJsonOptions = null
 #endif
-            )
+        )
         {
-            AddCommonMvc(services, configuration);
+            services.AddCommonMvc(configuration);
 
 #if CORE31LATER
             return services.AddControllers(mvcOption)
-                           .AppendJsonSettings(jsonOptions, mvcJsonOptions);
+                .AppendJsonSettings(jsonOptions, mvcJsonOptions);
 
 #else
             return services.AddMvc(mvcOption)
@@ -153,13 +163,19 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// </summary>
         /// <param name="services"></param>
         /// <param name="mvcJsonOption">
-        ///  used in  <see cref="Microsoft.Extensions.DependencyInjection.MvcJsonMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{MvcJsonOptions})"/>
+        ///     used in
+        ///     <see
+        ///         cref="Microsoft.Extensions.DependencyInjection.MvcJsonMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{MvcJsonOptions})" />
         /// </param>
         /// <param name="jsonOptions">
-        /// used in <see cref=" Microsoft.Extensions.DependencyInjection.MvcCoreMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{JsonOptions})"/>
+        ///     used in
+        ///     <see
+        ///         cref=" Microsoft.Extensions.DependencyInjection.MvcCoreMvcBuilderExtensions.AddJsonOptions(IMvcBuilder, Action{JsonOptions})" />
         /// </param>
         /// <param name="mvcJsonOptions">
-        /// used in <see cref=" Microsoft.Extensions.DependencyInjection.NewtonsoftJsonMvcBuilderExtensions.AddNewtonsoftJson(IMvcBuilder, Action{MvcNewtonsoftJsonOptions})"/>
+        ///     used in
+        ///     <see
+        ///         cref=" Microsoft.Extensions.DependencyInjection.NewtonsoftJsonMvcBuilderExtensions.AddNewtonsoftJson(IMvcBuilder, Action{MvcNewtonsoftJsonOptions})" />
         /// </param>
         /// <remarks>
         ///     while add filters with
@@ -170,7 +186,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// </remarks>
         /// <returns></returns>
         public static IMvcBuilder AddMvcBuilderWithDefaultFilters(this IServiceCollection services,
-            IConfiguration configuration//, Action<MvcOptions> mvcOption = null
+            IConfiguration configuration //, Action<MvcOptions> mvcOption = null
 #if !CORE31LATER
             , Action<MvcJsonOptions>? mvcJsonOption = null
 #else
@@ -179,22 +195,22 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         )
         {
             return services.AddMvcBuilder(configuration, options =>
-                 {
-                     //if (mvcOption != null)
-                     //{
-                     //    mvcOption.Invoke(options);
-                     //}
-                     options.Filters.Add(new LogProcessAttribute());
-                     options.Filters.Add(new ApiResultFilterAttribute());
-                     options.Filters.Add(new ApiExceptionFilterAttribute());
-                     options.Filters.Add(new ValidateInputAttribute());
-                 }
+                {
+                    //if (mvcOption != null)
+                    //{
+                    //    mvcOption.Invoke(options);
+                    //}
+                    options.Filters.Add(new LogProcessAttribute());
+                    options.Filters.Add(new ApiResultFilterAttribute());
+                    options.Filters.Add(new ApiExceptionFilterAttribute());
+                    options.Filters.Add(new ValidateInputAttribute());
+                }
 #if !CORE31LATER
                 , mvcJsonOption
 #else
-            , jsonOptions, mvcJsonOptions
+                , jsonOptions, mvcJsonOptions
 #endif
-                );
+            );
         }
 
 
@@ -210,7 +226,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
 
 
 #if NETCOREAPP3_1
-
 #endif
             return services;
         }
@@ -219,7 +234,8 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddInternalController(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInternalController(this IServiceCollection services,
+            IConfiguration configuration)
         {
             services.AddTransient(typeof(InternalController));
             services.AddTransient(typeof(MonitorController));
@@ -246,7 +262,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                 // 忽略JSON注释
                 options.JsonSerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
                 // 序列化时忽略null值
-                options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 // 忽略尾随逗号
                 options.JsonSerializerOptions.AllowTrailingCommas = true;
                 // 反序列化带引号的数字
@@ -255,7 +271,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 
                 jsonOptions?.Invoke(options);
-
             }).AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
@@ -268,16 +283,13 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions
                 mvcJsonOption?.Invoke(options);
             });
 #endif
-
-
         }
 
-        public static IServiceCollection AddSwaggerHiddenCheck(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddSwaggerHiddenCheck(this IServiceCollection services,
+            IConfiguration configuration)
         {
             services.AddSingleton<ISwaggerHiddenCheck, SwaggerHiddenCheckImpl>();
             return services;
         }
-
-
     }
 }

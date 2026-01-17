@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
+using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Extensions.@internal;
 using Swashbuckle.AspNetCore.HideApi;
@@ -20,7 +21,10 @@ namespace System.Attributes
     {
         public virtual void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            if (context.ApiDescriptions == null) return;
+            if (context.ApiDescriptions == null)
+            {
+                return;
+            }
 
             foreach (var apiDescription in context.ApiDescriptions)
             {
@@ -136,7 +140,10 @@ namespace System.Attributes
         private string GetApiPathKey(ApiDescription apiDescription)
         {
             var key = string.Concat("/", apiDescription.RelativePath);
-            if (key.Contains("?")) key = key.Substring(0, key.IndexOf("?", StringComparison.Ordinal));
+            if (key.Contains("?"))
+            {
+                key = key.Substring(0, key.IndexOf("?", StringComparison.Ordinal));
+            }
             return key;
         }
 

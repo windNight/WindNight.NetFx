@@ -1,4 +1,4 @@
-﻿
+
 namespace WindNight.ConfigCenter.Extension
 {
     internal partial class ConfigProvider
@@ -8,11 +8,15 @@ namespace WindNight.ConfigCenter.Extension
         static ConfigProvider()
         {
             if (Instance == null)
+            {
                 lock (LockInstance)
                 {
                     if (Instance == null)
+                    {
                         Instance = new ConfigProvider();
+                    }
                 }
+            }
         }
 
 

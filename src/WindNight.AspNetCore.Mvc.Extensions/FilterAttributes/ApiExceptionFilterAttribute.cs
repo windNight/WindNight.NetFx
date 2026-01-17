@@ -38,7 +38,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 }
                 else
                 {
-                    context.Result = new ObjectResult(new ResponseResult<object>().SystemError("系统错误"));
+                    context.Result = new ObjectResult(new ResponseResult<object>().SystemError("系统错误22"));
                     errMsg = exception.GetMessage();
                 }
 
@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
             catch (Exception ex)
             {
                 LogHelper.Error($" api[{context?.HttpContext?.Request?.Path ?? ""}] ApiExceptionFilterAttribute-系统错误", ex);
-                context.Result = new ObjectResult(new ResponseResult<object>().SystemError("系统错误"));
+                context.Result = new ObjectResult(new ResponseResult<object>().SystemError("系统错误23"));
 
                 base.OnException(context);
             }

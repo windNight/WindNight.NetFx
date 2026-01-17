@@ -5,7 +5,7 @@ namespace WindNight.ConfigCenter.Extension
         private static string XmlConfigPathPrefix => $"{ConfigType.XmlConfig}";
 
 
-        public static List<XmlFileConfigInfo> XmlConfigList
+        public static IEnumerable<XmlFileConfigInfo> XmlConfigList
         {
             get
             {

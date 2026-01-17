@@ -111,9 +111,9 @@ namespace WindNight.Extension
         }
     }
 
-    internal class PagedList<T> : IPagedList<T>
+    internal class PagedListInternal<T> : IPagedList<T>
     {
-        public PagedList()
+        public PagedListInternal()
         {
             List = new List<T>(); // Array.Empty<T>();
         }

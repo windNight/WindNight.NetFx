@@ -20,14 +20,14 @@ namespace WindNight.Extension
         /// <returns></returns>
         public static IEnumerable<T> GetList<T>(string url, Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200,
-            int timeOut = 1000 * 60 * 20,
+            int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
             bool isThrow = false,
             Func<IRestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null
         )
         {
             var res = Get<ResponseResult<IEnumerable<T>>>(url, headerDict, warnMiSeconds,
-                timeOut, errStatusFunc: errStatusFunc);
+                timeOut, convertFunc: convertFunc, errStatusFunc: errStatusFunc);
 
             if (res == null)
             {
@@ -63,13 +63,13 @@ namespace WindNight.Extension
         public static async Task<IEnumerable<T>> GetListAsync<T>(string domain, string path,
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
             bool isThrow = false,
             Func<IRestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null) //where T : new()
         {
             var res = await GetAsync<ResponseResult<IEnumerable<T>>>(domain, path, queries,
-                headerDict, warnMiSeconds, timeOut, errStatusFunc: errStatusFunc);
+                headerDict, warnMiSeconds, timeOut, convertFunc: convertFunc, errStatusFunc: errStatusFunc);
 
             if (res == null)
             {
@@ -103,25 +103,25 @@ namespace WindNight.Extension
         public static async Task<IEnumerable<T>> GetListAsync<T>(string domain, string path,
             object queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
             bool isThrow = false,
             Func<IRestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null) //where T : new()
         {
             var queryDict = queries.GenQueryDict();
-            return await GetListAsync(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, isThrow,
+            return await GetListAsync(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, convertFunc: convertFunc, isThrow,
                 errStatusFunc, errCodeFunc);
         }
 
         public static IEnumerable<T> GetList<T>(string domain, string path,
             object queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
             bool isThrow = false, Func<IRestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null) //where T : new()
         {
             var queryDict = queries.GenQueryDict();
-            return GetList(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, isThrow, errStatusFunc,
+            return GetList(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, convertFunc: convertFunc, isThrow, errStatusFunc,
                 errCodeFunc);
         }
 
@@ -129,12 +129,12 @@ namespace WindNight.Extension
         public static IEnumerable<T> GetList<T>(string domain, string path,
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
             bool isThrow = false, Func<IRestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null) //where T : new()
         {
             var res = Get<ResponseResult<IEnumerable<T>>>(domain, path, queries, headerDict,
-                warnMiSeconds, timeOut, errStatusFunc: errStatusFunc);
+                warnMiSeconds, timeOut, convertFunc: convertFunc, errStatusFunc: errStatusFunc);
             if (res == null)
             {
                 if (isThrow)
@@ -167,17 +167,18 @@ namespace WindNight.Extension
 
         public static async Task<IEnumerable<T>> PostListAsync<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
-            int timeOut = 1000 * 60 * 20,
-            bool isThrow = false, Func<IRestResponse, bool> errStatusFunc = null,
+            int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
+            bool isThrow = false, bool isJsonBody = true,
+            Func<IRestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null) //where T : new()
         {
             var res = await PostAsync<ResponseResult<IEnumerable<T>>>(domain, path,
-                bodyObjects, headerDict, warnMiSeconds, timeOut, errStatusFunc: errStatusFunc);
+                bodyObjects, headerDict, warnMiSeconds, timeOut, isJsonBody: isJsonBody, convertFunc: convertFunc, errStatusFunc: errStatusFunc);
             if (res == null)
             {
                 if (isThrow)
                 {
-                    throw new Exception("GetListAsync Handler Error  res is NULL");
+                    throw new Exception("PostListAsync Handler Error  res is NULL");
                 }
 
                 return EmptyArray<T>();
@@ -204,17 +205,17 @@ namespace WindNight.Extension
 
         public static IEnumerable<T> PostList<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
-            int timeOut = 1000 * 60 * 20,
-            bool isThrow = false,
+            int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
+            bool isThrow = false, bool isJsonBody = true,
             Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
         {
             var res = Post<ResponseResult<IEnumerable<T>>>(domain, path, bodyObjects,
-                headerDict, warnMiSeconds, timeOut, errStatusFunc: errStatusFunc);
+                headerDict, warnMiSeconds, timeOut, isJsonBody: isJsonBody, convertFunc: convertFunc, errStatusFunc: errStatusFunc);
             if (res == null)
             {
                 if (isThrow)
                 {
-                    throw new Exception("GetListAsync Handler Error  res is NULL");
+                    throw new Exception("PostList Handler Error  res is NULL");
                 }
 
                 return EmptyArray<T>();

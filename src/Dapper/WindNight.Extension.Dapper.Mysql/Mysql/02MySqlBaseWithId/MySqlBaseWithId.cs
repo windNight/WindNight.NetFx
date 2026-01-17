@@ -114,7 +114,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         /// <summary>
         /// 
-        /// impl<see cref="IStatusRepositoryService{TEntity}"/>
+        /// impl<see cref="IStatusReaderRepositoryService{TEntity}"/>
         /// </summary>
         /// <param name="status"><see cref="DataStatusEnums"/></param>
         /// <returns></returns>
@@ -126,7 +126,7 @@ namespace WindNight.Extension.Dapper.Mysql
 
         /// <summary>
         /// 
-        /// impl<see cref="IStatusRepositoryService{TEntity, TId}"/>
+        /// impl<see cref="IStatusReaderRepositoryService{TEntity, TId}"/>
         /// </summary>
         /// <param name="status"><see cref="DataStatusEnums"/></param>
         /// <returns></returns>

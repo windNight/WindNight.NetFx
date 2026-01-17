@@ -17,9 +17,14 @@ namespace Microsoft.Extensions.Configuration.Json
             object obj)
         {
             if (builder == null)
+            {
                 throw new ArgumentNullException(nameof(builder));
+            }
+
             if (obj == null)
+            {
                 throw new ArgumentNullException(nameof(obj));
+            }
 
             return builder.Add<JsonObjectConfigurationSource>(s => s.Object = obj);
         }

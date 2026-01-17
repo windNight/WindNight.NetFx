@@ -7,18 +7,18 @@ namespace WindNight.Extension.Db.Abstractions
     /// </summary>
     /// <typeparam name="TEntity">  inherit from <see cref="IEntity" /> , <see cref="IStatusEntity" /></typeparam>
     /// <inheritdoc />
-    [Obsolete("Please Use IStatusReaderRepositoryService AND ICUSWriterBaseRepositoryService ")]
+    [Obsolete("Please Use IStatusReaderRepositoryService AND ICUSWriterBaseRepositoryService ", true)]
     public interface IStatusRepositoryService<TEntity> : IStatusRepositoryService<TEntity, int>
         where TEntity : IEntity, IStatusEntity
     {
     }
 
     /// <summary>
-    ///     含Id的状态仓储基类
+    ///     含Id的状态仓储基类 <see cref="IStatusReaderRepositoryService"/>
     /// </summary>
     /// <typeparam name="TEntity">  inherit from <see cref="IEntity" /> , <see cref="IStatusEntity" /></typeparam>
     /// <typeparam name="TId"></typeparam>
-    [Obsolete("Please Use IStatusReaderRepositoryService AND ICUSWriterBaseRepositoryService ")]
+    [Obsolete("Please Use IStatusReaderRepositoryService AND ICUSWriterBaseRepositoryService ", true)]
     public interface IStatusRepositoryService<TEntity, TId>
         where TEntity : IEntity, IStatusEntity
         where TId : IEquatable<TId>, IComparable<TId>

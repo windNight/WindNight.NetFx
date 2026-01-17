@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Quartz;
 using Quartz.Impl;
@@ -25,6 +26,16 @@ namespace Schedule
         ///     所有job
         /// </summary>
         internal List<JobMeta> Jobs { get; set; } = new List<JobMeta>();
+
+        public JobMeta QueryJobInfoByJobCode(string jobCode)
+        {
+            return Jobs.FirstOrDefault(m => m.JobCode.Equals(jobCode, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public JobMeta QueryJobInfoByJobName(string jobName)
+        {
+            return Jobs.FirstOrDefault(m => m.JobName.Equals(jobName, StringComparison.OrdinalIgnoreCase));
+        }
 
 
         public IReadOnlyCollection<JobMeta> GeRegisteredJobs()
@@ -63,6 +74,7 @@ namespace Schedule
 
             }
         }
+
         internal void InitOnceJobScheduler()
         {
             if (OnceJobScheduler == null)

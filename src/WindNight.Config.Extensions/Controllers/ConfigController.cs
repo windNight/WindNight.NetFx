@@ -23,9 +23,13 @@ namespace WindNight.Config.Extensions
         /// </summary>
         /// <returns></returns>
         [HttpGet("appsettings")]
-        public List<AppSettingInfo> QueryAppSettingList()
+        public IEnumerable<AppSettingInfo> QueryAppSettingList()
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
+
 
             return ConfigItemsBase.GetAppSettingList();
         }
@@ -35,9 +39,12 @@ namespace WindNight.Config.Extensions
         /// </summary>
         /// <returns></returns>
         [HttpGet("connections")]
-        public List<ConnectionStringInfo> QueryConnectionStringList()
+        public IEnumerable<ConnectionStringInfo> QueryConnectionStringList()
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.GetConnectionStringList();
         }
 
@@ -46,9 +53,12 @@ namespace WindNight.Config.Extensions
         /// </summary>
         /// <returns></returns>
         [HttpGet("jsonconfigs")]
-        public List<string> QueryJsonConfigList()
+        public IEnumerable<string> QueryJsonConfigList()
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.GetJsonConfigList().Select(m => m.FileName).ToList();
         }
 
@@ -57,9 +67,12 @@ namespace WindNight.Config.Extensions
         /// </summary>
         /// <returns></returns>
         [HttpGet("xmlconfigs")]
-        public List<string> QueryXmlConfigList()
+        public IEnumerable<string> QueryXmlConfigList()
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.GetXmlConfigList().Select(m => m.FileName).ToList();
         }
 
@@ -71,7 +84,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("jsonconfig/byfilename")]
         public JsonFileConfigInfo QueryJsonConfigContent(string fileName)
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.GetJsonConfigList().FirstOrDefault(m => m.FileName == fileName);
         }
 
@@ -83,7 +99,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("xmlconfig/byfilename")]
         public XmlFileConfigInfo QueryXmlConfigContent(string fileName)
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.GetXmlConfigList().FirstOrDefault(m => m.FileName == fileName);
         }
 
@@ -95,7 +114,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/byfilename")]
         public FileConfigInfo QueryConfigContent(string fileName)
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             // 根据后缀 实际获取对应的配置文件
             return ConfigItemsBase.ReadConfigFileDirect(fileName);
         }
@@ -108,7 +130,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("config/byfilename/direct")]
         public FileConfigInfo QueryConfigContentDirect(string fileName)
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.ReadConfigFileDirect(fileName);
         }
 
@@ -121,7 +146,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("selfconfig/byfilename/direct")]
         public FileConfigInfo ReadSelfConfigFileDirect(string fileDir, string fileName)
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.ReadSelfConfigFileDirect(fileDir, fileName);
         }
 
@@ -134,7 +162,10 @@ namespace WindNight.Config.Extensions
         [HttpGet("frontconfig/byfilename/direct")]
         public FileConfigInfo ReadFrontConfigFileDirect(string fileDir, string fileName)
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             fileDir = $"wwwroot/{fileDir.TrimStart('/').TrimStart(Path.DirectorySeparatorChar)}";
             return ConfigItemsBase.ReadSelfConfigFileDirect(fileDir, fileName);
         }
@@ -145,9 +176,12 @@ namespace WindNight.Config.Extensions
         /// <param name="fileDir"></param>
         /// <returns></returns>
         [HttpGet("frontconfig/filenames")]
-        public List<string> QueryFrontConfigNamesDirect(string fileDir)
+        public IEnumerable<string> QueryFrontConfigNamesDirect(string fileDir)
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             fileDir = $"wwwroot/{fileDir.TrimStart('/').TrimStart(Path.DirectorySeparatorChar)}";
             return ConfigItemsBase.FetchSelfConfigNames(fileDir).ToList();
         }
@@ -158,9 +192,12 @@ namespace WindNight.Config.Extensions
         /// <param name="fileDir"></param>
         /// <returns></returns>
         [HttpGet("frontconfig/fileinfos")]
-        public List<ConfigFileBaseInfo> QueryFrontConfigInfosDirect(string fileDir)
+        public IEnumerable<ConfigFileBaseInfo> QueryFrontConfigInfosDirect(string fileDir)
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             fileDir = $"wwwroot/{fileDir.TrimStart('/').TrimStart(Path.DirectorySeparatorChar)}";
             return ConfigItemsBase.FetchSelfConfigFileInfos(fileDir).ToList();
         }
@@ -171,9 +208,12 @@ namespace WindNight.Config.Extensions
         /// <param name="fileDir"></param>
         /// <returns></returns>
         [HttpGet("selfconfig/filenames")]
-        public List<string> QuerySelfConfigNamesDirect(string fileDir)
+        public IEnumerable<string> QuerySelfConfigNamesDirect(string fileDir)
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.FetchSelfConfigNames(fileDir).ToList();
         }
 
@@ -183,9 +223,12 @@ namespace WindNight.Config.Extensions
         /// <param name="fileDir"></param>
         /// <returns></returns>
         [HttpGet("selfconfig/fileinfos")]
-        public List<ConfigFileBaseInfo> QuerySelfConfigFileInfosDirect(string fileDir)
+        public IEnumerable<ConfigFileBaseInfo> QuerySelfConfigFileInfosDirect(string fileDir)
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.FetchSelfConfigFileInfos(fileDir).ToList();
         }
 
@@ -195,9 +238,12 @@ namespace WindNight.Config.Extensions
         /// </summary>
         /// <returns></returns>
         [HttpGet("config/filenames")]
-        public List<string> QueryConfigNamesDirect()
+        public IEnumerable<string> QueryConfigNamesDirect()
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.FetchConfigNames().ToList();
         }
 
@@ -206,9 +252,12 @@ namespace WindNight.Config.Extensions
         /// </summary>
         /// <returns></returns>
         [HttpGet("config/fileinfos")]
-        public List<ConfigFileBaseInfo> FetchConfigFileInfosDirect()
+        public IEnumerable<ConfigFileBaseInfo> FetchConfigFileInfosDirect()
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.FetchConfigFileInfos().ToList();
         }
 
@@ -218,9 +267,12 @@ namespace WindNight.Config.Extensions
         /// </summary>
         /// <returns></returns>
         [HttpGet("updateflag")]
-        public Dictionary<string, string> QueryUpdateFlagDict()
+        public IDictionary<string, string> QueryUpdateFlagDict()
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.GetUpdateFlagDict();
         }
 
@@ -229,9 +281,12 @@ namespace WindNight.Config.Extensions
         /// </summary>
         /// <returns></returns>
         [HttpGet("configupdatetime")]
-        public Dictionary<string, DateTime> QueryConfigUpdateTime()
+        public IDictionary<string, DateTime> QueryConfigUpdateTime()
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.GetConfigUpdateTime();
         }
 
@@ -241,9 +296,12 @@ namespace WindNight.Config.Extensions
         /// </summary>
         /// <returns></returns>
         [HttpGet("config/current")]
-        public Dictionary<string, string> QueryCurrentConfiguration()
+        public IDictionary<string, string> QueryCurrentConfiguration()
         {
-            if (!IsAuthType1()) return null;
+            if (!IsAuthType1())
+            {
+                return null;
+            }
             return ConfigItemsBase.GetCurrentConfiguration();
         }
     }
@@ -252,7 +310,10 @@ namespace WindNight.Config.Extensions
     {
         protected virtual bool IsAuthType1(bool ignoreIp = true)
         {
-            if (ignoreIp && HttpClientIpIsPrivate()) return true;
+            if (ignoreIp && HttpClientIpIsPrivate())
+            {
+                return true;
+            }
             return AccessTokenIsAuth() || AppTokenIsAuth();
         }
     }
@@ -265,7 +326,10 @@ namespace WindNight.Config.Extensions
         protected virtual bool AccessTokenIsAuth()
         {
             var ak = GetAccessToken();
-            if (ak.IsNullOrEmpty()) return false;
+            if (ak.IsNullOrEmpty())
+            {
+                return false;
+            }
 
             return true;
         }
@@ -273,7 +337,10 @@ namespace WindNight.Config.Extensions
         protected virtual bool AppTokenIsAuth()
         {
             var appToken = GetAppTokenValue();
-            if (appToken.IsNullOrEmpty()) return false;
+            if (appToken.IsNullOrEmpty())
+            {
+                return false;
+            }
 
             return true;
         }
@@ -282,7 +349,10 @@ namespace WindNight.Config.Extensions
         {
             var authorizationValue = GetAuthorizationValue();
 
-            if (authorizationValue.IsNullOrEmpty()) return string.Empty;
+            if (authorizationValue.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
 
             var akArray = authorizationValue.Split(' ');
             if (akArray.Length == 2)
@@ -347,7 +417,10 @@ namespace WindNight.Config.Extensions
         protected virtual bool HttpClientIpIsPrivate()
         {
             var clientIp = GetHttpClientIp();
-            if (clientIp.IsInternalIp()) return true;
+            if (clientIp.IsInternalIp())
+            {
+                return true;
+            }
 
             return false;
         }
@@ -355,7 +428,10 @@ namespace WindNight.Config.Extensions
         protected virtual bool HttpClientIpIsLocal()
         {
             var clientIp = GetHttpClientIp();
-            if (clientIp.IsDefaultIp()) return true;
+            if (clientIp.IsDefaultIp())
+            {
+                return true;
+            }
             return false;
         }
 
@@ -364,7 +440,10 @@ namespace WindNight.Config.Extensions
             if (Request.Headers.TryGetValue(headerName, out var requestHeader))
             {
                 var header = requestHeader.FirstOrDefault();
-                if (!header.IsNullOrEmpty()) return header.Trim();
+                if (!header.IsNullOrEmpty())
+                {
+                    return header.Trim();
+                }
             }
 
             return defaultValue;

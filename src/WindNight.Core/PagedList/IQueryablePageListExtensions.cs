@@ -21,8 +21,10 @@ namespace System.Collections.Generic
             int indexFrom = 0, CancellationToken cancellationToken = default)
         {
             if (indexFrom > pageIndex)
+            {
                 throw new ArgumentException(
                     $"indexFrom: {indexFrom} > pageIndex: {pageIndex}, must indexFrom <= pageIndex");
+            }
 
             var count = source.Count();
             var items = source.Skip((pageIndex - indexFrom) * pageSize)
@@ -57,8 +59,10 @@ namespace System.Collections.Generic
             var pageSize = pagedInfo.PageSize;
 
             if (indexFrom > pageIndex)
+            {
                 throw new ArgumentException(
                     $"indexFrom: {indexFrom} > pageIndex: {pageIndex}, must indexFrom <= pageIndex");
+            }
 
             var count = source.Count();
             var items = source.Skip((pageIndex - indexFrom) * pageSize)

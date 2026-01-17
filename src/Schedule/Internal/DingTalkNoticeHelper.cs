@@ -1,14 +1,10 @@
-using System;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Extensions;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Extension;
-using Schedule.Abstractions;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;
 
@@ -27,7 +23,7 @@ namespace Schedule.@internal
                     NoticeDingSignKey = ConfigItems.NoticeDingSignKey,
                     NoticeDingPhones = ConfigItems.DingtalkPhones,
                     NoticeDingAtAll = ConfigItems.DingtalkAtAll,
-                    NoticeDingIsOpen = ConfigItems.DingtalkToken.IsNotNullOrEmpty(),
+                    NoticeDingIsOpen = ConfigItems.DingtalkToken.IsNotNullOrEmpty()
                 };
             }
 
@@ -63,16 +59,14 @@ namespace Schedule.@internal
             JobLogHelper.Debug(
                 $"DoNoticeAsync response is {rlt}, \r\n message is {postData.ToJsonStr()} ,\r\n token is {token}",
                 nameof(DoNoticeAsync));
-
         }
 
-        static string CalcTalkSign(long ts, string signKey)
+        private static string CalcTalkSign(long ts, string signKey)
         {
             try
             {
-
                 var stringToSign = $"{ts}\n{signKey}"; //ts + "\n" + signKey;
-                using (HMACSHA256 hmac = new HMACSHA256(Encoding.UTF8.GetBytes(signKey)))
+                using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(signKey)))
                 {
                     var signData = hmac.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
                     var sign = HttpUtility.UrlEncode(Convert.ToBase64String(signData));
@@ -81,10 +75,9 @@ namespace Schedule.@internal
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"", ex);
+                LogHelper.Error("", ex);
                 return "";
             }
-
         }
 
         private static string GetNoticeContent(IJobBaseInfo jobBaseInfo, string message)
@@ -116,6 +109,7 @@ namespace Schedule.@internal
                 {
                     return null;
                 }
+
                 atMobiles = noticeDingConfig.NoticeDingPhones;
                 isAtAll = noticeDingConfig.NoticeDingAtAll;
             }
@@ -131,17 +125,7 @@ namespace Schedule.@internal
             var title = "调度任务通知";
             var obj = new
             {
-                msgtype = "markdown",
-                markdown = new
-                {
-                    title,
-                    text = content,
-                },
-                at = new
-                {
-                    atMobiles,
-                    isAtAll,
-                },
+                msgtype = "markdown", markdown = new { title, text = content }, at = new { atMobiles, isAtAll }
             };
             return obj;
         }

@@ -1,29 +1,17 @@
-using System;
-using System.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Extensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
-using WindNight.AspNetCore.Mvc.Extensions;
 using WindNight.AspNetCore.Mvc.Extensions.FilterAttributes;
-using WindNight.Core;
 using WindNight.Core.Attributes.Abstractions;
-using WindNight.Extension;
 using WindNight.Linq.Extensions.Expressions;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 {
-
     [Route("api/internal")]
     [SysApi(50)]
     [NonAuth]
@@ -31,11 +19,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
     public class InternalController : DefaultApiControllerBase // Controller
     {
         // private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public InternalController()
-        {
-
-        }
 
         //protected override bool IsAuthType1(bool ignoreIp = true)
         //{
@@ -70,10 +53,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 return NotFound();
             }
 
-            return new
-            {
-                Configuration = GetConfiguration(),
-            };
+            return new { Configuration = GetConfiguration() };
         }
 
         //[HttpGet("config2")]
@@ -115,7 +95,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 AssemblyVersions = GetAssemblyVersions(),
                 ServerIp = GetHttpServerIp(),
                 IpHelper.LocalServerIp,
-                IpHelper.LocalServerIps,
+                IpHelper.LocalServerIps
             };
         }
 
@@ -130,7 +110,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             return new
             {
                 DateTime = HardInfo.NowFullString,
-                AssemblyVersion = typeof(InternalController).Assembly?.GetName()?.Version?.ToString(),
+                AssemblyVersion = typeof(InternalController).Assembly?.GetName()?.Version?.ToString()
             };
         }
 
@@ -142,11 +122,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 return NotFound();
             }
 
-            return new
-            {
-                DateTime = HardInfo.NowFullString,
-                AssemblyVersions = GetAssemblyVersions(),
-            };
+            return new { DateTime = HardInfo.NowFullString, AssemblyVersions = GetAssemblyVersions() };
         }
 
         [HttpGet("versions/internal")]
@@ -157,11 +133,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 return NotFound();
             }
 
-            return new
-            {
-                DateTime = HardInfo.NowFullString,
-                AssemblyVersions = GetAssemblyVersions(true),
-            };
+            return new { DateTime = HardInfo.NowFullString, AssemblyVersions = GetAssemblyVersions(true) };
         }
 
         private object GetAssemblyVersions(bool ignoreMicrosoft = false)
@@ -172,7 +144,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 var path = AppDomain.CurrentDomain.BaseDirectory;
                 var todoFiles = Directory.GetFiles(path).Where(m =>
                 {
-
                     var flag = ".dll".Equals(Path.GetExtension(m));
                     if (!flag)
                     {
@@ -182,11 +153,13 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                     if (ignoreMicrosoft)
                     {
                         var fileName = Path.GetFileName(m);
-                        if (fileName.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) || fileName.StartsWith("System", StringComparison.OrdinalIgnoreCase))
+                        if (fileName.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) ||
+                            fileName.StartsWith("System", StringComparison.OrdinalIgnoreCase))
                         {
                             return false;
                         }
                     }
+
                     return flag;
                 });
                 foreach (var file in todoFiles)
@@ -200,19 +173,20 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                             if (assemblyName != null)
                             {
                                 var key = assemblyName.Name;
-                                if (ignoreMicrosoft && (key.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) || key.StartsWith("System", StringComparison.OrdinalIgnoreCase)))
+                                if (ignoreMicrosoft &&
+                                    (key.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) ||
+                                     key.StartsWith("System", StringComparison.OrdinalIgnoreCase)))
                                 {
                                     continue;
                                 }
+
                                 if (key.IsNotNullOrEmpty() && !result.ContainsKey(key))
                                 {
                                     var value = assemblyName.Version.ToString();
                                     result.Add(key, value);
-
                                 }
                             }
                         }
-
                     }
                     catch
                     {
@@ -229,7 +203,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         }
 
 
-
         [HttpGet("svr/pid")]
         [SysApi(100)]
         public object GetSvrPId()
@@ -239,12 +212,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 return NotFound();
             }
 
-            return new
-            {
-                DateTime = HardInfo.NowFullString,
-                PId = HardInfo.QueryRuntimeProcessId(),
-            };
-
+            return new { DateTime = HardInfo.NowFullString, PId = HardInfo.QueryRuntimeProcessId() };
         }
 
 
@@ -260,7 +228,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             Environment.Exit(-1);
 
             return -1;
-
         }
 
 
@@ -293,7 +260,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 
         private void KillProcess(int pId)
         {
-
             try
             {
                 if (pId == Environment.ProcessId)
@@ -308,7 +274,6 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                 if (pInfo == null)
                 {
                     return;
-
                 }
 
                 var startInfo = new ProcessStartInfo
@@ -317,7 +282,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                     Arguments = $"/PID {pId} /T /F", // /T terminates the tree, /F forces termination
                     CreateNoWindow = true,
                     UseShellExecute = false,
-                    RedirectStandardError = true,
+                    RedirectStandardError = true
                 };
 
                 using (var process = Process.Start(startInfo))
@@ -325,7 +290,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                     process.WaitForExit();
                     if (process.ExitCode != 0)
                     {
-                        string error = process.StandardError.ReadToEnd();
+                        var error = process.StandardError.ReadToEnd();
                         var msg = $"Failed to terminate process tree for PID {pId}: {error}";
                         LogHelper.Warn(msg);
                     }
@@ -333,15 +298,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
             }
             catch (Win32Exception ex)
             {
-
             }
             catch (InvalidOperationException ex)
             {
-
             }
-
-
-
         }
 
 
@@ -380,20 +340,15 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
                     }
                     catch (Win32Exception ex)
                     {
-
                     }
                     catch (InvalidOperationException)
                     {
-
                     }
                 }
             }
             catch (Exception ex)
             {
-
             }
-
         }
-
     }
 }

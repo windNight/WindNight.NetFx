@@ -12,7 +12,7 @@ namespace WindNight.Extension.Db.Abstractions.@internal
 
         public static long DapperWarnMs => DapperConfig?.WarnMs ?? GetConfigValue(ConfigItemsKey.DapperWarnMsKey, 500L, false);
 
-        public static DapperConfig DapperConfig => GetSectionValue<DapperConfig>(null);
+        public static DapperConfig DapperConfig => GetSectionValue<DapperConfig>();
 
         static class ConfigItemsKey
         {

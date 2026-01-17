@@ -9,7 +9,7 @@ namespace WindNight.Extension.Db.Abstractions
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <inheritdoc />
-    [Obsolete("Please Use IReaderBaseRepositoryService ")]
+    [Obsolete("Please Use IReaderBaseRepositoryService ", true)]
     public interface IBaseRepositoryServiceWithId<TEntity> : IBaseRepositoryServiceWithId<TEntity, int>
         where TEntity : IEntity
     {
@@ -21,7 +21,7 @@ namespace WindNight.Extension.Db.Abstractions
     /// <typeparam name="TEntity"></typeparam>
     /// <typeparam name="TId"></typeparam>
     /// <inheritdoc cref="IQueryAllRepositoryService{TEntity}" />
-    [Obsolete("Please Use IReaderBaseRepositoryService ")]
+    [Obsolete("Please Use IReaderBaseRepositoryService ", true)]
     public interface IBaseRepositoryServiceWithId<TEntity, TId> : IQueryAllRepositoryService<TEntity>,
         IInsertRepositoryService<TEntity, TId>
         where TEntity : IEntity

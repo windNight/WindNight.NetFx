@@ -279,6 +279,7 @@ namespace Schedule.Func
             return context.JobDetail.JobDataMap.ContainsKey("isLogJobLC") &&
                    bool.Parse(context.JobDetail.JobDataMap["isLogJobLC"].ToString());
         }
+
         /// <summary>
         /// </summary>
         /// <param name="jobDetail"></param>
@@ -295,7 +296,7 @@ namespace Schedule.Func
         public static bool GetIsStoreJobLC(this IJobExecutionContext context)
         {
             return context.JobDetail.JobDataMap.ContainsKey("isStoreJobLC") &&
-                 context.JobDetail.JobDataMap["isStoreJobLC"].ToString().ToBoolean();
+                   context.JobDetail.JobDataMap["isStoreJobLC"].ToString().ToBoolean();
         }
 
         /// <summary>
@@ -313,7 +314,6 @@ namespace Schedule.Func
         /// <returns></returns>
         public static long GetJobWarnTs(this IJobExecutionContext context, long defaultValue = 300L)
         {
-
             if (context.JobDetail.JobDataMap.ContainsKey("jobWarnTs"))
             {
                 return context.JobDetail.JobDataMap["jobWarnTs"].ToLong(defaultValue);

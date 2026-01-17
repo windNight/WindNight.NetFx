@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Extensions.@internal;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -13,11 +12,11 @@ namespace Swashbuckle.AspNetCore.HideApi.@internal
             if (schema?.Properties != null)
             {
                 var newProperties = new Dictionary<string, OpenApiSchema>();
+                //var newProperties11 = new Dictionary<string, OpenApiSchema>();
                 foreach (var property in schema.Properties)
                 {
                     try
                     {
-
                         // 转换为大写驼峰命名法 
                         var pascalCaseName = ToPascalCase(property.Key);
                         if (newProperties.ContainsKey(pascalCaseName))
@@ -35,13 +34,19 @@ namespace Swashbuckle.AspNetCore.HideApi.@internal
                 }
 
                 schema.Properties = newProperties;
+
             }
         }
 
         private string ToPascalCase(string s)
         {
-            if (s.IsNullOrEmpty()) return s;
+            if (s.IsNullOrEmpty())
+            {
+                return s;
+            }
             return char.ToUpper(s[0]) + s.Substring(1);
         }
+
+
     }
 }

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using Schedule.Abstractions;
 using Schedule.Func;
@@ -44,6 +41,7 @@ namespace Schedule.Ctrl
             {
                 jobMetaList.Add(UtilsFunc.StringToJobMeta(item));
             }
+
             return jobMetaList;
         }
 
@@ -54,6 +52,7 @@ namespace Schedule.Ctrl
             {
                 encodingJobMetas.Add(UtilsFunc.JobMetaToString(item));
             }
+
             File.WriteAllLines("jobrunningenv.cache", encodingJobMetas, Encoding.UTF8);
             return true;
         }

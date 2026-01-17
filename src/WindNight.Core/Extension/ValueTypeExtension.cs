@@ -4,6 +4,88 @@ namespace WindNight.Core.Extension
 {
     public static class ValueTypeExtension
     {
+
+        public static bool IsValueType(this object obj)
+        {
+            var type = obj.GetType();
+            return type.IsValueType;
+        }
+
+        public static bool IsInt(this object obj)
+        {
+            var type = obj.GetType();
+            if (type.IsValueType)
+            {
+                if (type == typeof(int))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsLong(this object obj)
+        {
+            var type = obj.GetType();
+            if (type.IsValueType)
+            {
+                if (type == typeof(long))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsDouble(this object obj)
+        {
+            var type = obj.GetType();
+            if (type.IsValueType)
+            {
+                if (type == typeof(double))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsDecimal(this object obj)
+        {
+            var type = obj.GetType();
+            if (type.IsValueType)
+            {
+                if (type == typeof(decimal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsFloat(this object obj)
+        {
+            var type = obj.GetType();
+            if (type.IsValueType)
+            {
+                if (type == typeof(float))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+
+
+
+
         #region Decimal
 
         /// <summary>
@@ -46,7 +128,7 @@ namespace WindNight.Core.Extension
         {
             return (int)Math.Ceiling(data);
         }
-
+       
         /// <summary>
         ///     四舍六入五取整
         /// </summary>
@@ -60,9 +142,9 @@ namespace WindNight.Core.Extension
         ///     <paramref name="decimals" /> is less than 0 or greater than 28.
         /// </exception>
         /// <returns></returns>
-        public static int Round(this decimal data, int decimals)
+        public static decimal Round(this decimal data, int decimals)
         {
-            return (int)Math.Round(data, decimals);
+            return  Math.Round(data, decimals);
         }
 
         /// <summary>
@@ -78,7 +160,7 @@ namespace WindNight.Core.Extension
         {
             return (int)Math.Floor(data);
         }
-
+      
         /// <summary>
         ///     取整数
         ///     Calculates the integral part of a specified decimal number.
@@ -166,7 +248,6 @@ namespace WindNight.Core.Extension
         {
             return (int)Math.Truncate(data);
         }
-
 
         public static int ToInt(this double data)
         {

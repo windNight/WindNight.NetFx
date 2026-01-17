@@ -11,6 +11,7 @@ namespace Microsoft.AspNetCore.WindNight.Hosting.@internal
 
         public static string SvrCenterDomain => QueryDomainConfig(SvrCenterDomainConfigKey);
 
+        public static bool OpenDebug => OpenDebugInternal;
 
 
         public static DomainConfigDto SvrCenterConfig => QueryDomainInfoConfig(SvrCenterDomainConfigKey) ?? new DomainConfigDto();

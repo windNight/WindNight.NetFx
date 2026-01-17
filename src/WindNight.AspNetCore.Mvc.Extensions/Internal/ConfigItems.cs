@@ -5,6 +5,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
 {
     internal class ConfigItems : DefaultConfigItemBase
     {
+        public static bool OpenDebug => OpenDebugInternal;
 
         internal static bool OpenInternalApi => GetAppSettingValue("OpenInternalApi", false, false);
 
@@ -91,7 +92,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
 
         public static bool CheckClientIp => SwaggerConfigs?.CheckClientIp ?? true;
 
-        public static List<string> LimitIps => SwaggerConfigs?.LimitIps ?? new List<string>();
+        public static IEnumerable<string> LimitIps => SwaggerConfigs?.LimitIps ?? new List<string>();
 
         public static int ShowSysApiMiniLevel => SwaggerConfigs?.ShowSysApiMiniLevel ?? 0;
 
@@ -114,9 +115,10 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
         public bool IsManageApp { get; set; } = false;
 
         public bool HiddenSchemas { get; set; } = false;
+
         public bool CheckClientIp { get; set; } = true;
 
-        public List<string> LimitIps { get; set; } = new List<string>();
+        public IEnumerable<string> LimitIps { get; set; } = new List<string>();
 
         public bool OpenSwaggerDebug { get; set; } = false;
 

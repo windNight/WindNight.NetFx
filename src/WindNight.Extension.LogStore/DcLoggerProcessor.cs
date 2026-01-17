@@ -17,11 +17,12 @@ namespace WindNight.Extension.Logger.DcLog
     {
         private const int OpenGZipLimit = 1500;
         private const string GZipFlagStr = "gzip@";
+
         private readonly Stopwatch _stopwatch = new Stopwatch();
+
         //private ISystemLogsProcess _repo => Ioc.GetService<ISystemLogsProcess>();
         /// <summary> </summary>
         protected readonly DcLogOptions DcLogOptions;
-        private IPEndPoint EndPoint { get; set; }
 
         /// <summary> </summary>
         protected readonly ConcurrentQueue<SysLogs> MessageQueue;
@@ -39,7 +40,35 @@ namespace WindNight.Extension.Logger.DcLog
 
             Task.Run(ProcessLogQueueThread);
             Task.Run(BackupThread);
+        }
 
+        private IPEndPoint EndPoint { get; }
+
+        protected bool IsStop { get; set; }
+
+        /// <summary> </summary>
+        public virtual void EnqueueMessage(SysLogs message)
+        {
+            if (!CheckLogLevel(message))
+            {
+                return;
+            }
+
+            // if (message.ToLower().Contains($"{nameof(SysLogs)}".ToLower())) return;
+            if (DcLogOptions.IsOpenDebug)
+            {
+                Console.WriteLine($"EnqueueMessage({message.ToJsonStr()})");
+            }
+
+            MessageQueue.Enqueue(message);
+        }
+
+        /// <summary>
+        /// </summary>
+        public void Dispose()
+        {
+            ClearQueue();
+            IsStop = true;
         }
 
         bool CheckLogLevel(SysLogs message)
@@ -66,36 +95,8 @@ namespace WindNight.Extension.Logger.DcLog
             }
             catch (Exception ex)
             {
-
                 return true;
             }
-
-
-        }
-
-        protected bool IsStop { get; set; }
-
-        /// <summary> </summary>
-        public virtual void EnqueueMessage(SysLogs message)
-        {
-            if (!CheckLogLevel(message))
-            {
-                return;
-            }
-            // if (message.ToLower().Contains($"{nameof(SysLogs)}".ToLower())) return;
-            if (DcLogOptions.IsOpenDebug)
-            {
-                Console.WriteLine($"EnqueueMessage({message.ToJsonStr()})");
-            }
-            MessageQueue.Enqueue(message);
-        }
-
-        /// <summary>
-        /// </summary>
-        public void Dispose()
-        {
-            ClearQueue();
-            IsStop = true;
         }
 
         /// <summary> </summary>
@@ -105,6 +106,7 @@ namespace WindNight.Extension.Logger.DcLog
             {
                 Console.WriteLine("start processlog to sender");
             }
+
             Thread.CurrentThread.Name = "DbLoggerProcessor-sender";
             while (true)
             {
@@ -112,6 +114,7 @@ namespace WindNight.Extension.Logger.DcLog
                 {
                     break;
                 }
+
                 try
                 {
                     if (MessageQueue.TryDequeue(out var message))
@@ -120,6 +123,7 @@ namespace WindNight.Extension.Logger.DcLog
                         {
                             continue;
                         }
+
                         ProcessLog(message);
                     }
                     else
@@ -142,6 +146,7 @@ namespace WindNight.Extension.Logger.DcLog
             {
                 Console.WriteLine("start backupThread to sender batch");
             }
+
             Thread.CurrentThread.Name = "DbLoggerProcessor-backup-sender";
             while (true)
             {
@@ -153,6 +158,7 @@ namespace WindNight.Extension.Logger.DcLog
                         {
                             Console.WriteLine("start backupThread Before Stop to sender batch");
                         }
+
                         ProcessBackupLogs();
                     }
 
@@ -161,12 +167,14 @@ namespace WindNight.Extension.Logger.DcLog
 
                 try
                 {
-                    if (_stopwatch.ElapsedMilliseconds >= 1000 * 60 * 5 && MessageQueue.Count >= DcLogOptions.QueuedMaxMessageCount)
+                    if (_stopwatch.ElapsedMilliseconds >= 1000 * 60 * 5 &&
+                        MessageQueue.Count >= DcLogOptions.QueuedMaxMessageCount)
                     {
                         if (DcLogOptions.IsConsoleLog)
                         {
                             Console.WriteLine("start backupThread to sender batch");
                         }
+
                         Debug.Assert(MessageQueue.Count >= DcLogOptions.QueuedMaxMessageCount,
                             $"Current Length In Queue is {MessageQueue.Count}");
                         ProcessBackupLogs();
@@ -190,8 +198,12 @@ namespace WindNight.Extension.Logger.DcLog
             MessageQueue.Clear();
 #else
             if (!MessageQueue.IsEmpty)
+            {
                 for (var i = 0; i < MessageQueue.Count; i++)
+                {
                     MessageQueue.TryDequeue(out var msg);
+                }
+            }
 #endif
         }
 
@@ -220,27 +232,27 @@ namespace WindNight.Extension.Logger.DcLog
                         {
                             return;
                         }
-
                     }
-                    var data = message.ToJsonStr().ToBytes();// Encoding.UTF8.GetBytes();
+
+                    var data = message.ToJsonStr().ToBytes(); // Encoding.UTF8.GetBytes();
                     var sendData = FixSendContent(data);
                     var count = udpClient.Send(sendData, sendData.Length, EndPoint);
                     if (count != sendData.Length)
                     {
                         $"Send Msg:{message}  Count ({count})".Log2Console();
                     }
+
                     if (DcLogOptions.IsConsoleLog)
                     {
-                        $"send msg success {EndPoint.Address}:{EndPoint.Port} :{message.ToJsonStr()}, Current Length In Queue is {MessageQueue.Count}".Log2Console();
+                        $"send msg success {EndPoint.Address}:{EndPoint.Port} :{message.ToJsonStr()}, Current Length In Queue is {MessageQueue.Count}"
+                            .Log2Console();
                     }
                 }
                 catch (Exception ex)
                 {
                     $"Send Msg:{message} Handler Error {ex.Message}".Log2Console(ex);
-
                 }
             }
-
         }
 
 
@@ -256,7 +268,6 @@ namespace WindNight.Extension.Logger.DcLog
             {
                 foreach (var message in messages)
                 {
-
                     try
                     {
                         //var obj = new
@@ -265,12 +276,13 @@ namespace WindNight.Extension.Logger.DcLog
                         //    Items = message,
                         //};
                         //var data = obj.ToJsonStr().ToBytes();// Encoding.UTF8.GetBytes();
-                        var data = message.ToJsonStr().ToBytes();// Encoding.UTF8.GetBytes();
+                        var data = message.ToJsonStr().ToBytes(); // Encoding.UTF8.GetBytes();
                         var sendData = FixSendContent(data);
                         udpClient.Send(sendData, sendData.Length, EndPoint);
                         if (DcLogOptions.IsConsoleLog)
                         {
-                            $"send msg success {EndPoint.Address}:{EndPoint.Port} :{message.ToJsonStr()}, Current Length In Queue is {MessageQueue.Count}".Log2Console();
+                            $"send msg success {EndPoint.Address}:{EndPoint.Port} :{message.ToJsonStr()}, Current Length In Queue is {MessageQueue.Count}"
+                                .Log2Console();
                         }
                     }
                     catch (Exception ex)
@@ -278,9 +290,7 @@ namespace WindNight.Extension.Logger.DcLog
                         $"Send Msg:{message} Handler Error {ex.Message}".Log2Console(ex);
                     }
                 }
-
             }
-
         }
 
         private byte[] FixSendContent(byte[] originBytes)
@@ -323,6 +333,5 @@ namespace WindNight.Extension.Logger.DcLog
             ProcessLog(oldQueue);
             oldQueue = null;
         }
-
     }
 }

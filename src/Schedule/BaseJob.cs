@@ -39,6 +39,7 @@ namespace Schedule
         {
             CurrentJobContext = context;
         }
+
     }
 
     public abstract partial class BaseJob
@@ -113,6 +114,8 @@ namespace Schedule
         {
             return true;
         }
+
+
     }
 
     public abstract partial class BaseJob

@@ -39,7 +39,7 @@ namespace Schedule
             }
 
             var config = Items.FirstOrDefault(m =>
-                string.Equals(m.JobCode, jobCode, StringComparison.InvariantCultureIgnoreCase));
+                m.JobCode.Equals(jobCode, StringComparison.InvariantCultureIgnoreCase));
 
             return config;
 

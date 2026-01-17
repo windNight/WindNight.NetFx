@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using WindNight.Core.Abstractions;
 
 namespace WindNight.Extension.Logger.DbLog.Abstractions
 {

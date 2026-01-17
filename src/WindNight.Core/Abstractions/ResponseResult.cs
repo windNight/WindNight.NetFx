@@ -10,6 +10,14 @@ namespace WindNight.Core
 
         /// <summary> 响应信息 </summary>
         public string Message { get; set; } = "";
+
+        public string ReqClientIp { get; set; } = "";
+
+        public string TraceId { get; set; } = "";
+
+        /// <summary> 耗时 毫秒  </summary>
+        public long TTL { get; set; } = 0;
+
     }
 
 
@@ -174,5 +182,6 @@ namespace WindNight.Core
             message = message.IsNullOrEmpty() ? "BadRequest" : message;
             return new ResponseResult<T> { Code = code, Message = message, Data = default };
         }
+
     }
 }

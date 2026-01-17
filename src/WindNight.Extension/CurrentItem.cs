@@ -264,7 +264,7 @@ namespace WindNight.Extension
                             {
                                 if (traceId.IsNullOrEmpty())
                                 {
-                                    traceId = GuidHelper.GenerateOrderNumber();
+                                    traceId = $"{GuidHelper.GenerateOrderNumber()}T";
                                 }
 
                                 Items[Consts.SERIZLNUMBER] = traceId;
@@ -328,9 +328,9 @@ namespace WindNight.Extension
 
         public static IReadOnlyDictionary<object, object> FilterKeys(IEnumerable<string> keys)
         {
-            keys = keys.Distinct();
+            keys = keys.Select(m => m.ToLower()).Distinct();
             var dict =
-                Items.Where(m => !keys.Contains(m.Key))
+                Items.Where(m => !keys.Contains(m.Key.ToString().ToLower()))
                     .ToDictionary(
                         k => k.Key,
                         v => v.Value
@@ -433,6 +433,7 @@ namespace WindNight.Extension
                     "__AuthorizationMiddlewareWithEndpointInvoked",
                     "__CorsMiddlewareWithEndpointInvoked",
                     "MS_HttpRequestMessage",
+                    "accesstoken",
                     "Authorization",
                     "authorization",
                     "header:authorization",

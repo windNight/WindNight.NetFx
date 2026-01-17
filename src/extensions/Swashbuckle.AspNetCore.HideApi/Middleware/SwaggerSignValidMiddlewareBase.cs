@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Extension;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
 using Swashbuckle.AspNetCore.Extensions.@internal;
 using Swashbuckle.AspNetCore.HideApi.@internal;
@@ -28,6 +23,7 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
     internal class InternalSwaggerMiddlewareBase
     {
         private readonly RequestDelegate _next;
+
         public InternalSwaggerMiddlewareBase(RequestDelegate next)
         {
             _next = next;
@@ -63,16 +59,15 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
                 }
 
                 await _next(context);
-
             }
             catch (Exception ex)
             {
                 await _next(context);
             }
         }
-
     }
-    public abstract partial class SwaggerSignValidMiddlewareBase
+
+    public abstract class SwaggerSignValidMiddlewareBase
     {
         protected readonly RequestDelegate _next;
 
@@ -90,11 +85,11 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
 
         protected Dictionary<string, string> _signKeyDict { get; }
 
-        private List<SwaggerSignConfig> SignConfigs => ConfigItems.SwaggerSignConfigs;
+        private IEnumerable<SwaggerSignConfig> SignConfigs => ConfigItems.SwaggerSignConfigs;
 
         protected virtual bool SwaggerCanDebug => ConfigItems.SwaggerCanDebug;
 
-        protected virtual Dictionary<string, string> DefaultSignDict { get; } = new();
+        protected virtual Dictionary<string, string> DefaultSignDict { get; } = new Dictionary<string, string>();
 
         protected virtual Dictionary<string, string> CurrentSignKeyDict
         {
@@ -122,14 +117,14 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
             }
         }
 
+        protected virtual List<string> AllowedPaths => new List<string> { "/api" };
+
         protected virtual bool VerifyClientIp(HttpContext context)
         {
             return context.RemoteIpValid();
             //  var remoteIp = context.Request.HttpContext.QueryDefaultClient();
             //  return remoteIp.IpValid();
         }
-
-        protected virtual List<string> AllowedPaths => new() { "/api" };
 
         protected abstract bool CheckValidData(HttpContext context, Dictionary<string, string> dict);
 
@@ -144,12 +139,10 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
             {
                 await _next(context);
             }
-
         }
 
         protected virtual async Task DoInvokeAsync(HttpContext context)
         {
-
             // 判断是否来自 Swagger 页面的请求
             var isSwaggerPage = IsInSwaggerPage(context);
             if (!isSwaggerPage)
@@ -170,8 +163,6 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
                 await context.Response.WriteAsync("Invalid or missing signature");
                 return;
             }
-
-
 
 
             // 执行验证逻辑
@@ -258,8 +249,10 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
                 var traceId = GetHeaderData(context.Request, ConstantKeys.ReqTraceIdKey);
                 if (traceId.IsNullOrEmpty())
                 {
-                    context.Request.Headers[ConstantKeys.ReqTraceIdKey] = $"TraceId_swagger_{GuidHelper.GenerateOrderNumber()}";
+                    context.Request.Headers[ConstantKeys.ReqTraceIdKey] =
+                        $"TraceId_swagger_{GuidHelper.GenerateOrderNumber()}";
                 }
+
             }
         }
 
@@ -294,9 +287,15 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
 
                         if (key.Equals(ConstantKeys.ReqTraceIdKey, StringComparison.OrdinalIgnoreCase))
                         {
-                            context.Request.Headers[ConstantKeys.ReqTraceIdKey] = $"swagger_{GuidHelper.GenerateOrderNumber()}";
+                            context.Request.Headers[ConstantKeys.ReqTraceIdKey] =
+                                $"swagger_{GuidHelper.GenerateOrderNumber()}";
                         }
 
+                        if (key.Equals(ConstantKeys.HttpPluginKey, StringComparison.OrdinalIgnoreCase))
+                        {
+                            context.Request.Headers[ConstantKeys.HttpPluginKey] =
+                                $"swagger_HttpClient@{BuildInfo.BuildVersion}";
+                        }
                     }
 
                     signData.Add(key, data);
@@ -316,10 +315,8 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
                     {
                         return await Task.FromResult(false);
                     }
-                    else
-                    {
-                        InternalTodo(context);
-                    }
+
+                    InternalTodo(context);
 
                     // 获取当前请求的控制器和方法
                     var endpoint = context.GetEndpoint();
@@ -342,9 +339,6 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
                         var flag = CheckValidData(context, signData);
                         return await Task.FromResult(flag);
                     }
-
-
-
                 }
 
                 return await Task.FromResult(true);
@@ -353,7 +347,6 @@ namespace Swashbuckle.AspNetCore.HideApi.Middleware
             {
                 return false;
             }
-
         }
 
         protected virtual string GetHeaderData(HttpRequest httpRequest, string headerName, string defaultValue = "")

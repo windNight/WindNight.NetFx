@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Options;
+using WindNight.Core.Abstractions;
 using WindNight.Core.SQL;
 using WindNight.Core.SQL.Abstractions;
 using WindNight.Extension.Dapper.Mysql;

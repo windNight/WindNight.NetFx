@@ -51,7 +51,7 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
 
         public bool CheckClientIp { get; set; } = true;
 
-        public List<string> LimitIps { get; set; } = new List<string>();
+        public IEnumerable<string> LimitIps { get; set; } = new List<string>();
 
         //public Dictionary<string, string> GetResDict()
         //{
@@ -209,13 +209,13 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
             EnvName.IsNullOrEmpty() || EnvName.Equals("pre", StringComparison.OrdinalIgnoreCase) || EnvName.Equals("online", StringComparison.OrdinalIgnoreCase) || EnvName.Equals("production", StringComparison.OrdinalIgnoreCase);
 
 
-        public static List<string> LimitIps => SwaggerConfigs?.LimitIps ?? new List<string>();
+        public static IEnumerable<string> LimitIps => SwaggerConfigs?.LimitIps ?? new List<string>();
 
         public static bool CheckClientIp => SwaggerConfigs?.CheckClientIp ?? true;
 
         public static SwaggerConfigs SwaggerConfigs => GetSectionValue<SwaggerConfigs>();
 
-        public static List<SwaggerSignConfig> SwaggerSignConfigs => SwaggerConfigs?.SignConfigs ?? new List<SwaggerSignConfig>();
+        public static IEnumerable<SwaggerSignConfig> SwaggerSignConfigs => SwaggerConfigs?.SignConfigs ?? new List<SwaggerSignConfig>();
 
 
         /// <summary>

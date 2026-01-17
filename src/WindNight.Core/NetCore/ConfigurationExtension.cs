@@ -34,7 +34,10 @@ namespace Microsoft.Extensions.Configuration.Extensions
         public static List<ConfigBaseInfo2> GetConfiguration(IEnumerable<IConfigurationSection>? sections = null)
         {
             var _config = Ioc.GetService<IConfiguration>();
-            if (sections == null) sections = _config.GetChildren();
+            if (sections == null)
+            {
+                sections = _config.GetChildren();
+            }
 
             var list = new List<ConfigBaseInfo2>();
             foreach (var m in sections)
@@ -65,9 +68,15 @@ namespace Microsoft.Extensions.Configuration.Extensions
         public static List<ConfigBaseInfo2> GetConfiguration(this IConfiguration configuration,
             IEnumerable<IConfigurationSection>? sections = null)
         {
-            if (configuration == null) return new List<ConfigBaseInfo2>();
+            if (configuration == null)
+            {
+                return new List<ConfigBaseInfo2>();
+            }
             var _config = configuration;
-            if (sections == null) sections = _config.GetChildren();
+            if (sections == null)
+            {
+                sections = _config.GetChildren();
+            }
 
             var list = new List<ConfigBaseInfo2>();
             foreach (var m in sections)

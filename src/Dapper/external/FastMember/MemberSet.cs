@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -22,7 +22,10 @@ namespace FastMember
         /// </summary>
         public IEnumerator<Member> GetEnumerator()
         {
-            foreach (var member in members) yield return member;
+            foreach (var member in members)
+            {
+                yield return member;
+            }
         }
         /// <summary>
         /// Get a member by index
@@ -94,8 +97,15 @@ namespace FastMember
         {
             get
             {
-                if(member is FieldInfo) return ((FieldInfo)member).FieldType;
-                if (member is PropertyInfo) return ((PropertyInfo)member).PropertyType;
+                if (member is FieldInfo)
+                {
+                    return ((FieldInfo)member).FieldType;
+                }
+
+                if (member is PropertyInfo)
+                {
+                    return ((PropertyInfo)member).PropertyType;
+                }
                 throw new NotSupportedException(member.GetType().Name);
             }
         }
@@ -105,7 +115,10 @@ namespace FastMember
         /// </summary>
         public bool IsDefined(Type attributeType)
         {
-            if (attributeType == null) throw new ArgumentNullException(nameof(attributeType));
+            if (attributeType == null)
+            {
+                throw new ArgumentNullException(nameof(attributeType));
+            }
             return Attribute.IsDefined(member, attributeType);
         }
 
@@ -124,8 +137,14 @@ namespace FastMember
             {
                 switch (member.MemberType)
                 {
-                    case MemberTypes.Property: return ((PropertyInfo)member).CanWrite;
-                    default: throw new NotSupportedException(member.MemberType.ToString());
+                    case MemberTypes.Property:
+                    {
+                        return ((PropertyInfo)member).CanWrite;
+                    }
+                    default:
+                    {
+                        throw new NotSupportedException(member.MemberType.ToString());
+                    }
                 }
             }
         }
@@ -139,8 +158,14 @@ namespace FastMember
             {
                 switch (member.MemberType)
                 {
-                    case MemberTypes.Property: return ((PropertyInfo)member).CanRead;
-                    default: throw new NotSupportedException(member.MemberType.ToString());
+                    case MemberTypes.Property:
+                    {
+                        return ((PropertyInfo)member).CanRead;
+                    }
+                    default:
+                    {
+                        throw new NotSupportedException(member.MemberType.ToString());
+                    }
                 }
             }
         }
