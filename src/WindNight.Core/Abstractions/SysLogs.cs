@@ -6,9 +6,9 @@ using WindNight.Core.SQL;
 
 namespace WindNight.Core.Abstractions
 {
-    public class SysLogs: CreateBase<long>
+    public class SysLogs : CreateBase<long>
     {
-    
+
         public bool IsForce { get; set; } = false;
 
         public string SerialNumber { get; set; } = "";
@@ -46,7 +46,7 @@ namespace WindNight.Core.Abstractions
 
         public string BizSvrType { get; set; } = "";
 
-        public string LogPluginVersion { get; set; } = "1.0.0";
+        public string LogPluginVersion { get; set; } = BuildInfo.BuildVersion;
 
 
         public Dictionary<string, object> ExtInfo { get; set; } = new Dictionary<string, object>();

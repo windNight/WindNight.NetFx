@@ -19,6 +19,8 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
         public bool ShowTestApi { get; set; } = false;
         public bool ShowSysApi { get; set; } = false;
 
+        public string HiddenImplName { get; set; } = "default";
+
         [NJsonIgnore, MJsonIgnore]
         public bool IsManageApp { get; set; } = false;
 
@@ -199,6 +201,8 @@ namespace Swashbuckle.AspNetCore.Extensions.@internal
 
         public static string EnvName =>
             GetAppSettingValue("EnvName", "online", false);
+
+        public static string SwaggerHiddenImplName => SwaggerConfigs?.HiddenImplName ?? "default";
 
         public static bool SwaggerOnlineDebug =>
             GetAppSettingValue("SwaggerOnlineDebug", false, false);

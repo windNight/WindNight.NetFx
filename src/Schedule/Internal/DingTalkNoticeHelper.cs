@@ -1,3 +1,4 @@
+using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Extensions;
 using System.Text;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Extension;
 using WindNight.Core.Abstractions;
 using WindNight.Extension;
+using WindNight.Linq.Extensions.Expressions;
 
 namespace Schedule.@internal
 {
@@ -101,7 +103,7 @@ namespace Schedule.@internal
         private static object GetDingTalkPostData(IJobBaseInfo jobBaseInfo, string message,
             NoticeDingConfig noticeDingConfig)
         {
-            var atMobiles = string.Empty;
+            var atMobiles = HardInfo.EmptyList<string>();
             var isAtAll = false;
             if (noticeDingConfig != null)
             {
@@ -110,22 +112,28 @@ namespace Schedule.@internal
                     return null;
                 }
 
-                atMobiles = noticeDingConfig.NoticeDingPhones;
+                atMobiles = noticeDingConfig.NoticeDingPhones.Split(",");
                 isAtAll = noticeDingConfig.NoticeDingAtAll;
             }
             else
             {
-                atMobiles = ConfigItems.DingtalkPhones;
+                atMobiles = ConfigItems.DingtalkPhones.Split(",");
                 isAtAll = ConfigItems.DingtalkAtAll;
             }
 
+            if (atMobiles.IsNotNullOrEmpty())
+            {
+                message = $"{atMobiles} {atMobiles.Select(m => $"@{m}").Join(" ")} ";
+            }
             // <font color=#228B22>Failed</font>
             var content = GetNoticeContent(jobBaseInfo, message);
 
             var title = "调度任务通知";
             var obj = new
             {
-                msgtype = "markdown", markdown = new { title, text = content }, at = new { atMobiles, isAtAll }
+                msgtype = "markdown",
+                markdown = new { title, text = content },
+                at = new { atMobiles, isAtAll }
             };
             return obj;
         }

@@ -9,15 +9,21 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
     /// <summary> </summary>
     public partial class Ioc
     {
-        private IConfigService? _currentConfigService { get; set; }
 
-        public IConfigService? CurrentConfigService => _currentConfigService ?? GetService<IConfigService>();
+
+        public static string CurrentVersion => BuildInfo.BuildVersion;
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
+
+
+        private IConfigService _currentConfigService { get; set; }
+
+        public IConfigService CurrentConfigService => _currentConfigService ?? GetService<IConfigService>();
 
         public IConfiguration Configuration => GetService<IConfiguration>();
 
-        private ILogService? _currentLogService { get; set; }
+        private ILogService _currentLogService { get; set; }
 
-        public ILogService? CurrentLogService => _currentLogService ?? GetService<ILogService>();
+        public ILogService CurrentLogService => _currentLogService ?? GetService<ILogService>();
 
         public void SetCurrentConfigService(IConfigService configService)
         {
@@ -76,7 +82,7 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         ///     Please Make Sure you has do Ioc.Instance.InitServiceProvider(yourIServiceProvider) when init your app.
         /// </remarks>
         /// <returns> A service object of type T or null if there is no such service. </returns>
-        public static T GetService<T>(string? name = null)
+        public static T GetService<T>(string name = null)
         {
             if (Instance.ServiceProvider == null)
             {
@@ -108,7 +114,7 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
 
         public static bool HasService<T>()
         {
-            return !GetServices<T>().IsNullOrEmpty();
+            return GetServices<T>().IsNotNullOrEmpty();
         }
 
 
@@ -138,26 +144,33 @@ namespace Microsoft.Extensions.DependencyInjection.WnExtension
         ///     Please Make Sure you has do Ioc.Instance.InitServiceProvider(yourIServiceProvider) when init your app.
         /// </remarks>
         /// <returns> A service object of type T or null if there is no such service. </returns>
-        public static T GetService<T>(this IServiceProvider? serviceProvider, string? name)
+        public static T GetService<T>(this IServiceProvider serviceProvider, string name, bool isFirst = true)
         {
             if (serviceProvider == null)
             {
                 return default;
             }
+
 #if NETSTANDARD
-            if (name.IsNotNullOrEmpty())
+            if (name.IsNotNullOrEmpty(true))
             {
+                name = name.Trim();
                 var impls = serviceProvider.GetServices<T>();
                 foreach (var impl in impls)
                 {
                     var alias = impl.GetType().GetCustomAttributes<AliasAttribute>().FirstOrDefault();
-                    if (alias != null && alias.Name == name)
+                    if (alias != null && alias.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
                     {
                         return impl;
                     }
                 }
 
-                return impls.FirstOrDefault();
+                if (isFirst)
+                {
+                    return impls.FirstOrDefault();
+                }
+
+                return impls.LastOrDefault();
             }
 
             return serviceProvider.GetService<T>();

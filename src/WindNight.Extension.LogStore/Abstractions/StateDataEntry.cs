@@ -28,6 +28,7 @@ namespace WindNight.Extension.Logger.DcLog.Abstractions
         public string SerialNumber { get; set; } = "";
         public string Msg { get; set; } = "";
         public bool IsForce { get; set; } = false;
+        public Dictionary<string, object> ExtInfo { get; set; } = new Dictionary<string, object>();
 
         public override string ToString()
         {

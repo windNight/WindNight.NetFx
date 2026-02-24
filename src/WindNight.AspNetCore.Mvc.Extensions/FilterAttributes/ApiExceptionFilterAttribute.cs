@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
-using Newtonsoft.Json.Extension;
 using WindNight.Core;
 using WindNight.Core.ExceptionExt;
 
@@ -29,7 +28,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 var exception = context.Exception;
 
                 context.HttpContext.Response.StatusCode = 200;
-             
+
                 if (context.Exception is BusinessException ex)
                 {
                     context.Result =
@@ -42,11 +41,11 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                     errMsg = exception.GetMessage();
                 }
 
-                LogHelper.Warn($"api[{context?.HttpContext?.Request?.Path ?? ""}] {errMsg}");
+                LogHelper.Warn($" 业务异常未捕获 reqApi[{context?.HttpContext?.Request?.Path ?? ""}] errMsg:{errMsg}");
             }
             catch (Exception ex)
             {
-                LogHelper.Error($" api[{context?.HttpContext?.Request?.Path ?? ""}] ApiExceptionFilterAttribute-系统错误", ex);
+                LogHelper.Error($" api[{context?.HttpContext?.Request?.Path ?? ""}] ApiExceptionFilterAttribute-系统错误 ,{ex.Message}", ex);
                 context.Result = new ObjectResult(new ResponseResult<object>().SystemError("系统错误23"));
 
                 base.OnException(context);

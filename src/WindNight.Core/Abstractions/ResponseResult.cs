@@ -1,4 +1,5 @@
-using System;
+using Microsoft.Extensions.DependencyInjection.WnExtension;
+using WindNight.Core.Abstractions;
 
 namespace WindNight.Core
 {
@@ -29,7 +30,7 @@ namespace WindNight.Core
         /// <returns></returns>
         public virtual ResponseResult Ok()
         {
-            return new ResponseResult { Code = 0, Message = string.Empty };
+            return new ResponseResult { Code = 0, Message = string.Empty, TraceId = FetchTraceId() };
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace WindNight.Core
         public virtual ResponseResult SystemError(string? message = null)
         {
             message = message.IsNullOrEmpty() ? "SystemError" : message;
-            return new ResponseResult { Code = 100500, Message = message };
+            return new ResponseResult { Code = 100500, Message = message, TraceId = FetchTraceId() };
         }
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace WindNight.Core
         public virtual ResponseResult NotFound(string? message = null)
         {
             message = message.IsNullOrEmpty() ? "NOT FOUND" : message;
-            return new ResponseResult { Code = 100404, Message = message };
+            return new ResponseResult { Code = 100404, Message = message, TraceId = FetchTraceId() };
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace WindNight.Core
         public virtual ResponseResult BadRequest(string message)
         {
             message = message.IsNullOrEmpty() ? "BadRequest" : message;
-            return new ResponseResult { Code = 100400, Message = message };
+            return new ResponseResult { Code = 100400, Message = message, TraceId = FetchTraceId() };
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace WindNight.Core
         public virtual ResponseResult BadRequest(int code, string message)
         {
             message = message.IsNullOrEmpty() ? "BadRequest" : message;
-            return new ResponseResult { Code = code, Message = message };
+            return new ResponseResult { Code = code, Message = message, TraceId = FetchTraceId() };
         }
     }
 
@@ -102,6 +103,21 @@ namespace WindNight.Core
         public static ResponseResult GenNotFoundRes(string message) => new ResponseResult().NotFound(message);
 
         public static ResponseResult<T> GenNotFoundRes<T>(string message) => new ResponseResult<T>().NotFound(message);
+
+        protected virtual string FetchTraceId()
+        {
+            try
+            {
+                return Ioc.GetService<ICurrentContext>()?.SerialNumber ?? "";
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }
+        }
+
+
+
     }
 
 
@@ -139,7 +155,7 @@ namespace WindNight.Core
         /// <returns></returns>
         public virtual ResponseResult<T> Ok(T data)
         {
-            return new ResponseResult<T> { Code = 0, Message = string.Empty, Data = data };
+            return new ResponseResult<T> { Code = 0, Message = string.Empty, Data = data, TraceId = FetchTraceId() };
         }
 
         /// <summary>
@@ -149,8 +165,9 @@ namespace WindNight.Core
         public new ResponseResult<T> SystemError(string? message = null)
         {
             message = message.IsNullOrEmpty() ? "SystemError" : message;
-            return new ResponseResult<T> { Code = 100500, Message = message, Data = default };
+            return new ResponseResult<T> { Code = 100500, Message = message, Data = default, TraceId = FetchTraceId() };
         }
+
 
         /// <summary>
         /// </summary>
@@ -159,7 +176,7 @@ namespace WindNight.Core
         public new ResponseResult<T> NotFound(string? message = null)
         {
             message = message.IsNullOrEmpty() ? "NOT FOUND" : message;
-            return new ResponseResult<T> { Code = 100404, Message = message, Data = default };
+            return new ResponseResult<T> { Code = 100404, Message = message, Data = default, TraceId = FetchTraceId() };
         }
 
         /// <summary>
@@ -169,7 +186,7 @@ namespace WindNight.Core
         public new ResponseResult<T> BadRequest(string message)
         {
             message = message.IsNullOrEmpty() ? "BadRequest" : message;
-            return new ResponseResult<T> { Code = 100400, Message = message, Data = default };
+            return new ResponseResult<T> { Code = 100400, Message = message, Data = default, TraceId = FetchTraceId() };
         }
 
         /// <summary>
@@ -180,7 +197,7 @@ namespace WindNight.Core
         public new ResponseResult<T> BadRequest(int code, string message)
         {
             message = message.IsNullOrEmpty() ? "BadRequest" : message;
-            return new ResponseResult<T> { Code = code, Message = message, Data = default };
+            return new ResponseResult<T> { Code = code, Message = message, Data = default, TraceId = FetchTraceId() };
         }
 
     }

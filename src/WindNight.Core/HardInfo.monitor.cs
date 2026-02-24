@@ -28,9 +28,14 @@ namespace System
 
         public static string ContentRootPath => HostEnv?.ContentRootPath ?? "";
 
-        public static bool IsEnvName(string envName) => HostEnv.IsEnvName(envName);
+        public static bool IsEnvName(string envName, bool defaultValue = false) => HostEnv.IsEnvName(envName, defaultValue: defaultValue);
 
         public static bool IsTestEnv(bool defaultValue = true) => QuerySvrHostInfoImpl?.IsTestEnv(defaultValue) ?? defaultValue;
+
+        public static bool HasWebApi(bool defaultValue = true) => QuerySvrHostInfoImpl?.HasWebApi(defaultValue) ?? defaultValue;
+
+        public static bool SysApiCheckIp(string ip,bool defaultValue = true) => QuerySvrHostInfoImpl?.SysApiCheckIp(ip) ?? defaultValue;
+
 
         public static IQuerySvrHostInfo QuerySvrHostInfoImpl => Ioc.GetService<IQuerySvrHostInfo>();
 
@@ -57,7 +62,7 @@ namespace System
         public static string QueryBizSvrType() => QueryBuildInfoItem("BizSvrType", "");
 
         public static string QueryBizSvrKind() => QueryBuildInfoItem("BizSvrKind", "");
-
+     
         public static string QueryBuildInfoItem(string itemKey, string defaultValue = "") => QuerySvrBuildInfo().QueryBuildInfoItem(itemKey, defaultValue);
 
         public static long QueryBuildInfoItem(string itemKey, long defaultValue = 0L) => QuerySvrBuildInfo().QueryBuildInfoItem(itemKey, defaultValue);
@@ -122,14 +127,15 @@ namespace System
                 PId = SvrMonitorInfo?.SvrRuntimeInfo?.ProcessId ?? -1,
                 SvrHostInfo = SvrMonitorInfo?.SvrHostInfo,
                 SvrBuildInfo = SvrMonitorInfo?.SvrBuildInfo,
-
+                CurrentVersion,
+                CurrentCompileTime,
             };
 
             return obj;
         }
 
 
-
+ 
         public new static string ToString() => Obj().ToJsonStr();
 
         public static string ToString(Formatting formatting) => Obj().ToJsonStr(formatting);

@@ -10,6 +10,8 @@ namespace WindNight.Core.Abstractions
 
         bool SysApiCheckIp(string ip);
 
+        bool HasWebApi(bool defaultValue = true);
+
         IEnumerable<string> QueryWhiteIpList();
 
         //ISvrHostInfo QuerySvrHostInfo();

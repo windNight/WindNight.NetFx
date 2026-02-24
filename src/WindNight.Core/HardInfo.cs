@@ -15,6 +15,7 @@ namespace System
 
     public partial class HardInfo
     {
+ 
 
         public static IEnumerable<T> EmptyList<T>() => Enumerable.Empty<T>();
 
@@ -89,7 +90,7 @@ namespace System
         public static int NowMonthInt => Now.TryToDateInt("yyyyMM");
 
         // ReSharper disable once StringLiteralTypo
-        public static int NowHourInt => Now.TryToDateInt("yyyyMMHH");
+        public static int NowHourInt => Now.TryToDateInt("yyyyMMddHH");
 
         public static int NowWeekInt => $"{NowYearInt}{WeekOfYear:00}".ToInt();
 

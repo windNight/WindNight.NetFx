@@ -204,7 +204,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             var logLevel = LogLevels.Information;
             var reqTraceId = jo.SafeGetValue(ReqTraceIdKey, "");
 
-            if (!reqTraceId.IsNullOrEmpty())
+            if (reqTraceId.IsNotNullOrEmpty())
             {
                 traceId = jo[ReqTraceIdKey].ToString();
             }
@@ -215,10 +215,11 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
 
             var logDate = now.ToString("yyyyMMdd");
             var reqLogLevel = jo.SafeGetValue("level", "");
-            if (!reqLogLevel.IsNullOrEmpty())
+            if (reqLogLevel.IsNotNullOrEmpty())
             {
                 logLevel = reqLogLevel.Convert2LogLevel();
             }
+
 
             var logMsg = new SysLogs
             {
@@ -230,12 +231,14 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                 LogTs = logTimestamps,
                 NodeCode = HardInfo.NodeCode ?? "",
                 LogPluginVersion = LogPluginVersion,
-                BizSvrKind = HardInfo.QueryBizSvrKind(),
-                BizSvrType = HardInfo.QueryBizSvrType(),
-
+                //BizSvrKind = HardInfo.QueryBizSvrKind(),
+                //BizSvrType = HardInfo.QueryBizSvrType(),
             };
+
+
+
             var logAppCode = jo.SafeGetValue("logAppCode", "");
-            ;
+
             if (logAppCode.IsNullOrEmpty())
             {
                 jo["logAppCode"] = DcLogOptions.LogAppCode;
@@ -245,9 +248,38 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
 
             if (logAppName.IsNullOrEmpty())
             {
-                jo["logAppName"] = DcLogOptions.LogAppName;
+                logAppName = DcLogOptions.LogAppName;
+                jo["logAppName"] = logAppName;
             }
 
+            var extDict = jo.SafeGetValue("ExtInfo", "{}").To<Dictionary<string, object>>() ?? new Dictionary<string, object>();
+
+            var svrKind = jo["BizSvrKind"]?.ToString();
+            if (svrKind.IsNullOrEmpty())
+            {
+                var proxyBizSvrKind = HardInfo.QueryBizSvrKind();
+                svrKind = proxyBizSvrKind;
+                jo["BizSvrKind"] = proxyBizSvrKind;
+                extDict["ProxyBizSvrKind"] = proxyBizSvrKind;
+
+            }
+
+            logMsg.BizSvrKind = svrKind;
+
+            var svrAppType = jo["BizSvrType"]?.ToString();
+            if (svrAppType.IsNullOrEmpty())
+            {
+                var proxyBizSvrType = HardInfo.QueryBizSvrType();
+                svrAppType = proxyBizSvrType;
+                jo["BizSvrType"] = proxyBizSvrType;
+                extDict["ProxyBizSvrType"] = proxyBizSvrType;
+            }
+
+            logMsg.BizSvrType = svrAppType;
+
+            jo["ExtInfo"] = extDict.ToJObject();
+
+            logMsg.ExtInfo = extDict;
 
             logMsg.LogAppCode = jo["logAppCode"].ToString();
             logMsg.LogAppName = jo["logAppName"].ToString();
@@ -268,7 +300,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                 //}
             }
 
-            var message = jo.ToJsonStr();
+            var message = $"{logAppName} TraceId[{traceId}]:Report {jo.ToJsonStr()}";
 
             logMsg.Content = FixContent(message);
 
@@ -341,7 +373,7 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
                         Message = exception.Message,
                         StackTraceString = exception.StackTrace,
                     };
-               
+
                     messageEntity.Exceptions = messageEntity.ExceptionObj.ToJsonStr();
                 }
                 else

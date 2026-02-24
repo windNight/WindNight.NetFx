@@ -39,7 +39,7 @@
         <VersionMinor>5</VersionMinor>
         <VersionPatch>0</VersionPatch>
         <VersionQuality>2</VersionQuality>
-        <VersionTT>-beta.6011601</VersionTT>
+        <VersionTT>-beta.6011701</VersionTT>
         <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</VersionPrefix>
         <AssemblyVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)</AssemblyVersion>
         <FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionQuality)$(VersionTT)</FileVersion>

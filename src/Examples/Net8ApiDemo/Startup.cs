@@ -1,5 +1,5 @@
 using System.Reflection;
-using Microsoft.AspNetCore.Hosting.WnExtensions; 
+using Microsoft.AspNetCore.Hosting.WnExtensions;
 using WindNight.AspNetCore.Mvc.Extensions;
 using WindNight.Config.Abstractions;
 using WindNight.Config.Extensions;
@@ -505,6 +505,18 @@ RunMachineName: {Environment.MachineName} <br/>
         public bool SysApiCheckIp(string ip)
         {
             return false;
+        }
+
+        public bool HasWebApi(bool defaultValue = true)
+        {
+            var svrKind = QueryBuildInfoItem("BizSvrKind", "");
+            if (svrKind.IsNotNullOrEmpty())
+            {
+                // TODO 实际判断
+                return true;
+            }
+
+            return defaultValue;
         }
 
         public IEnumerable<string> QueryWhiteIpList()

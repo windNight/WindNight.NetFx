@@ -327,11 +327,18 @@ namespace WindNight.Extension.Logger.DcLog
 
         private void ProcessBackupLogs()
         {
-            var oldQueue = new SysLogs[MessageQueue.Count];
-            MessageQueue.CopyTo(oldQueue, 0);
-            ClearQueue();
-            ProcessLog(oldQueue);
-            oldQueue = null;
+            try
+            { 
+                var oldQueue = new SysLogs[MessageQueue.Count];
+                MessageQueue.CopyTo(oldQueue, 0);
+                ClearQueue();
+                ProcessLog(oldQueue);
+                oldQueue = null;
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

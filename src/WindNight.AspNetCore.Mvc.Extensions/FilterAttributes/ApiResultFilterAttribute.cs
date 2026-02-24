@@ -208,12 +208,24 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
 
         private void SetAdditionalProperties(dynamic apiResult, ResultExecutingContext context)
         {
-            // 设置 TTL
-            apiResult.TTL = CalculateTtl();
-            apiResult.TraceId = FetchTraceId();
 
-            // 设置客户端 IP
-            apiResult.ReqClientIp = context.HttpContext.GetClientIp() ?? "Unknown";
+            try
+            {
+
+
+                // 设置 TTL
+                apiResult.TTL = CalculateTtl();
+                apiResult.TraceId = FetchTraceId();
+
+                // 设置客户端 IP
+                apiResult.ReqClientIp = context.HttpContext.GetClientIp() ?? "Unknown";
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
         }
 
         private dynamic CreateResponseWrapper(object value, Type declaredType)

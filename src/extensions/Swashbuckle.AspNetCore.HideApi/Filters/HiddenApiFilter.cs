@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
-using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Extensions.@internal;
 using Swashbuckle.AspNetCore.HideApi;
@@ -30,7 +29,9 @@ namespace System.Attributes
             {
                 try
                 {
-                    var hiddenCheck = Ioc.GetService<ISwaggerHiddenCheck>();
+                    var hiddenApiImplName = ConfigItems.SwaggerHiddenImplName;
+
+                    var hiddenCheck = Ioc.GetService<ISwaggerHiddenCheck>(hiddenApiImplName);
                     if (hiddenCheck != null)
                     {
                         var isHidden = hiddenCheck.HiddenApi(apiDescription);
