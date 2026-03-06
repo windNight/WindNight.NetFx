@@ -14,7 +14,7 @@ namespace Schedule.Abstractions
 
         public override string ToString()
         {
-            return $"{JobName} ({JobCode}) :{JobId} ";
+            return $"{JobName}({JobCode}){JobId}";
         }
 
         public string ToString(bool needAppend)

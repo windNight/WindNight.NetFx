@@ -1,0 +1,262 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized; 
+using Microsoft.Extensions.DependencyInjection.WnExtension;
+using Quartz;
+using Quartz.Impl;
+using Schedule.Abstractions;
+using Schedule.Ctrl;
+using Schedule.@internal;
+using Schedule.Model;
+using Schedule.Model.Enums;
+using WindNight.Linq.Extensions.Expressions;
+
+namespace Schedule
+{
+    public class ScheduleModIniter : IDisposable
+    {
+        private static readonly Lazy<ScheduleModIniter> LazyInstance = new(() => new ScheduleModIniter());
+
+        private ScheduleModIniter()
+        {
+        }
+
+        public static ScheduleModIniter Instance => LazyInstance.Value;
+
+        public bool IsInit { get; private set; } = false;
+
+        public void Dispose()
+        {
+            if (ScheduleModConfig.Instance.DefaultScheduler != null)
+            {
+                ScheduleModConfig.Instance.DefaultScheduler.Shutdown(true);
+            }
+        }
+
+        NameValueCollection GenStdSchedulerDefaultKV()
+        {
+            var jobConfig = ConfigItems.JobsConfig;
+            var properties = new NameValueCollection
+            {
+                ["quartz.jobStore.misfireThreshold"] = (10 * 1000).ToString(), //修改misfire的时间为10秒
+                ["quartz.scheduler.instanceName"] = jobConfig.JobInstanceName,
+            };
+
+            if (jobConfig.JobRemoteIsOpen && jobConfig.JobRemotingConfig.JobRemotePort > 0)
+            {
+                var jobRemotingConfig = jobConfig.JobRemotingConfig;
+                // set remoting expoter
+                properties["quartz.scheduler.exporter.type"] = "Quartz.Simpl.RemotingSchedulerExporter, Quartz";
+                properties["quartz.scheduler.exporter.port"] = jobRemotingConfig.JobRemotePort.ToString();
+                properties["quartz.scheduler.exporter.bindName"] = jobRemotingConfig.JobRemoteBindName;
+                properties["quartz.scheduler.exporter.channelType"] = jobRemotingConfig.JobRemoteChannelType;
+            }
+
+            return properties;
+        }
+
+        IScheduler GenDefaultScheduler()
+        {
+            var properties = GenStdSchedulerDefaultKV();
+            var scheduler = new StdSchedulerFactory(properties).GetScheduler().GetAwaiter().GetResult();
+
+            return scheduler;
+        }
+
+        async Task<IScheduler> GenDefaultSchedulerAsync()
+        {
+            // var jobConfig = ConfigItems.JobsConfig;
+            var properties = GenStdSchedulerDefaultKV();
+
+            var scheduler = await new StdSchedulerFactory(properties).GetScheduler();
+
+            return scheduler;
+        }
+
+        /// <summary>
+        ///     初始化调度context
+        /// </summary>
+        public bool Init(JobMeta? config = null, bool isForce = true)
+        {
+            if (IsInit && !isForce)
+            {
+                return IsInit;
+            }
+            // var jobConfig = ConfigItems.JobsConfig;
+            // var properties = new NameValueCollection
+            // {
+            //     ["quartz.jobStore.misfireThreshold"] = (10 * 1000).ToString(), //修改misfire的时间为10秒
+            //     ["quartz.scheduler.instanceName"] = jobConfig.JobInstanceName,
+            // };
+            // if (jobConfig.JobRemoteIsOpen && jobConfig.JobRemotingConfig.JobRemotePort > 0)
+            // {
+            //     var jobRemotingConfig = jobConfig.JobRemotingConfig;
+            //     // set remoting expoter
+            //     properties["quartz.scheduler.exporter.type"] = "Quartz.Simpl.RemotingSchedulerExporter, Quartz";
+            //     properties["quartz.scheduler.exporter.port"] = jobRemotingConfig.JobRemotePort.ToString();
+            //     properties["quartz.scheduler.exporter.bindName"] = jobRemotingConfig.JobRemoteBindName;
+            //     properties["quartz.scheduler.exporter.channelType"] = jobRemotingConfig.JobRemoteChannelType;
+            // }
+            // var scheduler = new StdSchedulerFactory(properties).GetScheduler().GetAwaiter().GetResult();
+
+            var scheduler = GenDefaultScheduler();
+
+            ScheduleModConfig.Instance.InitDefaultScheduler(scheduler);
+
+            ScheduleModConfig.Instance.DefaultScheduler.Start();
+
+            if (config != null) //在当天的用户指定时间运行一次指定的任务
+            {
+                // 暂不支持 OnceJob
+                var sc = new ScheduleCtrl();
+                sc.StartJob(config.JobName, config.StartTime, config.RunParams, config.AutoClose);
+
+                IsInit = true;
+                return true;
+
+            }
+            else
+            {
+                //加载配置文件，并且运行状态为open的任务
+                var allJobs = Ioc.GetServices<IJobCtrl>().ToList();
+                var skipJobs = new List<IJobCtrl>(); // allJobs.Where(m => m.JobCanSkip()).ToList();
+                var todoJobs = new List<JobMeta>(); //allJobs.Where(m => !m.JobCanSkip()).ToList();
+
+                ScheduleModConfig.Instance.Jobs = new List<JobMeta>();
+
+                foreach (var job in allJobs)
+                {
+
+                    var jobParam = job.ReadJobParam();
+
+                    if (jobParam.IsNullOrEmpty())
+                    {
+                        if (job.JobCanSkip())
+                        {
+                            skipJobs.Add(job);
+                            continue;
+                        }
+                        throw new ArgumentNullException("JobCode", $"JobCode({job.JobCode}) 缺少配置项");
+
+                    }
+                    ScheduleModConfig.Instance.Jobs.Add(jobParam);
+                    if (jobParam.State.Equals(JobStateEnum.Open) || jobParam.State.Equals(JobStateEnum.Pause))
+                    {
+                        job.StartJob(jobParam);
+                    }
+                    todoJobs.Add(jobParam);
+                }
+
+                var msg1 = $"预期创建【{allJobs.Count}】个，成功创建Job[{todoJobs.Count}]个：[{todoJobs.Select(m => m.ToString()).Join(",")}]";
+                JobLogHelper.Info(msg1, nameof(Init));
+                if (skipJobs.IsNotNullOrEmpty())
+                {
+                    var msg2 = $"跳过创建Job[{skipJobs.Count}]个：{skipJobs.Select(m => m.JobCode).Join(" | ")}";
+                    JobLogHelper.Warn(msg2, actionName: nameof(Init));
+                }
+
+            }
+
+            IsInit = true;
+
+            return IsInit;
+
+        }
+
+        /// <summary>
+        ///     初始化调度context
+        /// </summary>
+        public async Task<bool> InitAsync(JobMeta? config = null, bool isForce = true, CancellationToken stoppingToken = default)
+        {
+            if (IsInit && !isForce)
+            {
+                return IsInit;
+            }
+
+            // var jobConfig = ConfigItems.JobsConfig;
+            // var properties = new NameValueCollection
+            // {
+            //     ["quartz.jobStore.misfireThreshold"] = (10 * 1000).ToString(), //修改misfire的时间为10秒
+            //     ["quartz.scheduler.instanceName"] = jobConfig.JobInstanceName,
+            // };
+            // if (jobConfig.JobRemoteIsOpen && jobConfig.JobRemotingConfig.JobRemotePort > 0)
+            // {
+            //     var jobRemotingConfig = jobConfig.JobRemotingConfig;
+            //     // set remoting expoter
+            //     properties["quartz.scheduler.exporter.type"] = "Quartz.Simpl.RemotingSchedulerExporter, Quartz";
+            //     properties["quartz.scheduler.exporter.port"] = jobRemotingConfig.JobRemotePort.ToString();
+            //     properties["quartz.scheduler.exporter.bindName"] = jobRemotingConfig.JobRemoteBindName;
+            //     properties["quartz.scheduler.exporter.channelType"] = jobRemotingConfig.JobRemoteChannelType;
+            // }
+            // var scheduler = await new StdSchedulerFactory(properties).GetScheduler();
+
+            var scheduler = await GenDefaultSchedulerAsync();
+
+            await ScheduleModConfig.Instance.InitDefaultSchedulerAsync(scheduler);
+            //ScheduleModConfig.Instance.DefaultScheduler = await new StdSchedulerFactory(properties).GetScheduler();
+            await ScheduleModConfig.Instance.DefaultScheduler.Start();
+
+            if (config != null) //在当天的用户指定时间运行一次指定的任务
+            {
+                // 暂不支持 OnceJob
+                var sc = new ScheduleCtrl();
+                sc.StartJob(config.JobName, config.StartTime, config.RunParams, config.AutoClose);
+                IsInit = true;
+                return true;
+            }
+            else
+            {
+                //加载配置文件，并且运行状态为open的任务
+                var allJobs = Ioc.GetServices<IJobCtrl>().ToList();
+                var skipJobs = new List<IJobCtrl>(); // allJobs.Where(m => m.JobCanSkip()).ToList();
+                var todoJobs = new List<JobMeta>(); //allJobs.Where(m => !m.JobCanSkip()).ToList();
+
+                ScheduleModConfig.Instance.Jobs = new List<JobMeta>();
+                //var sc = new ScheduleCtrl();
+                //var cacheJobs = sc.GetBGJobInfo();
+
+                foreach (var job in allJobs)
+                {
+                    var jobParam = job.ReadJobParam();
+                    if (jobParam.IsNullOrEmpty())
+                    {
+                        if (job.JobCanSkip())
+                        {
+                            skipJobs.Add(job);
+                            continue;
+                        }
+                        throw new ArgumentNullException("JobCode", $"JobCode({job.JobCode}) 缺少配置项");
+
+                    }
+
+                    //jobParam = cacheJobs.FirstOrDefault(x => x.JobName.Equals(jobParam.JobName)) == null
+                    //    ? jobParam
+                    //    : cacheJobs.FirstOrDefault(x => x.JobName.Equals(jobParam.JobName));
+
+                    ScheduleModConfig.Instance.Jobs.Add(jobParam);
+                    if (jobParam.State.Equals(JobStateEnum.Open) || jobParam.State.Equals(JobStateEnum.Pause))
+                    {
+                        await job.StartJobAsync(jobParam);
+                    }
+                    todoJobs.Add(jobParam);
+                }
+
+
+                var msg1 = $"预期创建【{allJobs.Count}】个，成功创建Job[{todoJobs.Count}]个：[{todoJobs.Select(m => m.ToString()).Join(",")}]";
+                JobLogHelper.Info(msg1, nameof(Init));
+                if (skipJobs.IsNotNullOrEmpty())
+                {
+                    var msg2 = $"跳过创建Job[{skipJobs.Count}]个：{skipJobs.Select(m => m.JobCode).Join(" | ")}";
+                    JobLogHelper.Warn(msg2, actionName: nameof(Init));
+                }
+            }
+
+            IsInit = true;
+
+            return IsInit;
+        }
+
+
+
+    }
+}

@@ -24,7 +24,7 @@ namespace Schedule
 
         /// <summary>
         ///     所有job
-        /// </summary>
+        /// </summary> 
         internal List<JobMeta> Jobs { get; set; } = new List<JobMeta>();
 
         public JobMeta QueryJobInfoByJobCode(string jobCode)

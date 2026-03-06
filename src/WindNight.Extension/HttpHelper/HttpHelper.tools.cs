@@ -76,9 +76,9 @@ namespace WindNight.Extension
             return headerDict ?? new Dictionary<string, string>();
         }
 
-        private static Func<string, T> DefaultConvertFunc<T>() => _ => _.To<T>();
+        private static Func<string, T> DefaultConvertFunc<T>() => (_) => _.To<T>();
 
-        private static Func<string, T> DefaultResConvertFunc<T>()
+        private static Func<string, T> DefaultResConvertFunc<T>(Func<string> logPrefixHandler = null)
         {
             return s =>
             {
@@ -93,12 +93,12 @@ namespace WindNight.Extension
                     return res.Data;
                 }
 
-                LogHelper.Warn($"Code({res.Code}) res is {res.ToJsonStr()}");
+                LogHelper.Warn($"{logPrefixHandler?.Invoke()} Code({res.Code}) res is {res.ToJsonStr()}");
                 return default;
             };
         }
 
-        private static Func<string, IEnumerable<T>> DefaultEnumerableResConvertFunc<T>() // => _ => _.To<ResponseResult<IEnumerable<T>>>()?.Data ?? Array.Empty<T>();
+        private static Func<string, IEnumerable<T>> DefaultEnumerableResConvertFunc<T>(Func<string> logPrefixHandler = null) // => _ => _.To<ResponseResult<IEnumerable<T>>>()?.Data ?? Array.Empty<T>();
         {
             return s =>
             {
@@ -113,14 +113,14 @@ namespace WindNight.Extension
                     return res.Data;
                 }
 
-                LogHelper.Warn($"Code({res.Code}) res is {res.ToJsonStr()}");
+                LogHelper.Warn($"{logPrefixHandler?.Invoke()} Code({res.Code}) res is {res.ToJsonStr()}");
 
                 return EmptyArray<T>();
             };
         }
 
 
-        private static Func<string, IPagedList<T>> DefaultPagedConvertFunc<T>() //=> _ => _.To<ResponseResult<PagedList<T>>>()?.Data ?? PagedList.Empty<T>();
+        private static Func<string, IPagedList<T>> DefaultPagedConvertFunc<T>(Func<string> logPrefixHandler = null) //=> _ => _.To<ResponseResult<PagedList<T>>>()?.Data ?? PagedList.Empty<T>();
         {
             return s =>
             {
@@ -135,8 +135,8 @@ namespace WindNight.Extension
                     return res.Data;
                 }
 
-                LogHelper.Warn($"Code({res.Code}) res is {res.ToJsonStr()}");
-                return PagedList.Empty<T>();
+                LogHelper.Warn($"{logPrefixHandler?.Invoke()} Code({res.Code}) res is {res.ToJsonStr()}");
+                return HardInfo.EmptyPagedList<T>();// PagedList.Empty<T>();
             };
         }
 
@@ -155,6 +155,13 @@ namespace WindNight.Extension
             {
                 return $"domain({domain})";
             }
+        }
+
+        public static Func<string> GenReqLogFrefix(this IRestResponse response, string domain)
+        {
+            var prefix = response.GenReqUrl(domain);
+            var handler = () => prefix;
+            return handler;
         }
 
         public static T DeserializeResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string domain, T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
@@ -211,7 +218,8 @@ namespace WindNight.Extension
         public static IPagedList<T> DeserializeResponse2PageList<T>(this IRestResponse response, string domain, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var defaultValue = PagedList.Empty<T>();
-            var reqUrl = response.GenReqUrl(domain);
+            var logPrefixHandler = response.GenReqLogFrefix(domain);
+            var reqUrl = logPrefixHandler?.Invoke() ?? "";
             try
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -222,7 +230,9 @@ namespace WindNight.Extension
                     //}
 
                     if (ConfigItems.DebugIsOpen)
+                    {
                         LogHelper.Debug($"{reqUrl}-> response.Content is {response.Content} ", appendMessage: false);
+                    }
                     var res = response.Content.To<ResponseResult<PagedList<T>>>();
                     return res.Data;
                 }
@@ -248,14 +258,16 @@ namespace WindNight.Extension
 
         public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response, string domain, Func<IRestResponse, bool> errStatusFunc = null)
         {
-            return response.DeserializePageListResponse(DefaultPagedConvertFunc<T>(), domain, errStatusFunc);
+            var logPrefixHandler = response.GenReqLogFrefix(domain);
+            return response.DeserializePageListResponse(DefaultPagedConvertFunc<T>(logPrefixHandler), domain, errStatusFunc);
         }
 
 
         public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response, Func<string, IPagedList<T>> convertFunc, string domain, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var defaultValue = PagedList.Empty<T>();
-            var reqUrl = response.GenReqUrl(domain);
+            var logPrefixHandler = response.GenReqLogFrefix(domain);
+            var reqUrl = logPrefixHandler?.Invoke() ?? "";
             try
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -271,7 +283,7 @@ namespace WindNight.Extension
                             appendMessage: false);
                     }
 
-                    convertFunc ??= DefaultPagedConvertFunc<T>();
+                    convertFunc ??= DefaultPagedConvertFunc<T>(logPrefixHandler);
                     return convertFunc.Invoke(response.Content);
                 }
 
@@ -295,7 +307,8 @@ namespace WindNight.Extension
 
         public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response, string domain, Func<IRestResponse, bool> errStatusFunc = null)
         {
-            return response.DeserializeListResponse(DefaultEnumerableResConvertFunc<T>(), domain, errStatusFunc);
+            var logPrefixHandler = response.GenReqLogFrefix(domain);
+            return response.DeserializeListResponse(DefaultEnumerableResConvertFunc<T>(logPrefixHandler), domain, errStatusFunc);
         }
 
         private static IEnumerable<T> EmptyArray<T>()
@@ -310,7 +323,8 @@ namespace WindNight.Extension
         public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response, Func<string, IEnumerable<T>> convertFunc, string domain, Func<IRestResponse, bool> errStatusFunc = null)
         {
             var defaultValue = EmptyArray<T>();
-            var reqUrl = response.GenReqUrl(domain);
+            var logPrefixHandler = response.GenReqLogFrefix(domain);
+            var reqUrl = logPrefixHandler?.Invoke() ?? "";
             try
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -325,7 +339,7 @@ namespace WindNight.Extension
                         LogHelper.Debug($"{reqUrl}-> response.Content is {response.Content} ", appendMessage: false);
                     }
 
-                    convertFunc ??= DefaultEnumerableResConvertFunc<T>();
+                    convertFunc ??= DefaultEnumerableResConvertFunc<T>(logPrefixHandler);
                     return convertFunc.Invoke(response.Content);
                 }
 
@@ -349,12 +363,14 @@ namespace WindNight.Extension
 
         public static T DeserializeResResponse<T>(this IRestResponse response, string domain, T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
         {
-            return response.DeserializeResResponse(DefaultResConvertFunc<T>(), domain, defaultValue, errStatusFunc);
+            var logPrefixHandler = response.GenReqLogFrefix(domain);
+            return response.DeserializeResResponse(DefaultResConvertFunc<T>(logPrefixHandler), domain, defaultValue, errStatusFunc);
         }
 
         public static T DeserializeResResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string domain, T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
         {
-            var reqUrl = response.GenReqUrl(domain);
+            var logPrefixHandler = response.GenReqLogFrefix(domain);
+            var reqUrl = logPrefixHandler?.Invoke() ?? "";
             try
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -369,7 +385,7 @@ namespace WindNight.Extension
                         LogHelper.Debug($"{reqUrl}->  response.Content is {response.Content} ", appendMessage: false);
                     }
 
-                    convertFunc ??= DefaultResConvertFunc<T>();
+                    convertFunc ??= DefaultResConvertFunc<T>(logPrefixHandler);
                     return convertFunc.Invoke(response.Content);
                 }
 
