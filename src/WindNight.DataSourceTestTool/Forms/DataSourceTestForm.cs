@@ -293,7 +293,9 @@ namespace WindNight.DataSourceTestTool.Forms
             var databaseName = mongoUrl.DatabaseName;
             try
             {
-                var dbList = mongoClient.ListDatabases();
+                var cancellationToken = default(CancellationToken);
+                var options = new ListDatabasesOptions();
+                var dbList = mongoClient.ListDatabases(options, cancellationToken);
             }
             catch (Exception ex)
             {
