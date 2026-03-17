@@ -15,7 +15,7 @@ namespace Net8ApiDemo
         {
 
             var appToken = dict.SafeGetValue("AppToken");
-            return !appToken.IsNullOrEmpty();
+            return appToken.IsNotNullOrEmpty();
 
         }
 

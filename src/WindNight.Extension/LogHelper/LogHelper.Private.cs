@@ -5,6 +5,7 @@ using WindNight.Core;
 using WindNight.Core.Enums.Abstractions;
 using WindNight.Core.Enums.Extension;
 using WindNight.Core.ExceptionExt;
+using WindNight.Core.Extension;
 using WindNight.Extension;
 using IpHelper = WindNight.Extension.HttpContextExtension;
 
@@ -67,7 +68,7 @@ namespace WindNight.LogExtension
             var traceId = GuidHelper.GenerateOrderNumber();
             var reqTraceId = jo.SafeGetValue(ReqTraceIdKey, "");
 
-            if (!reqTraceId.IsNullOrEmpty())
+            if (reqTraceId.IsNotNullOrEmpty())
             {
                 traceId = reqTraceId;
             }
@@ -88,6 +89,22 @@ namespace WindNight.LogExtension
                 LogTs = logTimestamps,
                 NodeCode = HardInfo.NodeCode ?? "",
             };
+
+            var clientIp = jo.SafeGetValue("clientIp", "");
+
+            if (clientIp.IsNullOrEmpty())
+            {
+                clientIp = IpHelper.GetClientIp();
+                jo["clientIp"] = clientIp;
+            }
+
+            if (clientIp.IsNullOrEmptyIp())
+            {
+                logMsg.ClientIp = clientIp;
+            }
+
+
+
             logMsg.Content = jo.ToJsonStr();
             return logMsg;
         }

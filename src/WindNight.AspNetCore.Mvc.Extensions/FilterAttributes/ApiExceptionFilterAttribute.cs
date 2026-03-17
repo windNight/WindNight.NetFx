@@ -28,12 +28,13 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                 var exception = context.Exception;
 
                 context.HttpContext.Response.StatusCode = 200;
-
+                var bizError = false;
                 if (context.Exception is BusinessException ex)
                 {
                     context.Result =
                         new ObjectResult(new ResponseResult<object>().BadRequest(ex.BusinessCode, ex.Message));
                     errMsg = ex.Message;
+                    bizError = true;
                 }
                 else
                 {
@@ -41,7 +42,10 @@ namespace Microsoft.AspNetCore.Mvc.Filters.Extensions
                     errMsg = exception.GetMessage();
                 }
 
-                LogHelper.Warn($" 业务异常未捕获 reqApi[{context?.HttpContext?.Request?.Path ?? ""}] errMsg:{errMsg}");
+                if (!bizError)
+                {
+                    LogHelper.Warn($"{ConfigItems.AppInfo} 业务异常未捕获 reqApi[{context?.HttpContext?.Request?.Path ?? ""}] errMsg:{errMsg}");
+                }
             }
             catch (Exception ex)
             {

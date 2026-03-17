@@ -1,15 +1,11 @@
-
-using System.Configuration;
-using System.Numerics;
 using System.Text;
-using Microsoft.AspNetCore.Hosting.WnExtensions;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Newtonsoft.Json.Extension;
 using WindNight.AspNetCore.Hosting;
 using WindNight.Config.Abstractions;
 using WindNight.ConfigCenter.Extension;
 using WindNight.Core.Abstractions;
-using WindNight.Extension.Logger.DcLog;
+using WindNight.Core.ConfigCenter.Extensions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 using WindNight.Extension.Logger.DcLog.Extensions;
 using WindNight.LogExtension;
@@ -26,39 +22,26 @@ namespace WebApiDemo
 #else
             buildType = "Release";
 #endif
-            Init(CreateHostBuilder, buildType, () =>
-            {
-
-
-            }, args);
+            Init(CreateHostBuilder, buildType, () => { }, args);
         }
 
         private static IHostBuilder CreateHostBuilder(string buildType, string[] args)
         {
             return CreateHostBuilderDefaults(buildType, args,
-                         (hostingContext, configBuilder) =>
-                         {
-                             configBuilder.SetBasePath(AppContext.BaseDirectory)
-                                 .AddJsonFile("Config/AppSettings.json", false, true)
-                                 .AddJsonFile("Config/ConnectionStrings.json", false, true)
-
-                                 ;
-                         },
-                webHostConfigure: webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                },
-                configureServicesDelegate: (context, services) =>
-                {
-                    ConfigItems.Init(configuration: context.Configuration, sleepTimeInMs: 10000000);
-                })
-
+                    (hostingContext, configBuilder) =>
+                    {
+                        configBuilder.SetBasePath(AppContext.BaseDirectory)
+                            .AddJsonFile("Config/AppSettings.json", false, true)
+                            .AddJsonFile("Config/ConnectionStrings.json", false, true)
+                            ;
+                    },
+                    webBuilder => { webBuilder.UseStartup<Startup>(); },
+                    configureServicesDelegate: (context, services) =>
+                    {
+                        ConfigItems.Init(configuration: context.Configuration, sleepTimeInMs: 10000000);
+                    })
                 ;
         }
-
-
-
-
     }
 
     public class ConfigItems : ConfigItemsBase
@@ -74,9 +57,6 @@ namespace WebApiDemo
 
     public class Program2
     {
-
-
-
         public static void Main11(string[] args)
         {
             TestDemo122();
@@ -91,12 +71,11 @@ namespace WebApiDemo
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            IServiceCollection services = builder.Services;
+            var services = builder.Services;
             IConfiguration configuration = builder.Configuration;
 
             builder.Configuration.SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("Config/AppSettings.json", false, true)
-
                 ;
 
             builder.Services.AddControllers();
@@ -128,27 +107,24 @@ namespace WebApiDemo
             LogHelper.LogRegisterInfo(buildType);
             app.Run();
             LogHelper.LogOfflineInfo(buildType);
-
-
         }
-
 
 
         public static object TestDemo122()
         {
-            // n: nonce£¬Ò»´ÎĞÔÊı×Ö£¬ÓÃÓÚÈ·±£Ã¿¸öÏûÏ¢µÄ¼ÓÃÜ½á¹û²»Í¬¡£
-            // k: key£¬ÃÜÔ¿£¬ÓÃÓÚ¼ÓÃÜºÍ½âÃÜÊı¾İ¡£
-            // a: additional data£¬¸½¼ÓÊı¾İ£¬ÓÃÓÚÌá¹©¶îÍâµÄĞÅÏ¢¸ø¼ÓÃÜËã·¨£¬µ«²»°üº¬ÔÚÃÜÎÄÖĞ¡£
-            // m: plaintext message£¬Ã÷ÎÄÏûÏ¢£¬¼´Ô­Ê¼Î´¼ÓÃÜµÄÏûÏ¢¡£
-            // c: ciphertext£¬ÃÜÎÄ£¬¼´¾­¹ı¼ÓÃÜºóµÄÏûÏ¢¡£
-            // s: authenticated data£¬ÈÏÖ¤Êı¾İ£¬ÓÃÓÚÑéÖ¤ÏûÏ¢µÄÍêÕûĞÔ¡£
-            string n = "0000000000000000";
-            string k = "0000000000000000";
-            string a = "ASCON"; // ¸½¼ÓÊı¾İ
-            string m = "ascon"; // Ã÷ÎÄÏûÏ¢
-            m = "000102030405060708"; // Ã÷ÎÄÏûÏ¢
+            // n: nonceï¼Œä¸€æ¬¡æ€§æ•°å­—ï¼Œç”¨äºç¡®ä¿æ¯ä¸ªæ¶ˆæ¯çš„åŠ å¯†ç»“æœä¸åŒã€‚
+            // k: keyï¼Œå¯†é’¥ï¼Œç”¨äºåŠ å¯†å’Œè§£å¯†æ•°æ®ã€‚
+            // a: additional dataï¼Œé™„åŠ æ•°æ®ï¼Œç”¨äºæä¾›é¢å¤–çš„ä¿¡æ¯ç»™åŠ å¯†ç®—æ³•ï¼Œä½†ä¸åŒ…å«åœ¨å¯†æ–‡ä¸­ã€‚
+            // m: plaintext messageï¼Œæ˜æ–‡æ¶ˆæ¯ï¼Œå³åŸå§‹æœªåŠ å¯†çš„æ¶ˆæ¯ã€‚
+            // c: ciphertextï¼Œå¯†æ–‡ï¼Œå³ç»è¿‡åŠ å¯†åçš„æ¶ˆæ¯ã€‚
+            // s: authenticated dataï¼Œè®¤è¯æ•°æ®ï¼Œç”¨äºéªŒè¯æ¶ˆæ¯çš„å®Œæ•´æ€§ã€‚
+            var n = "0000000000000000";
+            var k = "0000000000000000";
+            var a = "ASCON"; // é™„åŠ æ•°æ®
+            var m = "ascon"; // æ˜æ–‡æ¶ˆæ¯
+            m = "000102030405060708"; // æ˜æ–‡æ¶ˆæ¯
 
-            k = "1234567898765432";  // key 
+            k = "1234567898765432"; // key 
             a = "31373131303131383633";
             n = "31363738393b3c3d3e3f414243444647";
 
@@ -161,33 +137,50 @@ namespace WebApiDemo
 
             var mBytes = new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
             var aBytes = new byte[] { 0x31, 0x37, 0x31, 0x31, 0x30, 0x31, 0x31, 0x38, 0x36, 0x33 };
-            var nBytes = new byte[] { 0x31, 0x36, 0x37, 0x38, 0x39, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x41, 0x42, 0x43, 0x44, 0x46, 0x47 };
-            var kBytes = new byte[] { 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x38, 0x37, 0x36, 0x35, 0x34, 0x33, 0x32 };
+            var nBytes = new byte[]
+            {
+                0x31, 0x36, 0x37, 0x38, 0x39, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x41, 0x42, 0x43, 0x44, 0x46, 0x47
+            };
+            var kBytes = new byte[]
+            {
+                0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x38, 0x37, 0x36, 0x35, 0x34, 0x33, 0x32
+            };
 
 
-            var cBytes1 = new byte[] { 0x32, 0xBD, 0x3A, 0xE2, 0x45, 0xA2, 0x79, 0xC9, 0x5D, 0x82, 0x93, 0xF7, 0x9C, 0xB8, 0xD0, 0xF6, 0x70, 0x2B, 0xC9, 0x90, 0xF4, 0xA6, 0x1C, 0xEE, 0xB2 };
+            var cBytes1 = new byte[]
+            {
+                0x32, 0xBD, 0x3A, 0xE2, 0x45, 0xA2, 0x79, 0xC9, 0x5D, 0x82, 0x93, 0xF7, 0x9C, 0xB8, 0xD0, 0xF6,
+                0x70, 0x2B, 0xC9, 0x90, 0xF4, 0xA6, 0x1C, 0xEE, 0xB2
+            };
 
 
             mBytes = new byte[] { 0x11, 0x22, 0x33, 0x44, 0xaa, 0xff, 0x55, 0x00 };
 
             aBytes = new byte[] { 0x31, 0x37, 0x31, 0x31, 0x30, 0x31, 0x35, 0x30, 0x30, 0x38 };
 
-            nBytes = new byte[] { 0x12, 0x15, 0x16, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1e, 0x1f, 0x20, 0x21, 0x23, 0x24, 0x25, 0x26 };
+            nBytes = new byte[]
+            {
+                0x12, 0x15, 0x16, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1e, 0x1f, 0x20, 0x21, 0x23, 0x24, 0x25, 0x26
+            };
 
-            kBytes = new byte[] { 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x38, 0x37, 0x36, 0x35, 0x34, 0x33, 0x32 };
+            kBytes = new byte[]
+            {
+                0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x38, 0x37, 0x36, 0x35, 0x34, 0x33, 0x32
+            };
 
             var cBytes2 = new byte[] { };
 
-            byte[] c = new byte[mBytes.Length + Ascon128av12.CRYPTO_ABYTES];
+            var c = new byte[mBytes.Length + Ascon128av12.CRYPTO_ABYTES];
             byte[] s = { };
 
             void Print(string name, byte[] array, int length, int offset)
             {
                 Console.Write(name + ": ");
-                for (int i = offset; i < length; i++)
+                for (var i = offset; i < length; i++)
                 {
                     Console.Write(array[i].ToString("X2") + " ");
                 }
+
                 Console.WriteLine();
             }
 
@@ -196,22 +189,25 @@ namespace WebApiDemo
             Print("a", aBytes, aBytes.Length, 0);
             Print("m", mBytes, mBytes.Length, 0);
 
-            Ascon128av12.crypto_aead_encrypt(c, out var clen, mBytes, mBytes.Length, aBytes, aBytes.Length, s, nBytes, kBytes);
+            Ascon128av12.crypto_aead_encrypt(c, out var clen, mBytes, mBytes.Length, aBytes, aBytes.Length, s, nBytes,
+                kBytes);
             Print("c", c, c.Length - 16, 0);
             Print("t", c, Ascon128av12.CRYPTO_ABYTES, c.Length - Ascon128av12.CRYPTO_ABYTES);
 
-            byte[] decryptedM = new byte[mBytes.Length];
-            Ascon128av12.crypto_aead_decrypt(decryptedM, out var mlen, null, c, clen, aBytes, aBytes.Length, nBytes, kBytes);
+            var decryptedM = new byte[mBytes.Length];
+            Ascon128av12.crypto_aead_decrypt(decryptedM, out var mlen, null, c, clen, aBytes, aBytes.Length, nBytes,
+                kBytes);
             if (mlen != -1)
             {
                 Print("p", decryptedM, mlen, 0);
-                string plaintext = Encoding.ASCII.GetString(decryptedM, 0, mlen);
+                var plaintext = Encoding.ASCII.GetString(decryptedM, 0, mlen);
                 Console.WriteLine("Decrypted plaintext: " + plaintext);
             }
             else
             {
                 Console.WriteLine("Verification failed");
             }
+
             Console.WriteLine();
             var d1 = c.ToHexString();
             var d2 = c.ToGetString();
@@ -225,23 +221,18 @@ namespace WebApiDemo
                 m,
                 c,
                 cS = Encoding.ASCII.GetString(c),
-                s,
-
+                s
             };
             return obj;
         }
-
-
-
     }
 
-    public static partial class LogsExtension
+    public static class LogsExtension
     {
         public static IServiceCollection AddDefaultEgDcLogService(this IServiceCollection services,
-    IConfiguration configuration,
-    IDcLoggerProcessor loggerProcessor = null)
+            IConfiguration configuration,
+            IDcLoggerProcessor loggerProcessor = null)
         {
-
             //LogHelper.RegisterProcessEvent(EgLogHelper.Log4NetSubscribe);
             //services.AddTransient<ILogService, LogService>();
 
@@ -267,8 +258,6 @@ namespace WebApiDemo
                     opt.DcLogVersion = configValue.DcLogVersion;
                     opt.ContentMaxLength = configValue.ContentMaxLength;
                     opt.QueuedMaxMessageCount = configValue.QueuedMaxMessageCount;
-
-
                 };
             }
             else
@@ -290,26 +279,28 @@ namespace WebApiDemo
                     opt.DcLogVersion = "1.0.0";
                     opt.ContentMaxLength = 2000;
                     opt.QueuedMaxMessageCount = 1024;
-
-
                 };
             }
 
             if (configure == null)
             {
-                throw new ArgumentNullException($"DcLogOptions");
+                throw new ArgumentNullException("DcLogOptions");
             }
+
             LogHelper.RegisterProcessEvent(DcLogSubscribe);
-            services.AddDcLogger(configure, loggerProcessor);
+            // services.AddDcLogger(configure, loggerProcessor:loggerProcessor);
 
             return services;
-
         }
+
         internal static void DcLogSubscribe(LogHelper.LogInfo? logInfo)
         {
             try
             {
-                if (logInfo == null) return;
+                if (logInfo == null)
+                {
+                    return;
+                }
                 // if (!ConfigItems.IsReportToE) return;
 #if !NET45
                 DcLogHelper.Add(logInfo.Content, logInfo.Level, logInfo.Exceptions, logInfo.SerialNumber,
@@ -318,11 +309,10 @@ namespace WebApiDemo
             }
             catch (Exception e)
             {
-                Console.WriteLine("ÉÏ±¨ÈÕÖ¾Òì³£:{0}", e.ToJsonStr());
+                Console.WriteLine("ä¸ŠæŠ¥æ—¥å¿—å¼‚å¸¸:{0}", e.ToJsonStr());
                 // Log(LogLevels.Warning, $"EsLogAsync({logInfo.ToJsonStr()}) error {e.Message}", e);
             }
         }
-
     }
 
 
@@ -334,8 +324,5 @@ namespace WebApiDemo
         {
             return true;
         }
-
     }
-
 }
-

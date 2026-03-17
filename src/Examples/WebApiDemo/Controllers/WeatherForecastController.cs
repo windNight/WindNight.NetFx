@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.WnExtensions.Abstractions.Attributes;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.Extensions.Options;
 using WindNight.Core.Abstractions;
+using WindNight.Core.Attributes.Abstractions;
 using WindNight.Extension.Logger.DcLog.Abstractions;
 using WindNight.Extension.Logger.DcLog.Extensions;
 using WindNight.LogExtension;
@@ -39,7 +39,7 @@ namespace WebApiDemo.Controllers
             if (httpRequest.Headers.TryGetValue(headerName, out var requestHeader))
             {
                 var header = requestHeader.FirstOrDefault();
-                if (!header.IsNullOrEmpty())
+                if (header.IsNotNullOrEmpty())
                 {
                     return header.Trim();
                 }
@@ -72,11 +72,11 @@ namespace WebApiDemo.Controllers
             }
 
             var rangeData = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-                {
-                    Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    TemperatureC = Random.Shared.Next(-20, 55),
-                    Summary = Summaries[Random.Shared.Next(Summaries.Length)],
-                })
+            {
+                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)],
+            })
                 .ToArray();
             var allHeaderData = GetAllHeaderData(Request);
             return new { allHeaderData, signData, rangeData };
@@ -95,11 +95,11 @@ namespace WebApiDemo.Controllers
             }
 
             var rangeData = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-                {
-                    Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    TemperatureC = Random.Shared.Next(-20, 55),
-                    Summary = Summaries[Random.Shared.Next(Summaries.Length)],
-                })
+            {
+                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)],
+            })
                 .ToArray();
             return new { signData, rangeData };
         }
@@ -109,11 +109,11 @@ namespace WebApiDemo.Controllers
         public IEnumerable<WeatherForecast> GetWeatherForecast()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-                {
-                    Date = DateOnly.FromDateTime(HardInfo.Now.AddDays(index)),
-                    TemperatureC = Random.Shared.Next(-20, 55),
-                    Summary = Summaries[Random.Shared.Next(Summaries.Length)],
-                })
+            {
+                Date = DateOnly.FromDateTime(HardInfo.Now.AddDays(index)),
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)],
+            })
                 .ToArray();
         }
 

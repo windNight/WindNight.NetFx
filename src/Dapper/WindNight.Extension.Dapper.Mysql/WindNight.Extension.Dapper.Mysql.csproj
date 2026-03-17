@@ -13,8 +13,8 @@
  
 
     <ItemGroup>
-		<PackageReference Include="Dapper" Version="2.1.66" />
-		<PackageReference Include="MySql.Data" Version="9.5.0" />
+		<PackageReference Include="Dapper" Version="2.1.72" />
+		<PackageReference Include="MySql.Data" Version="9.6.0" />
  
 		<!--<PackageReference Include="MySql.Data" Version="8.0.31" />-->
 	</ItemGroup>

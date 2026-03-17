@@ -6,8 +6,10 @@ using WindNight.Core;
 using WindNight.Core.Abstractions;
 using WindNight.Core.Enums.Abstractions;
 using WindNight.Core.Enums.Extension;
-using WindNight.Core.ExceptionExt;
 using WindNight.Extension.Logger.DcLog.Abstractions;
+using WindNight.Extension.Logger.DcLog.@internal;
+using IpHelper = WindNight.Extension.HttpContextExtension;
+
 
 namespace WindNight.Extension.Logger.DcLog.Extensions
 {
@@ -236,6 +238,19 @@ namespace WindNight.Extension.Logger.DcLog.Extensions
             };
 
 
+
+            var clientIp = jo.SafeGetValue("clientIp", "");
+
+            if (clientIp.IsNullOrEmpty())
+            {
+                clientIp= IpHelper.GetClientIp();
+                jo["clientIp"] = clientIp;
+            }
+
+            if (clientIp.IsNullOrEmptyIp())
+            {
+                logMsg.ClientIp = clientIp;
+            }
 
             var logAppCode = jo.SafeGetValue("logAppCode", "");
 

@@ -5,6 +5,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.@internal
 {
     internal class ConfigItems : DefaultConfigItemBase
     {
+        public static string AppInfo => $"{SystemAppName}({SystemAppCode})";
         public static bool OpenDebug => OpenDebugInternal;
 
         internal static bool OpenInternalApi => GetAppSettingValue("OpenInternalApi", false, false);
