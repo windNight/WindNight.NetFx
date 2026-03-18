@@ -26,7 +26,7 @@ namespace WindNight.Extension
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
-            Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
+            Func<RestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
@@ -40,7 +40,7 @@ namespace WindNight.Extension
         public static T GetResponse<T>(string domain, string path,
             object queries,
             Dictionary<string, string> headerDict = null,
-            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<IRestResponse, bool> errStatusFunc = null)
+            int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<RestResponse, bool> errStatusFunc = null)
         {
             var queryDict = queries.GenQueryDict();
             return GetResponse<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, errStatusFunc);
@@ -64,7 +64,7 @@ namespace WindNight.Extension
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
-            CancellationToken token = default, Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
+            CancellationToken token = default, Func<RestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
                 {
@@ -80,7 +80,7 @@ namespace WindNight.Extension
             object queries,
             Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
-            CancellationToken token = default, Func<IRestResponse, bool> errStatusFunc = null)
+            CancellationToken token = default, Func<RestResponse, bool> errStatusFunc = null)
         {
             var queryDict = queries.GenQueryDict();
             return await GetResponseAsync<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, token,
@@ -103,7 +103,7 @@ namespace WindNight.Extension
         public static T PostResponse<T>(string domain, string path, object bodyObjects,
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20, bool isJsonBody = true,
-            Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
+            Func<RestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
@@ -131,7 +131,7 @@ namespace WindNight.Extension
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20,
             CancellationToken token = default,
-            bool isJsonBody = true, Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
+            bool isJsonBody = true, Func<RestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
                 {

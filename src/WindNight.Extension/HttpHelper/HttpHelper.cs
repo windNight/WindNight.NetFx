@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Extension;
 using RestSharp;
 using WindNight.Core.Tools;
@@ -18,14 +12,14 @@ namespace WindNight.Extension
 
         public static string CurrentCompileTime => BuildInfo.BuildTime;
 
-        public static string HttpHelperPluginVersion => $"{nameof(HttpHelper)}/{CurrentVersion} {CurrentCompileTime}";
+        public static string HttpHelperPluginVersion => $"{nameof(HttpHelper)}/{CurrentVersion} {CurrentCompileTime} @{BuildInfo.UserName}";
 
 
         public static bool CheckRemoteFile(string url,
             Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20,
-            Func<IRestResponse, bool> errStatusFunc = null)
+            Func<RestResponse, bool> errStatusFunc = null)
         {
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
@@ -53,7 +47,7 @@ namespace WindNight.Extension
             int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20,
             CancellationToken token = default,
-            Func<IRestResponse, bool> errStatusFunc = null)
+            Func<RestResponse, bool> errStatusFunc = null)
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
                 {

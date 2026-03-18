@@ -27,7 +27,7 @@ namespace WindNight.Extension
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20,
             Func<string, T> convertFunc = null, bool isJsonBody = true,
-            Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
+            Func<RestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
@@ -56,7 +56,7 @@ namespace WindNight.Extension
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null,
             CancellationToken token = default,
-            bool isJsonBody = true, Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
+            bool isJsonBody = true, Func<RestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
                 {
@@ -74,7 +74,7 @@ namespace WindNight.Extension
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20, Func<string, T> convertFunc = null,
             CancellationToken token = default,
-            bool isJsonBody = true, Func<IRestResponse, bool> errStatusFunc = null)
+            bool isJsonBody = true, Func<RestResponse, bool> errStatusFunc = null)
         {
             var rlt = await TimeWatcherHelper.TimeWatcher(async () =>
                 {

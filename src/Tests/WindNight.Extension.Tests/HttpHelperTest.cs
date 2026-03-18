@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Extension;
+using WindNight.Core;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -50,16 +51,42 @@ namespace WindNight.Extension.Tests
         [Fact]
         public void HttpHelperPostUrl1()
         {
-            var url = "https://www.grphtk.cc:8179/ygCtrl/api/enopt/rtdata/batchsync";
 
             var domain = "https://www.grphtk.cc:8179/ygCtrl";
             var api = "/api/enopt/rtdata/batchsync";
             var res = HttpHelper.Post<int>(domain, api, null, timeOut: 200);
 
-            Output($"res is {res}"); 
+            Output($"res is {res}");
 
         }
 
+        [Fact]
+        public void HttpHelperGetTest()
+        {
+
+            var domain = "";
+            var api = "/api/monitor/slb";
+            var res = HttpHelper.Get<string>(domain, api, null, timeOut: 200);
+
+            Output($"res is {res}");
+
+        }
+
+        [Fact]
+        public void HttpHelperGetTest2()
+        {
+
+            var domain = "";
+            var api = "/api/monitor/svrinfo";
+            var headerData = new Dictionary<string, string>
+            {
+
+            };
+            var res = HttpHelper.Get<object>(domain, api, null, headerData, timeOut: 200);
+
+            Output($"res is {res}");
+
+        }
 
     }
 }

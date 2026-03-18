@@ -22,7 +22,7 @@ namespace WindNight.Extension
         public static T Get<T>(string url, Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20,
             Func<string, T> convertFunc = null,
-            Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
+            Func<RestResponse, bool> errStatusFunc = null) //where T : new()
         {
             var rlt= TimeWatcherHelper.TimeWatcher(() =>
                 {
@@ -52,7 +52,7 @@ namespace WindNight.Extension
             int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20,
             Func<string, T> convertFunc = null,
-            Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
+            Func<RestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
@@ -69,7 +69,7 @@ namespace WindNight.Extension
             int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20,
             Func<string, T> convertFunc = null,
-            Func<IRestResponse, bool> errStatusFunc = null)
+            Func<RestResponse, bool> errStatusFunc = null)
         {
             var queryDict = queries.GenQueryDict();
             return Get<T>(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, errStatusFunc: errStatusFunc);
@@ -96,7 +96,7 @@ namespace WindNight.Extension
             int timeOut = 1000 * 60 * 20,
             Func<string, T> convertFunc = null,
             CancellationToken token = default,
-            Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
+            Func<RestResponse, bool> errStatusFunc = null) //where T : new()
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
                 {
@@ -115,7 +115,7 @@ namespace WindNight.Extension
             int timeOut = 1000 * 60 * 20,
             Func<string, T> convertFunc = null,
             CancellationToken token = default,
-            Func<IRestResponse, bool> errStatusFunc = null)
+            Func<RestResponse, bool> errStatusFunc = null)
         {
             var queryDict = queries.GenQueryDict();
             return await GetAsync(domain, path, queryDict, headerDict, warnMiSeconds, timeOut, convertFunc, token,

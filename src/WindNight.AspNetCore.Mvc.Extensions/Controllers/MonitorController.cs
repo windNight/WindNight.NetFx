@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.WnExtensions.@internal;
 using WindNight.AspNetCore.Mvc.Extensions.FilterAttributes;
 using WindNight.Core.Abstractions;
-using WindNight.Core.Attributes.Abstractions; 
-using WindNight.Extension; 
+using WindNight.Core.Attributes.Abstractions;
+using WindNight.Extension;
 
 namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
 {
@@ -68,7 +69,7 @@ namespace Microsoft.AspNetCore.Mvc.WnExtensions.Controllers
         {
             var serverIp = GetHttpServerIp();
             var clientIp = GetHttpClientIp();
-            return $"200-ok-{serverIp}-{clientIp}";
+            return $"200-ok-{serverIp}-{clientIp}@{ConfigItems.AppInfo}";
         }
 
         /// <summary>

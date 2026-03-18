@@ -22,7 +22,7 @@ namespace WindNight.Extension
             int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
             bool isThrow = false,
-            Func<IRestResponse, bool> errStatusFunc = null,
+            Func<RestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null
         )
         {
@@ -65,7 +65,7 @@ namespace WindNight.Extension
             Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
             bool isThrow = false,
-            Func<IRestResponse, bool> errStatusFunc = null,
+            Func<RestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null) //where T : new()
         {
             var res = await GetAsync<ResponseResult<IEnumerable<T>>>(domain, path, queries,
@@ -105,7 +105,7 @@ namespace WindNight.Extension
             Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
             bool isThrow = false,
-            Func<IRestResponse, bool> errStatusFunc = null,
+            Func<RestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null) //where T : new()
         {
             var queryDict = queries.GenQueryDict();
@@ -117,7 +117,7 @@ namespace WindNight.Extension
             object queries,
             Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
-            bool isThrow = false, Func<IRestResponse, bool> errStatusFunc = null,
+            bool isThrow = false, Func<RestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null) //where T : new()
         {
             var queryDict = queries.GenQueryDict();
@@ -130,7 +130,7 @@ namespace WindNight.Extension
             Dictionary<string, object> queries,
             Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200, int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
-            bool isThrow = false, Func<IRestResponse, bool> errStatusFunc = null,
+            bool isThrow = false, Func<RestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null) //where T : new()
         {
             var res = Get<ResponseResult<IEnumerable<T>>>(domain, path, queries, headerDict,
@@ -169,7 +169,7 @@ namespace WindNight.Extension
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
             bool isThrow = false, bool isJsonBody = true,
-            Func<IRestResponse, bool> errStatusFunc = null,
+            Func<RestResponse, bool> errStatusFunc = null,
             Func<ResponseResult<IEnumerable<T>>, IEnumerable<T>> errCodeFunc = null) //where T : new()
         {
             var res = await PostAsync<ResponseResult<IEnumerable<T>>>(domain, path,
@@ -207,7 +207,7 @@ namespace WindNight.Extension
             Dictionary<string, string> headerDict = null, int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20, Func<string, ResponseResult<IEnumerable<T>>> convertFunc = null,
             bool isThrow = false, bool isJsonBody = true,
-            Func<IRestResponse, bool> errStatusFunc = null) //where T : new()
+            Func<RestResponse, bool> errStatusFunc = null) //where T : new()
         {
             var res = Post<ResponseResult<IEnumerable<T>>>(domain, path, bodyObjects,
                 headerDict, warnMiSeconds, timeOut, isJsonBody: isJsonBody, convertFunc: convertFunc, errStatusFunc: errStatusFunc);

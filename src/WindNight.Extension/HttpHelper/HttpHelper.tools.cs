@@ -144,7 +144,7 @@ namespace WindNight.Extension
         //    return _ => _.To<T>();
         //}
 
-        public static string GenReqUrl(this IRestResponse response, string domain)
+        public static string GenReqUrl(this RestResponse response, string domain)
         {
             try
             {
@@ -157,14 +157,14 @@ namespace WindNight.Extension
             }
         }
 
-        public static Func<string> GenReqLogFrefix(this IRestResponse response, string domain)
+        public static Func<string> GenReqLogFrefix(this RestResponse response, string domain)
         {
             var prefix = response.GenReqUrl(domain);
             var handler = () => prefix;
             return handler;
         }
 
-        public static T DeserializeResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string domain, T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
+        public static T DeserializeResponse<T>(this RestResponse response, Func<string, T> convertFunc, string domain, T defaultValue = default, Func<RestResponse, bool> errStatusFunc = null)
         {
             var reqUrl = response.GenReqUrl(domain);
             try
@@ -209,13 +209,13 @@ namespace WindNight.Extension
         }
 
 
-        public static T DeserializeResponse<T>(this IRestResponse response, string domain, Func<IRestResponse, bool> errStatusFunc = null)
+        public static T DeserializeResponse<T>(this RestResponse response, string domain, Func<RestResponse, bool> errStatusFunc = null)
         {
             return response.DeserializeResponse<T>(DefaultConvertFunc<T>(), domain, errStatusFunc: errStatusFunc);
         }
 
 
-        public static IPagedList<T> DeserializeResponse2PageList<T>(this IRestResponse response, string domain, Func<IRestResponse, bool> errStatusFunc = null)
+        public static IPagedList<T> DeserializeResponse2PageList<T>(this RestResponse response, string domain, Func<RestResponse, bool> errStatusFunc = null)
         {
             var defaultValue = PagedList.Empty<T>();
             var logPrefixHandler = response.GenReqLogFrefix(domain);
@@ -256,14 +256,14 @@ namespace WindNight.Extension
         }
 
 
-        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response, string domain, Func<IRestResponse, bool> errStatusFunc = null)
+        public static IPagedList<T> DeserializePageListResponse<T>(this RestResponse response, string domain, Func<RestResponse, bool> errStatusFunc = null)
         {
             var logPrefixHandler = response.GenReqLogFrefix(domain);
             return response.DeserializePageListResponse(DefaultPagedConvertFunc<T>(logPrefixHandler), domain, errStatusFunc);
         }
 
 
-        public static IPagedList<T> DeserializePageListResponse<T>(this IRestResponse response, Func<string, IPagedList<T>> convertFunc, string domain, Func<IRestResponse, bool> errStatusFunc = null)
+        public static IPagedList<T> DeserializePageListResponse<T>(this RestResponse response, Func<string, IPagedList<T>> convertFunc, string domain, Func<RestResponse, bool> errStatusFunc = null)
         {
             var defaultValue = PagedList.Empty<T>();
             var logPrefixHandler = response.GenReqLogFrefix(domain);
@@ -305,7 +305,7 @@ namespace WindNight.Extension
             return defaultValue;
         }
 
-        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response, string domain, Func<IRestResponse, bool> errStatusFunc = null)
+        public static IEnumerable<T> DeserializeListResponse<T>(this RestResponse response, string domain, Func<RestResponse, bool> errStatusFunc = null)
         {
             var logPrefixHandler = response.GenReqLogFrefix(domain);
             return response.DeserializeListResponse(DefaultEnumerableResConvertFunc<T>(logPrefixHandler), domain, errStatusFunc);
@@ -320,7 +320,7 @@ namespace WindNight.Extension
 #endif
         }
 
-        public static IEnumerable<T> DeserializeListResponse<T>(this IRestResponse response, Func<string, IEnumerable<T>> convertFunc, string domain, Func<IRestResponse, bool> errStatusFunc = null)
+        public static IEnumerable<T> DeserializeListResponse<T>(this RestResponse response, Func<string, IEnumerable<T>> convertFunc, string domain, Func<RestResponse, bool> errStatusFunc = null)
         {
             var defaultValue = EmptyArray<T>();
             var logPrefixHandler = response.GenReqLogFrefix(domain);
@@ -361,13 +361,13 @@ namespace WindNight.Extension
             return defaultValue;
         }
 
-        public static T DeserializeResResponse<T>(this IRestResponse response, string domain, T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
+        public static T DeserializeResResponse<T>(this RestResponse response, string domain, T defaultValue = default, Func<RestResponse, bool> errStatusFunc = null)
         {
             var logPrefixHandler = response.GenReqLogFrefix(domain);
             return response.DeserializeResResponse(DefaultResConvertFunc<T>(logPrefixHandler), domain, defaultValue, errStatusFunc);
         }
 
-        public static T DeserializeResResponse<T>(this IRestResponse response, Func<string, T> convertFunc, string domain, T defaultValue = default, Func<IRestResponse, bool> errStatusFunc = null)
+        public static T DeserializeResResponse<T>(this RestResponse response, Func<string, T> convertFunc, string domain, T defaultValue = default, Func<RestResponse, bool> errStatusFunc = null)
         {
             var logPrefixHandler = response.GenReqLogFrefix(domain);
             var reqUrl = logPrefixHandler?.Invoke() ?? "";

@@ -18,7 +18,7 @@ namespace WindNight.Extension
             Dictionary<string, string> headerDict = null,
             int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20,
-            Func<IRestResponse, RemoteFileInfo> errStatusFunc = null)
+            Func<RestResponse, RemoteFileInfo> errStatusFunc = null)
         {
             return TimeWatcherHelper.TimeWatcher(() =>
                 {
@@ -36,7 +36,7 @@ namespace WindNight.Extension
                     remoteInfo.IsExist = isOk;
                     if (isOk)
                     {
-                        remoteInfo.ContentLength = response.ContentLength;
+                        remoteInfo.ContentLength = response.ContentLength??0L;
                         var eTagHeader = response.Headers.FirstOrDefault(m =>
                             string.Equals(m.Name, "ETag", StringComparison.OrdinalIgnoreCase));
                         if (eTagHeader != null)
@@ -62,7 +62,7 @@ namespace WindNight.Extension
             int warnMiSeconds = 200,
             int timeOut = 1000 * 60 * 20,
             CancellationToken token = default,
-            Func<IRestResponse, RemoteFileInfo> errStatusFunc = null)
+            Func<RestResponse, RemoteFileInfo> errStatusFunc = null)
         {
             return await TimeWatcherHelper.TimeWatcher(async () =>
                 {
@@ -80,7 +80,7 @@ namespace WindNight.Extension
                     remoteInfo.IsExist = isOk;
                     if (isOk)
                     {
-                        remoteInfo.ContentLength = response.ContentLength;
+                        remoteInfo.ContentLength = response.ContentLength ?? 0L;
                         var eTagHeader = response.Headers.FirstOrDefault(m =>
                             string.Equals(m.Name, "ETag", StringComparison.OrdinalIgnoreCase));
                         if (eTagHeader != null)
