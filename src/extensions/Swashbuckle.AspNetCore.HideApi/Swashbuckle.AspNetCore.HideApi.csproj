@@ -32,8 +32,8 @@
         <!--<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.0.1" />-->
 
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.6" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.6" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.5" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.1.5" />
         
     </ItemGroup>
 

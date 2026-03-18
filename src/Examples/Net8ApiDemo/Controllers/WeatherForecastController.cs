@@ -31,11 +31,12 @@ namespace Net8ApiDemo.Controllers
 
         private readonly Dictionary<string, string> SignDict = new()
         {
-            { "Authorization", "格式 Bearer xx" },
-            { "AppId", "AppId" },
-            { "AppCode", "AppCode" },
-            { "AppToken", "Sign" },
-            { "Ts", "当前时间戳" },
+            {"Authorization","格式 Bearer xx"},
+            {"AppId","执行的AppId"},
+            {"AppCode","执行的AppCode"},
+            {"AppToken","当前请求的Token"},
+            {"Ts","当前时间戳"},
+            {ConstantKeys.ReqTraceIdKey,"ReqTraceId"},
         };
 
         public WeatherForecastController(ILogger<WeatherForecastController> logger)

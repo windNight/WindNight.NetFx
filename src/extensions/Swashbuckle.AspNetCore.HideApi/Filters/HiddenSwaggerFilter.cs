@@ -1,5 +1,5 @@
 using Microsoft.OpenApi;
-using Microsoft.OpenApi.Models;
+//using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Extensions.@internal;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -21,16 +21,17 @@ namespace System.Attributes
 
                 try
                 {
-                    swaggerDoc.Components.SecuritySchemes.Clear();
-                    //swaggerDoc.Security.Clear();
-                    swaggerDoc.SecurityRequirements.Clear();
+                    swaggerDoc.Components?.SecuritySchemes?.Clear();
+                    swaggerDoc.Security?.Clear();
+                    //  swaggerDoc.SecurityRequirements.Clear();
                     swaggerDoc.Info = null;
-                    swaggerDoc.Paths.Clear();
+                    swaggerDoc.Paths?.Clear();
                     swaggerDoc.Workspace = null;
-                    swaggerDoc.Servers.Clear();
+                    swaggerDoc.Servers?.Clear();
 
-                    swaggerDoc.Components.Schemas.Clear();
-                    swaggerDoc.Annotations?.Clear();
+                    swaggerDoc.Components?.Schemas?.Clear();
+                    // swaggerDoc.Annotations?.Clear();
+                    swaggerDoc.Extensions?.Clear();
                 }
                 catch
                 {

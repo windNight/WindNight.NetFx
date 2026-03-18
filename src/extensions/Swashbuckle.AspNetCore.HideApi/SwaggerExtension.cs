@@ -1,7 +1,5 @@
 using System;
-using System.Attributes;
-using System.Collections.Generic;
-using System.IO;
+using System.Attributes; 
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -9,10 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.WnExtension;
 using Microsoft.OpenApi;
-using Microsoft.OpenApi.Models;
+//using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Extensions.Abstractions;
 using Swashbuckle.AspNetCore.Extensions.@internal;
-using Swashbuckle.AspNetCore.HideApi;
+using Swashbuckle.AspNetCore.HideApi; 
 using Swashbuckle.AspNetCore.HideApi.@internal;
 using Swashbuckle.AspNetCore.HideApi.Middleware;
 using Swashbuckle.AspNetCore.Swagger;
@@ -73,7 +71,7 @@ namespace Swashbuckle.AspNetCore.Extensions
                 //    return true; // 或者根据条件返回false
                 //});
 
-            
+
                 if (!paramUpperCamelCase)
                 {
                     c.DescribeAllParametersInCamelCase();
@@ -156,6 +154,10 @@ namespace Swashbuckle.AspNetCore.Extensions
                 swaggerGenOptionsAction?.Invoke(c);
 
                 ProcessSecurityMode(c, configuration, signKeyDict);
+                //foreach (var item in signKeyDict)
+                //{
+                //    c.OperationFilter<FillCustomHeaderDataFilter>(item.Key, item.Value, true);
+                //}
                 //ProcessResponseMode(c, configuration, resDict);
             });
 
@@ -193,6 +195,53 @@ namespace Swashbuckle.AspNetCore.Extensions
 
         }
 
+        //private static void ProcessSecurityMode(SwaggerGenOptions c, IConfiguration configuration,
+        //    Dictionary<string, string> signKeyDict = null)
+        //{
+        //    if (signKeyDict.IsNullOrEmpty())
+        //    {
+        //        var sectionKey = nameof(SwaggerConfigs);
+        //        var config = configuration.GetSection(sectionKey).Get<SwaggerConfigs>();
+        //        signKeyDict = config.GetSignDict();
+        //    }
+
+        //    if (signKeyDict.IsNotNullOrEmpty())
+        //    {
+        //        var securityRequirements = new OpenApiSecurityRequirement();
+        //        foreach (var item in signKeyDict)
+        //        {
+        //            var name = item.Key;
+        //            var des = item.Value;
+        //            if (name.IsNotNullOrEmpty())
+        //            {
+        //                // 添加自定义请求头
+        //                c.AddSecurityDefinition(name, new OpenApiSecurityScheme
+        //                {
+        //                    Name = name,
+        //                    Description = des,
+        //                    In = ParameterLocation.Header,
+        //                    Type = SecuritySchemeType.ApiKey,
+        //                });
+
+        //                securityRequirements.Add(
+        //                    new OpenApiSecurityScheme
+        //                    {
+        //                        Reference = new OpenApiReference
+        //                        {
+        //                            Type = ReferenceType.SecurityScheme,
+        //                            Id = name,
+        //                        },
+        //                    }, new string[] { });
+        //            }
+        //        }
+
+        //        if (securityRequirements.IsNotNullOrEmpty())
+        //        {
+        //            c.AddSecurityRequirement(securityRequirements);
+        //        }
+        //    }
+        //}
+
         private static void ProcessSecurityMode(SwaggerGenOptions c, IConfiguration configuration,
             Dictionary<string, string> signKeyDict = null)
         {
@@ -205,11 +254,13 @@ namespace Swashbuckle.AspNetCore.Extensions
 
             if (signKeyDict.IsNotNullOrEmpty())
             {
-                var securityRequirements = new OpenApiSecurityRequirement();
+                var index = 0;
                 foreach (var item in signKeyDict)
                 {
+                    index++;
                     var name = item.Key;
-                    var des = item.Value;
+                    var des = $"[{index}]:{item.Value}";
+
                     if (name.IsNotNullOrEmpty())
                     {
                         // 添加自定义请求头
@@ -219,24 +270,104 @@ namespace Swashbuckle.AspNetCore.Extensions
                             Description = des,
                             In = ParameterLocation.Header,
                             Type = SecuritySchemeType.ApiKey,
+                            BearerFormat = "ApiKey",
+                            Scheme = name.ToLowerInvariant(),
+
                         });
-                    
-                        securityRequirements.Add(
-                            new OpenApiSecurityScheme
-                            {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = name,
-                                },
-                            }, new string[] { });
+
+                        //c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                        //{
+                        //    {
+                        //        new OpenApiSecuritySchemeReference(name, document),
+                        //        new List<string>()
+                        //    }
+                        //});
+
                     }
                 }
 
-                if (securityRequirements.IsNotNullOrEmpty())
+
+                c.AddSecurityRequirement(document =>
                 {
-                    c.AddSecurityRequirement(securityRequirements);
+                    var requirement = new OpenApiSecurityRequirement();
+
+                    foreach (var item in signKeyDict)
+                    {
+                        var name = item.Key;
+
+                        if (name.IsNullOrEmpty())
+                        {
+                            continue;
+                        }
+
+                        requirement.Add(new OpenApiSecuritySchemeReference(name, document), new List<string>());
+                    }
+
+                    return requirement;
+                });
+
+            }
+        }
+
+
+        private static void ProcessSecurityModeV11(SwaggerGenOptions c, IConfiguration configuration,
+            Dictionary<string, string> signKeyDict = null)
+        {
+            if (signKeyDict.IsNullOrEmpty())
+            {
+                var sectionKey = nameof(SwaggerConfigs);
+                var config = configuration.GetSection(sectionKey).Get<SwaggerConfigs>();
+                signKeyDict = config?.GetSignDict();
+            }
+
+            if (signKeyDict.IsNotNullOrEmpty())
+            {
+                var index = 0;
+                foreach (var item in signKeyDict)
+                {
+                    index++;
+                    var name = item.Key;
+                    var des = $"[{index}]:{item.Value}";
+
+                    if (name.IsNullOrEmpty())
+                    {
+                        continue;
+                    }
+
+                    // 添加安全定义
+                    c.AddSecurityDefinition(name, new OpenApiSecurityScheme
+                    {
+                        Name = name,
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                        Description = des,
+                        Scheme = name.ToLowerInvariant(),
+                    });
+
+
                 }
+
+
+                // 为每个安全定义单独添加安全要求
+                c.AddSecurityRequirement(document =>
+                {
+                    var requirement = new OpenApiSecurityRequirement();
+
+                    foreach (var item in signKeyDict)
+                    {
+                        var name = item.Key;
+
+                        // 使用 OpenApiSecuritySchemeReference（你之前编译通过的版本）
+                        var schemeReference = new OpenApiSecuritySchemeReference(
+                            name.ToLowerInvariant(),  // 方案名称
+                            document                    // 当前文档实例
+                        );
+
+                        requirement.Add(schemeReference, new List<string>());
+                    }
+
+                    return requirement;
+                });
             }
         }
 
