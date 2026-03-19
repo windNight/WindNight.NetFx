@@ -46,43 +46,43 @@ namespace WindNight.RabbitMq.Abstractions
 
 
         /// <summary>
-        ///     接受mq消息并执行 <paramref name="func" />  使用 EventingBasicConsumer
+        ///     接受mq消息并执行 <paramref name="func" />  使用 <see cref="AsyncEventingBasicConsumer"/>
         /// </summary>
         /// <param name="func">
         ///     Func{in string message,in ulong deliveryTag,int string routingKey,string messageMd5,out bool
         ///     execResult}
         /// </param>
-        EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, string, string, bool> func);
+        AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, string, string, bool> func);
 
         /// <summary>
-        ///     接受mq消息并执行 <paramref name="func" /> 使用 EventingBasicConsumer
+        ///     接受mq消息并执行 <paramref name="func" /> 使用 <see cref="AsyncEventingBasicConsumer"/>
         /// </summary>
         /// <param name="func"> Func{in string message,in ulong deliveryTag,int string routingKey,out bool execResult} </param>
-        EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, string, bool> func);
+        AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, string, bool> func);
 
         /// <summary>
-        ///     接受mq消息并执行 <paramref name="func" /> 使用 EventingBasicConsumer
+        ///     接受mq消息并执行 <paramref name="func" /> 使用 <see cref="AsyncEventingBasicConsumer"/>
         /// </summary>
         /// <param name="func"> Func{in string message,in ulong deliveryTag,out bool execResult} </param>
-        EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, bool> func);
+        AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, bool> func);
 
         /// <summary>
-        ///     接受mq消息并执行 <paramref name="func" /> 使用 EventingBasicConsumer
+        ///     接受mq消息并执行 <paramref name="func" /> 使用 <see cref="AsyncEventingBasicConsumer"/>
         /// </summary>
         /// <param name="func"> Func{in string message,in string messageMd5,out bool execResult} </param>
-        EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, string, bool> func);
+        AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, string, bool> func);
 
         /// <summary>
-        ///     接受mq消息并执行 <paramref name="func" /> 使用 EventingBasicConsumer
+        ///     接受mq消息并执行 <paramref name="func" /> 使用 <see cref="AsyncEventingBasicConsumer"/>
         /// </summary>
         /// <param name="func"> Func{in string message,in messageMd5,in string routingKey,out bool execResult} </param>
-        EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, string, string, bool> func);
+        AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, string, string, bool> func);
 
         /// <summary>
-        ///     接受mq消息并执行 <paramref name="func" /> 使用 EventingBasicConsumer
+        ///     接受mq消息并执行 <paramref name="func" /> 使用 <see cref="AsyncEventingBasicConsumer"/>
         /// </summary>
         /// <param name="func"> Func{in string message,out bool execResult} </param>
-        EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, bool> func);
+        AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, bool> func);
 
 
         /// <summary>
@@ -97,6 +97,41 @@ namespace WindNight.RabbitMq.Abstractions
         bool Receive(out string message, out string routingKey);
         bool ReceiveNeedAck(out string message, out ulong deliveryTag);
         bool ReceiveNeedAck(out string message, out ulong deliveryTag, out string routingKey);
-        EventingBasicConsumer SetConsumerActive(EventHandler<BasicDeliverEventArgs> e);
+        AsyncEventingBasicConsumer SetConsumerActive(EventHandler<BasicDeliverEventArgs> e);
+
+
+        Task<bool> AckAsync(ulong deliveryTag, bool multiple);
+        Task<bool> NackAsync(ulong deliveryTag, bool multiple, bool requeue);
+
+        #region SetEventingConsumerWithFunc 异步实现
+
+        Task<AsyncEventingBasicConsumer> SetEventingConsumerWithFuncAsync(
+            Func<string, ulong, string, string, Task<bool>> func);
+        Task<AsyncEventingBasicConsumer> SetEventingConsumerWithFuncAsync(
+            Func<string, ulong, string, Task<bool>> func);
+
+        Task<AsyncEventingBasicConsumer>
+            SetEventingConsumerWithFuncAsync(Func<string, ulong, Task<bool>> func);
+        Task<AsyncEventingBasicConsumer> SetEventingConsumerWithFuncAsync(
+            Func<string, string, Task<bool>> func);
+
+        Task<AsyncEventingBasicConsumer>
+            SetEventingConsumerWithFuncAsync(Func<string, string, string, Task<bool>> func);
+        Task<AsyncEventingBasicConsumer> SetEventingConsumerWithFuncAsync(Func<string, Task<bool>> func);
+
+        #endregion
+
+
+
+
+
+
+
+
+
+
     }
+
+
+
 }

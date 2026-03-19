@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Extension;
 using WindNight.RabbitMq.Abstractions;
@@ -14,22 +10,24 @@ namespace WindNight.RabbitMq
         private const long DefaultLockTakeKeyExpireMs = 1000 * 60 * 10; //默认 10分钟
 
         protected readonly IRabbitMqConsumer Consumer;
-        public static string CurrentCompileTime => BuildInfo.BuildTime;
 
+         
 
-        protected readonly IRabbitMqProducer Producer;
         public BaseConsumerBackgroundService(IRabbitMqConsumerFactory consumerFactory,
             IRabbitMqConsumerSettings consumerSettings
         )
         {
-            if (consumerSettings == null || string.IsNullOrEmpty(consumerSettings.QueueName))
+            if (consumerSettings == null || consumerSettings.QueueName.IsNullOrEmpty())
             {
                 consumerSettings = DefaultRabbitMqConsumerSettings;
             }
+
             LogHelper.Info($" RabbitMqConsumerSettings  is {consumerSettings.ToJsonStr()}");
             //初始化MQ消费者队列信息
             Consumer = consumerFactory.GetRabbitMqConsumer(consumerSettings.QueueName, consumerSettings);
         }
+
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
 
         protected abstract string QueueTag { get; }
 
@@ -42,6 +40,7 @@ namespace WindNight.RabbitMq
                 {
                     throw new ArgumentNullException("RabbitMqConfig Can not Get from config");
                 }
+
                 return new RabbitMqConsumerSettings
                 {
                     RabbitMqUrl = config.RabbitMqUrl,
@@ -50,7 +49,7 @@ namespace WindNight.RabbitMq
                     PrefetchCount = config.PrefetchCount,
                     QueueDurable = config.QueueDurable,
                     SleepTime = config.SleepTime,
-                    ProcessWarnMs = config.ProcessWarnMs,
+                    ProcessWarnMs = config.ProcessWarnMs
                 };
             }
         }
@@ -87,6 +86,7 @@ namespace WindNight.RabbitMq
         protected virtual void WhileTrueSafe(Action action, string actName, CancellationToken stoppingToken)
         {
             while (true)
+            {
                 try
                 {
                     if (IsStop || stoppingToken.IsCancellationRequested)
@@ -107,6 +107,7 @@ namespace WindNight.RabbitMq
                 {
                     Thread.Sleep(1);
                 }
+            }
         }
 
         protected virtual T WhileTrueSafe<T>(Func<T> func, string actName, CancellationToken stoppingToken)
@@ -192,7 +193,5 @@ namespace WindNight.RabbitMq
                 }
             }, cancellationToken);
         }
-
-
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -53,7 +53,7 @@ namespace WindNight.DataSourceTestTool.RabbitMQ
             set => this._priority = value <= 9 && value >= 0 ? (int)Convert.ToByte(value) : throw new Exception("无效的消息权重，消息权重的设置范围只能为[0,9]");
         }
 
-        public string CorrelationID
+        public string CorrelationId
         {
             get => this._correlationID;
             set => this._correlationID = value;
@@ -71,7 +71,7 @@ namespace WindNight.DataSourceTestTool.RabbitMQ
             set => this._expiration = value;
         }
 
-        public string MessageID
+        public string MessageId
         {
             get => this._messageID;
             set => this._messageID = value;
@@ -89,19 +89,19 @@ namespace WindNight.DataSourceTestTool.RabbitMQ
             set => this._type = value;
         }
 
-        public string UserID
+        public string UserId
         {
             get => this._userID;
             set => this._userID = value;
         }
 
-        public string AppID
+        public string AppId
         {
             get => this._appID;
             set => this._appID = value;
         }
 
-        public string ClusterID
+        public string ClusterId
         {
             get => this._clusterID;
             set => this._clusterID = value;

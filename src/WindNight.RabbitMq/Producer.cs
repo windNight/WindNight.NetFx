@@ -1,6 +1,4 @@
-using System;
 using System.Security.Cryptography.Extensions;
-using System.Threading;
 using Newtonsoft.Json.Extension;
 using RabbitMQ.Client;
 using WindNight.RabbitMq.Abstractions;
@@ -11,38 +9,29 @@ namespace WindNight.RabbitMq
     /// <summary>
     ///     生产者类
     /// </summary>
-    public class Producer // : IDisposable
+    public class Producer : IAsyncDisposable, IDisposable
     {
         private readonly object lockObj;
-
         private readonly ProducerConfigInfo producerConfigInfo;
-
         private readonly Producer spareProduce;
         private readonly string uri;
         private BasicLibrary basicLibrary;
-
         private bool breakRepairLoop;
-
         private string encrypturi;
-
-        /// <summary>
-        ///     本地文件修复线程
-        /// </summary>
         private Thread loopRepairExceptionThread;
-
-        private IModel model;
-
-        /// <summary>
-        ///     临时消息本地存储器
-        /// </summary>
+        private IChannel model;
         private IMessageWrapper wrapper;
+        private readonly SemaphoreSlim _modelLock = new SemaphoreSlim(1, 1);
+        private bool _disposed;
 
         private string EncryptUri
         {
             get
             {
-                if (encrypturi.IsNullOrEmpty()) encrypturi = RSAEncrypt(uri);
-
+                if (encrypturi.IsNullOrEmpty())
+                {
+                    encrypturi = RSAEncrypt(uri);
+                }
                 return encrypturi;
             }
         }
@@ -50,38 +39,39 @@ namespace WindNight.RabbitMq
         /// <summary>
         ///     通道连接信息
         /// </summary>
-        private IModel Model
+        private async Task<IChannel> GetModelAsync()
         {
-            get
-            {
-                if (model == null)
-                    lock (lockObj)
-                    {
-                        if (model == null)
-                            CreateModel();
-                    }
+            if (model != null && model.IsOpen) return model;
 
-                return model;
+            await _modelLock.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                if (model == null || !model.IsOpen)
+                {
+                    await CreateModelAsync().ConfigureAwait(false);
+                }
             }
+            finally
+            {
+                _modelLock.Release();
+            }
+            return model;
         }
 
         /// <summary>
         ///     初始化通道
         /// </summary>
-        /// <returns></returns>
-        private void CreateModel()
+        private async Task CreateModelAsync()
         {
             basicLibrary = new BasicLibrary(uri);
-            model = basicLibrary.CreateProducerChannelByConfig(producerConfigInfo);
+            model = await basicLibrary.CreateProducerChannelByConfigAsync(producerConfigInfo).ConfigureAwait(false);
         }
+
+        #region 同步发送方法（保持接口兼容）
 
         /// <summary>
         ///     发送消息(不自动重试,不融断,实时返回发送结果)
         /// </summary>
-        /// <param name="message">消息</param>
-        /// <param name="routingKey">路由键</param>
-        /// <param name="isMessageDurable">消息是否持久化</param>
-        /// <returns>true=成功</returns>
         public bool SendWithNotRetry(string message, string routingKey, bool isMessageDurable = true)
         {
             var messageBodyBytes = CommonLibrary.BinarySerialize(message);
@@ -91,18 +81,12 @@ namespace WindNight.RabbitMq
         /// <summary>
         ///     发送消息(不自动重试,不融断,实时返回发送结果)
         /// </summary>
-        /// <param name="message">消息</param>
-        /// <param name="routingKey">路由键</param>
-        /// <param name="isMessageDurable">消息是否持久化</param>
-        /// <returns>true=成功</returns>
         public bool SendWithNotRetry(byte[] messageBodyBytes, string routingKey, bool isMessageDurable = true)
         {
             try
             {
-                var config = new BasicProperties { Durable = isMessageDurable };
-                var configInfo = CommonLibrary.CreateBasicProperties(Model, config);
-                Model.BasicPublish(producerConfigInfo.ExchangeName, routingKey, configInfo, messageBodyBytes);
-                return true;
+                var config = new BasicMqProperties { Durable = isMessageDurable };
+                return SendWithNotRetryInternalAsync(messageBodyBytes, routingKey, config).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
@@ -115,83 +99,228 @@ namespace WindNight.RabbitMq
         /// <summary>
         ///     发送消息
         /// </summary>
-        /// <param name="message">消息</param>
-        /// <param name="routingKey">路由键</param>
-        /// <param name="isMessageDurable">消息是否持久化</param>
-        /// <returns>true=成功</returns>
         public bool Send(string message, string routingKey, bool isMessageDurable = true)
         {
-            return Send(message, routingKey, new BasicProperties { Durable = isMessageDurable }, null);
+            return Send(message, routingKey, new BasicMqProperties { Durable = isMessageDurable }, null);
         }
 
         /// <summary>
         ///     发送消息
         /// </summary>
-        /// <param name="message">消息</param>
-        /// <param name="routingKey">路由键</param>
-        /// <param name="basicProperties">基础属性配置</param>
-        /// <returns>true=成功</returns>
-        public bool Send(string message, string routingKey, BasicProperties basicProperties)
+        public bool Send(string message, string routingKey, BasicMqProperties basicProperties)
         {
             return Send(message, routingKey, basicProperties, null);
         }
 
-        internal bool Send(string message, string routingKey, BasicProperties basicProperties,
+        internal bool Send(string message, string routingKey, BasicMqProperties basicProperties,
             MessageLocal messageLocal)
         {
             try
             {
-                var configInfo = basicProperties == null
-                    ? null
-                    : CommonLibrary.CreateBasicProperties(Model, basicProperties);
-                var messageBodyBytes = CommonLibrary.BinarySerialize(message);
-                Model.BasicPublish(producerConfigInfo.ExchangeName, routingKey, configInfo, messageBodyBytes);
-                //#endif
-
-                return true;
+                return SendInternalAsync(message, routingKey, basicProperties, messageLocal).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
-                var log = "";
-                if (spareProduce != null)
-                    log = $"发送失败:本次消息推送到中转服务处理 ExchangeName:{producerConfigInfo.ExchangeName},RoutingKey:{routingKey} ";
-                else
-                    log = $"发送失败:本次消息记录到本地临时文件 ExchangeName:{producerConfigInfo.ExchangeName},RoutingKey:{routingKey} ";
+                var log = spareProduce != null
+                    ? $"发送失败:本次消息推送到中转服务处理 ExchangeName:{producerConfigInfo.ExchangeName},RoutingKey:{routingKey} "
+                    : $"发送失败:本次消息记录到本地临时文件 ExchangeName:{producerConfigInfo.ExchangeName},RoutingKey:{routingKey} ";
 
                 LogHelper.Error(log, ex);
-
                 SaveException(message, routingKey, producerConfigInfo, messageLocal);
                 return false;
             }
         }
 
-        #region 加密
+        #endregion
 
-        private static string RSAEncrypt(string content)
+        #region 异步发送方法（推荐使用）
+
+        /// <summary>
+        ///     异步发送消息(不自动重试,不融断,实时返回发送结果)
+        /// </summary>
+        public async Task<bool> SendWithNotRetryAsync(string message, string routingKey, bool isMessageDurable = true)
         {
-            // read from config
-            var publicKey =
-                "BgIAAACkAABSU0ExAAQAAAEAAQDhywxiz16bJ1YSx187lNqNz8ltNXhpivkt2WJGEpraUvHKhdF6h5rcses7gxOhAAg38/ZZlZq26Ssm2v791c8+DZ0CAkDfGG7GwbVmV2k2hLU6IB0Owof2IroMvR2mBkxGMPRcOfk/3JMasY451oOo7t3XlHmvtpTcZTrMDMDNzw==";
-            return content.RSAEncrypt(publicKey);
-            //RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            //rsa.ImportCspBlob(Convert.FromBase64String(publicKey));
-            //byte[] cipherbytes = rsa.Encrypt(content.ToBytes(), false);
-            //return Convert.ToBase64String(cipherbytes);
+            var messageBodyBytes = CommonLibrary.BinarySerialize(message);
+            return await SendWithNotRetryAsync(messageBodyBytes, routingKey, isMessageDurable).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        ///     异步发送消息(不自动重试,不融断,实时返回发送结果)
+        /// </summary>
+        public async Task<bool> SendWithNotRetryAsync(byte[] messageBodyBytes, string routingKey, bool isMessageDurable = true)
+        {
+            try
+            {
+                var config = new BasicMqProperties { Durable = isMessageDurable };
+                return await SendWithNotRetryInternalAsync(messageBodyBytes, routingKey, config).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                var errLog = $"ExchangeName:{producerConfigInfo.ExchangeName},RoutingKey:{routingKey},发送失败";
+                LogHelper.Error(errLog, ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        ///     异步发送消息
+        /// </summary>
+        public async Task<bool> SendAsync(string message, string routingKey, bool isMessageDurable = true)
+        {
+            return await SendAsync(message, routingKey, new BasicMqProperties { Durable = isMessageDurable }, null).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        ///     异步发送消息
+        /// </summary>
+        public async Task<bool> SendAsync(string message, string routingKey, BasicMqProperties basicProperties)
+        {
+            return await SendAsync(message, routingKey, basicProperties, null).ConfigureAwait(false);
+        }
+
+        internal async Task<bool> SendAsync(string message, string routingKey, BasicMqProperties basicProperties,
+            MessageLocal messageLocal)
+        {
+            try
+            {
+                return await SendInternalAsync(message, routingKey, basicProperties, messageLocal).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                var log = spareProduce != null
+                    ? $"发送失败:本次消息推送到中转服务处理 ExchangeName:{producerConfigInfo.ExchangeName},RoutingKey:{routingKey} "
+                    : $"发送失败:本次消息记录到本地临时文件 ExchangeName:{producerConfigInfo.ExchangeName},RoutingKey:{routingKey} ";
+
+                LogHelper.Error(log, ex);
+                SaveException(message, routingKey, producerConfigInfo, messageLocal);
+                return false;
+            }
         }
 
         #endregion
 
-        public void Dispose()
+        #region 内部异步实现
+
+        private async Task<bool> SendWithNotRetryInternalAsync(byte[] messageBodyBytes, string routingKey, BasicMqProperties config)
         {
-            //退出修复线程
-            breakRepairLoop = true;
+            var currentModel = await GetModelAsync().ConfigureAwait(false);
+            var configInfo = CommonLibrary.CreateBasicProperties(currentModel, config);
+
+            await currentModel.BasicPublishAsync(
+                exchange: producerConfigInfo.ExchangeName,
+                routingKey: routingKey,
+                mandatory: false,
+                basicProperties: configInfo,
+                body: messageBodyBytes
+            ).ConfigureAwait(false);
+
+            return true;
+        }
+
+        private async Task<bool> SendInternalAsync(string message, string routingKey, BasicMqProperties basicProperties,
+            MessageLocal messageLocal)
+        {
+            var currentModel = await GetModelAsync().ConfigureAwait(false);
+            var configInfo = basicProperties == null
+                ? null
+                : CommonLibrary.CreateBasicProperties(currentModel, basicProperties);
+            var messageBodyBytes = CommonLibrary.BinarySerialize(message);
+
+            await currentModel.BasicPublishAsync(
+                exchange: producerConfigInfo.ExchangeName,
+                routingKey: routingKey,
+                mandatory: false,
+                basicProperties: configInfo,
+                body: messageBodyBytes
+            ).ConfigureAwait(false);
+
+            return true;
+        }
+
+        #endregion
+
+        #region 加密
+
+        private static string RSAEncrypt(string content)
+        {
+            var publicKey =
+                "BgIAAACkAABSU0ExAAQAAAEAAQDhywxiz16bJ1YSx187lNqNz8ltNXhpivkt2WJGEpraUvHKhdF6h5rcses7gxOhAAg38/ZZlZq26Ssm2v791c8+DZ0CAkDfGG7GwbVmV2k2hLU6IB0Owof2IroMvR2mBkxGMPRcOfk/3JMasY451oOo7t3XlHmvtpTcZTrMDMDNzw==";
+            return content.RSAEncrypt(publicKey);
+        }
+
+        #endregion
+
+        #region 构造函数与资源释放
+
+        ~Producer()
+        {
+            Dispose();
         }
 
         /// <summary>
-        ///     释放资源
+        ///     生产者初始化
         /// </summary>
+        /// <param name="uri">amqp地址</param>
+        /// <param name="producerConfigInfo">生产者配置信息</param>
+        /// <param name="messageWrapper">消息包装器</param>
+        public Producer(string uri, ProducerConfigInfo producerConfigInfo, IMessageWrapper messageWrapper = null)
+        {
+            if (producerConfigInfo.FileName.IsNullOrEmpty())
+            {
+                producerConfigInfo.FileName = producerConfigInfo.ExchangeName;
+            }
+
+            this.uri = uri;
+            lockObj = new object();
+            this.producerConfigInfo = producerConfigInfo;
+            wrapper = new DefaultMessageWrapper(producerConfigInfo.FileName);
+            LoopRepairException();
+
+            if (!producerConfigInfo.SpareMqUri.IsNullOrEmpty())
+            {
+                if (producerConfigInfo.SpareExchangeName.IsNullOrEmpty() ||
+                    producerConfigInfo.SpareRoutingKey.IsNullOrEmpty())
+                {
+                    throw new ArgumentNullException("SpareExchangeName or SpareRoutingKey can not be empty");
+                }
+
+                spareProduce = new Producer(producerConfigInfo.SpareMqUri,
+                    new ProducerConfigInfo
+                    {
+                        ExchangeDurable = true,
+                        ExchangeName = producerConfigInfo.SpareExchangeName,
+                        ExchangeTypeCode = ExchangeTypeCodeEnum.Topic,
+                        FileName = $"{producerConfigInfo.ExchangeName}_{producerConfigInfo.SpareExchangeName}"
+                    });
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            breakRepairLoop = true;
+            DisposeResource();
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_disposed) return;
+            breakRepairLoop = true;
+            await DisposeResourceAsync().ConfigureAwait(false);
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
         private void DisposeResource()
         {
+            try
+            {
+                loopRepairExceptionThread?.Join(TimeSpan.FromSeconds(5));
+            }
+            catch { }
+
             if (basicLibrary != null)
             {
                 try
@@ -202,7 +331,6 @@ namespace WindNight.RabbitMq
                 {
                     LogHelper.Error("basicLibrary.Dispose()", ex);
                 }
-
                 basicLibrary = null;
             }
 
@@ -216,155 +344,134 @@ namespace WindNight.RabbitMq
                 {
                     LogHelper.Error("wrapper.Dispose()", ex);
                 }
-
                 wrapper = null;
             }
+
+            _modelLock?.Dispose();
         }
 
-        #region 构造函数
-
-        ~Producer()
+        private async ValueTask DisposeResourceAsync()
         {
-            Dispose();
-            GC.Collect();
-        }
-
-        /// <summary>
-        ///     生产者初始化
-        /// </summary>
-        /// <param name="uri">amqp地址</param>
-        /// <param name="producerConfigInfo">生产者配置信息</param>
-        /// <param name="messageWrapper"> 消息包装器 </param>
-        public Producer(string uri, ProducerConfigInfo producerConfigInfo, IMessageWrapper messageWrapper = null)
-        {
-            if (producerConfigInfo.FileName.IsNullOrEmpty())
-                producerConfigInfo.FileName = producerConfigInfo.ExchangeName;
-            this.uri = uri;
-            lockObj = new object();
-
-            this.producerConfigInfo = producerConfigInfo;
-            wrapper = new DefaultMessageWrapper(producerConfigInfo.FileName);
-            LoopRepairException();
-
-
-            if (!producerConfigInfo.SpareMqUri.IsNullOrEmpty())
+            try
             {
-                if (producerConfigInfo.SpareExchangeName.IsNullOrEmpty() ||
-                    producerConfigInfo.SpareRoutingKey.IsNullOrEmpty())
-                    throw new ArgumentNullException("SpareExchangeName or SpareRoutingKey can not be empty");
-
-                spareProduce = new Producer(producerConfigInfo.SpareMqUri, new ProducerConfigInfo
-                {
-                    ExchangeDurable = true,
-                    ExchangeName = producerConfigInfo.SpareExchangeName,
-                    ExchangeTypeCode = ExchangeTypeCodeEnum.Topic,
-                    FileName = $"{producerConfigInfo.ExchangeName}_{producerConfigInfo.SpareExchangeName}",
-                });
+                if (loopRepairExceptionThread?.IsAlive == true)
+                    loopRepairExceptionThread.Join(TimeSpan.FromSeconds(5));
             }
+            catch { }
+
+            if (basicLibrary != null)
+            {
+                try
+                {
+                    await basicLibrary.DisposeAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error("basicLibrary.DisposeAsync()", ex);
+                }
+                basicLibrary = null;
+            }
+
+            if (wrapper != null)
+            {
+                try
+                {
+                    wrapper.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error("wrapper.Dispose()", ex);
+                }
+                wrapper = null;
+            }
+
+            _modelLock?.Dispose();
         }
 
         #endregion
 
-
         #region 异常数据处理
 
-        /// <summary>
-        ///     检查本地消息
-        /// </summary>
-        /// <param name="messageLocal"></param>
-        /// <returns></returns>
         private bool CheckLocalMessage(MessageLocal messageLocal, IMessageWrapper wrapper)
         {
-            if (messageLocal.NeedGiveUp) return false;
-
-            return true;
+            return !messageLocal.NeedGiveUp;
         }
 
-        /// <summary>
-        ///     开始循环修复异常
-        /// </summary>
         private void LoopRepairException()
         {
             loopRepairExceptionThread = new Thread(p =>
             {
                 var sleepTicks = 1;
                 var sender = (Producer)p;
-                while (true)
+
+                while (!breakRepairLoop)
+                {
                     try
                     {
-                        if (breakRepairLoop) break;
-
-                        var localFile = false; //本地存在文件
-                        var repairCount = 0; //修复数量
+                        var localFile = false;
+                        var repairCount = 0;
                         MessageLocal msgLocal;
 
                         while ((msgLocal = sender.wrapper.ReadLine()) != null)
                         {
                             localFile = true;
 
-                            if (!CheckLocalMessage(msgLocal, sender.wrapper)) //丢弃消息
+                            if (!CheckLocalMessage(msgLocal, sender.wrapper))
+                            {
                                 continue;
+                            }
 
                             if (!sender.Send(msgLocal.Message, msgLocal.RoutingKey, null, msgLocal))
+                            {
                                 break;
+                            }
 
                             repairCount++;
                             Thread.Sleep(1);
                         }
 
-                        //异常或者没有修复数据的时候，叠加延时
-                        //修复数量
-                        if (repairCount > 0)
-                        {
-                            sleepTicks = 1;
-                        }
-                        else if (localFile) //存在本地文件
-                        {
-                            if (sleepTicks < 10)
-                                sleepTicks++;
-                        }
-                        else //不存在本地文件
-                        {
-                            if (sleepTicks < 20)
-                                sleepTicks++;
-                        }
+                        sleepTicks = repairCount > 0 ? 1 :
+                            localFile ? Math.Min(sleepTicks + 1, 10) : Math.Min(sleepTicks + 1, 20);
 
                         if (repairCount > 0)
+                        {
                             RecordLog.Debug($"修复线程: {sender.producerConfigInfo.ExchangeName} 修复本地文件数量:{repairCount}");
+                        }
 
                         RecordLog.Debug($"修复线程: {sender.producerConfigInfo.ExchangeName} 延时:{sleepTicks}秒");
                         Thread.Sleep(sleepTicks * 1000);
                     }
-                    catch (ThreadAbortException ex)
+                    catch (ThreadAbortException)
                     {
                         breakRepairLoop = true;
-                        LogHelper.Error("LoopRepairException:ThreadAbortException", ex);
                     }
                     catch (Exception ex)
                     {
                         LogHelper.Error("LoopRepairException", ex);
                     }
+                }
 
-                if (breakRepairLoop) DisposeResource();
+                if (breakRepairLoop)
+                {
+                    DisposeResource();
+                }
             });
             loopRepairExceptionThread.Start(this);
         }
 
-        /// <summary>
-        ///     临时存储异常时的消息
-        /// </summary>
         private void SaveException(string message, string routingKey, ProducerConfigInfo producerConfigInfo,
             MessageLocal messageLocal)
         {
             if (spareProduce != null)
+            {
                 SaveExceptionSpareProcess(message, routingKey, producerConfigInfo);
+            }
             else
+            {
                 SaveExceptionLocalFile(message, routingKey, producerConfigInfo, messageLocal);
+            }
         }
 
-        /// <summary>
-        ///     处理异常
-        /// </summary>
         private void SaveExceptionSpareProcess(string message, string routingKey, ProducerConfigInfo producerConfigInfo)
         {
             var msg = new
@@ -372,18 +479,11 @@ namespace WindNight.RabbitMq
                 Exchange = producerConfigInfo.ExchangeName,
                 RoutingKey = routingKey,
                 Msg = message,
-                Uri = EncryptUri,
+                Uri = EncryptUri
             }.ToJsonStr();
             spareProduce.Send(msg, producerConfigInfo.SpareRoutingKey);
         }
 
-        /// <summary>
-        ///     保存本地文件
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="routingKey"></param>
-        /// <param name="producerConfigInfo"></param>
-        /// <param name="basicProperties"></param>
         private void SaveExceptionLocalFile(string message, string routingKey, ProducerConfigInfo producerConfigInfo,
             MessageLocal messageLocal)
         {
@@ -396,7 +496,7 @@ namespace WindNight.RabbitMq
                     RoutingKey = routingKey,
                     IsEncrypt = true,
                     CreateTime = now.ConvertToUnixTime(),
-                    ProducerConfigInfo = producerConfigInfo,
+                    ProducerConfigInfo = producerConfigInfo
                 };
 
                 if (messageLocal != null)
@@ -414,7 +514,7 @@ namespace WindNight.RabbitMq
                 var errLog =
                     $"保存本地文件异常 ExchangeName:{producerConfigInfo.ExchangeName},RoutingKey:{routingKey},Message:{message}";
                 LogHelper.Error(errLog, ex);
-                throw ex;
+                throw;
             }
         }
 

@@ -5,44 +5,48 @@ using WindNight.RabbitMq.Abstractions;
 
 namespace WindNight.RabbitMq.@internal
 {
+
     internal class CommonLibrary
     {
         /// <summary>
         ///     创建消息基础属性
         /// </summary>
-        /// <param name="model">通道</param>
+        /// <param name="channel">通道</param>
         /// <param name="configInfo">消息基础属性</param>
         /// <returns></returns>
-        public static IBasicProperties CreateBasicProperties(IModel model, BasicProperties configInfo)
+        public static BasicProperties CreateBasicProperties(IChannel channel, BasicMqProperties configInfo)
         {
-            var basicProperties = model.CreateBasicProperties();
-            if (configInfo.AppID != string.Empty)
+            var basicProperties = new BasicProperties(); // RabbitMQ.Client 7.x 中直接创建
+
+            if (configInfo.AppId.IsNotNullOrEmpty())
             {
-                basicProperties.AppId = configInfo.AppID;
+                basicProperties.AppId = configInfo.AppId;
             }
 
-            if (configInfo.ClusterID != string.Empty)
+            if (configInfo.ClusterId.IsNotNullOrEmpty())
             {
-                basicProperties.ClusterId = configInfo.ClusterID;
+                basicProperties.ClusterId = configInfo.ClusterId;
             }
 
-            if (configInfo.ContentEncoding != string.Empty)
+            if (configInfo.ContentEncoding.IsNotNullOrEmpty())
             {
                 basicProperties.ContentEncoding = configInfo.ContentEncoding;
             }
 
-            if (configInfo.ContentType != string.Empty)
+            if (configInfo.ContentType.IsNotNullOrEmpty())
             {
                 basicProperties.ContentType = configInfo.ContentType;
             }
 
-            if (configInfo.CorrelationID != string.Empty)
+            if (configInfo.CorrelationId.IsNotNullOrEmpty())
             {
-                basicProperties.CorrelationId = configInfo.CorrelationID;
+                basicProperties.CorrelationId = configInfo.CorrelationId;
             }
 
-            basicProperties.DeliveryMode = configInfo.Durable ? Convert.ToByte(2) : Convert.ToByte(1);
-            if (configInfo.Expiration > 0)
+            basicProperties.DeliveryMode = configInfo.Durable ? (DeliveryModes.Persistent) : (DeliveryModes.Transient);
+
+
+            if (configInfo.Expiration >0)
             {
                 basicProperties.Expiration = configInfo.Expiration.ToString();
             }
@@ -52,9 +56,9 @@ namespace WindNight.RabbitMq.@internal
                 basicProperties.Headers = configInfo.Headers;
             }
 
-            if (configInfo.MessageID != string.Empty)
+            if (configInfo.MessageId.IsNotNullOrEmpty())
             {
-                basicProperties.MessageId = configInfo.MessageID;
+                basicProperties.MessageId = configInfo.MessageId;
             }
 
             if (configInfo.Priority != -1)
@@ -62,7 +66,7 @@ namespace WindNight.RabbitMq.@internal
                 basicProperties.Priority = Convert.ToByte(configInfo.Priority);
             }
 
-            if (configInfo.ReplyTo != string.Empty)
+            if (configInfo.ReplyTo.IsNotNullOrEmpty())
             {
                 basicProperties.ReplyTo = configInfo.ReplyTo;
             }
@@ -72,14 +76,14 @@ namespace WindNight.RabbitMq.@internal
                 basicProperties.Timestamp = new AmqpTimestamp(configInfo.Timestamp);
             }
 
-            if (configInfo.Type != string.Empty)
+            if (configInfo.Type.IsNotNullOrEmpty())
             {
                 basicProperties.Type = configInfo.Type;
             }
 
-            if (configInfo.UserID != string.Empty)
+            if (configInfo.UserId.IsNotNullOrEmpty())
             {
-                basicProperties.UserId = configInfo.UserID;
+                basicProperties.UserId = configInfo.UserId;
             }
 
             return basicProperties;
@@ -89,14 +93,15 @@ namespace WindNight.RabbitMq.@internal
         ///     序列化成byte[]
         /// </summary>
         /// <returns></returns>
-        public static byte[] BinarySerialize(string message_string)
+        public static byte[] BinarySerialize(string messageString)
         {
-            if (message_string.IsNullOrEmpty())
+            if (messageString.IsNullOrEmpty())
             {
-                return null;
+                return HardInfo.EmptyArrayList<byte>();
             }
 
-            return message_string.ToBytes();
+            return messageString.ToBytes(Encoding.UTF8);
+            // return Encoding.UTF8.GetBytes(messageString);
         }
 
         /// <summary>
@@ -105,12 +110,13 @@ namespace WindNight.RabbitMq.@internal
         /// <returns></returns>
         public static string BinaryDeserialize(byte[] bytes)
         {
-            if (bytes.IsNullOrEmpty())
+            if (bytes == null || bytes.Length == 0)
             {
-                return null;
+                return "";
             }
 
-            return bytes.ToGetString();
+            return bytes.ToGetString(Encoding.UTF8);
+            //return Encoding.UTF8.GetString(bytes);
         }
     }
 }

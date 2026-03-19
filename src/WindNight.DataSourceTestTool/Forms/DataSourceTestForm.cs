@@ -416,7 +416,7 @@ namespace WindNight.DataSourceTestTool.Forms
             var consumer = new Consumer(amqpUrl, new ConsumerConfigInfo { QueueName = queueName, });
             // using (var consumer = new Consumer(amqpUrl, new ConsumerConfigInfo { QueueName = queueName }))
             // {
-            AppendLine(tb_Output, $"IsChannelOpen: {consumer.IsChannelOpen}");
+            AppendLine(tb_Output, $"IsChannelOpen: {consumer.IsChannelOpen()}");
 
             int loop = 0;
             bool isAck = false;
@@ -477,7 +477,7 @@ namespace WindNight.DataSourceTestTool.Forms
 
             try
             {
-                consumer.Dispose();
+               // consumer.Dispose();
                 AppendLine(tb_Output, $"consumer.Dispose() Success!");
 
             }
@@ -536,7 +536,7 @@ namespace WindNight.DataSourceTestTool.Forms
                 ExchangeTypeCode = "topic"
             });
 
-            AppendLine(tb_Output, $"IsChannelOpen: {producer.IsChannelOpen}");
+            AppendLine(tb_Output, $"IsChannelOpen: {producer.IsChannelOpen()}");
             try
             {
                 producer.Send(SendMsg, RoutingKey, true);

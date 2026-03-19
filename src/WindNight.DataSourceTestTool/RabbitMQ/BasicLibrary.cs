@@ -1,80 +1,204 @@
-﻿using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using RabbitMQ.Client;
 
 namespace WindNight.DataSourceTestTool.RabbitMQ
 {
-    internal class BasicLibrary : IDisposable
+     
+
+    internal class BasicLibrary : IAsyncDisposable, IDisposable
     {
-        private Uri uri;
-        private ushort requestedHeartbeat = 30;
-        private ConnectionFactory factory;
-        private IConnection conn;
-        private IModel channel;
+        private IChannel _channel;
+        private IConnection _connection;
+        private ConnectionFactory _factory;
+        private readonly ushort _requestedHeartbeat = 30;
+        private readonly Uri _uri;
+        private readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(1, 1);
+        private bool _disposed;
 
-        public BasicLibrary(string uri) => this.uri = new Uri(uri);
-
-        public bool IsAlive => this.conn != null && this.conn.IsOpen;
-
-        private ConnectionFactory CreateFactory()
+        public BasicLibrary(string uri)
         {
-            if (this.factory == null)
-            {
-                this.factory = new ConnectionFactory();
-                if (this.requestedHeartbeat > (ushort)0)
-                    this.factory.RequestedHeartbeat = TimeSpan.FromSeconds(this.requestedHeartbeat);
-                this.factory.Uri = (this.uri);
-            }
-            return this.factory;
+            _uri = new Uri(uri);
         }
 
-        private IConnection CreateConnection()
+        public async Task<bool> IsAliveAsync()
         {
-            if (this.conn == null || !this.conn.IsOpen)
-                this.conn = this.CreateFactory().CreateConnection();
-            return this.conn;
+            return _connection != null && _connection.IsOpen;
         }
 
-        private IModel CreateChannel()
-        {
-            if (this.channel == null || !this.channel.IsOpen)
-            {
-                this.channel = this.CreateConnection().CreateModel();
-                //    this.conn.AutoClose = false;
-            }
-            return this.channel;
-        }
-
-        public IModel CreateConsumerChannelByConfig(ConsumerConfigInfo consumerConfigInfo)
-        {
-            IModel channel = this.CreateChannel();
-            channel.QueueDeclare(consumerConfigInfo.QueueName, consumerConfigInfo.QueueDurable, false, false, (IDictionary<string, object>)null);
-            return channel;
-        }
-
-        public IModel CreateProducerChannelByConfig(ProducerConfigInfo producerConfigInfo)
-        {
-            IModel channel = this.CreateChannel();
-            IModelExensions.ExchangeDeclare(channel, producerConfigInfo.ExchangeName, producerConfigInfo.ExchangeTypeCode, producerConfigInfo.ExchangeDurable, false, (IDictionary<string, object>)null);
-            return channel;
-        }
+        #region 资源释放
 
         public void Dispose()
         {
+            if (_disposed) return;
+
             try
             {
-                if (this.channel != null)
-                    ((IDisposable)this.channel).Dispose();
-                if (this.conn == null)
-                    return;
-                ((IDisposable)this.conn).Dispose();
+                _channel?.Dispose();
+                _connection?.Dispose();
+                _connectionLock?.Dispose();
             }
             catch (Exception ex)
             {
                 //RecordLog.WriteLog("BasicLibrary Dispose ", "", "", "", ex);
             }
+            finally
+            {
+                _disposed = true;
+            }
+            GC.SuppressFinalize(this);
         }
 
-        ~BasicLibrary() => this.Dispose();
+        public async ValueTask DisposeAsync()
+        {
+            if (_disposed) return;
+
+            try
+            {
+                if (_channel != null)
+                {
+                    await _channel.DisposeAsync().ConfigureAwait(false);
+                    _channel = null;
+                }
+
+                if (_connection != null)
+                {
+                    await _connection.DisposeAsync().ConfigureAwait(false);
+                    _connection = null;
+                }
+
+                _connectionLock?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                //RecordLog.WriteLog("BasicLibrary DisposeAsync ", "", "", "", ex);
+            }
+            finally
+            {
+                _disposed = true;
+            }
+            GC.SuppressFinalize(this);
+        }
+
+        ~BasicLibrary()
+        {
+            Dispose();
+        }
+
+        #endregion
+
+        #region 工厂和连接创建
+
+        private ConnectionFactory CreateFactory()
+        {
+            if (_factory == null)
+            {
+                _factory = new ConnectionFactory
+                {
+                    Uri = _uri,
+                    AutomaticRecoveryEnabled = true,
+                    NetworkRecoveryInterval = TimeSpan.FromSeconds(5),
+                    TopologyRecoveryEnabled = true,
+                    ConsumerDispatchConcurrency = 1 // 保持消息顺序
+                };
+
+                if (_requestedHeartbeat > 0)
+                {
+                    _factory.RequestedHeartbeat = TimeSpan.FromSeconds(_requestedHeartbeat);
+                }
+            }
+
+            return _factory;
+        }
+
+        private async Task<IConnection> CreateConnectionAsync()
+        {
+            if (_connection != null && _connection.IsOpen) return _connection;
+
+            await _connectionLock.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                if (_connection == null || !_connection.IsOpen)
+                {
+                    _connection = await CreateFactory().CreateConnectionAsync().ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                _connectionLock.Release();
+            }
+
+            return _connection;
+        }
+
+        private async Task<IChannel> CreateChannelAsync()
+        {
+            if (_channel != null && _channel.IsOpen) return _channel;
+
+            var connection = await CreateConnectionAsync().ConfigureAwait(false);
+            _channel = await connection.CreateChannelAsync().ConfigureAwait(false);
+
+            return _channel;
+        }
+
+        #endregion
+
+        #region 公共方法
+
+        /// <summary>
+        /// 创建消费者通道
+        /// </summary>
+        public async Task<IChannel> CreateConsumerChannelByConfigAsync(ConsumerConfigInfo consumerConfigInfo)
+        {
+            var channel = await CreateChannelAsync().ConfigureAwait(false);
+
+            await channel.QueueDeclareAsync(
+                queue: consumerConfigInfo.QueueName,
+                durable: consumerConfigInfo.QueueDurable,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null
+            ).ConfigureAwait(false);
+
+            return channel;
+        }
+
+        /// <summary>
+        /// 创建生产者通道
+        /// </summary>
+        public async Task<IChannel> CreateProducerChannelByConfigAsync(ProducerConfigInfo producerConfigInfo)
+        {
+            var channel = await CreateChannelAsync().ConfigureAwait(false);
+
+            await channel.ExchangeDeclareAsync(
+                exchange: producerConfigInfo.ExchangeName,
+                type: producerConfigInfo.ExchangeTypeCode.ToString().ToLower(),
+                durable: producerConfigInfo.ExchangeDurable,
+                autoDelete: false,
+                arguments: null
+            ).ConfigureAwait(false);
+
+            return channel;
+        }
+
+        #endregion
+
+        #region 同步方法兼容（不推荐使用）
+
+        [Obsolete("请使用异步方法 CreateConsumerChannelByConfigAsync")]
+        public IChannel CreateConsumerChannelByConfig(ConsumerConfigInfo consumerConfigInfo)
+        {
+            return CreateConsumerChannelByConfigAsync(consumerConfigInfo).GetAwaiter().GetResult();
+        }
+
+        [Obsolete("请使用异步方法 CreateProducerChannelByConfigAsync")]
+        public IChannel CreateProducerChannelByConfig(ProducerConfigInfo producerConfigInfo)
+        {
+            return CreateProducerChannelByConfigAsync(producerConfigInfo).GetAwaiter().GetResult();
+        }
+
+        #endregion
     }
 }

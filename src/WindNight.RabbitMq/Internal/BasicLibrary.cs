@@ -1,54 +1,101 @@
-using System;
 using RabbitMQ.Client;
 using WindNight.RabbitMq.Abstractions;
 
 namespace WindNight.RabbitMq.@internal
 {
-    internal class BasicLibrary : IDisposable
+    internal class BasicLibrary : IAsyncDisposable, IDisposable
     {
-        /// <summary>
-        ///     心跳包60秒一次
-        /// </summary>
         private readonly ushort requestedHeartbeat = 30;
-
         private readonly Uri uri;
+        private IChannel _channel;
+        private IConnection _connection;
+        private bool _disposed;
+        private ConnectionFactory _factory;
 
         public BasicLibrary(string uri)
         {
             this.uri = new Uri(uri);
         }
 
+        public async ValueTask DisposeAsync()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            try
+            {
+                if (_channel != null)
+                {
+                    try
+                    {
+                        if (_channel.IsOpen)
+                        {
+                            await _channel.CloseAsync().ConfigureAwait(false);
+                        }
+
+                        await _channel.DisposeAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.Error("channel.DisposeAsync()", ex);
+                    }
+
+                    _channel = null;
+                }
+
+                if (_connection != null)
+                {
+                    try
+                    {
+                        if (_connection.IsOpen)
+                        {
+                            await _connection.CloseAsync().ConfigureAwait(false);
+                        }
+
+                        await _connection.DisposeAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.Error("connection.DisposeAsync()", ex);
+                    }
+
+                    _connection = null;
+                }
+            }
+            finally
+            {
+                _disposed = true;
+            }
+
+            GC.SuppressFinalize(this);
+        }
+
         public void Dispose()
         {
-            if (_model != null)
+            if (_disposed)
             {
-                try
-                {
-                    _model.Dispose();
-                    _model.Close();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error("model.Dispose()", ex);
-                }
-
-                _model = null;
+                return;
             }
 
-            if (conn != null)
+            try
             {
-                try
-                {
-                    conn.Dispose();
-                    conn.Close();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error("conn.Dispose() ", ex);
-                }
-
-                conn = null;
+                _channel?.CloseAsync().GetAwaiter().GetResult();
+                _channel?.Dispose();
+                _connection?.CloseAsync().GetAwaiter().GetResult();
+                _connection?.Dispose();
             }
+            catch (Exception ex)
+            {
+                LogHelper.Error("Dispose error", ex);
+            }
+            finally
+            {
+                _disposed = true;
+            }
+
+            GC.SuppressFinalize(this);
         }
 
         ~BasicLibrary()
@@ -56,80 +103,73 @@ namespace WindNight.RabbitMq.@internal
             Dispose();
         }
 
-        #region 通道创建
-
-        private ConnectionFactory factory;
-        private IConnection conn;
-        private IModel _model;
-
-        /// <summary>
-        ///     创建链接工厂(ConnectionFactory)
-        /// </summary>
-        /// <returns></returns>
         private ConnectionFactory CreateFactory()
         {
-            if (factory == null)
+            if (_factory == null)
             {
-                factory = new ConnectionFactory();
-                if (requestedHeartbeat > 0)
-                    factory.RequestedHeartbeat = TimeSpan.FromSeconds(requestedHeartbeat);
-
-                factory.AutomaticRecoveryEnabled = true;
-
-                factory.Uri = uri;
+                _factory = new ConnectionFactory
+                {
+                    Uri = uri,
+                    AutomaticRecoveryEnabled = true,
+                    NetworkRecoveryInterval = TimeSpan.FromSeconds(5),
+                    ConsumerDispatchConcurrency = 1, // 保持消息顺序
+                    TopologyRecoveryEnabled = true,
+                    RequestedHeartbeat = TimeSpan.FromSeconds(requestedHeartbeat)
+                };
             }
 
-            return factory;
+            return _factory;
         }
 
-        /// <summary>
-        ///     创建链接(Connection)
-        /// </summary>
-        /// <returns></returns>
-        private IConnection CreateConnection()
+        private async Task<IConnection> CreateConnectionAsync()
         {
-            if (conn == null || !conn.IsOpen)
-                conn = CreateFactory().CreateConnection();
-            // conn.AutoClose = false;
-            return conn;
+            if (_connection == null || !_connection.IsOpen)
+            {
+                _connection = await CreateFactory().CreateConnectionAsync().ConfigureAwait(false);
+            }
+
+            return _connection;
         }
 
-        /// <summary>
-        ///     创建通道(Model)
-        /// </summary>
-        /// <returns></returns>
-        private IModel CreateModel()
+        private async Task<IChannel> CreateChannelAsync()
         {
-            if (_model == null || !_model.IsOpen) _model = CreateConnection().CreateModel();
-            return _model;
+            if (_channel == null || !_channel.IsOpen)
+            {
+                var connection = await CreateConnectionAsync().ConfigureAwait(false);
+                _channel = await connection.CreateChannelAsync().ConfigureAwait(false);
+            }
+
+            return _channel;
         }
 
-        /// <summary>
-        ///     通过消费者配置创建通道
-        /// </summary>
-        /// <param name="consumerConfigInfo"></param>
-        /// <returns></returns>
-        public IModel CreateConsumerChannelByConfig(ConsumerConfigInfo consumerConfigInfo)
+        public async Task<IChannel> CreateConsumerChannelByConfigAsync(ConsumerConfigInfo consumerConfigInfo)
         {
-            var model = CreateModel();
-            model.QueueDeclare(consumerConfigInfo.QueueName, consumerConfigInfo.QueueDurable, false, false, null);
-            return model;
+            var channel = await CreateChannelAsync().ConfigureAwait(false);
+
+            await channel.QueueDeclareAsync(
+                consumerConfigInfo.QueueName,
+                consumerConfigInfo.QueueDurable,
+                false,
+                false,
+                null
+            ).ConfigureAwait(false);
+
+            return channel;
         }
 
-        /// <summary>
-        ///     通过生产者配置创建通道
-        /// </summary>
-        /// <param name="producerConfigInfo"></param>
-        /// <returns></returns>
-        public IModel CreateProducerChannelByConfig(ProducerConfigInfo producerConfigInfo)
+        public async Task<IChannel> CreateProducerChannelByConfigAsync(ProducerConfigInfo producerConfigInfo)
         {
-            var model = CreateModel();
-            model.ExchangeDeclare(producerConfigInfo.ExchangeName,
+            var channel = await CreateChannelAsync().ConfigureAwait(false);
+
+            await channel.ExchangeDeclareAsync(
+                producerConfigInfo.ExchangeName,
                 producerConfigInfo.ExchangeTypeCode.ToString().ToLower(),
-                producerConfigInfo.ExchangeDurable);
-            return model;
-        }
+                producerConfigInfo.ExchangeDurable,
+                false,
+                null
+            ).ConfigureAwait(false);
 
-        #endregion
+            return channel;
+        }
     }
 }

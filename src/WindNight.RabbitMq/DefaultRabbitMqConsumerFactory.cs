@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Concurrent;
 using WindNight.RabbitMq.Abstractions;
 
@@ -6,10 +5,6 @@ namespace WindNight.RabbitMq
 {
     public class DefaultRabbitMqConsumerFactory : IRabbitMqConsumerFactory, IDisposable
     {
-        public static string CurrentVersion => BuildInfo.BuildVersion;
-
-        public static string CurrentCompileTime => BuildInfo.BuildTime;
-
         private static readonly object objectLock = new();
 
         private readonly ConcurrentDictionary<string, IRabbitMqConsumer> ConsumerDict = new();
@@ -21,6 +16,10 @@ namespace WindNight.RabbitMq
                 ConsumerDict = new ConcurrentDictionary<string, IRabbitMqConsumer>();
             }
         }
+
+        public static string CurrentVersion => BuildInfo.BuildVersion;
+
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
 
 
         public void Dispose()

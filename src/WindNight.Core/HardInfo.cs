@@ -19,7 +19,7 @@ namespace System
 
         public static IEnumerable<T> EmptyList<T>() => Enumerable.Empty<T>();
 
-        public static T[] ArrayList<T>() => Array.Empty<T>();
+        public static T[] EmptyArrayList<T>() => Array.Empty<T>();
 
         public static IPagedList<T> EmptyPagedList<T>() => PagedList.Empty<T>();
 

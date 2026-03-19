@@ -1,8 +1,6 @@
-using System;
 using System.Security.Cryptography.Extensions;
 using System.Text;
-using System.Threading;
-using Newtonsoft.Json.Extension;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using WindNight.Core.Tools;
 using WindNight.RabbitMq.Abstractions;
@@ -12,231 +10,312 @@ namespace WindNight.RabbitMq
 {
     public class DefaultRabbitMqConsumer : Consumer, IRabbitMqConsumer
     {
-        public static string CurrentVersion => BuildInfo.BuildVersion;
-
-        public static string CurrentCompileTime => BuildInfo.BuildTime;
-
         public DefaultRabbitMqConsumer(IRabbitMqConsumerSettings settings) :
             base(settings.RabbitMqUrl,
                 new ConsumerConfigInfo
                 {
                     QueueName = settings.QueueName,
                     PrefetchCount = settings.PrefetchCount,
-                    QueueDurable = settings.QueueDurable,
+                    QueueDurable = settings.QueueDurable
                 })
         {
             Settings = settings;
         }
 
+        public static string CurrentVersion => BuildInfo.BuildVersion;
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
+
         private IRabbitMqConsumerSettings Settings { get; set; }
 
-        /// <inheritdoc />
         public bool SyncMqConsumerSettings(IRabbitMqConsumerSettings settings)
         {
             Settings = settings;
-
             return true;
         }
 
+        #region ExecuteReceiveMsg 同步实现
 
-        #region ExecuteReceiveMsg
-
-        /// <inheritdoc />
-        public virtual void ExecuteReceiveMsg(Func<string, ulong, string, string, bool> func)
+        public void ExecuteReceiveMsg(Func<string, ulong, string, string, bool> func)
         {
-            ReceiveMessageAndExecFunc(func.Invoke);
+            Task.Run(async () =>
+                await ReceiveMessageLoopAsync(async (m, d, r, md5) => await Task.FromResult(func(m, d, r, md5))
+                )).GetAwaiter().GetResult();
         }
 
-        /// <inheritdoc />
-        public virtual void ExecuteReceiveMsg(Func<string, ulong, string, bool> func)
+        public void ExecuteReceiveMsg(Func<string, ulong, string, bool> func)
         {
-            ReceiveMessageAndExecFunc((message, deliveryTag, routingKey, messageMd5) =>
-                func.Invoke(message, deliveryTag, routingKey));
+            Task.Run(async () =>
+                await ReceiveMessageLoopAsync(async (m, d, r, md5) => await Task.FromResult(func(m, d, r))
+                )).GetAwaiter().GetResult();
         }
 
-        /// <inheritdoc />
-        public virtual void ExecuteReceiveMsg(Func<string, ulong, bool> func)
+        public void ExecuteReceiveMsg(Func<string, ulong, bool> func)
         {
-            ReceiveMessageAndExecFunc((message, deliveryTag, routingKey, messageMd5) =>
-                func.Invoke(message, deliveryTag));
+            Task.Run(async () => await ReceiveMessageLoopAsync(async (m, d, r, md5) => await Task.FromResult(func(m, d))
+            )).GetAwaiter().GetResult();
         }
 
-        /// <inheritdoc />
-        public virtual void ExecuteReceiveMsg(Func<string, string, bool> func)
+        public void ExecuteReceiveMsg(Func<string, string, bool> func)
         {
-            ReceiveMessageAndExecFunc(
-                (message, deliveryTag, routingKey, messageMd5) => func.Invoke(message, messageMd5));
+            Task.Run(async () =>
+                await ReceiveMessageLoopAsync(async (m, d, r, md5) => await Task.FromResult(func(m, md5))
+                )).GetAwaiter().GetResult();
         }
 
-        /// <inheritdoc />
-        public virtual void ExecuteReceiveMsg(Func<string, string, string, bool> func)
+        public void ExecuteReceiveMsg(Func<string, string, string, bool> func)
         {
-            ReceiveMessageAndExecFunc((message, deliveryTag, routingKey, messageMd5) =>
-                func.Invoke(message, messageMd5, routingKey));
+            Task.Run(async () =>
+                await ReceiveMessageLoopAsync(async (m, d, r, md5) => await Task.FromResult(func(m, md5, r))
+                )).GetAwaiter().GetResult();
         }
 
-        /// <inheritdoc />
-        public virtual void ExecuteReceiveMsg(Func<string, bool> func)
+        public void ExecuteReceiveMsg(Func<string, bool> func)
         {
-            ReceiveMessageAndExecFunc((message, deliveryTag, routingKey, messageMd5) => func.Invoke(message));
+            Task.Run(async () => await ReceiveMessageLoopAsync(async (m, d, r, md5) => await Task.FromResult(func(m))
+            )).GetAwaiter().GetResult();
         }
 
-        #endregion //end ExecuteReceiveMsg
+        #endregion
 
-        #region SetEventingConsumerWithFunc
+        #region SetEventingConsumerWithFunc 同步实现
 
-        /// <inheritdoc />
-        public virtual EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, string, string, bool> func)
+        public AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, string, string, bool> func)
         {
-            return SetConsumerWithFunc((message, deliveryTag, routingKey, messageMd5) =>
-                func.Invoke(message, deliveryTag, routingKey, messageMd5));
+            return SetConsumerWithFuncAsync(async (m, d, r, md5) => await Task.FromResult(func(m, d, r, md5))
+            ).GetAwaiter().GetResult();
         }
 
-        /// <inheritdoc />
-        public virtual EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, string, bool> func)
+        public AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, string, bool> func)
         {
-            return SetConsumerWithFunc((message, deliveryTag, routingKey, messageMd5) =>
-                func.Invoke(message, deliveryTag, routingKey));
+            return SetConsumerWithFuncAsync(async (m, d, r, md5) => await Task.FromResult(func(m, d, r))
+            ).GetAwaiter().GetResult();
         }
 
-        /// <inheritdoc />
-        public virtual EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, bool> func)
+        public AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, ulong, bool> func)
         {
-            return SetConsumerWithFunc((message, deliveryTag, routingKey, messageMd5) =>
-                func.Invoke(message, deliveryTag));
+            return SetConsumerWithFuncAsync(async (m, d, r, md5) => await Task.FromResult(func(m, d))
+            ).GetAwaiter().GetResult();
         }
 
-        /// <inheritdoc />
-        public virtual EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, string, bool> func)
+        public AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, string, bool> func)
         {
-            return SetConsumerWithFunc((message, deliveryTag, routingKey, messageMd5) =>
-                func.Invoke(message, messageMd5));
+            return SetConsumerWithFuncAsync(async (m, d, r, md5) => await Task.FromResult(func(m, md5))
+            ).GetAwaiter().GetResult();
         }
 
-        /// <inheritdoc />
-        public virtual EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, string, string, bool> func)
+        public AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, string, string, bool> func)
         {
-            return SetConsumerWithFunc((message, deliveryTag, routingKey, messageMd5) =>
-                func.Invoke(message, messageMd5, routingKey));
+            return SetConsumerWithFuncAsync(async (m, d, r, md5) => await Task.FromResult(func(m, md5, r))
+            ).GetAwaiter().GetResult();
         }
 
-        /// <inheritdoc />
-        public virtual EventingBasicConsumer SetEventingConsumerWithFunc(Func<string, bool> func)
+        public AsyncEventingBasicConsumer SetEventingConsumerWithFunc(Func<string, bool> func)
         {
-            return SetConsumerWithFunc((message, deliveryTag, routingKey, messageMd5) => func.Invoke(message));
+            return SetConsumerWithFuncAsync(async (m, d, r, md5) => await Task.FromResult(func(m))
+            ).GetAwaiter().GetResult();
         }
 
-        #endregion //end SetEventingConsumerWithFunc
+        #endregion
 
-        #region Private
 
-        /// <summary>
-        /// </summary>
-        /// <param name="func">
-        ///     Func{in <paramref name="message" /> ,in <paramref name="deliveryTag" />, in <paramref name="routingKey" />,in
-        ///     <paramref name="messageMd5" /> ,out bool execResult}
-        /// </param>
-        private void ReceiveMessageAndExecFunc(Func<string, ulong, string, string, bool> func)
+
+
+
+        #region 同步接收方法
+
+        public bool Receive(out string message)
+        {
+            return Receive(out message, out _);
+        }
+
+        public bool Receive(out string message, out string routingKey)
+        {
+            var result = ReceiveInternalAsync(true).GetAwaiter().GetResult();
+            message = result.Message;
+            routingKey = result.RoutingKey;
+            return result.Success;
+        }
+
+        public bool ReceiveNeedAck(out string message, out ulong deliveryTag)
+        {
+            return ReceiveNeedAck(out message, out deliveryTag, out _);
+        }
+
+        public bool ReceiveNeedAck(out string message, out ulong deliveryTag, out string routingKey)
+        {
+            var result = ReceiveInternalAsync(false).GetAwaiter().GetResult();
+            message = result.Message;
+            deliveryTag = result.DeliveryTag;
+            routingKey = result.RoutingKey;
+            return result.Success;
+        }
+
+        public bool Ack(ulong deliveryTag, bool multiple)
+        {
+            return AckAsync(deliveryTag, multiple).GetAwaiter().GetResult();
+        }
+
+        public bool NoAck(ulong deliveryTag, bool multiple, bool requeue)
+        {
+            return NackAsync(deliveryTag, multiple, requeue).GetAwaiter().GetResult();
+        }
+
+        public AsyncEventingBasicConsumer SetConsumerActive(EventHandler<BasicDeliverEventArgs> e)
+        {
+            return SetConsumerActiveAsync(async (sender, args) => { await Task.Run(() => e(sender, args)); })
+                .GetAwaiter().GetResult();
+        }
+       
+
+        #endregion
+
+        #region 私有异步方法
+
+        private async Task ReceiveMessageLoopAsync(Func<string, ulong, string, string, Task<bool>> asyncFunc)
         {
             while (true)
             {
                 try
                 {
-                    var isSuccess = ReceiveNeedAck(out var message, out var deliveryTag, out var routingKey);
-                    if (!isSuccess)
+                    var (success, message, deliveryTag, routingKey) =
+                        await ReceiveInternalAsync(false).ConfigureAwait(false);
+
+                    if (!success)
                     {
-                        Thread.Sleep(TimeSpan.FromMilliseconds(Settings.SleepTime));
-                        return;
+                        await Task.Delay(TimeSpan.FromMilliseconds(Settings.SleepTime)).ConfigureAwait(false);
+                        continue;
                     }
 
-                    ProcessOneMessage(func, message, deliveryTag, routingKey);
+                    await ProcessOneMessageAsync(asyncFunc, message, deliveryTag, routingKey).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     LogHelper.Error($"{Settings.QueueName} handler error:{ex.Message}", ex);
+                    await Task.Delay(TimeSpan.FromMilliseconds(Settings.SleepTime)).ConfigureAwait(false);
                 }
-
             }
         }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="func">
-        ///     Func{in <paramref name="message" /> ,in <paramref name="deliveryTag" />, in <paramref name="routingKey" />,in
-        ///     <paramref name="messageMd5" /> ,out bool execResult}
-        /// </param>
-        /// <returns></returns>
-        private EventingBasicConsumer SetConsumerWithFunc(Func<string, ulong, string, string, bool> func)
+        private async Task<AsyncEventingBasicConsumer> SetConsumerWithFuncAsync(
+            Func<string, ulong, string, string, Task<bool>> asyncFunc)
         {
-            var eventConsumer = SetConsumerActive((sender, received) =>
-            {
-                var message = received.Body.ToArray().ToGetString();
-                var obj = new
-                {
-                    received.Body,
-                    message,
-                    received.DeliveryTag,
-                    received.Exchange,
-                    received.ConsumerTag,
-                    received.Redelivered,
-                    received.RoutingKey,
-                };
-                if (Settings.LogSwitch)
-                {
-                    LogHelper.Debug(
-                        $"BasicDeliverEventArgs obj is {obj.ToJsonStr()} ,messageMd5 is {message.Md5Encrypt()}");
-                }
-                ProcessOneMessage(func, message, received.DeliveryTag, received.RoutingKey);
-            });
-
-            return eventConsumer;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="func">
-        ///     Func{in <paramref name="message" /> ,in <paramref name="deliveryTag" />, in <paramref name="routingKey" />, in
-        ///     string messageMd5 ,out bool execResult}
-        /// </param>
-        /// <param name="message"></param>
-        /// s
-        /// <param name="deliveryTag"></param>
-        /// <param name="routingKey"></param>
-        private void ProcessOneMessage(Func<string, ulong, string, string, bool> func, string message,
-            ulong deliveryTag, string routingKey)
-        {
-            var doAck = true;
-            if (!message.IsNotNullOrEmpty())
+            return await SetConsumerActiveAsync(async (sender, received) =>
             {
                 try
                 {
-                    var messageMd5 = message.Md5Encrypt();
-                    doAck = TimeWatcherHelper.TimeWatcherUnsafe(
-                        () => func.Invoke(message, deliveryTag, routingKey, messageMd5),
-                        $"process queue({Settings.QueueName}) with message:{message}",
-                        warnMiSeconds: Settings.ProcessWarnMs);
+                    var message = Encoding.UTF8.GetString(received.Body.ToArray());
+
+                    if (Settings.LogSwitch)
+                    {
+                        var messageMd5 = message.Md5Encrypt();
+                        LogHelper.Debug(
+                            $"BasicDeliverEventArgs: DeliveryTag={received.DeliveryTag}, RoutingKey={received.RoutingKey}, MessageMd5={messageMd5}");
+                    }
+
+                    await ProcessOneMessageAsync(asyncFunc, message, received.DeliveryTag, received.RoutingKey)
+                        .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    doAck = false;
-                    LogHelper.Error($"{Settings.QueueName} handler error:{ex.Message}", ex);
-                    throw;
-                }
-                finally
-                {
-                    if (doAck)
+                    LogHelper.Error($"{Settings.QueueName} consumer error:{ex.Message}", ex);
+                    if (sender is AsyncEventingBasicConsumer consumer && consumer.Channel is IChannel channel)
                     {
-                        Ack(deliveryTag, false);
-                    }
-                    else
-                    {
-                        NoAck(deliveryTag, false, true);
+                        await channel.BasicNackAsync(received.DeliveryTag, false, true).ConfigureAwait(false);
                     }
                 }
+            }).ConfigureAwait(false);
+        }
 
+        private async Task ProcessOneMessageAsync(
+            Func<string, ulong, string, string, Task<bool>> asyncFunc,
+            string message,
+            ulong deliveryTag,
+            string routingKey)
+        {
+            var doAck = true;
+
+            try
+            {
+                if (!string.IsNullOrEmpty(message))
+                {
+                    var messageMd5 = message.Md5Encrypt();
+
+                    doAck = await TimeWatcherHelper.TimeWatcherUnsafe(
+                        async () => await asyncFunc(message, deliveryTag, routingKey, messageMd5).ConfigureAwait(false),
+                        $"process queue({Settings.QueueName}) with message:{message}",
+                        warnMiSeconds: Settings.ProcessWarnMs).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                doAck = false;
+                LogHelper.Error($"{Settings.QueueName} handler error:{ex.Message}", ex);
+            }
+            finally
+            {
+                if (doAck)
+                {
+                    await AckAsync(deliveryTag, false).ConfigureAwait(false);
+                }
+                else
+                {
+                    await NackAsync(deliveryTag, false, true).ConfigureAwait(false);
+                }
             }
         }
 
-        #endregion //end Private
+        #endregion
+
+
+
+
+        #region SetEventingConsumerWithFunc 异步实现
+
+        public async Task<AsyncEventingBasicConsumer> SetEventingConsumerWithFuncAsync(Func<string, ulong, string, string, Task<bool>> func)
+        {
+            return await SetConsumerWithFuncAsync(async (m, d, r, md5) => await func(m, d, r, md5)).ConfigureAwait(false);
+        }
+
+        public async Task<AsyncEventingBasicConsumer> SetEventingConsumerWithFuncAsync(Func<string, ulong, string, Task<bool>> func)
+        {
+            return await SetConsumerWithFuncAsync(async (m, d, r, md5) => await func(m, d, r)
+            ).ConfigureAwait(false);
+        }
+
+        public async Task<AsyncEventingBasicConsumer> SetEventingConsumerWithFuncAsync(Func<string, ulong, Task<bool>> func)
+        {
+            return await SetConsumerWithFuncAsync(async (m, d, r, md5) => await func(m, d)
+            ).ConfigureAwait(false);
+        }
+
+        public async Task<AsyncEventingBasicConsumer> SetEventingConsumerWithFuncAsync(Func<string, string, Task<bool>> func)
+        {
+            return await SetConsumerWithFuncAsync(async (m, d, r, md5) => await func(m, md5)
+            ).ConfigureAwait(false);
+        }
+
+        public async Task<AsyncEventingBasicConsumer> SetEventingConsumerWithFuncAsync(Func<string, string, string, Task<bool>> func)
+        {
+            return await SetConsumerWithFuncAsync(async (m, d, r, md5) => await func(m, md5, r)
+            ).ConfigureAwait(false);
+        }
+
+        public async Task<AsyncEventingBasicConsumer> SetEventingConsumerWithFuncAsync(Func<string, Task<bool>> func)
+        {
+            return await SetConsumerWithFuncAsync(async (m, d, r, md5) => await func(m)
+            ).ConfigureAwait(false);
+        }
+
+        #endregion
+
+
+
+
+
+
+
+
+
+
     }
 }

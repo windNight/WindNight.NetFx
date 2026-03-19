@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using RabbitMQ.Client;
 
 namespace WindNight.RabbitMq.Abstractions
 {
-    public class BasicProperties
+    public class BasicMqProperties  
     {
         private int _priority = -1;
 
@@ -34,7 +35,7 @@ namespace WindNight.RabbitMq.Abstractions
         }
 
         /// <summary>   用于"请求"与"响应"之间的匹配.</summary>
-        public string CorrelationID { get; set; } = string.Empty;
+        public string CorrelationId { get; set; } = string.Empty;
 
         /// <summary>  "响应"的目标队列. </summary>
         public string ReplyTo { get; set; } = string.Empty;
@@ -43,7 +44,7 @@ namespace WindNight.RabbitMq.Abstractions
         public long Expiration { get; set; } = -1;
 
         /// <summary> 消息的ID. </summary>
-        public string MessageID { get; set; } = string.Empty;
+        public string MessageId { get; set; } = string.Empty;
 
         /// <summary>  时间戳(UnixTime)  </summary>
         public long Timestamp { get; set; } = -1;
@@ -52,12 +53,12 @@ namespace WindNight.RabbitMq.Abstractions
         public string Type { get; set; } = string.Empty;
 
         /// <summary>  用户的ID  </summary>
-        public string UserID { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
 
         /// <summary>   应用的ID </summary>
-        public string AppID { get; set; } = string.Empty;
+        public string AppId { get; set; } = string.Empty;
 
         /// <summary> 服务集群ID </summary>
-        public string ClusterID { get; set; } = string.Empty;
+        public string ClusterId { get; set; } = string.Empty;
     }
 }

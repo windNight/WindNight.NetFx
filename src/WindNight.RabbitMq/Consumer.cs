@@ -1,3 +1,4 @@
+using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using WindNight.RabbitMq.Abstractions;
@@ -8,86 +9,122 @@ namespace WindNight.RabbitMq
     /// <summary>
     ///     消费者类
     /// </summary>
-    public class Consumer //: IDisposable
+    public class Consumer : IAsyncDisposable, IDisposable
     {
-        private readonly ConsumerConfigInfo consumerConfigInfo;
+        private readonly SemaphoreSlim _modelLock = new SemaphoreSlim(1, 1);
+        protected readonly ConsumerConfigInfo consumerConfigInfo;
+        protected readonly string uri;
+        private bool _disposed;
 
-        private readonly object lockObj;
-
-        private readonly string uri;
         private BasicLibrary basicLibrary;
 
-        private EventingBasicConsumer consumerPassive;
+        protected AsyncEventingBasicConsumer consumerPassive;
+        protected IChannel model;
 
-
-        private IModel model;
-
-        /// <summary>
-        ///     消费者操作
-        /// </summary>
-        /// <param name="uri">amqp地址</param>
-        /// <param name="consumerConfigInfo">消费者通道配置信息</param>
         public Consumer(string uri, ConsumerConfigInfo consumerConfigInfo)
         {
-            lockObj = new object();
             this.uri = uri;
             this.consumerConfigInfo = consumerConfigInfo;
         }
 
-        /// <summary>
-        ///     渠道连接信息
-        /// </summary>
-        private IModel Model
+        public async ValueTask DisposeAsync()
         {
-            get
+            if (_disposed)
             {
-                if (model == null)
+                return;
+            }
+
+            try
+            {
+                if (basicLibrary != null)
                 {
-                    lock (lockObj)
-                    {
-                        if (model == null)
-                        {
-                            CreateModel();
-                        }
-                    }
+                    await basicLibrary.DisposeAsync().ConfigureAwait(false);
                 }
 
+                _modelLock?.Dispose();
+            }
+            finally
+            {
+                _disposed = true;
+            }
+
+            GC.SuppressFinalize(this);
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            try
+            {
+                basicLibrary?.Dispose();
+                _modelLock?.Dispose();
+            }
+            finally
+            {
+                _disposed = true;
+            }
+
+            GC.SuppressFinalize(this);
+        }
+
+        protected async Task<IChannel> GetModelAsync()
+        {
+            if (model != null && model.IsOpen)
+            {
                 return model;
             }
-        }
 
-        /// <summary>
-        ///     渠道连接是否为开启状态
-        /// </summary>
-        public bool IsChannelOpen
-        {
-            get
+            await _modelLock.WaitAsync().ConfigureAwait(false);
+            try
             {
-                if (!model.IsOpen)
+                if (model == null || !model.IsOpen)
                 {
-                    return false;
+                    await CreateModelAsync().ConfigureAwait(false);
                 }
-
-                return true;
             }
+            finally
+            {
+                _modelLock.Release();
+            }
+
+            return model;
         }
 
+        private async Task CreateModelAsync()
+        {
+            basicLibrary = new BasicLibrary(uri);
+            model = await basicLibrary.CreateConsumerChannelByConfigAsync(consumerConfigInfo).ConfigureAwait(false);
+        }
 
-        /// <summary>
-        ///     创建被动接收（主动应答式的消费者）事件
-        /// </summary>
-        /// <returns></returns>
-        public EventingBasicConsumer SetConsumerActive(EventHandler<BasicDeliverEventArgs> e)
+        public async Task<AsyncEventingBasicConsumer> SetConsumerActiveAsync(Func<object, BasicDeliverEventArgs, Task> asyncHandler)
         {
             try
             {
                 if (consumerPassive == null)
                 {
-                    var consumer = new EventingBasicConsumer(Model);
-                    consumer.Received += e;
+                    var currentModel = await GetModelAsync().ConfigureAwait(false);
+                    var consumer = new AsyncEventingBasicConsumer(currentModel);
 
-                    Model.BasicQos(0, consumerConfigInfo.PrefetchCount, false);
-                    Model.BasicConsume(consumerConfigInfo.QueueName, false, consumer);
+                    consumer.ReceivedAsync += async (sender, eventArgs) =>
+                    {
+                        try
+                        {
+                            await asyncHandler(sender, eventArgs).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogHelper.Error($"消息处理失败: {ex.Message}", ex);
+                            await currentModel.BasicNackAsync(eventArgs.DeliveryTag, false, true).ConfigureAwait(false);
+                        }
+                    };
+
+                    await currentModel.BasicQosAsync(0, consumerConfigInfo.PrefetchCount, false).ConfigureAwait(false);
+                    await currentModel.BasicConsumeAsync(consumerConfigInfo.QueueName, false, consumer)
+                        .ConfigureAwait(false);
 
                     consumerPassive = consumer;
                 }
@@ -96,186 +133,65 @@ namespace WindNight.RabbitMq
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"SetConsumerActive Handler Error {ex.Message}", ex);
-                return default;
+                LogHelper.Error($"SetConsumerActiveAsync Error {ex.Message}", ex);
+                return null;
             }
         }
 
-        /// <summary>
-        ///     创建连接渠道
-        /// </summary>
-        /// <returns></returns>
-        private void CreateModel()
+        public async Task<bool> AckAsync(ulong deliveryTag, bool multiple)
         {
-            basicLibrary = new BasicLibrary(uri);
-            model = basicLibrary.CreateConsumerChannelByConfig(consumerConfigInfo);
-        }
-
-
-        ~Consumer()
-        {
-            Dispose();
-            GC.Collect();
-        }
-
-        /// <summary>
-        ///     接受
-        /// </summary>
-        /// <remarks>效率高，但在断开前一刻，消息队列中如果有未被读取的消息会被清空，在断开后有新消息时还是会保留在MQ中，可以在下次连接时获取，所以不保证完整性</remarks>
-        /// <param name="message">获取消息</param>
-        /// <returns></returns>
-        public bool Receive(out string message)
-        {
-            string routingKey;
-            return Receive(out message, out routingKey);
-        }
-
-        /// <summary>
-        ///     无需ack
-        /// </summary>
-        /// <param name="message">获取消息</param>
-        /// <param name="routingKey">路由键</param>
-        /// <returns></returns>
-        public bool Receive(out string message, out string routingKey)
-        {
-            message = string.Empty;
-            routingKey = string.Empty;
             try
             {
-                var res = Model.BasicGet(consumerConfigInfo.QueueName, true);
-                if (res == null)
-                {
-                    Thread.Sleep(200);
-                    return false;
-                }
-
-                var bytes = res.Body.ToArray();
-                message = CommonLibrary.BinaryDeserialize(bytes);
-                routingKey = res.RoutingKey;
+                var currentModel = await GetModelAsync().ConfigureAwait(false);
+                await currentModel.BasicAckAsync(deliveryTag, multiple).ConfigureAwait(false);
                 return true;
             }
             catch (Exception ex)
             {
-                var errLog = $"QueueName:{consumerConfigInfo.QueueName},Receive ";
-                LogHelper.Error(errLog, ex);
-                Thread.Sleep(500);
-                //Dispose();
+                LogHelper.Error($"AckAsync error: {ex.Message}", ex);
                 return false;
             }
         }
 
-        /// <summary>
-        ///     接受并且需要调用Ack方法告知MQ已完成接收
-        /// </summary>
-        /// <param name="message">获取消息</param>
-        /// <remarks>可确保消息的完整性，效率，未完成的数据将需重新连接MQ获取</remarks>
-        /// <param name="deliveryTag">该条消息识别码，调用Ack方法时使用</param>
-        /// <returns></returns>
-        public bool ReceiveNeedAck(out string message, out ulong deliveryTag)
+        public async Task<bool> NackAsync(ulong deliveryTag, bool multiple, bool requeue)
         {
-            string routingKey;
-            return ReceiveNeedAck(out message, out deliveryTag, out routingKey);
-        }
-
-        /// <summary>
-        ///     接受并且需要调用Ack方法告知MQ已完成接收
-        /// </summary>
-        /// <param name="message">获取消息</param>
-        /// <param name="deliveryTag">该条消息识别码，调用Ack方法时使用</param>
-        /// <param name="routingKey">路由键</param>
-        /// <returns></returns>
-        public bool ReceiveNeedAck(out string message, out ulong deliveryTag, out string routingKey)
-        {
-            message = string.Empty;
-            routingKey = string.Empty;
-            deliveryTag = 0;
             try
             {
-                var res = Model.BasicGet(consumerConfigInfo.QueueName, false);
-                if (res == null)
-                {
-                    Thread.Sleep(200);
-                    return false;
-                }
-
-                var bytes = res.Body.ToArray();
-                message = CommonLibrary.BinaryDeserialize(bytes);
-                routingKey = res.RoutingKey;
-                deliveryTag = res.DeliveryTag;
+                var currentModel = await GetModelAsync().ConfigureAwait(false);
+                await currentModel.BasicNackAsync(deliveryTag, multiple, requeue).ConfigureAwait(false);
                 return true;
             }
             catch (Exception ex)
             {
-                var errLog = $"QueueName:{consumerConfigInfo.QueueName},ReceiveNeedAck";
-                LogHelper.Error(errLog, ex);
-                Thread.Sleep(500);
-                //Dispose();
+                LogHelper.Error($"NackAsync error: {ex.Message}", ex);
                 return false;
             }
         }
 
-        /// <summary>
-        ///     告知服务已经收到该消息
-        /// </summary>
-        /// <param name="deliveryTag">消息识别码</param>
-        /// <param name="multiple">是否通知多条消息(一般情况下为false)</param>
-        /// <returns></returns>
-        public bool Ack(ulong deliveryTag, bool multiple)
+        protected async Task<(bool Success, string Message, ulong DeliveryTag, string RoutingKey)> ReceiveInternalAsync(
+            bool autoAck)
         {
             try
             {
-                Model.BasicAck(deliveryTag, multiple);
-                return true;
+                var currentModel = await GetModelAsync().ConfigureAwait(false);
+                var result = await currentModel.BasicGetAsync(consumerConfigInfo.QueueName, autoAck)
+                    .ConfigureAwait(false);
+
+                if (result == null)
+                {
+                    await Task.Delay(200).ConfigureAwait(false);
+                    return (false, string.Empty, 0, string.Empty);
+                }
+
+                var bytes = result.Body.ToArray();
+                var message = Encoding.UTF8.GetString(bytes);
+                return (true, message, result.DeliveryTag, result.RoutingKey);
             }
             catch (Exception ex)
             {
-                var errLog = $"deliveryTag:{deliveryTag},Ack ";
-                LogHelper.Error(errLog, ex);
-                //Dispose();
-                return false;
-            }
-        }
-
-        /// <summary>
-        ///     告知服务已经收到该消息
-        /// </summary>
-        /// <param name="deliveryTag">消息识别码</param>
-        /// <param name="multiple">是否通知多条消息(一般情况下为false)</param>
-        /// <param name="requeue">是否扔回队列</param>
-        /// <returns></returns>
-        public bool NoAck(ulong deliveryTag, bool multiple, bool requeue)
-        {
-            try
-            {
-                Model.BasicNack(deliveryTag, multiple, requeue);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                var errLog = $"deliveryTag:{deliveryTag},NAck ";
-                LogHelper.Error(errLog, ex);
-                //Dispose();
-                return false;
-            }
-        }
-
-        /// <summary>
-        ///     释放资源
-        /// </summary>
-        public void Dispose()
-        {
-            if (basicLibrary != null)
-            {
-                try
-                {
-                    basicLibrary.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error("basicLibrary.Dispose()", ex);
-                }
-
-                basicLibrary = null;
+                LogHelper.Error($"ReceiveInternalAsync error: {ex.Message}", ex);
+                await Task.Delay(500).ConfigureAwait(false);
+                return (false, string.Empty, 0, string.Empty);
             }
         }
     }

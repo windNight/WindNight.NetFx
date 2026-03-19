@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Extension;
 using WindNight.RabbitMq.Abstractions;
@@ -11,9 +7,6 @@ namespace WindNight.RabbitMq
 {
     public abstract class BaseProducerService
     {
-        public static string CurrentCompileTime => BuildInfo.BuildTime;
-
-
         protected readonly IRabbitMqProducer Producer;
 
         public BaseProducerService(IRabbitMqProducerFactory producerFactory, IRabbitMqProducerSettings producerSettings)
@@ -22,9 +15,12 @@ namespace WindNight.RabbitMq
             {
                 producerSettings = DefaultRabbitMqProducerSettings;
             }
+
             LogHelper.Info($" IRabbitMqProducerSettings is {producerSettings.ToJsonStr()}");
             Producer = producerFactory.GetRabbitMqProducer(producerSettings);
         }
+
+        public static string CurrentCompileTime => BuildInfo.BuildTime;
 
         public IRabbitMqProducerSettings CurrentProducerSettings => DefaultRabbitMqProducerSettings;
 
@@ -39,13 +35,14 @@ namespace WindNight.RabbitMq
                 {
                     throw new ArgumentNullException($"RabbitMqConfig({ProducerName}) Can not Get from config");
                 }
+
                 return new RabbitMqProducerSettings
                 {
                     RabbitMqUrl = config.RabbitMqUrl,
                     ExchangeName = config.ExchangeName,
                     ExchangeTypeCode = config.ExchangeTypeCode,
                     ExchangeDurable = config.ExchangeDurable,
-                    ProducerName = config.ProducerName,
+                    ProducerName = config.ProducerName
                 };
             }
         }
@@ -91,14 +88,17 @@ namespace WindNight.RabbitMq
             {
                 var config = ConfigItems.RabbitMqConfig.Items.FirstOrDefault(m => m.ProducerName == ProducerName);
                 if (config == null)
+                {
                     throw new ArgumentNullException($"RabbitMqConfig({ProducerName}) Can not Get from config");
+                }
+
                 return new RabbitMqProducerSettings
                 {
                     RabbitMqUrl = config.RabbitMqUrl,
                     ExchangeName = config.ExchangeName,
                     ExchangeTypeCode = config.ExchangeTypeCode,
                     ExchangeDurable = config.ExchangeDurable,
-                    ProducerName = config.ProducerName,
+                    ProducerName = config.ProducerName
                 };
             }
         }

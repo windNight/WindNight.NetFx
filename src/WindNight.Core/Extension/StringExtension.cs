@@ -71,7 +71,7 @@ namespace System
         {
             if (value.IsNullOrEmpty())
             {
-                return HardInfo.ArrayList<string>();
+                return HardInfo.EmptyArrayList<string>();
             }
 
             if (separators.IsNullOrEmpty() || separators.Length < 1 ||
